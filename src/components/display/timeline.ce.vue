@@ -28,6 +28,7 @@ const { isCustomElement } = useNativeSlots(root);
 .kima-timeline__item.kima-list-leave-active { position: absolute; width: 100%; }
 .kima-timeline {
   @include display-base;
+  @include kima-block-host;
   margin: 0; padding: 0; list-style: none;
   &__item { @include display-tones; display: flex; position: relative; gap: var(--kima-space-4); padding-bottom: var(--kima-space-8); &:last-child { padding-bottom: 0; } &:not(:last-child)::before { content: ''; position: absolute; inset-inline-start: 11px; top: 32px; bottom: 8px; width: 2px; background: var(--kima-color-layer-3); } }
   &__marker { color: var(--kima-display-tone); display: inline-flex; flex: 0 0 24px; }

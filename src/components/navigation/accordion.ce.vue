@@ -36,7 +36,8 @@ function expanded(value) { return props.multiple ? selected.value.includes(value
 </template>
 <style scoped lang="scss">
 @use "../../styles/navigation" as *;
-.kima-accordion { @include navigation-root; &__item { margin-block: var(--kima-space-2); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); padding: var(--kima-space-2); } &__heading { margin: 0; font: inherit; } &__trigger { width: 100%; justify-content: space-between; min-height: 56px; :deep(.kima-button__label) { width: 100%; justify-content: space-between; gap: var(--kima-space-4); white-space: normal; text-align: start; } } &__content { padding: var(--kima-space-4); line-height: 1.7; } }
+@use "../../styles/mixins" as *;
+.kima-accordion { @include navigation-root; @include kima-block-host; &__item { margin-block: var(--kima-space-2); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); padding: var(--kima-space-2); } &__heading { margin: 0; font: inherit; } &__trigger { width: 100%; justify-content: space-between; min-height: 56px; :deep(.kima-button__label) { width: 100%; justify-content: space-between; gap: var(--kima-space-4); white-space: normal; text-align: start; } } &__content { padding: var(--kima-space-4); line-height: 1.7; } }
 .kima-accordion__arrow { flex: 0 0 auto; transition: transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
 .kima-accordion__arrow--expanded { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { .kima-accordion__arrow { transition: none; } }

@@ -12,8 +12,11 @@
   overflow-wrap: anywhere;
 }
 
+/* 面板类展示（提示、结果、空状态、横幅、统计）本身是一块场地：
+ * 占满可用宽度，内容变长变短都不会让整块突然变窄。 */
 @mixin display-panel {
   @include display-base;
+  @include kima-block-host;
   @include kima-layer;
   padding: var(--kima-space-6);
   border-radius: var(--kima-radius-m);

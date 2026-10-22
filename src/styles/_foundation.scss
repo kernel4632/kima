@@ -1,4 +1,6 @@
 // 只布局，不添加背景、边框、交互或装饰性运动。
+@use "mixins" as *;
+
 @mixin foundation-responsive($name) {
   --kima-#{$name}-gap: var(--kima-#{$name}-gap-base);
   gap: var(--kima-#{$name}-gap);
@@ -6,8 +8,9 @@
   @media (min-width: 960px) { --kima-#{$name}-gap: var(--kima-#{$name}-gap-md); }
   @media (min-width: 1280px) { --kima-#{$name}-gap: var(--kima-#{$name}-gap-lg); }
 }
+/* 布局组件（Flex / Grid / Stack / 页头 / 错误态 / 输入组）是块级场地：
+ * 占满可用宽度，不按内容收缩。 */
 @mixin foundation-base {
-  box-sizing: border-box;
-  min-width: 0;
+  @include kima-block-host;
   > :deep(*) { min-width: 0; }
 }

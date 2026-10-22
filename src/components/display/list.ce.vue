@@ -37,6 +37,7 @@ function itemKey(item, index) {
 @use "../../styles/mixins" as *;
 .kima-list {
   @include display-base;
+  @include kima-block-host;
   display: grid; gap: var(--kima-space-3); margin: 0; padding: 0; list-style-position: inside;
   &:is(ul) { list-style: none; }
   &__item { @include kima-layer; min-height: var(--kima-list-item-height); padding: var(--kima-space-5); border-radius: var(--kima-radius-m); }

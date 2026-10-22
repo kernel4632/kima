@@ -37,6 +37,12 @@ defineExpose({ dismiss, restore });
 <style scoped lang="scss">
 @use '../../styles/display' as *;
 @use '../../styles/mixins' as *;
+/* 收起动画作用在这个外壳上：它必须占满宽度，
+ * 否则关闭横幅时外壳按新的内容宽度收缩，整块会瞬间变窄。 */
+.kima-banner__clip {
+  @include kima-block-host;
+}
+
 .kima-banner {
   @include display-panel;
   @include display-tones;

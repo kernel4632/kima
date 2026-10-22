@@ -10,6 +10,7 @@
 }
 @mixin navigation-surface {
   @include navigation-root;
+  @include kima-block-host;
   @include kima-layer(1);
   border-radius: var(--kima-radius-m);
   padding: var(--kima-space-4);

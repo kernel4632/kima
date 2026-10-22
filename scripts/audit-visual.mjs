@@ -3,7 +3,8 @@
  * 用法：node scripts/audit-visual.mjs [baseURL]
  */
 import { chromium } from '@playwright/test';
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { componentPaths } from '../src/component-paths.js';
 
 const base = process.argv[2] || process.env.KIMA_AUDIT_BASE || 'http://127.0.0.1:5188';
 const width = Number(process.env.KIMA_AUDIT_WIDTH || 1440);
@@ -13,10 +14,7 @@ const root = new URL('../', import.meta.url);
 const output = new URL(`shots/audit${suffix}/`, root);
 await mkdir(output, { recursive: true });
 
-const slugs = (await readdir(new URL('src/components/', root)))
-  .filter((name) => name.endsWith('.ce.vue'))
-  .map((name) => name.replace('.ce.vue', ''))
-  .sort();
+const slugs = Object.keys(componentPaths).sort();
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
@@ -67,10 +65,18 @@ async function measure() {
       .map((element) => name(element))
       .slice(0, 8);
     const hostStyle = getComputedStyle(demo);
+    const hosts = [...demo.children]
+      .filter((element) => element.tagName.includes('-'))
+      .map((element) => ({
+        tag: element.tagName.toLowerCase(),
+        display: getComputedStyle(element).display,
+        width: box(element).width,
+      }));
     return {
       missing: false,
       demo: box(demo),
       canvas: box(canvas),
+      hosts,
       demoDisplay: hostStyle.display,
       demoGap: hostStyle.rowGap,
       scroll: { x: demo.scrollWidth - demo.clientWidth, y: demo.scrollHeight - demo.clientHeight },
