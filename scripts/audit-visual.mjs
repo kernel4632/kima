@@ -6,8 +6,11 @@ import { chromium } from '@playwright/test';
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 
 const base = process.argv[2] || process.env.KIMA_AUDIT_BASE || 'http://127.0.0.1:5188';
+const width = Number(process.env.KIMA_AUDIT_WIDTH || 1440);
+const height = Number(process.env.KIMA_AUDIT_HEIGHT || 1000);
+const suffix = width < 800 ? '-mobile' : '';
 const root = new URL('../', import.meta.url);
-const output = new URL('shots/audit/', root);
+const output = new URL(`shots/audit${suffix}/`, root);
 await mkdir(output, { recursive: true });
 
 const slugs = (await readdir(new URL('src/components/', root)))
@@ -16,7 +19,7 @@ const slugs = (await readdir(new URL('src/components/', root)))
   .sort();
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
 const report = [];
 
 async function measure() {

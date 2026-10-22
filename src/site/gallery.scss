@@ -66,7 +66,7 @@
 }
 
 .kima-gallery__demo > form {
-  max-width: 620px;
+  max-width: 520px;
 }
 
 /* 表单里重复的演示标题由页面标题承担；提交按钮按内容宽度居中，不拉满整行。 */
@@ -86,8 +86,21 @@
 /* 表单控件统一到可读宽度：横向铺满所在格子，但不把整页拉成一条。 */
 .kima-gallery__demo :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-cascader, .kima-multi-select, .kima-tree-select, .kima-virtual-select, .kima-date-picker, .kima-time-picker, .kima-date-range-picker, .kima-time-range-picker, .kima-datetime-picker, .kima-datetime-range-picker, .kima-period-picker, .kima-date-field, .kima-time-field, .kima-time-select, .kima-masked-input, .kima-json-input, .kima-number-field, .kima-tags-input, .kima-pin-input, .kima-color-picker, .kima-slider, .kima-range-slider, .kima-file-upload, .kima-upload-manager) {
   width: 100%;
+  min-width: 0;
   max-width: 520px;
   margin-inline: auto;
+}
+
+/* 表单已经限宽，里面的控件跟着表单走，避免标签和控件各居一次中。 */
+.kima-gallery__demo form :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-cascader, .kima-multi-select, .kima-tree-select, .kima-virtual-select, .kima-date-picker, .kima-time-picker, .kima-date-range-picker, .kima-time-range-picker, .kima-datetime-picker, .kima-datetime-range-picker, .kima-period-picker, .kima-date-field, .kima-time-field, .kima-time-select, .kima-masked-input, .kima-json-input, .kima-number-field, .kima-tags-input, .kima-pin-input, .kima-color-picker, .kima-slider, .kima-range-slider, .kima-file-upload, .kima-upload-manager) {
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* 输入类控件自带固有宽度（input 的 size 默认值）。作为栅格项时，
+ * 默认的 min-width:auto 会把字段撑出手机屏幕，这里让容器可以被压缩。 */
+.kima-gallery__demo :is(form, .kima-field, .kima-field-group, label) {
+  min-width: 0;
 }
 
 .kima-gallery__row {

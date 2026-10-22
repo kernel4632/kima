@@ -5,7 +5,7 @@ import { chromium } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
-const audit = new URL('shots/audit/', root);
+const audit = new URL(`${process.env.KIMA_AUDIT_DIR || 'shots/audit'}/`, root);
 const { readFile } = await import('node:fs/promises');
 const report = JSON.parse(await readFile(new URL('report.json', audit), 'utf8'));
 const slugs = report.map((item) => item.slug);
