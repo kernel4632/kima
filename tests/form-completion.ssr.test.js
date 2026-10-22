@@ -19,9 +19,10 @@ const samples = {
 
 test("form completion components render in SSR without browser globals", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
     for (const [slug, modelValue] of Object.entries(samples)) {
-      const component = (await server.ssrLoadModule(`/src/components/${slug}.ce.vue`)).default;
+      const component = (await server.ssrLoadModule(componentPaths[slug])).default;
       const html = await renderToString(createSSRApp({ render: () => h(component, { name: "field", modelValue }) }));
       assert.match(html, new RegExp(`kima-${slug.replaceAll("-", "\\-")}`), slug);
     }
@@ -32,6 +33,7 @@ test("form completion components render in SSR without browser globals", async (
 
 test("form-completion examples server render without touching document", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
     const example = (await server.ssrLoadModule("/src/site/form-completion-examples.vue")).default;
     for (const slug of ["date-field", "upload-manager", "form", "color-picker"]) {

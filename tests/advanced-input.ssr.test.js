@@ -18,6 +18,7 @@ test('local civil parsing never accepts offsets or rollover dates', () => {
 
 test('all nine advanced input components SSR render with nonempty local models',async()=>{
   const server=await createServer({server:{middlewareMode:true,hmr:false,ws:false},appType:'custom'});
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   const values={
     'range-slider':{modelValue:[20,80]},calendar:{modelValue:'2026-06-01'},
     'date-range-picker':{modelValue:['2026-06-01','2026-06-10']},
@@ -27,7 +28,7 @@ test('all nine advanced input components SSR render with nonempty local models',
   };
   try {
     for(const [slug,props] of Object.entries(values)){
-      const component=(await server.ssrLoadModule(`/src/components/${slug}.ce.vue`)).default;
+      const component=(await server.ssrLoadModule(componentPaths[slug])).default;
       const html=await renderToString(createSSRApp({render:()=>h(component,{...props,name:'entry'},slug==='form'?{default:()=>h('input',{name:'child',required:true})}:undefined)}));
       assert.ok(html.includes(`kima-${slug}`),slug);
       if(slug==='date-range-picker') assert.equal((html.match(/role="grid"/g)||[]).length,2);

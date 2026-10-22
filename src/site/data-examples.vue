@@ -1,16 +1,16 @@
 <script setup>
 import { computed, ref } from "vue";
-import KimaButton from "../components/button.ce.vue";
-import KimaTable from "../components/table.ce.vue";
-import KimaInfiniteScroll from "../components/infinite-scroll.ce.vue";
-import KimaVirtualTable from "../components/virtual-table.ce.vue";
-import KimaVirtualTree from "../components/virtual-tree.ce.vue";
-import KimaImagePreview from "../components/image-preview.ce.vue";
-import KimaNotificationQueue from "../components/notification-queue.ce.vue";
-import KimaRelativeTime from "../components/relative-time.ce.vue";
-import KimaRingProgress from "../components/ring-progress.ce.vue";
-import KimaCopyButton from "../components/copy-button.ce.vue";
-import KimaLongText from "../components/long-text.ce.vue";
+import KimaButton from "../components/core/button.ce.vue";
+import KimaTable from "../components/data/table.ce.vue";
+import KimaInfiniteScroll from "../components/data/infinite-scroll.ce.vue";
+import KimaVirtualTable from "../components/data/virtual-table.ce.vue";
+import KimaVirtualTree from "../components/data/virtual-tree.ce.vue";
+import KimaImagePreview from "../components/data/image-preview.ce.vue";
+import KimaNotificationQueue from "../components/utility/notification-queue.ce.vue";
+import KimaRelativeTime from "../components/data/relative-time.ce.vue";
+import KimaRingProgress from "../components/data/ring-progress.ce.vue";
+import KimaCopyButton from "../components/data/copy-button.ce.vue";
+import KimaLongText from "../components/data/long-text.ce.vue";
 import { dataCatalog } from "./data-catalog.js";
 
 const props = defineProps({ component: { type: String, default: "table" } });

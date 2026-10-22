@@ -1,12 +1,12 @@
 <!-- Real Vue consumers exercise v-model, legacy title attrs, scoped slots and styles. -->
 <script setup>
 import { ref } from "vue";
-import Button from "../src/components/button.ce.vue";
-import Select from "../src/components/select.ce.vue";
-import Notification from "../src/components/notification.ce.vue";
-import Table from "../src/components/table.ce.vue";
-import EmptyState from "../src/components/empty-state.ce.vue";
-import Drawer from "../src/components/drawer.ce.vue";
+import Button from "../src/components/core/button.ce.vue";
+import Select from "../src/components/core/select.ce.vue";
+import Notification from "../src/components/core/notification.ce.vue";
+import Table from "../src/components/data/table.ce.vue";
+import EmptyState from "../src/components/core/empty-state.ce.vue";
+import Drawer from "../src/components/core/drawer.ce.vue";
 
 const clicks = ref(0);
 const choice = ref(null);

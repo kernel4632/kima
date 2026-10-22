@@ -40,34 +40,34 @@
 
 | # | 文件 | 交互与状态审查 / 实修结果 |
 | --- | --- | --- |
-| 1 | [accordion.ce.vue](../src/components/accordion.ce.vue) | 审查单选/多选展开、禁用、方向键和面板插槽。即时隐藏改为共享实测高度过渡；过渡外壳无 padding，内层承接内容间距；保留挂载并即时禁止关闭区域的焦点和交互。加减字符改为箭头旋转，减少动态效果时不旋转。依赖父任务的 [collapseTransition](../src/utils/motion.js)。 |
-| 2 | [alert.ce.vue](../src/components/alert.ce.vue) | 审查外部开关、本地关闭、语义变体、动作插槽和原生插槽。增加高度退场外壳，关闭期间立即不可交互；语义文字/图标颜色接入共享颜色过渡。初始隐藏不执行入场。新增外壳可能影响调用方直接对子级布局的假设，需联调检查。 |
-| 3 | [anchor.ce.vue](../src/components/anchor.ce.vue) | 审查滚动跟踪、目标容器重连、偏移、点击导航、当前项和卸载清理。已有滚动行为通过共享工具尊重减少动态效果，当前项反馈由链接组件承接。本组无需新增动画，保留。 |
-| 4 | [aspect-ratio.ce.vue](../src/components/aspect-ratio.ce.vue) | 纯比例布局容器，无自有交互/显隐状态。比例变化属于使用者布局数据，不添加尺寸补间，保留。 |
-| 5 | [avatar-group.ce.vue](../src/components/avatar-group.ce.vue) | 审查成员增删、max 截断、剩余数量及默认插槽。数组回退内容接入共享列表过渡，增加局部定位容器；自定义插槽保持由调用方管理。成员未提供 id 时仍沿用索引身份，重排动效准确性取决于调用方提供稳定 id。 |
-| 6 | [avatar.ce.vue](../src/components/avatar.ce.vue) | 审查图片载入、失败、换源、姓名/图标回退及可访问名称。增加加载完成状态；加载期间显示回退，成功淡入图片/淡出回退；失败继续显示回退；换源重置状态。固定网格轨道，避免长姓名或图片固有尺寸撑大头像；减少动态效果关闭图片淡入。 |
-| 7 | [back-top.ce.vue](../src/components/back-top.ce.vue) | 审查阈值显隐、滚动目标、禁用、点击和卸载。即时隐藏改为共享内容过渡，保留按钮与插槽挂载，隐藏/退场立即不可交互。平滑返回顶部仍沿用已有减少动态效果处理。 |
-| 8 | [badge.ce.vue](../src/components/badge.ce.vue) | 审查数值上限、dot、语义变体、文字插槽和状态播报。默认数值变化按 key 淡出再淡入，语义配色增加共享过渡；自定义插槽内容不被重新挂载。dot 几何切换保留即时显示，不制造不必要缩放。 |
-| 9 | [blockquote.ce.vue](../src/components/blockquote.ce.vue) | 纯引用/出处排版，无自有交互状态。静态不适用，保留。 |
-| 10 | [breadcrumb.ce.vue](../src/components/breadcrumb.ce.vue) | 审查末项当前位置、禁用链接、路径数组和插槽。链接反馈由链接组件负责；路径是页面导航结果，不强制对子项做进入/离开延迟，保留。 |
-| 11 | [button-group.ce.vue](../src/components/button-group.ce.vue) | 审查单选/多选、方向键、tablist、禁用、焦点与对勾。补齐原先只有样式而无事件的涟漪绑定（落在整组宿主），多选对勾使用共享内容过渡，减少动态效果关闭段颜色过渡。未引入整行缩放。 |
-| 12 | [button.ce.vue](../src/components/button.ce.vue) | 审查变体、形状、禁用、loading、前后插槽和按下反馈。加载/leading 内容交接增加淡出淡入；旋转内圈与淡入外壳分离，避免动画属性互抢；减少动态效果下停止旋转、取消按下位移。文字标签保持挂载和可访问名称。 |
-| 13 | [card.ce.vue](../src/components/card.ce.vue) | 审查可点击/静态、禁用、键盘、嵌套交互元素、变体和分区插槽。修复按下 mixin 覆盖基础过渡后，描边、抬升、禁用瞬切的问题；保留回弹并补回颜色、边框、阴影和透明度的释放态过渡。减少动态效果取消位移。按下期间仍以共享 mixin 的短按节奏优先。 |
-| 14 | [carousel.ce.vue](../src/components/carousel.ce.vue) | 审查前后按钮、循环、受控索引、方向键、空内容和命名插槽。即时隐藏改为每张独立的共享淡入淡出，网格同格叠放，保留所有幻灯片挂载；旧项立即不可交互/读屏隐藏。交叉淡化期间容器短暂取两页较大高度，结束后恢复当前页固有高度，未做自动高度补间。 |
-| 15 | [cascader.ce.vue](../src/components/cascader.ce.vue) | 审查路径选择、层级增删、方向键、清除、外点关闭、表单重置和禁用。清除入口淡入淡出，补其悬停/焦点颜色过渡；列增删接共享列表过渡。弹层退场立即不可交互，重新入场清除此状态；列退场也不可交互。原有选项高亮/选中配色及箭头旋转保留。 |
-| 16 | [checkbox-group.ce.vue](../src/components/checkbox-group.ce.vue) | 审查原生复选、必填至少一项、禁用、方向布局及整组涟漪。选项行选中底色/文字色接共享过渡，补行自身禁用语义与整组禁用视觉。原生方框勾选由浏览器绘制，不伪造自定义动画。 |
-| 17 | [checkbox.ce.vue](../src/components/checkbox.ce.vue) | 审查 checked/indeterminate 互转、原生 change、reset、禁用、光环与勾/横杠。已有方框颜色和弹簧标记保留；补标签/禁用颜色过渡，减少动态效果禁用标记弹簧转换。 |
-| 18 | [chip.ce.vue](../src/components/chip.ce.vue) | 审查静态/可选/可删除组合、表单和 reset。补选中/禁用配色过渡，移除入口显隐接共享内容过渡。删除事件仍由父层决定是否移除，不延迟事件、不自毁组件；整个芯片从父层列表被删除的退场应由父层共享列表过渡承接。 |
-| 19 | [code-block.ce.vue](../src/components/code-block.ce.vue) | 审查高亮、换行、复制等待/成功/失败和读屏反馈。复制等待接按钮 loading，成功文案淡出淡入；读屏状态仍即时更新。换行/代码内容更新保持即时，避免代码阅读时整块移动。 |
-| 20 | [collapsible.ce.vue](../src/components/collapsible.ce.vue) | 审查受控/本地开关、触发插槽、禁用和原生内容保活。即时隐藏改为共享实测高度过渡；无 padding 外壳包住内容，关闭立即不可交互，插槽不卸载。 |
-| 21 | [color-picker.ce.vue](../src/components/color-picker.ce.vue) | 审查原生系统面板、HEX 编辑合法/非法、提交、只读和禁用。非法输入文字颜色接共享过渡；原生系统颜色面板由浏览器/系统绘制，无可控面板动效。 |
-| 22 | [combobox.ce.vue](../src/components/combobox.ce.vue) | 审查输入过滤、自由文本提交、选择、键盘、清除、开关/外点关闭、表单重置。补整块场地状态层与涟漪事件；清除入口和选中勾淡入淡出；清除/展开按钮颜色过渡。弹层退场不可交互，再入场恢复。过滤行保持即时更新，避免高速输入时焦点索引被延迟列表打乱。 |
-| 23 | [command.ce.vue](../src/components/command.ce.vue) | 审查原生 dialog、搜索/分组、方向键、执行、关闭与焦点返回。保留已有遮罩淡入淡出，面板加轻微缩放入场/退场，减少动态效果取消缩放；搜索框颜色加共享过渡。搜索结果保持即时以匹配游标索引。 |
-| 24 | [context-menu.ce.vue](../src/components/context-menu.ce.vue) | 审查右键/长按、键盘打开、禁用项、外点/ESC 与焦点恢复。既有 Reka 内容由共享 popup 过渡、选项由共享 row 过渡承接；补触发区域的主题颜色过渡。没有新增行缩放。 |
-| 25 | [countdown.ce.vue](../src/components/countdown.ce.vue) | 审查每秒更新、到时一次事件、目标改变、SSR 占位和卸载计时器。等宽数字直接更新，连续计时不施加每秒位移/淡化以免持续抢注意力；保留。 |
-| 26 | [date-picker.ce.vue](../src/components/date-picker.ce.vue) | 审查开关、选择、清除、翻月/跨月键盘焦点、边界、reset 和原生表单。清除入口淡化；清除/月份导航/日期的颜色与状态增加共享过渡；月份标题及整月网格切换淡化。旧月退场移除重复 id、设为不可交互，重新进入恢复 id，避免快速来回翻月留下失效焦点。弹层退场也禁止交互。需重点实测跨月、快速反向和聚焦。 |
-| 27 | [descriptions.ce.vue](../src/components/descriptions.ce.vue) | 纯详情排版和响应式列数，无自有交互状态，保留。 |
-| 28 | [dialog.ce.vue](../src/components/dialog.ce.vue) | 审查外部开关、ESC、背景点击、原生关闭、焦点循环和插槽。面板补完整关闭端缩放/淡出目标；关闭按钮复用现有基础按钮获得状态层/涟漪/按下回弹，保留原尺寸与可访问名称；减少动态效果取消面板缩放。原生 display/overlay 离散过渡保留。 |
+| 1 | [accordion.ce.vue](../src/components/navigation/accordion.ce.vue) | 审查单选/多选展开、禁用、方向键和面板插槽。即时隐藏改为共享实测高度过渡；过渡外壳无 padding，内层承接内容间距；保留挂载并即时禁止关闭区域的焦点和交互。加减字符改为箭头旋转，减少动态效果时不旋转。依赖父任务的 [collapseTransition](../src/utils/motion.js)。 |
+| 2 | [alert.ce.vue](../src/components/display/alert.ce.vue) | 审查外部开关、本地关闭、语义变体、动作插槽和原生插槽。增加高度退场外壳，关闭期间立即不可交互；语义文字/图标颜色接入共享颜色过渡。初始隐藏不执行入场。新增外壳可能影响调用方直接对子级布局的假设，需联调检查。 |
+| 3 | [anchor.ce.vue](../src/components/navigation/anchor.ce.vue) | 审查滚动跟踪、目标容器重连、偏移、点击导航、当前项和卸载清理。已有滚动行为通过共享工具尊重减少动态效果，当前项反馈由链接组件承接。本组无需新增动画，保留。 |
+| 4 | [aspect-ratio.ce.vue](../src/components/display/aspect-ratio.ce.vue) | 纯比例布局容器，无自有交互/显隐状态。比例变化属于使用者布局数据，不添加尺寸补间，保留。 |
+| 5 | [avatar-group.ce.vue](../src/components/display/avatar-group.ce.vue) | 审查成员增删、max 截断、剩余数量及默认插槽。数组回退内容接入共享列表过渡，增加局部定位容器；自定义插槽保持由调用方管理。成员未提供 id 时仍沿用索引身份，重排动效准确性取决于调用方提供稳定 id。 |
+| 6 | [avatar.ce.vue](../src/components/display/avatar.ce.vue) | 审查图片载入、失败、换源、姓名/图标回退及可访问名称。增加加载完成状态；加载期间显示回退，成功淡入图片/淡出回退；失败继续显示回退；换源重置状态。固定网格轨道，避免长姓名或图片固有尺寸撑大头像；减少动态效果关闭图片淡入。 |
+| 7 | [back-top.ce.vue](../src/components/navigation/back-top.ce.vue) | 审查阈值显隐、滚动目标、禁用、点击和卸载。即时隐藏改为共享内容过渡，保留按钮与插槽挂载，隐藏/退场立即不可交互。平滑返回顶部仍沿用已有减少动态效果处理。 |
+| 8 | [badge.ce.vue](../src/components/core/badge.ce.vue) | 审查数值上限、dot、语义变体、文字插槽和状态播报。默认数值变化按 key 淡出再淡入，语义配色增加共享过渡；自定义插槽内容不被重新挂载。dot 几何切换保留即时显示，不制造不必要缩放。 |
+| 9 | [blockquote.ce.vue](../src/components/display/blockquote.ce.vue) | 纯引用/出处排版，无自有交互状态。静态不适用，保留。 |
+| 10 | [breadcrumb.ce.vue](../src/components/navigation/breadcrumb.ce.vue) | 审查末项当前位置、禁用链接、路径数组和插槽。链接反馈由链接组件负责；路径是页面导航结果，不强制对子项做进入/离开延迟，保留。 |
+| 11 | [button-group.ce.vue](../src/components/core/button-group.ce.vue) | 审查单选/多选、方向键、tablist、禁用、焦点与对勾。补齐原先只有样式而无事件的涟漪绑定（落在整组宿主），多选对勾使用共享内容过渡，减少动态效果关闭段颜色过渡。未引入整行缩放。 |
+| 12 | [button.ce.vue](../src/components/core/button.ce.vue) | 审查变体、形状、禁用、loading、前后插槽和按下反馈。加载/leading 内容交接增加淡出淡入；旋转内圈与淡入外壳分离，避免动画属性互抢；减少动态效果下停止旋转、取消按下位移。文字标签保持挂载和可访问名称。 |
+| 13 | [card.ce.vue](../src/components/core/card.ce.vue) | 审查可点击/静态、禁用、键盘、嵌套交互元素、变体和分区插槽。修复按下 mixin 覆盖基础过渡后，描边、抬升、禁用瞬切的问题；保留回弹并补回颜色、边框、阴影和透明度的释放态过渡。减少动态效果取消位移。按下期间仍以共享 mixin 的短按节奏优先。 |
+| 14 | [carousel.ce.vue](../src/components/navigation/carousel.ce.vue) | 审查前后按钮、循环、受控索引、方向键、空内容和命名插槽。即时隐藏改为每张独立的共享淡入淡出，网格同格叠放，保留所有幻灯片挂载；旧项立即不可交互/读屏隐藏。交叉淡化期间容器短暂取两页较大高度，结束后恢复当前页固有高度，未做自动高度补间。 |
+| 15 | [cascader.ce.vue](../src/components/core/cascader.ce.vue) | 审查路径选择、层级增删、方向键、清除、外点关闭、表单重置和禁用。清除入口淡入淡出，补其悬停/焦点颜色过渡；列增删接共享列表过渡。弹层退场立即不可交互，重新入场清除此状态；列退场也不可交互。原有选项高亮/选中配色及箭头旋转保留。 |
+| 16 | [checkbox-group.ce.vue](../src/components/input/checkbox-group.ce.vue) | 审查原生复选、必填至少一项、禁用、方向布局及整组涟漪。选项行选中底色/文字色接共享过渡，补行自身禁用语义与整组禁用视觉。原生方框勾选由浏览器绘制，不伪造自定义动画。 |
+| 17 | [checkbox.ce.vue](../src/components/core/checkbox.ce.vue) | 审查 checked/indeterminate 互转、原生 change、reset、禁用、光环与勾/横杠。已有方框颜色和弹簧标记保留；补标签/禁用颜色过渡，减少动态效果禁用标记弹簧转换。 |
+| 18 | [chip.ce.vue](../src/components/interaction/chip.ce.vue) | 审查静态/可选/可删除组合、表单和 reset。补选中/禁用配色过渡，移除入口显隐接共享内容过渡。删除事件仍由父层决定是否移除，不延迟事件、不自毁组件；整个芯片从父层列表被删除的退场应由父层共享列表过渡承接。 |
+| 19 | [code-block.ce.vue](../src/components/core/code-block.ce.vue) | 审查高亮、换行、复制等待/成功/失败和读屏反馈。复制等待接按钮 loading，成功文案淡出淡入；读屏状态仍即时更新。换行/代码内容更新保持即时，避免代码阅读时整块移动。 |
+| 20 | [collapsible.ce.vue](../src/components/navigation/collapsible.ce.vue) | 审查受控/本地开关、触发插槽、禁用和原生内容保活。即时隐藏改为共享实测高度过渡；无 padding 外壳包住内容，关闭立即不可交互，插槽不卸载。 |
+| 21 | [color-picker.ce.vue](../src/components/form-completion/color-picker.ce.vue) | 审查原生系统面板、HEX 编辑合法/非法、提交、只读和禁用。非法输入文字颜色接共享过渡；原生系统颜色面板由浏览器/系统绘制，无可控面板动效。 |
+| 22 | [combobox.ce.vue](../src/components/core/combobox.ce.vue) | 审查输入过滤、自由文本提交、选择、键盘、清除、开关/外点关闭、表单重置。补整块场地状态层与涟漪事件；清除入口和选中勾淡入淡出；清除/展开按钮颜色过渡。弹层退场不可交互，再入场恢复。过滤行保持即时更新，避免高速输入时焦点索引被延迟列表打乱。 |
+| 23 | [command.ce.vue](../src/components/interaction/command.ce.vue) | 审查原生 dialog、搜索/分组、方向键、执行、关闭与焦点返回。保留已有遮罩淡入淡出，面板加轻微缩放入场/退场，减少动态效果取消缩放；搜索框颜色加共享过渡。搜索结果保持即时以匹配游标索引。 |
+| 24 | [context-menu.ce.vue](../src/components/interaction/context-menu.ce.vue) | 审查右键/长按、键盘打开、禁用项、外点/ESC 与焦点恢复。既有 Reka 内容由共享 popup 过渡、选项由共享 row 过渡承接；补触发区域的主题颜色过渡。没有新增行缩放。 |
+| 25 | [countdown.ce.vue](../src/components/display/countdown.ce.vue) | 审查每秒更新、到时一次事件、目标改变、SSR 占位和卸载计时器。等宽数字直接更新，连续计时不施加每秒位移/淡化以免持续抢注意力；保留。 |
+| 26 | [date-picker.ce.vue](../src/components/core/date-picker.ce.vue) | 审查开关、选择、清除、翻月/跨月键盘焦点、边界、reset 和原生表单。清除入口淡化；清除/月份导航/日期的颜色与状态增加共享过渡；月份标题及整月网格切换淡化。旧月退场移除重复 id、设为不可交互，重新进入恢复 id，避免快速来回翻月留下失效焦点。弹层退场也禁止交互。需重点实测跨月、快速反向和聚焦。 |
+| 27 | [descriptions.ce.vue](../src/components/display/descriptions.ce.vue) | 纯详情排版和响应式列数，无自有交互状态，保留。 |
+| 28 | [dialog.ce.vue](../src/components/core/dialog.ce.vue) | 审查外部开关、ESC、背景点击、原生关闭、焦点循环和插槽。面板补完整关闭端缩放/淡出目标；关闭按钮复用现有基础按钮获得状态层/涟漪/按下回弹，保留原尺寸与可访问名称；减少动态效果取消面板缩放。原生 display/overlay 离散过渡保留。 |
 
 ## 实际验证
 
@@ -94,13 +94,13 @@
 
 ## 范围
 
-按 PowerShell 命令 `Get-ChildItem src/components/*.ce.vue | Sort-Object Name` 的结果，本批范围为第 29 到第 56 项，包含 28 个文件。第 30 项 [`drawer.ce.vue`](../src/components/drawer.ce.vue) 按父任务明确跳过，因此本次实际审查并修改 27 个组件。未修改共享文件、测试文件、业务组件，也未停止 5188/5193 服务。
+按 PowerShell 命令 `Get-ChildItem src/components/*.ce.vue | Sort-Object Name` 的结果，本批范围为第 29 到第 56 项，包含 28 个文件。第 30 项 [`drawer.ce.vue`](../src/components/core/drawer.ce.vue) 按父任务明确跳过，因此本次实际审查并修改 27 个组件。未修改共享文件、测试文件、业务组件，也未停止 5188/5193 服务。
 
 本次判定依据是逐个全文阅读模板、脚本和样式，并结合真实交互用例、中间帧 DOM 检查、构建和 SSR 验证；不是依据是否出现 `transition` 关键词判定通过。
 
 ## 逐项记录
 
-### 29. [`divider.ce.vue`](../src/components/divider.ce.vue)
+### 29. [`divider.ce.vue`](../src/components/core/divider.ce.vue)
 
 - 交互：纯语义分割线，水平/垂直方向、插槽标签和原生 CE 插槽。
 - 已有动效：无。
@@ -108,7 +108,7 @@
 - 静态不适用：分割线没有可操作状态，也没有增删生命周期。
 - 验证风险：未做视觉截图；风险仅限宿主对动态尺寸变化时的布局过渡需求。
 
-### 30. [`drawer.ce.vue`](../src/components/drawer.ce.vue)
+### 30. [`drawer.ce.vue`](../src/components/core/drawer.ce.vue)
 
 - 交互：bottom/right/left 原生 modal dialog、拖拽、吸附点和焦点管理。
 - 已有动效：父任务已经落地完整抽屉动效。
@@ -116,7 +116,7 @@
 - 静态不适用：不适用。
 - 验证风险：本批没有重复验证抽屉，沿用父任务现有验证结果。
 
-### 31. [`empty-state.ce.vue`](../src/components/empty-state.ce.vue)
+### 31. [`empty-state.ce.vue`](../src/components/core/empty-state.ce.vue)
 
 - 交互：静态空状态，支持标题、说明、图标和 action 插槽。
 - 已有动效：无。
@@ -124,7 +124,7 @@
 - 静态不适用：空状态本身没有显示/隐藏状态机；强行给整块空状态加动画会影响页面状态切换布局。
 - 验证风险：未做动态替换截图；保留静态呈现是有意设计。
 
-### 32. [`field.ce.vue`](../src/components/field.ce.vue)
+### 32. [`field.ce.vue`](../src/components/input/field.ce.vue)
 
 - 交互：把 hint/error 关联到真实表单控件，动态维护 `aria-describedby` 和 `aria-invalid`。
 - 已有动效：原先提示节点直接 `v-if` 销毁，没有退场过渡。
@@ -132,7 +132,7 @@
 - 静态不适用：字段容器本身不做整体入场，避免表单布局跳动。
 - 验证风险：浏览器对 `inert` 的无障碍树刷新时机存在差异；Playwright Chromium 已验证描述文本和错误状态。
 
-### 33. [`file-upload.ce.vue`](../src/components/file-upload.ce.vue)
+### 33. [`file-upload.ce.vue`](../src/components/input/file-upload.ce.vue)
 
 - 交互：文件选择、拖放、accept/大小/数量校验、列表删除、原生 FileList 同步。
 - 已有动效：拖放 active 状态只有颜色切换；文件列表原先直接 `v-if`/索引 key。
@@ -140,7 +140,7 @@
 - 静态不适用：原生文件选择器由浏览器负责，组件不能控制其内部动画。
 - 验证风险：`DataTransfer` 构造和 FileList 赋值在不同浏览器的文件权限策略可能不同；Chromium 文件选择、拖放和删除已通过。
 
-### 34. [`highlight.ce.vue`](../src/components/highlight.ce.vue)
+### 34. [`highlight.ce.vue`](../src/components/display/highlight.ce.vue)
 
 - 交互：纯文本关键词高亮，支持大小写和正则字符安全处理。
 - 已有动效：无。
@@ -148,7 +148,7 @@
 - 静态不适用：纯展示组件，没有交互状态或独立退场节点。
 - 验证风险：超长文本的正则和重排性能仍取决于宿主输入规模。
 
-### 35. [`hover-card.ce.vue`](../src/components/hover-card.ce.vue)
+### 35. [`hover-card.ce.vue`](../src/components/interaction/hover-card.ce.vue)
 
 - 交互：延时打开/关闭、鼠标保持、键盘焦点、触屏点击、Escape 关闭。
 - 已有动效：使用全库 `kima-popup`，原先没有 presence hook。
@@ -156,7 +156,7 @@
 - 静态不适用：触发器本身的按下反馈由内部按钮组件负责。
 - 验证风险：Reka popper 包装层的实际 DOM 结构属于第三方底座；已用中间帧探针确认包装层隔离内部内容。
 
-### 36. [`icon-button.ce.vue`](../src/components/icon-button.ce.vue)
+### 36. [`icon-button.ce.vue`](../src/components/core/icon-button.ce.vue)
 
 - 交互：原生图标按钮、disabled/loading、焦点环、涟漪和按下回弹。
 - 已有动效：loading 时图标直接替换为 spinner，spinner 持续旋转。
@@ -164,7 +164,7 @@
 - 静态不适用：图标本身不增加独立 hover 动画。
 - 验证风险：持续 spinner 的减弱动效行为依赖全局 reduced-motion 规则；未在 Safari 实机验证。
 
-### 37. [`icon.ce.vue`](../src/components/icon.ce.vue)
+### 37. [`icon.ce.vue`](../src/components/core/icon.ce.vue)
 
 - 交互：Hugeicons 静态包装，统一线宽。
 - 已有动效：无。
@@ -172,7 +172,7 @@
 - 静态不适用：没有状态机和可操作节点。
 - 验证风险：图标 SVG 的具体绘制由 Hugeicons 版本决定。
 
-### 38. [`image.ce.vue`](../src/components/image.ce.vue)
+### 38. [`image.ce.vue`](../src/components/display/image.ce.vue)
 
 - 交互：loading/loaded/error 三态，src/srcset/sizes 换源，load/error 事件和 caption 插槽。
 - 已有动效：原先 loading/error 占位直接切换，图片通过 `v-show` 隐藏。
@@ -180,7 +180,7 @@
 - 静态不适用：caption 不做动画，避免图注跟随图片状态抖动。
 - 验证风险：浏览器缓存可能让 load 事件同步或异步到达；当前请求匹配已防止旧事件污染，Chromium 慢请求交叉场景已通过。
 
-### 39. [`kbd.ce.vue`](../src/components/kbd.ce.vue)
+### 39. [`kbd.ce.vue`](../src/components/display/kbd.ce.vue)
 
 - 交互：键盘快捷键静态语义展示，支持数组和插槽。
 - 已有动效：无。
@@ -188,7 +188,7 @@
 - 静态不适用：不是按钮，不存在进入/退出或按下反馈。
 - 验证风险：宿主字体和长快捷键组合可能影响换行，但不属于动效问题。
 
-### 40. [`layout.ce.vue`](../src/components/layout.ce.vue)
+### 40. [`layout.ce.vue`](../src/components/core/layout.ce.vue)
 
 - 交互：页面/面板布局、header/content/footer 插槽、尺寸和间距 token。
 - 已有动效：无。
@@ -196,7 +196,7 @@
 - 静态不适用：为布局根节点加过渡会把内部业务状态变化错误地整体动画化。
 - 验证风险：动态改变 max-width/padding 时由 CSS 布局即时重排，未做布局动画需求验证。
 
-### 41. [`link.ce.vue`](../src/components/link.ce.vue)
+### 41. [`link.ce.vue`](../src/components/navigation/link.ce.vue)
 
 - 交互：真实 href、disabled 拦截、新窗口安全 rel、current 语义、涟漪。
 - 已有动效：导航 mixin 的状态过渡和 ripple。
@@ -204,7 +204,7 @@
 - 静态不适用：链接导航后的页面过渡属于宿主路由，不由此组件控制。
 - 验证风险：已验证真实链接和 disabled；跨路由框架的页面过渡未覆盖。
 
-### 42. [`list.ce.vue`](../src/components/list.ce.vue)
+### 42. [`list.ce.vue`](../src/components/display/list.ce.vue)
 
 - 交互：有序/无序列表、items、item/action 插槽、空列表状态。
 - 已有动效：原先静态 `v-for`，无稳定离场策略。
@@ -212,7 +212,7 @@
 - 静态不适用：默认插槽完全由调用者提供真实 `li` 时，组件不接管其内部列表动画。
 - 验证风险：用户自定义 slot 若自行复用不稳定 key，组件无法替代其 key 策略。
 
-### 43. [`loading-overlay.ce.vue`](../src/components/loading-overlay.ce.vue)
+### 43. [`loading-overlay.ce.vue`](../src/components/interaction/loading-overlay.ce.vue)
 
 - 交互：区域 loading、blocking/passive、内容 inert、状态焦点和结束后焦点恢复。
 - 已有动效：原先使用 `kima-popup`，但 loading mask 的语义和 popup 过渡不完全匹配。
@@ -220,7 +220,7 @@
 - 静态不适用：passive overlay 不隔离内容，符合后台刷新语义。
 - 验证风险：跨浏览器对 focus 在 inert 节点切换瞬间的处理可能不同；Chromium 已验证原节点和值和焦点恢复。
 
-### 44. [`menu.ce.vue`](../src/components/menu.ce.vue)
+### 44. [`menu.ce.vue`](../src/components/core/menu.ce.vue)
 
 - 交互：单选菜单、搜索、方向键/Home/End/Enter/Escape、外部点击和焦点恢复。
 - 已有动效：popup 过渡、菜单项颜色过渡；原先列表项没有进入/移除动画，触发器缺少统一反馈。
@@ -228,7 +228,7 @@
 - 静态不适用：浏览器原生 search 输入本身不做按下缩放。
 - 验证风险：items 使用重复 value 时仍需要调用方保证唯一；搜索输入和菜单 roving focus 已通过。
 
-### 45. [`menubar.ce.vue`](../src/components/menubar.ce.vue)
+### 45. [`menubar.ce.vue`](../src/components/interaction/menubar.ce.vue)
 
 - 交互：多菜单左右导航、菜单内键盘行为、Escape、禁用菜单和 action select。
 - 已有动效：Reka `MenubarContent` 外层 `kima-popup`。
@@ -236,7 +236,7 @@
 - 静态不适用：菜单项属于操作行，不增加按下缩放，避免重排。
 - 验证风险：左右键切换依赖 Reka 的焦点管理和其 DOM 包装层，Chromium 已通过；其他浏览器未逐一验证。
 
-### 46. [`multi-select.ce.vue`](../src/components/multi-select.ce.vue)
+### 46. [`multi-select.ce.vue`](../src/components/interaction/multi-select.ce.vue)
 
 - 交互：多选、搜索、chips 删除、清空、键盘游标、原生 hidden select、form reset。
 - 已有动效：popup 过渡、交互行颜色过渡；chips 和清空按钮原先直接出现/消失。
@@ -244,7 +244,7 @@
 - 静态不适用：原生 hidden select 本身不可见，不做视觉过渡。
 - 验证风险：用户传入重复 value 会破坏 key 唯一性；当前契约已注明 value 唯一，Chromium 键盘/搜索/清空/reset 已通过。
 
-### 47. [`native-select.ce.vue`](../src/components/native-select.ce.vue)
+### 47. [`native-select.ce.vue`](../src/components/input/native-select.ce.vue)
 
 - 交互：原生 select、multiple、原生校验、reset、移动端系统选择界面。
 - 已有动效：输入表面 focus-within 和颜色状态过渡；选项菜单由浏览器绘制。
@@ -252,7 +252,7 @@
 - 静态不适用：系统选择菜单和滚轮动画不能由组件控制。
 - 验证风险：选项弹出动画、平台主题和滚轮效果依赖 OS/browser；已验证 Chromium 值同步、multiple、disabled option 和 reset。
 
-### 48. [`navigation-menu.ce.vue`](../src/components/navigation-menu.ce.vue)
+### 48. [`navigation-menu.ce.vue`](../src/components/navigation/navigation-menu.ce.vue)
 
 - 交互：真实导航链接、当前位置、水平/垂直布局和窄屏折行。
 - 已有动效：导航 mixin 与 link 内部状态反馈。
@@ -260,7 +260,7 @@
 - 静态不适用：当前页切换由真实导航/宿主路由决定，不在组件内做内容动画。
 - 验证风险：窄屏布局只做 CSS media query，未做跨浏览器截图比较。
 
-### 49. [`notification.ce.vue`](../src/components/notification.ce.vue)
+### 49. [`notification.ce.vue`](../src/components/core/notification.ce.vue)
 
 - 交互：自动关闭、剩余时间暂停、hover/focus 暂停、手动关闭、重开、语义 role/live。
 - 已有动效：自带从边缘滑入/淡出；原先使用 `v-show`，退场时内部正文和关闭按钮会先消失。
@@ -268,7 +268,7 @@
 - 静态不适用：通知正文不做逐字段动画，避免 live region 重复播报。
 - 验证风险：通知固定定位和 transform 在不同 viewport/zoom 下仍需视觉回归；SSR、timer、hover/focus、重开和变体测试已通过。SSR 测试期间出现过 Vite HMR 端口 24678 已占用警告，但测试本身通过。
 
-### 50. [`number-field.ce.vue`](../src/components/number-field.ce.vue)
+### 50. [`number-field.ce.vue`](../src/components/input/number-field.ce.vue)
 
 - 交互：原生 spinbutton、步进按钮、min/max/step、空值、reset。
 - 已有动效：输入表面 focus-within、按钮内部反馈。
@@ -276,7 +276,7 @@
 - 静态不适用：输入值本身不做数字滚动动画，避免输入和校验语义延迟。
 - 验证风险：`step="any"` 的上下限边界由浏览器 number parsing 参与；Chromium 小数、边界和 reset 已通过。
 
-### 51. [`overflow-list.ce.vue`](../src/components/overflow-list.ce.vue)
+### 51. [`overflow-list.ce.vue`](../src/components/navigation/overflow-list.ce.vue)
 
 - 交互：折叠显示前 N 项、展开/收起、原生 item slot、键盘按钮。
 - 已有动效：原先使用 `hidden`，项目直接从布局中消失。
@@ -284,7 +284,7 @@
 - 静态不适用：展开按钮本身沿用按钮组件的反馈，不重复叠加列表动画。
 - 验证风险：各项高度包含复杂异步内容时 ResizeObserver 只覆盖共享 collapse wrapper 能观察到的首层；原生 slot、外部状态和键盘回归已通过。
 
-### 52. [`pagination.ce.vue`](../src/components/pagination.ce.vue)
+### 52. [`pagination.ce.vue`](../src/components/core/pagination.ce.vue)
 
 - 交互：页码生成、省略号、上一页/下一页、键盘移动、modelValue 同步、空状态。
 - 已有动效：页码颜色/背景过渡；原先页码集合直接替换。
@@ -292,7 +292,7 @@
 - 静态不适用：省略号不是交互节点，不做独立动画。
 - 验证风险：快速连续跳页时旧页码可能同时处于离场帧，这是过渡设计预期；DOM 语义和快速切换已通过，未做低刷新率设备实测。
 
-### 53. [`pin-input.ce.vue`](../src/components/pin-input.ce.vue)
+### 53. [`pin-input.ce.vue`](../src/components/input/pin-input.ce.vue)
 
 - 交互：单输入承载粘贴、IME、自动填充、掩码、完成事件和表单校验。
 - 已有动效：输入表面 focus-within，格子显示层。
@@ -300,15 +300,15 @@
 - 静态不适用：验证码字符不做逐格入场，避免自动填充和屏幕阅读器内容不同步。
 - 验证风险：密码掩码和浏览器自动填充由浏览器控制；IME、粘贴、完成和 reset 已通过。
 
-### 54. [`popconfirm.ce.vue`](../src/components/popconfirm.ce.vue)
+### 54. [`popconfirm.ce.vue`](../src/components/interaction/popconfirm.ce.vue)
 
 - 交互：触发器、确认/取消、危险操作、Escape/外部关闭和焦点管理由内部 popover 负责。
-- 已有动效：复用 [`popover.ce.vue`](../src/components/popover.ce.vue) 的 popup transition。
+- 已有动效：复用 [`popover.ce.vue`](../src/components/interaction/popover.ce.vue) 的 popup transition。
 - 实修：本文件无独立动画代码；内部 popover 已绑定 `presenceTransition`，因此确认内容退场保持节点并立即隔离。
 - 静态不适用：确认按钮本身不重复叠加面板动画。
 - 验证风险：焦点恢复链路依赖内部 popover 和 Reka；确认/取消、安全焦点回归已通过。
 
-### 55. [`popover.ce.vue`](../src/components/popover.ce.vue)
+### 55. [`popover.ce.vue`](../src/components/interaction/popover.ce.vue)
 
 - 交互：非模态锚定弹层、碰撞翻转、焦点进入/返回、Escape、外部点击和 disabled。
 - 已有动效：全库 `kima-popup`。
@@ -316,7 +316,7 @@
 - 静态不适用：触发器交给 KIMA button，不在 popup 组件中重复 press。
 - 验证风险：定位和焦点行为依赖 Reka/floating-ui；Chromium 已通过碰撞翻转、嵌套 dialog Escape 和中间帧探针。
 
-### 56. [`progress.ce.vue`](../src/components/progress.ce.vue)
+### 56. [`progress.ce.vue`](../src/components/core/progress.ce.vue)
 
 - 交互：确定/不确定进度、原生 progress 语义、aria-label。
 - 已有动效：不确定状态连续滑动；确定状态原生 progress 宽度更新。
@@ -354,32 +354,32 @@
 
 | 序号 / 文件 | 审查交互与实际修复 | 保留说明 | 父任务待验证 |
 | --- | --- | --- | --- |
-| 57 [radio-group.ce.vue](../src/components/radio-group.ce.vue) | 原生单选、键盘循环、禁用、表单重置。增加选项底色/文字和单选圆环描边宽度/颜色过渡。 | 原生勾选、焦点与事件即时更新，不延迟到动画完成。 | 深浅主题、禁用与减少动态效果、原生校验。 |
-| 58 [rating.ce.vue](../src/components/rating.ce.vue) | 键盘评分、清空、只读与原生必填。补星格底色与颜色过渡，容器配色改用匹配的容器前景。 | 无需给评分值或输入事件加缓动。清除按钮常驻并按评分状态禁用。 | 深浅主题对比度、只读/禁用、清空评分。 |
-| 59 [result.ce.vue](../src/components/result.ce.vue) | 结果类型切换改变图标与语义色；补语义图标颜色过渡。 | 标题/说明及调用方动作保留即时展示，不为静态整页加进场动画。 | 类型切换配色、具名原生插槽。 |
-| 60 [scroll-area.ce.vue](../src/components/scroll-area.ce.vue) | 全文审查滚动事件、方向、尺寸与键盘焦点；无需实修。 | 原生滚动与滚动事件应跟手，不对滚动位置或容器尺寸做缓动；共享焦点样式保留。 | 横竖滚动、键盘、减少动态效果。 |
-| 61 [select.ce.vue](../src/components/select.ce.vue) | 搜索、键盘选择、清除、关闭及焦点恢复。清除按钮淡入淡出，按钮颜色过渡，弹层退场立即禁交互/隐藏语义；关闭焦点回调增加重开状态判断。 | 搜索与选择值即时更新，选项颜色沿用现有过渡。 | 清除表单值、搜索 IME、快速开关与外部关闭焦点。 |
-| 62 [skeleton.ce.vue](../src/components/skeleton.ce.vue) | 加载占位与真实内容改为网格同格交叉淡入淡出；两者保留节点，真实内容在加载时立即禁交互/隐藏语义。 | 脉冲与现有减少动态效果规则保留；原生插槽一直存在，内容节点不卸载。 | 实际库产物的轻 DOM 插槽分配、交互恢复、不同内容高度。 |
-| 63 [slider.ce.vue](../src/components/slider.ce.vue) | 原生拖动、键盘、连续输入与提交、表单重置。补两个浏览器手柄伪元素的减少动态效果规则。 | 填充位置与值即时跟手，不给拖动位移增加延迟；只保留手柄悬停宽度反馈。 | Firefox 手柄、真实指针拖动、步长及禁用。 |
-| 64 [spinner.ce.vue](../src/components/spinner.ce.vue) | 全文审查状态语义、装饰模式、尺寸及无限旋转；无需实修。 | 旋转已有减少动态效果停转规则；状态切换由宿主控制，不给静态指示器另加挂载动画。 | 装饰与具名状态、减少动态效果静止。 |
-| 65 [splitter.ce.vue](../src/components/splitter.ce.vue) | 全文审查指针捕获、取消、方向/禁用变更、键盘及范围限制；无需实修。 | 面板尺寸和拖拽保持一对一，无尺寸补间；手柄沿用共享交互反馈。 | 指针取消、横竖及 RTL、禁用时结束捕获。 |
-| 66 [statistic.ce.vue](../src/components/statistic.ce.vue) | 全文审查格式化、前后缀与输入异常回退；无需实修。 | 数值是数据展示，保留即时格式化，不引入计数动画、定时器或额外读屏播报。 | 货币、精度、无效输入及原生插槽。 |
-| 67 [stepper.ce.vue](../src/components/stepper.ce.vue) | 当前/完成/待开始状态、线性约束与按钮禁用。补数字圆片与状态配色，数字/勾选和状态文案同格交叉淡出入，旧状态语义立即退出。 | 当前步骤语义和约束立即改变，按钮继续使用共享反馈。 | 快速前进后退、线性限制、禁用、减少动态效果。 |
-| 68 [switch.ce.vue](../src/components/switch.ce.vue) | 原生开关、轨道/滑块尺寸与位移、表单重置。补明确的减少动态效果规则；修复选中勾与滑块原先同色的问题。 | 原生选中即时更新；现有位置/尺寸强调曲线可直接反向。 | 快速反复切换、按住时的滑块形变、禁用与对比度。 |
-| 69 [table.ce.vue](../src/components/table.ce.vue) | 外部排序回写、稳定行键、加载/数据/空状态、选中及键盘。数据体使用列表重排，三个主体状态淡出入，旧主体立即禁交互；行颜色和底色一起过渡；补表格行专用进出/移动规则，避免原有行样式覆盖运动属性。 | 保留外部排序契约，不在组件内私自排序；需要稳定行键才能表达数据身份。 | 加载/空/数据快速反向、复杂多列退场宽度、行选择与排序状态、实际库产物。 |
-| 70 [tabs.ce.vue](../src/components/tabs.ce.vue) | 单一独立指示条按当前按钮实测位置移动，支持横竖；观察栏/按钮尺寸并在卸载清理。面板同格交叉过渡，旧面板即时禁交互并隐藏语义，内容保留供快速反向。 | 原有方向键、禁用与选择事件不等待动画；不再依赖各按钮的独立伪元素下划线。 | 不同高度面板、响应式和字体加载、动态增删标签、原生 CE 插槽、全部禁用。 |
-| 71 [tags-input.ce.vue](../src/components/tags-input.ce.vue) | 添加、删除、粘贴、退格、去重/上限及表单。标签使用稳定内容键列表进出/移动；退场测量固定位置尺寸，避免绝对定位跳位；重入清除旧几何。隐藏表单值移到动画之外，删除后立即停止提交旧值。 | 输入、IME 和校验即时处理；不动画输入框本身。 | 换行布局、删除中重新添加相同值、原生表单/必填、粘贴及 IME。 |
-| 72 [text-field.ce.vue](../src/components/text-field.ce.vue) | 即时输入、IME、清除、密码显示、说明/错误。清除按钮淡入淡出与退场禁交互；提示区域真实高度开合，提示/错误文本交叉；独立错误文字配色避免退出的提示被错误状态染色。补场地状态层/涟漪与输入、动作颜色过渡。 | 不动画用户文本值、光标或原生输入事件。 | 密码与普通类型、IME、清除焦点、错误/提示快速替换、原生重置。 |
-| 73 [textarea.ce.vue](../src/components/textarea.ce.vue) | 补错误/提示、错误语义和描述关联、清除按钮及焦点恢复；提示区域高度开合与文本交叉。增加可选自动高度，按输入和外部回写同步测量，清除/重置可收回，保持原生行数最低高度。 | 文本输入和高度即时，IME 期间仍实时测量；保留手动缩放模式与字数统计。 | IME、重置、外部回写、原生校验、容器宽度变化后的自动高度。 |
-| 74 [time-picker.ce.vue](../src/components/time-picker.ce.vue) | 时/分/AM-PM、键盘、清除和关闭。清除按钮淡入淡出；弹层退场禁交互；选项改用效果时长颜色过渡；关闭焦点恢复检查快速重开，关闭状态清除也恢复触发器焦点。修复原先引用未定义标签 ID 的弹层可访问名。 | 时间值与高亮即时改变，保留容器色配对。 | 12/24 小时、禁用范围、分钟步长、快速开关和焦点、表单重置。 |
-| 75 [timeline.ce.vue](../src/components/timeline.ce.vue) | 数据行添加、删除、重排与语义状态变化。默认数据行接列表过渡，退出立即禁交互/隐藏语义；标记颜色过渡。 | 自定义默认插槽由调用方管理；默认列表优先使用稳定 ID，无 ID 时沿用索引。 | 稳定 ID 重排、换状态、长内容与删除位置；无 ID 无法保证重排身份。 |
-| 76 [toggle.ce.vue](../src/components/toggle.ce.vue) | 按压切换、表单值、禁用及重置。保留已有按下回弹/颜色/状态层/涟漪，并给选中悬停增加匹配容器色。 | 隐藏表单值及按压语义立即更新，不包裹退出动画。 | 快速切换、选中悬停的深浅主题、减少动态效果、表单重置。 |
-| 77 [toolbar.ce.vue](../src/components/toolbar.ce.vue) | 全文审查 roving 焦点、增删控件观察、禁用与恢复原始索引；无需实修。 | 容器不拥有业务选中状态，焦点移动必须即时；内部按钮自行负责反馈。 | 控件进出期间的不可交互祖先、方向键及 RTL。 |
-| 78 [tooltip.ce.vue](../src/components/tooltip.ce.vue) | 延迟打开、鼠标/焦点组合、Escape、受控开关与描述 ID。已有弹层运动补即时退场语义钩子。 | 现有定位变换和延迟取消保持，提示不接指针交互。 | 四方向位置、快速重入、Escape、描述 ID 恢复及减少动态效果。 |
-| 79 [tree-select.ce.vue](../src/components/tree-select.ce.vue) | 复用树的高度变化；弹层接即时退场钩子并明确关闭状态语义，清除按钮淡入淡出且清除后恢复触发器焦点。 | 定位包装层才是共享退场钩子的真实 DOM 目标；不能只检查内层弹层自身的属性。原生表单模型即时更新。 | 定位包装层的禁交互祖先、快关快开、多选清空、原生表单与键盘焦点。 |
-| 80 [tree.ce.vue](../src/components/tree.ce.vue) | 平面可见树保持键盘算法，新增无内边距运动包装行，列表进出使用真实高度与淡出入。退出包装层立即禁交互/隐藏语义，使用共享取消/反向处理；行颜色统一效果时长。 | 不给选项行加按下缩放，不延迟展开语义和可见节点计算；高度结束恢复自然尺寸。 | 深层树、动态子项高度、外部收起当前焦点后焦点归属、快收快开。 |
-| 81 [virtual-scroll.ce.vue](../src/components/virtual-scroll.ce.vue) | 全文审查视口、上下占位、滚动同步、键盘确保可见与高亮；无需实修。 | 行颜色已有过渡；虚拟行是视口回收，保留即时挂载/卸载和固定行高，不对回收行增加入场/退场导致滚动追赶。 | 大数据快速滚动、数据缩短、选中颜色及减少动态效果。 |
-| 82 [visually-hidden.ce.vue](../src/components/visually-hidden.ce.vue) | 全文审查视觉裁切与可聚焦显示模式；无需实修。 | 静态无障碍工具不加运动，聚焦显现必须即时。 | 读屏保留与键盘聚焦显示。 |
+| 57 [radio-group.ce.vue](../src/components/input/radio-group.ce.vue) | 原生单选、键盘循环、禁用、表单重置。增加选项底色/文字和单选圆环描边宽度/颜色过渡。 | 原生勾选、焦点与事件即时更新，不延迟到动画完成。 | 深浅主题、禁用与减少动态效果、原生校验。 |
+| 58 [rating.ce.vue](../src/components/input/rating.ce.vue) | 键盘评分、清空、只读与原生必填。补星格底色与颜色过渡，容器配色改用匹配的容器前景。 | 无需给评分值或输入事件加缓动。清除按钮常驻并按评分状态禁用。 | 深浅主题对比度、只读/禁用、清空评分。 |
+| 59 [result.ce.vue](../src/components/display/result.ce.vue) | 结果类型切换改变图标与语义色；补语义图标颜色过渡。 | 标题/说明及调用方动作保留即时展示，不为静态整页加进场动画。 | 类型切换配色、具名原生插槽。 |
+| 60 [scroll-area.ce.vue](../src/components/navigation/scroll-area.ce.vue) | 全文审查滚动事件、方向、尺寸与键盘焦点；无需实修。 | 原生滚动与滚动事件应跟手，不对滚动位置或容器尺寸做缓动；共享焦点样式保留。 | 横竖滚动、键盘、减少动态效果。 |
+| 61 [select.ce.vue](../src/components/core/select.ce.vue) | 搜索、键盘选择、清除、关闭及焦点恢复。清除按钮淡入淡出，按钮颜色过渡，弹层退场立即禁交互/隐藏语义；关闭焦点回调增加重开状态判断。 | 搜索与选择值即时更新，选项颜色沿用现有过渡。 | 清除表单值、搜索 IME、快速开关与外部关闭焦点。 |
+| 62 [skeleton.ce.vue](../src/components/display/skeleton.ce.vue) | 加载占位与真实内容改为网格同格交叉淡入淡出；两者保留节点，真实内容在加载时立即禁交互/隐藏语义。 | 脉冲与现有减少动态效果规则保留；原生插槽一直存在，内容节点不卸载。 | 实际库产物的轻 DOM 插槽分配、交互恢复、不同内容高度。 |
+| 63 [slider.ce.vue](../src/components/core/slider.ce.vue) | 原生拖动、键盘、连续输入与提交、表单重置。补两个浏览器手柄伪元素的减少动态效果规则。 | 填充位置与值即时跟手，不给拖动位移增加延迟；只保留手柄悬停宽度反馈。 | Firefox 手柄、真实指针拖动、步长及禁用。 |
+| 64 [spinner.ce.vue](../src/components/display/spinner.ce.vue) | 全文审查状态语义、装饰模式、尺寸及无限旋转；无需实修。 | 旋转已有减少动态效果停转规则；状态切换由宿主控制，不给静态指示器另加挂载动画。 | 装饰与具名状态、减少动态效果静止。 |
+| 65 [splitter.ce.vue](../src/components/navigation/splitter.ce.vue) | 全文审查指针捕获、取消、方向/禁用变更、键盘及范围限制；无需实修。 | 面板尺寸和拖拽保持一对一，无尺寸补间；手柄沿用共享交互反馈。 | 指针取消、横竖及 RTL、禁用时结束捕获。 |
+| 66 [statistic.ce.vue](../src/components/display/statistic.ce.vue) | 全文审查格式化、前后缀与输入异常回退；无需实修。 | 数值是数据展示，保留即时格式化，不引入计数动画、定时器或额外读屏播报。 | 货币、精度、无效输入及原生插槽。 |
+| 67 [stepper.ce.vue](../src/components/navigation/stepper.ce.vue) | 当前/完成/待开始状态、线性约束与按钮禁用。补数字圆片与状态配色，数字/勾选和状态文案同格交叉淡出入，旧状态语义立即退出。 | 当前步骤语义和约束立即改变，按钮继续使用共享反馈。 | 快速前进后退、线性限制、禁用、减少动态效果。 |
+| 68 [switch.ce.vue](../src/components/core/switch.ce.vue) | 原生开关、轨道/滑块尺寸与位移、表单重置。补明确的减少动态效果规则；修复选中勾与滑块原先同色的问题。 | 原生选中即时更新；现有位置/尺寸强调曲线可直接反向。 | 快速反复切换、按住时的滑块形变、禁用与对比度。 |
+| 69 [table.ce.vue](../src/components/data/table.ce.vue) | 外部排序回写、稳定行键、加载/数据/空状态、选中及键盘。数据体使用列表重排，三个主体状态淡出入，旧主体立即禁交互；行颜色和底色一起过渡；补表格行专用进出/移动规则，避免原有行样式覆盖运动属性。 | 保留外部排序契约，不在组件内私自排序；需要稳定行键才能表达数据身份。 | 加载/空/数据快速反向、复杂多列退场宽度、行选择与排序状态、实际库产物。 |
+| 70 [tabs.ce.vue](../src/components/core/tabs.ce.vue) | 单一独立指示条按当前按钮实测位置移动，支持横竖；观察栏/按钮尺寸并在卸载清理。面板同格交叉过渡，旧面板即时禁交互并隐藏语义，内容保留供快速反向。 | 原有方向键、禁用与选择事件不等待动画；不再依赖各按钮的独立伪元素下划线。 | 不同高度面板、响应式和字体加载、动态增删标签、原生 CE 插槽、全部禁用。 |
+| 71 [tags-input.ce.vue](../src/components/input/tags-input.ce.vue) | 添加、删除、粘贴、退格、去重/上限及表单。标签使用稳定内容键列表进出/移动；退场测量固定位置尺寸，避免绝对定位跳位；重入清除旧几何。隐藏表单值移到动画之外，删除后立即停止提交旧值。 | 输入、IME 和校验即时处理；不动画输入框本身。 | 换行布局、删除中重新添加相同值、原生表单/必填、粘贴及 IME。 |
+| 72 [text-field.ce.vue](../src/components/core/text-field.ce.vue) | 即时输入、IME、清除、密码显示、说明/错误。清除按钮淡入淡出与退场禁交互；提示区域真实高度开合，提示/错误文本交叉；独立错误文字配色避免退出的提示被错误状态染色。补场地状态层/涟漪与输入、动作颜色过渡。 | 不动画用户文本值、光标或原生输入事件。 | 密码与普通类型、IME、清除焦点、错误/提示快速替换、原生重置。 |
+| 73 [textarea.ce.vue](../src/components/input/textarea.ce.vue) | 补错误/提示、错误语义和描述关联、清除按钮及焦点恢复；提示区域高度开合与文本交叉。增加可选自动高度，按输入和外部回写同步测量，清除/重置可收回，保持原生行数最低高度。 | 文本输入和高度即时，IME 期间仍实时测量；保留手动缩放模式与字数统计。 | IME、重置、外部回写、原生校验、容器宽度变化后的自动高度。 |
+| 74 [time-picker.ce.vue](../src/components/core/time-picker.ce.vue) | 时/分/AM-PM、键盘、清除和关闭。清除按钮淡入淡出；弹层退场禁交互；选项改用效果时长颜色过渡；关闭焦点恢复检查快速重开，关闭状态清除也恢复触发器焦点。修复原先引用未定义标签 ID 的弹层可访问名。 | 时间值与高亮即时改变，保留容器色配对。 | 12/24 小时、禁用范围、分钟步长、快速开关和焦点、表单重置。 |
+| 75 [timeline.ce.vue](../src/components/display/timeline.ce.vue) | 数据行添加、删除、重排与语义状态变化。默认数据行接列表过渡，退出立即禁交互/隐藏语义；标记颜色过渡。 | 自定义默认插槽由调用方管理；默认列表优先使用稳定 ID，无 ID 时沿用索引。 | 稳定 ID 重排、换状态、长内容与删除位置；无 ID 无法保证重排身份。 |
+| 76 [toggle.ce.vue](../src/components/input/toggle.ce.vue) | 按压切换、表单值、禁用及重置。保留已有按下回弹/颜色/状态层/涟漪，并给选中悬停增加匹配容器色。 | 隐藏表单值及按压语义立即更新，不包裹退出动画。 | 快速切换、选中悬停的深浅主题、减少动态效果、表单重置。 |
+| 77 [toolbar.ce.vue](../src/components/navigation/toolbar.ce.vue) | 全文审查 roving 焦点、增删控件观察、禁用与恢复原始索引；无需实修。 | 容器不拥有业务选中状态，焦点移动必须即时；内部按钮自行负责反馈。 | 控件进出期间的不可交互祖先、方向键及 RTL。 |
+| 78 [tooltip.ce.vue](../src/components/core/tooltip.ce.vue) | 延迟打开、鼠标/焦点组合、Escape、受控开关与描述 ID。已有弹层运动补即时退场语义钩子。 | 现有定位变换和延迟取消保持，提示不接指针交互。 | 四方向位置、快速重入、Escape、描述 ID 恢复及减少动态效果。 |
+| 79 [tree-select.ce.vue](../src/components/interaction/tree-select.ce.vue) | 复用树的高度变化；弹层接即时退场钩子并明确关闭状态语义，清除按钮淡入淡出且清除后恢复触发器焦点。 | 定位包装层才是共享退场钩子的真实 DOM 目标；不能只检查内层弹层自身的属性。原生表单模型即时更新。 | 定位包装层的禁交互祖先、快关快开、多选清空、原生表单与键盘焦点。 |
+| 80 [tree.ce.vue](../src/components/core/tree.ce.vue) | 平面可见树保持键盘算法，新增无内边距运动包装行，列表进出使用真实高度与淡出入。退出包装层立即禁交互/隐藏语义，使用共享取消/反向处理；行颜色统一效果时长。 | 不给选项行加按下缩放，不延迟展开语义和可见节点计算；高度结束恢复自然尺寸。 | 深层树、动态子项高度、外部收起当前焦点后焦点归属、快收快开。 |
+| 81 [virtual-scroll.ce.vue](../src/components/core/virtual-scroll.ce.vue) | 全文审查视口、上下占位、滚动同步、键盘确保可见与高亮；无需实修。 | 行颜色已有过渡；虚拟行是视口回收，保留即时挂载/卸载和固定行高，不对回收行增加入场/退场导致滚动追赶。 | 大数据快速滚动、数据缩短、选中颜色及减少动态效果。 |
+| 82 [visually-hidden.ce.vue](../src/components/navigation/visually-hidden.ce.vue) | 全文审查视觉裁切与可聚焦显示模式；无需实修。 | 静态无障碍工具不加运动，聚焦显现必须即时。 | 读屏保留与键盘聚焦显示。 |
 
 ## 本地验证证据
 

@@ -5,6 +5,16 @@ import { readdir, readFile } from 'node:fs/promises';
 import { parse, babelParse } from 'vue/compiler-sfc';
 import { fileURLToPath } from 'node:url';
 
+async function collect(directory) {
+  const files = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = new URL(entry.name + (entry.isDirectory() ? '/' : ''), directory);
+    if (entry.isDirectory()) files.push(...await collect(path));
+    else if (entry.name.endsWith('.ce.vue')) files.push({ filename: entry.name, path });
+  }
+  return files;
+}
+
 export function docsPlugin() {
   return {
     name: 'kima-docs',
@@ -13,9 +23,7 @@ export function docsPlugin() {
       if (id !== '\0kima-docs') return;
       const directory = new URL('../src/components/', import.meta.url);
       const entries = [];
-      for (const filename of await readdir(directory)) {
-        if (!filename.endsWith('.ce.vue')) continue;
-        const path = new URL(filename, directory);
+      for (const { filename, path } of await collect(directory)) {
         this.addWatchFile(fileURLToPath(path));
         const source = await readFile(path, 'utf8');
         const { descriptor } = parse(source);

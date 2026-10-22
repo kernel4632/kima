@@ -1,18 +1,18 @@
 <!-- Parent integration: <AdvancedInputExamples :component="slug" />. Only this group's active example mounts. -->
 <script setup>
 import { computed, ref } from "vue";
-import KimaRangeSlider from "../components/range-slider.ce.vue";
-import KimaCalendar from "../components/calendar.ce.vue";
-import KimaDateRangePicker from "../components/date-range-picker.ce.vue";
-import KimaTimeRangePicker from "../components/time-range-picker.ce.vue";
-import KimaDatetimePicker from "../components/datetime-picker.ce.vue";
-import KimaMention from "../components/mention.ce.vue";
-import KimaForm from "../components/form.ce.vue";
-import KimaEditable from "../components/editable.ce.vue";
-import KimaTransfer from "../components/transfer.ce.vue";
-import KimaField from "../components/field.ce.vue";
-import KimaTextField from "../components/text-field.ce.vue";
-import KimaButton from "../components/button.ce.vue";
+import KimaRangeSlider from "../components/advanced-input/range-slider.ce.vue";
+import KimaCalendar from "../components/advanced-input/calendar.ce.vue";
+import KimaDateRangePicker from "../components/advanced-input/date-range-picker.ce.vue";
+import KimaTimeRangePicker from "../components/advanced-input/time-range-picker.ce.vue";
+import KimaDatetimePicker from "../components/advanced-input/datetime-picker.ce.vue";
+import KimaMention from "../components/advanced-input/mention.ce.vue";
+import KimaForm from "../components/form-completion/form.ce.vue";
+import KimaEditable from "../components/advanced-input/editable.ce.vue";
+import KimaTransfer from "../components/advanced-input/transfer.ce.vue";
+import KimaField from "../components/input/field.ce.vue";
+import KimaTextField from "../components/core/text-field.ce.vue";
+import KimaButton from "../components/core/button.ce.vue";
 const props = defineProps({ component: { type: String, required: true } });
 const range=ref([20,80]),day=ref('2026-06-01'),dates=ref(['2026-06-01',null]),times=ref(['22:00','02:00']),datetime=ref('2026-06-01T09:30'),message=ref(''),editable=ref('可以行内编辑的说明'),transferred=ref(['a']),formName=ref(''),status=ref('');
 const suggestions=[{value:'kai',label:'凯'},{value:'kima',label:'KIMA'},{value:'design',label:'设计组'}];

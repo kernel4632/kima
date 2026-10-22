@@ -1,8 +1,8 @@
 <script setup>
 import { computed, useId } from 'vue';
-import KimaLink from '../components/link.ce.vue';
-import KimaButton from '../components/button.ce.vue';
-import KimaIcon from '../components/icon.ce.vue';
+import KimaLink from '../components/navigation/link.ce.vue';
+import KimaButton from '../components/core/button.ce.vue';
+import KimaIcon from '../components/core/icon.ce.vue';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { collapseTransition } from '../utils/motion.js';
 import { navKey, navContains } from '../utils/shell.js';

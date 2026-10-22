@@ -7,7 +7,7 @@
 import { defineCustomElement } from "vue";
 import tokens from "./styles/_tokens.scss?inline";
 
-const components = import.meta.glob("./components/*.ce.vue", { eager: true, import: "default" });
+const components = import.meta.glob("./components/**/*.ce.vue", { eager: true, import: "default" });
 const elements = Object.fromEntries(Object.entries(components).map(([path, component]) => [
   `kima-${path.split("/").pop().replace(/\.ce\.vue$/, "")}`,
   component,

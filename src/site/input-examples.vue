@@ -1,20 +1,20 @@
 <!-- 按 component slug 只挂载当前演示。独立导入，不依赖自动生成入口。 -->
 <script setup>
 import { ref } from "vue";
-import KimaTextarea from "../components/textarea.ce.vue";
-import KimaRadioGroup from "../components/radio-group.ce.vue";
-import KimaNumberField from "../components/number-field.ce.vue";
-import KimaTagsInput from "../components/tags-input.ce.vue";
-import KimaRating from "../components/rating.ce.vue";
-import KimaPinInput from "../components/pin-input.ce.vue";
-import KimaFileUpload from "../components/file-upload.ce.vue";
-import KimaColorPicker from "../components/color-picker.ce.vue";
-import KimaToggle from "../components/toggle.ce.vue";
-import KimaCheckboxGroup from "../components/checkbox-group.ce.vue";
-import KimaNativeSelect from "../components/native-select.ce.vue";
-import KimaField from "../components/field.ce.vue";
-import KimaTextField from "../components/text-field.ce.vue";
-import KimaButton from "../components/button.ce.vue";
+import KimaTextarea from "../components/input/textarea.ce.vue";
+import KimaRadioGroup from "../components/input/radio-group.ce.vue";
+import KimaNumberField from "../components/input/number-field.ce.vue";
+import KimaTagsInput from "../components/input/tags-input.ce.vue";
+import KimaRating from "../components/input/rating.ce.vue";
+import KimaPinInput from "../components/input/pin-input.ce.vue";
+import KimaFileUpload from "../components/input/file-upload.ce.vue";
+import KimaColorPicker from "../components/form-completion/color-picker.ce.vue";
+import KimaToggle from "../components/input/toggle.ce.vue";
+import KimaCheckboxGroup from "../components/input/checkbox-group.ce.vue";
+import KimaNativeSelect from "../components/input/native-select.ce.vue";
+import KimaField from "../components/input/field.ce.vue";
+import KimaTextField from "../components/core/text-field.ce.vue";
+import KimaButton from "../components/core/button.ce.vue";
 const props = defineProps({ component: { type: String, required: true } });
 const text = ref("一段可以继续编辑的备注。");
 const radio = ref("design");

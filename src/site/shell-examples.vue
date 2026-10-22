@@ -1,15 +1,15 @@
 <script setup>
 import { ref } from 'vue';
-import KimaSidebar from '../components/sidebar.ce.vue';
-import KimaAppShell from '../components/app-shell.ce.vue';
-import KimaConfigProvider from '../components/config-provider.ce.vue';
-import KimaMasonry from '../components/masonry.ce.vue';
-import KimaMarquee from '../components/marquee.ce.vue';
-import KimaGradientText from '../components/gradient-text.ce.vue';
-import KimaNavigationMenu from '../components/navigation-menu.ce.vue';
-import KimaMenu from '../components/menu.ce.vue';
-import KimaButton from '../components/button.ce.vue';
-import KimaLink from '../components/link.ce.vue';
+import KimaSidebar from '../components/shell/sidebar.ce.vue';
+import KimaAppShell from '../components/shell/app-shell.ce.vue';
+import KimaConfigProvider from '../components/shell/config-provider.ce.vue';
+import KimaMasonry from '../components/shell/masonry.ce.vue';
+import KimaMarquee from '../components/shell/marquee.ce.vue';
+import KimaGradientText from '../components/shell/gradient-text.ce.vue';
+import KimaNavigationMenu from '../components/navigation/navigation-menu.ce.vue';
+import KimaMenu from '../components/core/menu.ce.vue';
+import KimaButton from '../components/core/button.ce.vue';
+import KimaLink from '../components/navigation/link.ce.vue';
 const props = defineProps({ component: { type: String, default: 'app-shell' } });
 const page = ref('start'); const mode = ref('light');
 const items = [{value:'overview',label:'概览',href:'#overview'}, {value:'guide',label:'指南',href:'#guide',children:[{value:'start',label:'开始使用',href:'#start'},{value:'theme',label:'主题配置',href:'#theme'}]}];

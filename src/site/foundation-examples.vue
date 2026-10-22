@@ -1,20 +1,20 @@
 <!-- 独立布局/内容组示例：父入口按 component 挂载当前一项。 -->
 <script setup>
 import { ref } from 'vue';
-import KimaGrid from '../components/grid.ce.vue';
-import KimaFlex from '../components/flex.ce.vue';
-import KimaStack from '../components/stack.ce.vue';
-import KimaFieldGroup from '../components/field-group.ce.vue';
-import KimaInputGroup from '../components/input-group.ce.vue';
-import KimaPageHeader from '../components/page-header.ce.vue';
-import KimaBanner from '../components/banner.ce.vue';
-import KimaErrorState from '../components/error-state.ce.vue';
-import KimaTypography from '../components/typography.ce.vue';
-import KimaMark from '../components/mark.ce.vue';
-import KimaTimeDisplay from '../components/time-display.ce.vue';
-import KimaTextField from '../components/text-field.ce.vue';
-import KimaButton from '../components/button.ce.vue';
-import KimaLink from '../components/link.ce.vue';
+import KimaGrid from '../components/foundation/grid.ce.vue';
+import KimaFlex from '../components/foundation/flex.ce.vue';
+import KimaStack from '../components/foundation/stack.ce.vue';
+import KimaFieldGroup from '../components/foundation/field-group.ce.vue';
+import KimaInputGroup from '../components/foundation/input-group.ce.vue';
+import KimaPageHeader from '../components/foundation/page-header.ce.vue';
+import KimaBanner from '../components/foundation/banner.ce.vue';
+import KimaErrorState from '../components/foundation/error-state.ce.vue';
+import KimaTypography from '../components/foundation/typography.ce.vue';
+import KimaMark from '../components/foundation/mark.ce.vue';
+import KimaTimeDisplay from '../components/foundation/time-display.ce.vue';
+import KimaTextField from '../components/core/text-field.ce.vue';
+import KimaButton from '../components/core/button.ce.vue';
+import KimaLink from '../components/navigation/link.ce.vue';
 import { foundationCatalog } from './foundation-catalog.js';
 const props = defineProps({ component: { type: String, required: true } });
 const groupValid = ref(false), bannerOpen = ref(true), banner = ref(null);

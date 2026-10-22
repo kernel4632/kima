@@ -1,0 +1,13 @@
+<script setup>
+import { computed, ref, watch } from "vue";
+import KimaButton from "../core/button.ce.vue";
+import { useContentMotion } from "../../utils/content-motion.js";
+import { useInputAttrs, useInputState } from "../../utils/input-state.js";
+const props=defineProps({modelValue:{type:String,default:""},name:String,label:{type:String,default:"JSON"},required:Boolean,disabled:Boolean,readonly:Boolean,rows:{type:Number,default:8}});const emit=defineEmits(["update:modelValue","change","parse"]);const root=ref(null),area=ref(null);const {attrs,controlAttrs}=useInputAttrs();const {local,update}=useInputState(props,emit,root,v=>String(v??""));const parsed=computed(()=>{try{return{value:JSON.parse(local.value),error:null}}catch(error){const match=/position\s+(\d+)/i.exec(error.message);return{value:undefined,error:{message:error.message,position:match?Number(match[1]):null}}}});watch(parsed,result=>{area.value?.setCustomValidity(result.error?.message||"");emit('parse',result);},{immediate:true});function format(){if(!parsed.value.error)update(JSON.stringify(parsed.value.value,null,2));}defineExpose({format,parse:()=>parsed.value});
+const message = ref(null);
+useContentMotion(message, () => Boolean(parsed.value.error));
+</script>
+<template><div ref="root" :class="['kima-json-input',attrs.class]" :style="attrs.style"><textarea ref="area" v-bind="controlAttrs" class="kima-json-input__control" :value="local" :name="name" :aria-label="controlAttrs['aria-label']||label" :rows="rows" :required="required" :disabled="disabled" :readonly="readonly" spellcheck="false" @input.stop="update($event.target.value,false)" @change.stop="emit('change',local)"></textarea><div ref="message" class="kima-json-input__message"><p v-if="parsed.error" role="alert">{{parsed.error.message}}<template v-if="parsed.error.position!==null"> · 位置 {{parsed.error.position}}</template></p><p v-else role="status">JSON 有效</p></div><KimaButton variant="tonal" :disabled="disabled||readonly||!!parsed.error" @click="format">格式化</KimaButton></div></template>
+<style scoped lang="scss">
+@use "../../styles/input" as *;.kima-json-input{@include input-root;display:grid;gap:var(--kima-space-2);&__control{@include input-surface;@include input-control;min-height:10em;resize:vertical;font-family:var(--kima-font-family);tab-size:2}p{margin:0;color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium)}p[role=alert]{color:var(--kima-color-error)}button{justify-self:start;min-height:var(--kima-touch-target);padding:var(--kima-space-2) var(--kima-space-3);border:0;border-radius:var(--kima-radius-full);background:var(--kima-color-primary-container);color:var(--kima-color-on-primary-container);font:inherit;cursor:pointer}}
+</style>

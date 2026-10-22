@@ -12,14 +12,15 @@ test('HTML allowlist removes executable payloads and validates URLs',()=>{
 });
 test('five content components render useful safe SSR output',async()=>{
  const server=await createServer({server:{middlewareMode:true,hmr:false,ws:false},appType:'custom'});
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
  try{for(const [slug,props] of Object.entries({chart:{series:[{name:'North',data:[1,null,-2]}]},heatmap:{values:[[0,null,-2]]},'rich-text-editor':{modelValue:'<p>SSR document</p><script>unsafe()</script>'},'code-editor':{modelValue:'<script>plain text</script>'},equation:{formula:'\\frac{1}{2}'}})){
- const component=(await server.ssrLoadModule(`/src/components/${slug}.ce.vue`)).default;
+ const component=(await server.ssrLoadModule(componentPaths[slug])).default;
  const html=await renderToString(createSSRApp({render:()=>h(component,props)}));assert.match(html,new RegExp(`kima-${slug}`));
  if(slug==='equation'){assert.match(html,/<math/);assert.match(html,/<mfrac>/);}
  if(slug==='rich-text-editor'){assert.match(html,/SSR document/);assert.doesNotMatch(html,/<script>/);}
  if(slug==='code-editor'){assert.ok(html.includes('&'+'lt;script'+'&'+'gt;plain text'));assert.doesNotMatch(html,/<script>/);}
  }
- const Equation=(await server.ssrLoadModule('/src/components/equation.ce.vue')).default;
+ const Equation=(await server.ssrLoadModule(componentPaths['equation'])).default;
  for(const formula of ['\\href{javascript:alert(1)}{x}','\\htmlStyle{color:red}{x}','\\frac{']){const html=await renderToString(createSSRApp({render:()=>h(Equation,{formula})}));assert.match(html,/role="alert"/);assert.doesNotMatch(html,/<a |<script/);}
  }finally{await server.close();}
 });

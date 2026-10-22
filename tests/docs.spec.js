@@ -2,8 +2,8 @@
  * pnpm exec playwright test tests/docs.spec.js
  */
 import { expect, test } from '@playwright/test';
-import { readdir } from 'node:fs/promises';
-const components = (await readdir(new URL('../src/components/', import.meta.url))).filter((file) => file.endsWith('.ce.vue')).map((file) => file.replace('.ce.vue', ''));
+import { componentPaths } from '../src/component-paths.js';
+const components = Object.keys(componentPaths).sort();
 
 test('文档站首页使用 KIMA 控件，组件路径可直达和刷新', async ({ page }) => {
   await page.goto('/');

@@ -1,14 +1,14 @@
 <script setup>
 import { ref } from 'vue';
-import KimaChart from '../components/chart.ce.vue';
-import KimaHeatmap from '../components/heatmap.ce.vue';
-import KimaRichTextEditor from '../components/rich-text-editor.ce.vue';
-import KimaCodeEditor from '../components/code-editor.ce.vue';
-import KimaEquation from '../components/equation.ce.vue';
-import KimaButton from '../components/button.ce.vue';
-import KimaCheckbox from '../components/checkbox.ce.vue';
-import KimaNativeSelect from '../components/native-select.ce.vue';
-import KimaTextField from '../components/text-field.ce.vue';
+import KimaChart from '../components/content/chart.ce.vue';
+import KimaHeatmap from '../components/content/heatmap.ce.vue';
+import KimaRichTextEditor from '../components/content/rich-text-editor.ce.vue';
+import KimaCodeEditor from '../components/content/code-editor.ce.vue';
+import KimaEquation from '../components/content/equation.ce.vue';
+import KimaButton from '../components/core/button.ce.vue';
+import KimaCheckbox from '../components/core/checkbox.ce.vue';
+import KimaNativeSelect from '../components/input/native-select.ce.vue';
+import KimaTextField from '../components/core/text-field.ce.vue';
 const props=defineProps({component:{type:String,required:true}});
 const mode=ref('line'),html=ref('<h2>写下想法</h2><p>选择文字，试试<strong>格式</strong>与链接。</p>'),code=ref('const greeting = "Hello KIMA";\nconsole.log(greeting);'),language=ref('javascript'),formula=ref('E = mc^2'),status=ref(''),disabled=ref(false),readonly=ref(false),modeOptions=['line','bar','area','scatter'],languageOptions=['javascript','json','html','css','plain'];
 const series=ref([{name:'访问量',data:[12,24,null,-8,32,18]},{name:'转化量',data:[5,12,9,-4,20,16]}]);

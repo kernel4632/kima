@@ -1,7 +1,7 @@
 <script setup>
 import { computed, reactive } from 'vue';
 import * as Reka from 'reka-ui';
-import KimaIcon from '../components/icon.ce.vue';
+import KimaIcon from '../components/core/icon.ce.vue';
 import { ArrowRight01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
 import { presenceTransition } from '../utils/motion.js';
 const props = defineProps({ items: Array, family: { type: String, default: 'DropdownMenu' }, checked: Object, modelValue: null, selection: Boolean, disabled: Boolean });

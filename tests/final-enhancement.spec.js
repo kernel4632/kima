@@ -110,7 +110,8 @@ test('documentation full search exposes metadata and keyboard navigation', async
 
 test('all component source entries remain represented in the catalog', async ({ page }) => {
   await page.goto('/');
-  const files = (await readdir(new URL('../src/components/', import.meta.url))).filter((file) => file.endsWith('.ce.vue'));
+  const { componentPaths } = await import('../src/component-paths.js');
+  const files = Object.keys(componentPaths).map((slug) => `${slug}.ce.vue`);
   const catalogCount = await page.locator('.kima-docs__sidebar nav .kima-button').count();
   expect(catalogCount).toBeGreaterThanOrEqual(files.length);
   expect(new Set(files.map((file) => file.replace('.ce.vue', ''))).size).toBe(files.length);

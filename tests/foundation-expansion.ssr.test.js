@@ -20,9 +20,10 @@ const samples = [
 
 test('all eleven foundation components SSR render without browser globals', async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
     for (const [slug, props, slots] of samples) {
-      const Component = (await server.ssrLoadModule(`/src/components/${slug}.ce.vue`)).default;
+      const Component = (await server.ssrLoadModule(componentPaths[slug])).default;
       const html = await renderToString(createSSRApp({ render: () => h(Component, props, slots) }));
       assert.ok(html.includes(`kima-${slug}`), slug);
       if (slug === 'field-group') {
@@ -51,8 +52,9 @@ test('all eleven foundation components SSR render without browser globals', asyn
 
 test('SSR time display is deterministic with explicit zone and safe on invalid input', async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
-    const Component = (await server.ssrLoadModule('/src/components/time-display.ce.vue')).default;
+    const Component = (await server.ssrLoadModule(componentPaths['time-display'])).default;
     const render = (props) => renderToString(createSSRApp({ render: () => h(Component, props) }));
     const date = await render({ value: '2026-06-01', mode: 'date', locale: 'en-GB', timeZone: 'UTC', dateStyle: 'full' });
     assert.match(date, /Monday,? 1 June 2026/);
@@ -69,8 +71,9 @@ test('SSR time display is deterministic with explicit zone and safe on invalid i
 test('error-state never invokes its retry handler during SSR', async () => {
   let calls = 0;
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
-    const Component = (await server.ssrLoadModule('/src/components/error-state.ce.vue')).default;
+    const Component = (await server.ssrLoadModule(componentPaths['error-state'])).default;
     const html = await renderToString(createSSRApp({ render: () => h(Component, { heading: '失败', retryHandler: () => { calls += 1; } }) }));
     assert.equal(calls, 0);
     assert.match(html, /重试/);

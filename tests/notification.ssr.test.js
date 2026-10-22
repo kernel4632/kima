@@ -5,10 +5,11 @@ import { createServer } from "vite";
 
 test("SSR of an open notification does not schedule a close timer", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   const setTimeoutOriginal = globalThis.setTimeout;
   const timers = [];
   try {
-    const { default: Notification } = await server.ssrLoadModule("/src/components/notification.ce.vue");
+    const { default: Notification } = await server.ssrLoadModule(componentPaths['notification']);
     const { createSSRApp, h } = await import("vue");
     const { renderToString } = await import("vue/server-renderer");
     globalThis.setTimeout = (...args) => {

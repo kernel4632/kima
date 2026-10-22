@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
-import Rich from '../src/components/rich-text-editor.ce.vue';
-import Code from '../src/components/code-editor.ce.vue';
+import Rich from '../src/components/content/rich-text-editor.ce.vue';
+import Code from '../src/components/content/code-editor.ce.vue';
 const rich=ref('<p>Alpha beta</p>'),code=ref('const alpha = 1;'),cancel=ref(false),result=ref('');
 function submit(event){result.value=JSON.stringify(Object.fromEntries(new FormData(event.target)));}
 </script>

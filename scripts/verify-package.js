@@ -10,6 +10,15 @@ const root = new URL('../', import.meta.url);
 const report = { startedAt: new Date().toISOString(), exitCode: 1, components: 0, checks: [], sizes: {} };
 await mkdir(new URL('artifacts/', root), { recursive: true });
 function check(name, run) { run(); report.checks.push(name); }
+async function componentFiles(folder) {
+  const files = [];
+  for (const entry of await readdir(folder, { withFileTypes: true })) {
+    const path = new URL(entry.name + (entry.isDirectory() ? '/' : ''), folder);
+    if (entry.isDirectory()) files.push(...await componentFiles(path));
+    else if (entry.name.endsWith('.ce.vue')) files.push(entry.name);
+  }
+  return files;
+}
 function walk(node, visit) {
   if (!node || typeof node !== 'object') return;
   if (Array.isArray(node)) { for (const child of node) walk(child, visit); return; }
@@ -57,8 +66,7 @@ try {
     assert.match(css, /--kima-color-primary:/);
     assert.doesNotMatch(css, /(?:^|\})\s*(?:html|body|\*)(?:[\s,{.:>])/, 'Library CSS must not reset host page');
   });
-  for (const file of await readdir(new URL('src/components/', root))) {
-    if (!file.endsWith('.ce.vue')) continue;
+  for (const file of await componentFiles(new URL('src/components/', root))) {
     const tag = `kima-${file.slice(0, -'.ce.vue'.length)}`;
     const name = `Kima${tag.slice(5).split('-').map(word => word[0].toUpperCase() + word.slice(1)).join('')}`;
     assert.ok(library[name], `Missing named Vue export ${name}`);

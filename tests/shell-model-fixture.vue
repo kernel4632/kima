@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-import KimaMenu from '../src/components/menu.ce.vue';
-import KimaConfigProvider from '../src/components/config-provider.ce.vue';
-import KimaSidebar from '../src/components/sidebar.ce.vue';
+import KimaMenu from '../src/components/core/menu.ce.vue';
+import KimaConfigProvider from '../src/components/shell/config-provider.ce.vue';
+import KimaSidebar from '../src/components/shell/sidebar.ce.vue';
 const open = ref(true); const checked = ref({flag:false}); const accept = ref(false);
 const items = [{value:'flag',label:'标记',type:'checkbox'}, {value:'sub',label:'子菜单',children:[{value:'leaf',label:'叶子'}]}];
 </script>

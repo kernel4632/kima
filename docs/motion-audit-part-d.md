@@ -5,10 +5,10 @@
 ## 核对范围
 
 - 新增/已整合的 utility、日期/表单、数据/媒体、闭环入口均复用 [`src/utils/motion.js`](../src/utils/motion.js)、全局 popup/list/content 过渡和 `prefers-reduced-motion` 规则。
-- [`color-picker.ce.vue`](../src/components/color-picker.ce.vue:1) 的 HSV 二维区、色相、alpha 和输入值需要跟手更新，因此不对拖动、键盘值或光标引入延迟动画；焦点环即时，颜色展示使用 token。
-- [`table.ce.vue`](../src/components/table.ce.vue:1) 的排序、筛选、列宽拖动/键盘调整和 summary 是数据语义，保持即时；行增删/重排沿用 list 过渡，loading/data/empty 维持交叉状态并在退场时隔离交互。
-- [`select.ce.vue`](../src/components/select.ce.vue:1) 与 [`combobox.ce.vue`](../src/components/combobox.ce.vue:1) 的 loader loading/error/empty 是请求状态，不能延迟结果或焦点；弹层仍使用 popup 过渡，旧请求通过 AbortSignal 和 generation 丢弃。
-- [`command.ce.vue`](../src/components/command.ce.vue:1) 的文档搜索结果保持即时过滤；模态 panel/backdrop 使用现有离散过渡，Escape、Enter、方向键和焦点返回不等待动画。
+- [`color-picker.ce.vue`](../src/components/form-completion/color-picker.ce.vue:1) 的 HSV 二维区、色相、alpha 和输入值需要跟手更新，因此不对拖动、键盘值或光标引入延迟动画；焦点环即时，颜色展示使用 token。
+- [`table.ce.vue`](../src/components/data/table.ce.vue:1) 的排序、筛选、列宽拖动/键盘调整和 summary 是数据语义，保持即时；行增删/重排沿用 list 过渡，loading/data/empty 维持交叉状态并在退场时隔离交互。
+- [`select.ce.vue`](../src/components/core/select.ce.vue:1) 与 [`combobox.ce.vue`](../src/components/core/combobox.ce.vue:1) 的 loader loading/error/empty 是请求状态，不能延迟结果或焦点；弹层仍使用 popup 过渡，旧请求通过 AbortSignal 和 generation 丢弃。
+- [`command.ce.vue`](../src/components/interaction/command.ce.vue:1) 的文档搜索结果保持即时过滤；模态 panel/backdrop 使用现有离散过渡，Escape、Enter、方向键和焦点返回不等待动画。
 
 ## 专项证据
 

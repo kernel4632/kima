@@ -100,8 +100,21 @@ src/
     _palette.scss   由 scripts/palette.js 生成的颜色角色，不要手改
     _mixins.scss    共用交互 mixin（状态层、焦点环、表面、禁用）
     index.scss      开发预览页的基础样式
-  components/       组件，一个组件一个 xxx.ce.vue 文件，直接平铺，放进来就自动登记
+  components/       组件，一个组件一个 xxx.ce.vue 文件，按文档分组放在子目录，放进来就自动登记
+    core/           基础控件（按钮、文本框、表格、弹层等）
+    input/          输入控件
+    display/        展示与反馈
+    navigation/     导航与内容组织
+    interaction/    弹层与交互
+    advanced-input/ 日期与表单高级能力
+    data/           数据、媒体与反馈
+    form-completion/ 表单闭环
+    utility/        工具与操作
+    foundation/     布局、排版与页面基础
+    content/        图表与内容引擎
+    shell/          应用壳与装饰
   utils/            共用工具（主题、动效、输入/日期、导航、配置、内容等），按实际复用维护
+  component-paths.js 由 scripts/components.js 生成，slug → 分组路径，测试与工具使用
   App.vue           开发预览页
   main.js           开发入口
 ```

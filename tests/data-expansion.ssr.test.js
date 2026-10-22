@@ -7,9 +7,10 @@ import { renderToString } from "vue/server-renderer";
 const slugs = ["infinite-scroll", "virtual-table", "virtual-tree", "image-preview", "notification-queue", "relative-time", "ring-progress", "copy-button", "long-text"];
 test("data expansion components render safely in SSR and relative time creates no timer", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
+  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
     const modules = {};
-    for (const slug of slugs) modules[slug] = (await server.ssrLoadModule(`/src/components/${slug}.ce.vue`)).default;
+    for (const slug of slugs) modules[slug] = (await server.ssrLoadModule(componentPaths[slug])).default;
     for (const slug of slugs) {
       const html = await renderToString(createSSRApp({ render: () => h(modules[slug], { id: `ssr-${slug}` }) }));
       assert.match(html, new RegExp(`kima-${slug.replace("-", "\\-")}`), slug);
