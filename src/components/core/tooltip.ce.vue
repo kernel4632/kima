@@ -250,13 +250,13 @@ onBeforeUnmount(() => {
   width: max-content;
   max-width: min(320px, calc(100vw - 24px));
   padding: var(--kima-space-2) var(--kima-space-3);
-  border-radius: 4px;
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
-  font-size: var(--kima-font-size-sm);
-  line-height: 1.4;
+  font-size: var(--kima-font-size-label-medium);
+  line-height: var(--kima-line-height-normal);
   white-space: normal;
   pointer-events: none;
 }

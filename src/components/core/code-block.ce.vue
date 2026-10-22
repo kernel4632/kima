@@ -158,8 +158,8 @@ async function copyCode() {
   &__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   &__status--error { position: static; display: block; width: auto; height: auto; clip-path: none; padding: 0 var(--kima-space-5) var(--kima-space-3); font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); }
   :deep(.hljs-keyword), :deep(.hljs-tag), :deep(.hljs-selector-tag) { color: var(--kima-color-primary); }
-  :deep(.hljs-string), :deep(.hljs-attr), :deep(.hljs-selector-class) { color: var(--kima-color-tertiary); }
-  :deep(.hljs-number), :deep(.hljs-literal), :deep(.hljs-built_in), :deep(.hljs-title) { color: var(--kima-color-secondary); }
+  :deep(.hljs-string), :deep(.hljs-attr), :deep(.hljs-selector-class) { color: var(--kima-color-code-string); }
+  :deep(.hljs-number), :deep(.hljs-literal), :deep(.hljs-built_in), :deep(.hljs-title) { color: var(--kima-color-code-number); }
   :deep(.hljs-comment), :deep(.hljs-meta) { color: var(--kima-color-on-surface-variant); }
 }
 </style>

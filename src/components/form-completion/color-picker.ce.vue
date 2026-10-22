@@ -93,7 +93,7 @@ const hsl = computed(() => {
       <div class="kima-color-picker__area" role="slider" :tabindex="disabled ? -1 : 0" :aria-disabled="disabled" :aria-readonly="readonly" :aria-label="`${label}饱和度和明度`" :aria-valuetext="`S ${Math.round(hsv.s * 100)}%, V ${Math.round(hsv.v * 100)}%`" :style="{ background: `linear-gradient(to top,var(--kima-color-picker-black),var(--kima-color-transparent)),linear-gradient(to right,var(--kima-color-picker-white),hsl(${hsv.h} 100% 50%))` }" @pointerdown="e => startPointer(e, area)" @pointermove="e => e.buttons && area(e)" @keydown="areaKey"><span :style="{ left: `${hsv.s * 100}%`, top: `${(1 - hsv.v) * 100}%` }"></span></div>
       <div class="kima-color-picker__hue" role="slider" :tabindex="disabled ? -1 : 0" :aria-disabled="disabled" :aria-readonly="readonly" aria-label="色相" :aria-valuemin="0" :aria-valuemax="359" :aria-valuenow="hsv.h" @pointerdown="e => startPointer(e, hue)" @pointermove="e => e.buttons && hue(e)" @keydown="e => sliderKey(e, 'h', 1)"><span :style="{ top: `${hsv.h / 360 * 100}%` }"></span></div>
     </div>
-    <div class="kima-color-picker__alpha" role="slider" :tabindex="disabled ? -1 : 0" :aria-disabled="disabled" :aria-readonly="readonly" aria-label="透明度" aria-valuemin="0" aria-valuemax="1" :aria-valuenow="hsv.a" @pointerdown="e => startPointer(e, alpha)" @pointermove="e => e.buttons && alpha(e)" @keydown="e => sliderKey(e, 'a', .01)"><span :style="{ left: `${hsv.a * 100}%` }"></span></div>
+    <div class="kima-color-picker__alpha" role="slider" :tabindex="disabled ? -1 : 0" :aria-disabled="disabled" :aria-readonly="readonly" aria-label="透明度" aria-valuemin="0" aria-valuemax="1" :aria-valuenow="hsv.a" :style="{ '--kima-alpha-color': `rgb(${rgb.r} ${rgb.g} ${rgb.b})` }" @pointerdown="e => startPointer(e, alpha)" @pointermove="e => e.buttons && alpha(e)" @keydown="e => sliderKey(e, 'a', .01)"><span :style="{ left: `${hsv.a * 100}%` }"></span></div>
     <div class="kima-color-picker__inputs">
       <input ref="nativeColor" class="kima-color-picker__native" type="color" :value="toHex(rgb).slice(0, 7)" :aria-label="`${label}颜色选择器`" :disabled="disabled || readonly" @input="setNativeColor">
       <input ref="hex" v-bind="controlAttrs" class="kima-color-picker__hex" type="text" :value="draft" :name="name" :aria-label="controlAttrs['aria-label'] || label" :disabled="disabled" :readonly="readonly" :required="required" pattern="#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?" maxlength="9" @input.stop="draft = $event.target.value; commit(draft, false)" @change.stop="commit(draft, true)">
@@ -104,5 +104,126 @@ const hsl = computed(() => {
 <style scoped lang="scss">
 @use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
-.kima-color-picker { @include input-root; display: grid; gap: var(--kima-space-3); &__editor { display: grid; grid-template-columns: 1fr 28px; gap: var(--kima-space-3); min-width: 220px; } &__area { position: relative; min-height: 220px; border-radius: var(--kima-radius-m); cursor: crosshair; touch-action: none; &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: var(--kima-focus-ring-offset); } span, &__hue span, &__alpha span { position: absolute; width: 20px; height: 20px; border: 3px solid var(--kima-color-on-surface); border-radius: 50%; box-shadow: 0 0 0 2px var(--kima-color-surface); transform: translate(-50%, -50%); } } &__hue { position: relative; border-radius: var(--kima-radius-m); background: linear-gradient(to bottom, var(--kima-color-picker-red), var(--kima-color-picker-yellow), var(--kima-color-picker-green), var(--kima-color-picker-cyan), var(--kima-color-picker-blue), var(--kima-color-picker-magenta), var(--kima-color-picker-red)); touch-action: none; &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); } span { left: 50%; } } &__alpha { position: relative; height: 20px; border-radius: var(--kima-radius-s); background: linear-gradient(to right, var(--kima-color-transparent), var(--kima-color-on-surface)); touch-action: none; &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); } span { top: 50%; } } &__inputs { display: grid; grid-template-columns: 48px 1fr; gap: var(--kima-space-2); align-items: center; } &__native { width: 48px; height: 48px; padding: 4px; border: 0; border-radius: var(--kima-radius-s); background: var(--kima-color-layer-1); cursor: pointer; &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); } } &__hex { @include input-surface; @include input-control; width: 100%; font-variant-numeric: tabular-nums; } output { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); } }
+.kima-color-picker {
+  @include input-root;
+  display: grid;
+  gap: var(--kima-space-3);
+
+  &__editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    gap: var(--kima-space-3);
+    min-width: 220px;
+  }
+
+  &__area {
+    position: relative;
+    min-height: 220px;
+    border-radius: var(--kima-radius-m);
+    cursor: crosshair;
+    touch-action: none;
+
+    > span {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--kima-color-surface);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--kima-color-on-surface);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    &:focus-visible {
+      outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline-offset: var(--kima-focus-ring-offset);
+    }
+  }
+
+  &__hue,
+  &__alpha {
+    position: relative;
+    touch-action: none;
+    cursor: pointer;
+
+    > span {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--kima-color-surface);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--kima-color-on-surface);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    &:focus-visible {
+      outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline-offset: 3px;
+    }
+  }
+
+  &__hue {
+    border-radius: var(--kima-radius-m);
+    background: linear-gradient(
+      to bottom,
+      var(--kima-color-picker-red),
+      var(--kima-color-picker-yellow),
+      var(--kima-color-picker-green),
+      var(--kima-color-picker-cyan),
+      var(--kima-color-picker-blue),
+      var(--kima-color-picker-magenta),
+      var(--kima-color-picker-red)
+    );
+
+    > span { left: 50%; }
+  }
+
+  /* 透明度轨道：棋盘底 + 当前颜色到透明的渐变，拖到哪儿都能看出结果。 */
+  &__alpha {
+    height: 22px;
+    border-radius: var(--kima-radius-full);
+    background-color: var(--kima-color-layer-2);
+    background-image:
+      linear-gradient(to right, transparent, var(--kima-alpha-color, var(--kima-color-on-surface))),
+      repeating-conic-gradient(from 45deg, var(--kima-color-layer-3) 0% 25%, var(--kima-color-layer-1) 0% 50%);
+    background-size: 100% 100%, 16px 16px;
+
+    > span { top: 50%; }
+  }
+
+  &__inputs {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--kima-space-2);
+    align-items: center;
+  }
+
+  &__native {
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+    border: 0;
+    border-radius: var(--kima-radius-s);
+    background: var(--kima-color-layer-1);
+    cursor: pointer;
+
+    &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); }
+  }
+
+  &__hex {
+    @include input-surface;
+    @include input-control;
+    width: 100%;
+    background: var(--kima-color-layer-2);
+    border-radius: var(--kima-radius-m);
+    font-variant-numeric: tabular-nums;
+  }
+
+  output {
+    color: var(--kima-color-on-surface-variant);
+    font-size: var(--kima-font-size-label-medium);
+    font-variant-numeric: tabular-nums;
+  }
+}
 </style>

@@ -88,11 +88,22 @@ function fileKey(file, index) {
 .kima-file-upload {
   @include input-root;
   @include kima-motion-colors;
-  &__drop { @include input-surface; @include kima-motion-colors; display: grid; gap: var(--kima-space-3); padding: var(--kima-space-5); }
+  /* 原生 file 控件的外观不可控，整块拖放区就是点击目标；输入框只保留语义与键盘焦点。 */
+  &__drop {
+    @include input-surface;
+    @include kima-motion-colors;
+    position: relative;
+    display: grid;
+    gap: var(--kima-space-3);
+    padding: var(--kima-space-4);
+    cursor: pointer;
+
+    &:hover { background: var(--kima-color-layer-3); }
+    &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary); }
+  }
   &__drop--active { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
-  input { @include input-control; width: 100%; }
-  input::file-selector-button { border: 0; padding: var(--kima-space-3); margin-inline-end: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); font: inherit; cursor: pointer; }
-  p { @include input-message; }
+  input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  p { @include input-message; margin: 0; padding: var(--kima-space-5); text-align: center; }
   &__files { list-style: none; margin: 0; padding: var(--kima-space-3) 0 0; display: grid; gap: var(--kima-space-2); }
   li { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-3); }
   li span { min-width: 0; overflow-wrap: anywhere; }

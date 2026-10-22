@@ -198,6 +198,10 @@
   --kima-color-warning: #ffb95c;
   --kima-color-on-warning: #3d2600;
 
+  /* 代码高亮的附加色：只用于语法着色，不表达状态语义。 */
+  --kima-color-code-string: var(--kima-color-success);
+  --kima-color-code-number: var(--kima-color-warning);
+
   /* ---- 兼容别名：旧的占位组件还在用这些名字 ----
    * 值都指向上面某一档，逐个组件重做后这些名字会消失，新组件不要再引。 */
   --kima-color-transparent: transparent;

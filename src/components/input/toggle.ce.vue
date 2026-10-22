@@ -35,6 +35,7 @@ useRipple(root);
   @include input-root;
   @include kima-layer(2);
   @include kima-state-layer;
+  @include kima-motion-colors;
   @include kima-focus-ring;
   @include kima-ripple-host;
   @include kima-press;
