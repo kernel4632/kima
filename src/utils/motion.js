@@ -23,6 +23,16 @@ export function activateMotionElement(element) {
 }
 export const presenceTransition = { onBeforeEnter: activateMotionElement, onBeforeLeave: retireMotionElement };
 
+/* 收起时内容可能和开关一起从 DOM 消失（字段组提示就是这种）。
+ * 那时现场量高度只能量到 0，动画就成了 0→0。
+ * 组件在更新前调用一次 rememberCollapseHeight(元素)，把旧高度存下来当起点。 */
+const rememberedHeights = new WeakMap();
+
+export function rememberCollapseHeight(element) {
+  const height = element?.getBoundingClientRect().height || 0;
+  if (height > 0) rememberedHeights.set(element, height);
+}
+
 function cancelCollapse(element) {
   const state = active.get(element);
   if (!state) return;
@@ -40,7 +50,7 @@ function collapse(element, done, entering) {
   const style = view.getComputedStyle(element);
   const previous = interrupted.get(element);
   interrupted.delete(element);
-  const natural = element.getBoundingClientRect().height;
+  const natural = element.getBoundingClientRect().height || rememberedHeights.get(element) || 0;
   const duration = prefersReducedMotion(element) ? 0 : milliseconds(style.getPropertyValue("--kima-duration-slow") || "300ms");
   const easing = style.getPropertyValue("--kima-curve-emphasized").trim() || "ease-out";
   if (!duration || !element.animate) { done(); return; }

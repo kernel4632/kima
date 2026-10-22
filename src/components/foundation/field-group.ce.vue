@@ -1,14 +1,16 @@
 <!-- 字段分组：可见 legend 是分组标题，不是输入框标签；hint/error 关联组内所有真实控件，required/valid 只做聚合，不冒充 schema 校验。调用示例：<kima-field-group legend="通知方式" hint="至少选择一种" required><kima-checkbox label="邮件" name="mail" /></kima-field-group> -->
 <script setup>
-import { onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
-import { useContentMotion } from "../../utils/content-motion.js";
+import { onBeforeUnmount, onBeforeUpdate, onMounted, ref, useId, watch } from 'vue';
+import { collapseTransition, rememberCollapseHeight } from "../../utils/motion.js";
 import { useNavigationRoot } from '../../utils/navigation.js';
 defineOptions({ inheritAttrs: false });
 const props = defineProps({ legend: { type: String, default: '' }, hint: { type: String, default: '' }, error: { type: String, default: '' }, required: Boolean, disabled: Boolean });
 const emit = defineEmits(['validity-change']);
 const { root, forwardedAttrs } = useNavigationRoot();
+/* 提示文字和容器显隐在同一次更新里变化：先在更新前记下旧高度，
+ * 收起动画才有 21px 这样的起点，否则只能量到已经被清空后的 0。 */
 const messages = ref(null);
-useContentMotion(messages, () => [props.hint, props.error]);
+onBeforeUpdate(() => rememberCollapseHeight(messages.value));
 const id = `kima-field-group-${useId()}`;
 const hintId = `${id}-hint`, errorId = `${id}-error`, statusId = `${id}-status`;
 const validity = ref({ valid: true, errors: [] });
@@ -73,10 +75,14 @@ defineExpose({ validate, reportValidity });
   <fieldset ref="root" v-bind="forwardedAttrs" class="kima-field-group" :disabled="disabled" :data-valid="validity.valid" :aria-describedby="[hint ? hintId : '', error ? errorId : ''].filter(Boolean).join(' ') || undefined">
     <legend v-if="legend" class="kima-field-group__legend">{{ legend }}<span v-if="required" class="kima-field-group__required">必填</span></legend>
     <div class="kima-field-group__fields"><slot /></div>
-    <div v-show="hint || error" ref="messages" class="kima-field-group__messages">
-      <p v-if="hint" :id="hintId" class="kima-field-group__hint">{{ hint }}</p>
-      <p v-if="error" :id="errorId" class="kima-field-group__error" role="alert">{{ error }}</p>
-    </div>
+    <!-- 提示和错误也是"会出现/会消失的内容"：走和单字段一样的高度过渡，
+        不能一出现就把整组撑高一段、一消失又瞬间塌回去。 -->
+    <Transition :css="false" v-bind="collapseTransition">
+      <div v-show="hint || error" ref="messages" class="kima-field-group__messages" :inert="!hint && !error" :aria-hidden="!hint && !error || undefined">
+        <p v-if="hint" :id="hintId" class="kima-field-group__hint">{{ hint }}</p>
+        <p v-if="error" :id="errorId" class="kima-field-group__error" role="alert">{{ error }}</p>
+      </div>
+    </Transition>
     <p :id="statusId" class="kima-field-group__status" aria-live="polite">{{ validity.valid ? '分组有效' : `分组有 ${validity.errors.length} 项待处理` }}</p>
   </fieldset>
 </template>
