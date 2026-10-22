@@ -174,7 +174,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     height: 24px;
     border: 2px solid var(--kima-color-outline);
     border-radius: var(--kima-radius-xs);
-    background: var(--kima-color-transparent);
+    /* 用长写属性：状态切换只改 background-color，过渡才真的跑起来。 */
+    background-color: var(--kima-color-transparent);
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);
@@ -202,7 +203,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   &--indeterminate {
     .kima-checkbox__box {
       border-color: var(--kima-color-primary);
-      background: var(--kima-color-primary);
+      background-color: var(--kima-color-primary);
     }
   }
 

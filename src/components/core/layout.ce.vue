@@ -109,20 +109,20 @@ const layoutStyle = computed(() => ({
 .kima-layout--panel {
   padding: var(--kima-layout-padding, 24px);
   border: 0;
-  border-radius: 16px;
+  border-radius: var(--kima-radius-l);
   background: var(--kima-color-layer-2);
 }
 
 @media (max-width: 720px) {
   .kima-layout--page {
-    padding: 24px;
+    padding: var(--kima-space-6);
   }
 }
 
 @media (max-width: 480px) {
   .kima-layout--page,
   .kima-layout--panel {
-    padding: 16px;
+    padding: var(--kima-space-4);
   }
 }
 </style>

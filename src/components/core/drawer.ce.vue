@@ -625,7 +625,7 @@ onBeforeUnmount(() => {
 .kima-drawer__panel {
   box-sizing: border-box;
   overflow: auto;
-  padding: 24px;
+  padding: var(--kima-space-6);
   outline: none;
   /* 弹层必须实色（kima-popup 给的就是实色底）。
    * 抽屉比对话框更大、盖住半屏，阴影用更高的 elevation-5 才托得住。 */

@@ -19,12 +19,11 @@ import {
 } from "@material/material-color-utilities";
 
 // 默认主题色。想改默认值只改这里。
-export const defaultSeed = "#ffffff";
+export const defaultSeed = "#61afef";
 
-// 默认配色风格。
-// 白色种子配 tonal-spot 会得到偏红的色板（TonalSpot 的彩度是写死的），
-// 所以纯白种子对应 monochrome，得到的才是真正的无彩色。
-export const defaultVariant = "monochrome";
+// 默认配色风格。需要纯灰度主题时由使用者调用
+// applyPalette("#ffffff", { variant: "monochrome" })，不要改这里的默认值。
+export const defaultVariant = "tonal-spot";
 
 // 只生成组件真正用得到的角色，每一条写清它管什么，加新角色时照着往下加。
 export const paletteRoles = [

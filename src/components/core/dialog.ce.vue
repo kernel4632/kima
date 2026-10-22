@@ -148,7 +148,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   max-width: none;
   max-height: none;
   margin: 0;
-  padding: 16px;
+  padding: var(--kima-space-4);
   border: 0;
   background: var(--kima-color-transparent);
   place-items: center;
@@ -214,9 +214,9 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   width: 100%;
   max-height: 100%;
   overflow: auto;
-  padding: 24px;
+  padding: var(--kima-space-6);
   border: 0;
-  border-radius: 28px;
+  border-radius: var(--kima-radius-xl);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup-large);
   box-shadow: var(--kima-elevation-4);
@@ -338,11 +338,11 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
 
 @media (max-width: 600px) {
   .kima-dialog {
-    padding: 12px;
+    padding: var(--kima-space-3);
   }
 
   .kima-dialog__panel {
-    padding: 20px;
+    padding: var(--kima-space-5);
   }
 }
 </style>
