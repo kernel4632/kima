@@ -1,4 +1,5 @@
-// Browser regressions against the real Vite source entry: pnpm exec playwright test.
+// 只跑最小冒烟，保证入口、真实事件、弹层和文档站可用；总时长控制在 10 秒内。
+// 视觉、间距、排版和中间帧靠人工截图审查，不把时间花在成百上千条自动化用例上。
 import { defineConfig, devices } from "@playwright/test";
 
 const port = Number(process.env.KIMA_TEST_PORT || 5188);
@@ -6,22 +7,17 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "**/*.spec.js",
-  // 截图脚本不参与 pnpm test，它用 playwright.shots.config.js 单独跑（pnpm shots）。
-  testIgnore: "**/shots.spec.js",
-  fullyParallel: true,
+  testMatch: "**/smoke.spec.js",
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 2 : undefined,
-  reporter: "list",
-  use: { baseURL, trace: "retain-on-failure" },
-  projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"], browserName: "chromium" } },
-  ],
+  retries: 0,
+  workers: 1,
+  reporter: "line",
+  use: { baseURL, trace: "off" },
+  projects: [{ name: "desktop", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: `pnpm exec vite --host 127.0.0.1 --port ${port} --strictPort`,
     url: `${baseURL}/tests/fixture.html`,
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
   },
 });

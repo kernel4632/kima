@@ -1,7 +1,0 @@
-html { background: var(--kima-color-surface); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); }
-body { margin: 0; padding: 24px; }
-#fixture { max-width: 960px; margin-inline: auto; }
-.kima-gallery__demo { min-height: 380px; background: var(--kima-color-layer-1); border-radius: var(--kima-radius-l); }
-button, input, select { font: inherit; }
-a { color: var(--kima-color-primary); }
-@media (max-width: 560px) { body { padding: 12px; } }

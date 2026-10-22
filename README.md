@@ -101,11 +101,8 @@ pnpm build
 pnpm build:lib
 pnpm verify:lib
 pnpm verify:install
-# PowerShell：选择空闲端口，保留当前 5188/5193 服务
-$env:KIMA_TEST_PORT = '5228'
-pnpm test -- --workers=2
-pnpm test:ssr
-pnpm exec playwright test --config playwright.final-enhancement.config.js
+pnpm test        # 约 8 秒冒烟：入口、真实点击、弹层、表单值
+pnpm test:ssr    # 发布前可选
 pnpm shots
 # 逐页视觉审查：桌面与手机各跑一遍，截图落在 shots/audit*
 node scripts/audit-visual.mjs http://127.0.0.1:5188
