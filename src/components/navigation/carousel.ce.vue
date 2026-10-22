@@ -3,8 +3,9 @@
   <kima-carousel v-model="index" :items="[{ title: '设计', content: '体验优先' }, { title: '交互', content: '键盘可达' }]" />
 -->
 <script setup>
-import { computed, useId } from "vue";
+import { computed, ref, useId } from "vue";
 import KimaButton from "../core/button.ce.vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { useNavigationModel, useNavigationRoot } from "../../utils/navigation.js";
 defineOptions({ inheritAttrs: false });
 const props = defineProps({ modelValue: { type: Number, default: 0 }, items: { type: Array, default: () => [] }, loop: Boolean, disabled: Boolean, label: { type: String, default: "内容轮播" } });
@@ -12,7 +13,10 @@ const emit = defineEmits(["update:modelValue", "change"]);
 const { root, forwardedAttrs } = useNavigationRoot();
 const [local, update] = useNavigationModel(props, "modelValue", emit);
 const id = `kima-carousel-${useId()}`;
+const viewport = ref(null);
 const current = computed(() => Math.max(0, Math.min(props.items.length - 1, Math.trunc(Number(local.value) || 0))));
+/* 换一张时只淡入淡出会留下高度硬切：视口高度跟着幻灯片一起过渡。 */
+useContentMotion(viewport, () => current.value, { opacity: false });
 const previousDisabled = computed(() => props.disabled || props.items.length < 2 || (!props.loop && current.value === 0));
 const nextDisabled = computed(() => props.disabled || props.items.length < 2 || (!props.loop && current.value === props.items.length - 1));
 function content(item) { return item && typeof item === "object" ? item.content ?? item.label ?? "" : item; }
@@ -31,7 +35,7 @@ function keydown(event) {
 </script>
 <template>
   <section ref="root" v-bind="forwardedAttrs" class="kima-carousel" role="region" aria-roledescription="轮播" :aria-label="label" tabindex="0" @keydown="keydown">
-    <div :id="id" class="kima-carousel__viewport">
+    <div :id="id" ref="viewport" class="kima-carousel__viewport">
       <Transition v-for="(item, index) in items" :key="item.value ?? index" name="kima-fade">
         <div v-show="current === index" class="kima-carousel__slide" role="group" aria-roledescription="幻灯片" :aria-label="`第 ${index + 1} 张，共 ${items.length} 张`" :aria-hidden="current !== index" :inert="current !== index">
           <slot :name="`slide-${index}`" :item="item" :index="index"><h3 v-if="item.title">{{ item.title }}</h3><p v-if="content(item)">{{ content(item) }}</p></slot>
@@ -48,4 +52,6 @@ function keydown(event) {
 .kima-carousel { @include navigation-surface; @include kima-focus-ring; &__viewport { padding: var(--kima-space-6); min-height: 180px; box-sizing: border-box; background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); overflow-wrap: anywhere; } &__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--kima-space-3); margin-top: var(--kima-space-4); } }
 .kima-carousel__viewport { display: grid; }
 .kima-carousel__slide { grid-area: 1 / 1; min-width: 0; }
+/* 退场那张不再参与高度计算，视口高度才能马上变成新一张的高度再由动画补齐。 */
+.kima-carousel__slide.kima-fade-leave-active { position: absolute; inset-block-start: var(--kima-space-6); inset-inline: var(--kima-space-6); }
 </style>

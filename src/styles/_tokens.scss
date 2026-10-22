@@ -253,6 +253,49 @@
   --kima-color-on-warning: #ffffff;
 }
 
+/* ---- 块级组件的宿主默认 ----
+ * 自定义元素默认是 inline：宽度跟着内容走。内容一收起来（手风琴收起、标签换页、
+ * 列表删掉一行），整块就按新的内容宽度重新排，看起来是"瞬间变窄"。
+ * 这些组件本身就是一块场地，宿主要和组件根一样占满可用宽度。
+ * 不在这个名单里的（按钮、徽标、头像这类）保持按内容排。 */
+kima-accordion,
+kima-collapsible,
+kima-tabs,
+kima-carousel,
+kima-alert,
+kima-banner,
+kima-result,
+kima-empty-state,
+kima-error-state,
+kima-page-header,
+kima-descriptions,
+kima-list,
+kima-timeline,
+kima-stepper,
+kima-breadcrumb,
+kima-progress-group,
+kima-table,
+kima-virtual-table,
+kima-tree,
+kima-virtual-tree,
+kima-code-block,
+kima-log-viewer,
+kima-chart,
+kima-heatmap,
+kima-transfer,
+kima-splitter,
+kima-masonry,
+kima-scroll-area,
+kima-toolbar,
+kima-navigation-menu,
+kima-anchor,
+kima-overflow-list,
+kima-app-shell {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
 /* ---- 字段类宿主的默认 ----
  * 宿主（<kima-cascader> 这类标签本身）放进网格或弹性排版时，浏览器默认
  * 最小宽度是"内容有多宽就多宽"（min-width: auto）。字段类的值是"电子/手机/安卓"
