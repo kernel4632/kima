@@ -10,5 +10,7 @@
   border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
   &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
 }
-@mixin advanced-field { @include input-surface; @include input-control; width: 100%; border-radius: var(--kima-radius-m); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
+/* input-control 会把背景重置为透明（供“外层表面 + 内层输入”使用）；
+ * advanced-field 是同一个元素兼作表面和控件，必须在最后把底色和圆角补回来。 */
+@mixin advanced-field { @include input-surface; @include input-control; width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
 @mixin advanced-native { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; clip-path: inset(50%); overflow: hidden; }

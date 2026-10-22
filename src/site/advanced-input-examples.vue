@@ -22,7 +22,7 @@ const handleSubmit=async ({data})=>{await new Promise(resolve=>setTimeout(resolv
 const summary=computed(()=>range.value.join(' 至 '));
 </script>
 <template>
-  <article class="kima-gallery__demo kima-advanced-input-example">
+  <article class="kima-gallery__demo kima-advanced-input-example" :data-component="props.component">
     <KimaForm v-if="props.component==='form'" :handle-submit="handleSubmit">
       <template #default="{pending}"><KimaField hint="填写工作姓名，输入 fail 演示异步失败"><KimaTextField v-model="formName" label="姓名" name="person" required /></KimaField><KimaButton type="submit" :loading="pending">异步提交</KimaButton><KimaButton type="reset" variant="text">重置</KimaButton></template>
       <template #status><output role="status">{{ status }}</output></template>

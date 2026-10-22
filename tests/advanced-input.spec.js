@@ -13,7 +13,7 @@ test('nine entries, metadata, isolated Vue demos and theme screenshots',async ({
   await page.evaluate(async()=>{(await import('/tests/advanced-input-fixture.js')).mountAdvancedInputExamples();});
   for(const theme of ['dark','light']){
     await page.evaluate(async theme=>{(await import('/src/utils/theme.js')).applyPalette('#61afef',{isDark:theme==='dark'});},theme);
-    for(const name of names){await page.evaluate(name=>window.advancedInputSlug.value=name,name);await expect(page.locator('article')).toHaveCount(1);await expect(page.locator('h3')).toHaveText(name);await page.screenshot({path:`shots/advanced-input/${info.project.name}-${theme}-${name}.png`,fullPage:true});}
+    for(const name of names){await page.evaluate(name=>window.advancedInputSlug.value=name,name);await expect(page.locator('article')).toHaveCount(1);await expect(page.locator('article')).toHaveAttribute('data-component',name);await page.screenshot({path:`shots/advanced-input/${info.project.name}-${theme}-${name}.png`,fullPage:true});}
   }
   await page.evaluate(()=>window.advancedInputApp.unmount());expect(errors).toEqual([]);
 });

@@ -18,7 +18,7 @@ import Button from '../components/button.ce.vue';
 import { createNotifications } from '../utils/notifications.js';
 import { utilityCatalog } from './utility-catalog.js';
 const props = defineProps({ component: { type: String, required: true } });
-const open = ref(false), number = ref(1250), chosen = ref('a'), many = ref(['a']), loading = ref(null), log = ref(null), action = ref('');
+const open = ref(false), number = ref(1250), chosen = ref(0), many = ref(['a']), loading = ref(null), log = ref(null), action = ref('');
 const options = [{ value: 'a', label: '设计' }, { value: 'b', label: '开发' }, { value: 'c', label: '已停用', disabled: true }, { value: 'd', label: '验证' }];
 const virtualOptions = Array.from({ length: 10000 }, (_, index) => ({ value: index, label: `项目 ${index}`, disabled: index === 5 }));
 const tags = ref(options.slice(0, 2));
