@@ -10,6 +10,7 @@ title 沿用原生属性，作为 attrs 读取，不声明同名组件 prop。
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useId, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
+import KimaButton from "./button.ce.vue";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { useNativeSlots } from "../utils/native-slots.js";
 
@@ -123,9 +124,9 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
             <h2 v-if="attrs.title" :id="titleId" class="kima-dialog__title">{{ attrs.title }}</h2>
             <div v-if="$slots.header || hasNativeSlot('header')" class="kima-dialog__header-slot"><slot name="header" /></div>
           </div>
-          <button class="kima-dialog__close" type="button" aria-label="关闭对话框" @click="close('button')">
+          <KimaButton variant="text" class="kima-dialog__close" aria-label="关闭对话框" @click="close('button')">
             <KimaIcon :icon="Cancel01Icon" :size="20" color="currentColor" />
-          </button>
+          </KimaButton>
         </header>
 
         <p v-if="description" :id="descriptionId" class="kima-dialog__description">{{ description }}</p>
@@ -225,6 +226,8 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
     opacity var(--kima-duration-medium) var(--kima-curve-emphasized),
     scale var(--kima-duration-medium) var(--kima-curve-emphasized);
 
+  .kima-dialog:not([open]) & { opacity: 0; scale: 0.96; }
+
   @starting-style {
     opacity: 0;
     scale: 0.96;
@@ -277,14 +280,17 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   justify-content: center;
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   padding: 0;
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   cursor: pointer;
-  /* 关闭按钮是"亮起来"的反馈，要看得见过程。 */
+  /* 保留基础按钮回弹，同时过渡关闭入口的颜色。 */
   transition:
+    transform 320ms var(--kima-spring-gentle),
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     color var(--kima-duration-effects) var(--kima-curve-standard);
 }
@@ -325,6 +331,8 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   .kima-dialog__panel {
     transition-duration: 1ms;
   }
+  .kima-dialog__panel { scale: 1; }
+  .kima-dialog:not([open]) .kima-dialog__panel { scale: 1; }
 }
 
 @media (max-width: 600px) {

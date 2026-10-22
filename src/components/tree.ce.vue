@@ -12,6 +12,7 @@ items 格式为 { value, label, children, disabled }，value 必须在整棵树�
 -->
 <script setup>
 import { computed, getCurrentInstance, nextTick, ref, shallowRef, useAttrs, useHost, useId, watch } from "vue";
+import { collapseTransition, presenceTransition } from "../utils/motion.js";
 import KimaIcon from "./icon.ce.vue";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
@@ -248,11 +249,10 @@ watch([visibleNodes, () => props.modelValue], () => {
     :aria-multiselectable="multiple || undefined"
     :aria-disabled="disabled || undefined"
   >
-    <div v-if="visibleNodes.length" class="kima-tree__group" role="group">
+    <TransitionGroup tag="div" class="kima-tree__group" role="group" :css="false" v-bind="{ ...collapseTransition, ...presenceTransition }">
+      <div v-for="(node, index) in visibleNodes" :key="node.value" class="kima-tree__motion-row">
       <div
-        v-for="(node, index) in visibleNodes"
         :id="nodeId(node.value)"
-        :key="node.value"
         :ref="(element) => setNodeRef(element, index)"
         class="kima-tree__item"
         :class="{
@@ -290,8 +290,9 @@ watch([visibleNodes, () => props.modelValue], () => {
           </slot>
         </span>
       </div>
-    </div>
-    <div v-else class="kima-tree__empty" role="status">
+      </div>
+    </TransitionGroup>
+    <div v-if="!visibleNodes.length" class="kima-tree__empty" role="status">
       <slot name="empty">暂无数据</slot>
     </div>
   </div>
@@ -306,10 +307,9 @@ watch([visibleNodes, () => props.modelValue], () => {
   line-height: 1.4;
 }
 
-.kima-tree__group {
-  display: grid;
-  gap: var(--kima-space-1);
-}
+.kima-tree__group { display: grid; }
+.kima-tree__motion-row { display: flow-root; }
+.kima-tree__motion-row > .kima-tree__item { margin-bottom: var(--kima-space-1); }
 
 .kima-tree__item {
   display: flex;
@@ -323,7 +323,7 @@ watch([visibleNodes, () => props.modelValue], () => {
   color: var(--kima-color-on-surface);
   cursor: pointer;
   outline: none;
-  transition: background-color var(--kima-duration-fast) var(--kima-ease-standard), color var(--kima-duration-fast) var(--kima-ease-standard);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
 
   &:hover:not(.kima-tree__item--disabled),
   &:focus-visible {

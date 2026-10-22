@@ -1,176 +1,101 @@
-/*
-截图：把预览页的几张关键画面拍下来放进 shots/，用于跟用户确认视觉效果。
-用法：pnpm shots（会自己起一个预览页服务器）。
-改完 token 或组件后重跑，就能看前后对比。
-*/
-import { expect, test } from "@playwright/test";
+/* 正式文档站截图：pnpm shots。截图不提交，供视觉验收。 */
+import { expect, test } from '@playwright/test';
 
-// 这个测试要跑完预览页一整轮（含抽屉拖拽、通知各种变体），30 秒不够。
-test.setTimeout(90_000);
+test('文档站桌面深浅主题与组件页', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await expect(page.locator('h1')).toBeVisible();
+  await page.screenshot({ path: 'shots/docs-home-dark.png', scale: 'css' });
+  await page.getByRole('button', { name: '切换浅色', exact: true }).click();
+  await page.waitForTimeout(300); // 等待 token 配色和状态层过渡结束，不拍主题中间帧。
+  await page.screenshot({ path: 'shots/docs-home-light.png', scale: 'css' });
+  await page.goto('/#/components/button', { waitUntil: 'networkidle' });
+  await expect(page.locator('.kima-docs__canvas .kima-button').first()).toBeVisible();
+  await page.screenshot({ path: 'shots/docs-button-light.png', scale: 'css' });
+  await page.goto('/#/components/table', { waitUntil: 'networkidle' });
+  await expect(page.locator('.kima-docs__canvas table')).toBeVisible();
+  await page.screenshot({ path: 'shots/docs-table.png', scale: 'css' });
+});
 
-test("拍下基础层与按钮组的深色、浅色效果", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1200 });
-  await page.goto("/", { waitUntil: "networkidle" });
-  await expect(page.locator(".kima-gallery")).toBeVisible();
-
-  // 首屏：基础层（色板、字体阶梯、圆角层级）
-  await page.screenshot({ path: "shots/base-dark.png" });
-
-  // 换主题色：点第 2 个种子色（紫），确认整套色板跟着变。
-  // 这一步验证的是"运行时换色"这条路是通的，不是只有构建期能换。
-  const secondSeed = page.locator(".kima-gallery__seed").nth(1);
-  if (await secondSeed.count()) {
-    await secondSeed.click();
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: "shots/theme-purple.png" });
-    // 点回第一个（青蓝）供后面的截图用。
-    await page.locator(".kima-gallery__seed").first().click();
-    await page.waitForTimeout(300);
-  }
-
-  // 按钮组：重点看整条是否连贯、外侧是不是满圆
-  const buttonGroup = page.locator("#actions");
-  await buttonGroup.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(400);
-  await buttonGroup.screenshot({ path: "shots/button-group-dark.png" });
-
-  // 表单输入区：输入框、复选框、开关改成"透明度分层"后最值得看的地方
-  const form = page.locator("#form");
-  await form.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(400);
-  await form.screenshot({ path: "shots/form-dark.png" });
-
-  // 徽章：语义色（危险/成功）是否还算语义色。
-  // 主题切成纯灰度后最容易出问题——如果语义色跟着去色，"危险"和"中性"就长得一样了。
-  const badgeRow = page.locator(".kima-badge").first();
-  if (await badgeRow.count()) {
-    await badgeRow.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
-    const box = await badgeRow.boundingBox();
-    await page.screenshot({
-      path: "shots/badges-zoom.png",
-      clip: { x: box.x - 12, y: box.y - 12, width: 420, height: box.height + 24 },
-    });
-  }
-
-  // 图标线宽：放大拍一排图标，用来判断 2px 的线够不够粗。
-  const iconButtons = page.locator(".kima-icon-button");
-  if (await iconButtons.count()) {
-    const first = iconButtons.first();
-    await first.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
-    const box = await first.boundingBox();
-    const count = Math.min(await iconButtons.count(), 6);
-    await page.screenshot({
-      path: "shots/icons-zoom.png",
-      clip: { x: box.x - 10, y: box.y - 14, width: (box.width + 20) * count, height: box.height + 28 },
-    });
-  }
-
-  // 切浅色再拍一遍，确认两套主题都正常
-  await page.evaluate(() => {
-    document.documentElement.dataset.kimaTheme = "light";
-  });
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: "shots/base-light.png" });
-  await buttonGroup.screenshot({ path: "shots/button-group-light.png" });
-
-  // 打开下拉，放大拍一张，确认弹层是实色、背后文字不会透上来。
-  await page.evaluate(() => {
-    document.documentElement.dataset.kimaTheme = "dark";
-  });
-  const selectTrigger = page.locator(".kima-select__trigger").first();
-  if (await selectTrigger.count()) {
-    await selectTrigger.scrollIntoViewIfNeeded();
-    await selectTrigger.click();
-    await page.waitForTimeout(400);
-    // 只拍触发器加下拉这一块，放大看清字有没有跟背后的内容叠在一起。
-    const triggerBox = await selectTrigger.boundingBox();
-    await page.screenshot({
-      path: "shots/popup-dark.png",
-      clip: {
-        x: Math.max(0, triggerBox.x - 16),
-        y: Math.max(0, triggerBox.y - 16),
-        width: 420,
-        height: 380,
-      },
-    });
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-  }
-
-  // 通知：四种语义各拍一张，确认实色底挡住背后、图标和布局对位。
-  // 通知不是模态弹层，Escape 关不掉；拍完直接点它自己的关闭按钮，
-  // 否则下一条通知叠上来、还会挡住后面要点的抽屉按钮。
-  const noticeRow = page.locator("#feedback .kima-gallery__demo").filter({ hasText: "Notification 通知" });
-  if (await noticeRow.count()) {
-    await noticeRow.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(400);
-    const noticeButtons = noticeRow.locator(".kima-button");
-    for (const [index, name] of [[0, "success"], [1, "warning"], [2, "danger"]]) {
-      await noticeButtons.nth(index).click();
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: `shots/notification-${name}.png` });
-      await page.locator(".kima-notification__close").click();
-      await page.waitForTimeout(300);
-    }
-  }
-
-  // 对话框：遮罩暗度 + 模糊是否到位，背后内容有没有真的退成背景。
-  const dialogRow = page.locator("#feedback .kima-gallery__demo").filter({ hasText: "Dialog 对话框" });
-  if (await dialogRow.count()) {
-    await dialogRow.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
-    await dialogRow.locator(".kima-button").first().click();
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: "shots/dialog-open.png" });
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(500);
-  }
-
-  // 抽屉：三个方向各拍一张。这里是"背景 dim + 模糊、只聚焦面板"最集中的地方，
-  // 一眼能看出遮罩有没有真的挡住背后内容。
-  const drawerRow = page.locator("#feedback .kima-gallery__demo").filter({ hasText: "Drawer 抽屉" });
-  if (await drawerRow.count()) {
-    await drawerRow.scrollIntoViewIfNeeded();
-    for (const [index, name] of [[0, "bottom"], [1, "right"], [2, "left"]]) {
-      await drawerRow.locator(".kima-button").nth(index).click();
-      await page.waitForTimeout(700);
-      await page.screenshot({ path: `shots/drawer-${name}.png` });
-      // 底部抽屉的焦点在面板里，Escape 就能关；侧抽屉同理。
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(500);
-    }
-
-    // 吸附抽屉：拍最矮和最高两档，确认换档只改露出多少，内容布局不动。
-    const snapButton = drawerRow.locator(".kima-button").nth(3);
-    if (await snapButton.count()) {
-      await snapButton.click();
-      await page.waitForTimeout(700);
-      await page.screenshot({ path: "shots/drawer-snap-low.png" });
-
-      // 关掉的抽屉还留在 DOM 里，所以要限定到当前打开的那个。
-      const handle = await page.locator(".kima-drawer--bottom[open] .kima-drawer__handle").boundingBox();
-      const viewport = await page.evaluate(() => window.innerHeight);
-      const x = handle.x + handle.width / 2;
-      await page.mouse.move(x, handle.y + handle.height / 2);
-      await page.mouse.down();
-      await page.mouse.move(x, handle.y + handle.height / 2 - viewport * 0.5, { steps: 8 });
-      await page.mouse.up();
-      await page.waitForTimeout(700);
-      await page.screenshot({ path: "shots/drawer-snap-high.png" });
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(500);
-    }
-  }
-
-  // 纵向那一条单独放大拍，用来确认首末段的圆角和内部分隔线。
-  const verticalGroup = page.locator(".kima-button-group--vertical").first();
+test('代码块深浅主题与窄屏', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/#/components/code-block', { waitUntil: 'networkidle' });
+  await expect(page.locator('.kima-docs__canvas .kima-code-block').first()).toBeVisible();
+  await page.screenshot({ path: 'shots/code-block-dark.png', scale: 'css' });
+  await page.getByRole('button', { name: '切换浅色', exact: true }).click();
   await page.waitForTimeout(300);
-  await verticalGroup.screenshot({ path: "shots/button-group-vertical.png", scale: "css" });
-  const box = await verticalGroup.boundingBox();
-  await page.screenshot({
-    path: "shots/button-group-vertical-zoom.png",
-    clip: { x: box.x - 12, y: box.y - 12, width: box.width + 24, height: box.height + 24 },
-  });
+  await page.screenshot({ path: 'shots/code-block-light.png', scale: 'css' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('#preview').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'shots/code-block-mobile.png', scale: 'css' });
+});
+
+test('新增分组在正式文档站的深浅与窄屏效果', async ({ page }) => {
+  for (const slug of ['radio-group', 'alert', 'accordion', 'multi-select']) {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(`/#/components/${slug}`, { waitUntil: 'networkidle' });
+    await expect(page.locator('.kima-docs__canvas .kima-gallery__demo')).toBeVisible();
+    const switchDark = page.getByRole('button', { name: '切换深色', exact: true });
+    if (await switchDark.count()) await switchDark.click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `shots/expansion-${slug}-dark.png`, scale: 'css' });
+    await page.getByRole('button', { name: '切换浅色', exact: true }).click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `shots/expansion-${slug}-light.png`, scale: 'css' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#preview').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `shots/expansion-${slug}-mobile.png`, scale: 'css' });
+  }
+});
+
+test('文档站窄屏导航', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.screenshot({ path: 'shots/docs-mobile.png', scale: 'css' });
+  await page.getByRole('button', { name: '打开文档导航' }).click();
+  await expect(page.locator('dialog[open]')).toBeVisible();
+  await page.screenshot({ path: 'shots/docs-mobile-navigation.png', scale: 'css' });
+});
+
+test('最终145关键组件正式站截图：日期、上传、虚拟表格、编辑器、图表、菜单与移动端', async ({ page }) => {
+  async function settle() {
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(350);
+  }
+  async function setTheme(theme) {
+    const button = page.getByRole('button', { name: theme === 'dark' ? '切换深色' : '切换浅色', exact: true });
+    if (await button.count()) await button.click();
+    await page.waitForTimeout(350);
+  }
+  const cases = [
+    ['date-range-picker', 'date-range-picker'],
+    ['calendar', 'calendar'],
+    ['file-upload', 'file-upload'],
+    ['virtual-table', 'virtual-table'],
+    ['rich-text-editor', 'rich-text-editor'],
+    ['chart', 'chart'],
+    ['menu', 'menu'],
+    ['navigation-menu', 'navigation-menu'],
+  ];
+  for (const [slug, name] of cases) {
+    await page.goto(`/#/components/${slug}`, { waitUntil: 'networkidle' });
+    await expect(page.locator('.kima-docs__canvas')).toBeVisible();
+    await expect(page.locator('.kima-examples .kima-gallery__demo:visible')).toHaveCount(1);
+    await setTheme('dark');
+    await settle();
+    await page.screenshot({ path: `shots/final-145/${name}-desktop-dark.png`, scale: 'css' });
+    await setTheme('light');
+    await settle();
+    await page.screenshot({ path: `shots/final-145/${name}-desktop-light.png`, scale: 'css' });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#/components/navigation-menu', { waitUntil: 'networkidle' });
+  await expect(page.locator('.kima-examples .kima-gallery__demo:visible')).toHaveCount(1);
+  await setTheme('light');
+  await settle();
+  await page.locator('#preview').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'shots/final-145/menus-mobile.png', scale: 'css' });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await settle();
+  await page.screenshot({ path: 'shots/final-145/docs-mobile-settled.png', scale: 'css' });
 });

@@ -228,4 +228,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     color: var(--kima-color-on-surface-38);
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  .kima-slider__input::-webkit-slider-thumb { transition: none; }
+  .kima-slider__input::-moz-range-thumb { transition: none; }
+}
 </style>

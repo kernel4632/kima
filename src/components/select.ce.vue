@@ -12,8 +12,10 @@ form.reset() 恢复挂载时的 modelValue；清除选择返回 null，必填时
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, getCurrentInstance, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
+import { useRemoteOptions } from "../utils/remote-options.js";
 import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../utils/ripple.js";
+import { presenceTransition } from "../utils/motion.js";
 
 defineOptions({ inheritAttrs: false });
 const attrs = useAttrs();
@@ -42,9 +44,12 @@ const props = defineProps({
   searchable: Boolean,
   clearable: Boolean,
   open: Boolean,
+  loader: { type: Function, default: undefined },
+  debounce: { type: Number, default: 200 },
+  retry: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(["update:modelValue", "change", "update:open"]);
+const emit = defineEmits(["update:modelValue", "change", "update:open", "options-loading", "options-load", "options-error"]);
 
 const root = ref(null);
 const trigger = ref(null);
@@ -73,17 +78,22 @@ const hiddenSelectId = `kima-select-${baseId}-native`;
 // 跟文本框同一套做法：组件不画标签，可访问名取调用方的 aria-label，其次 label 属性。
 // 可见的「国家」两个字由使用者自己用普通排版文字写在自己的布局里。
 const ariaLabel = computed(() => attrs["aria-label"] || attrs.ariaLabel || props.label || undefined);
+const remoteLoader = computed(() => props.loader);
+const remoteQuery = computed(() => query.value);
+const { items: remoteItems, loading: remoteLoading, error: remoteError, retry: retryRemote } = useRemoteOptions(remoteLoader, remoteQuery, computed(() => props.debounce), computed(() => props.retry), emit);
+const optionItems = computed(() => typeof props.loader === "function" ? remoteItems.value : props.items);
 const visibleItems = computed(() => {
   const text = query.value.trim().toLocaleLowerCase();
-  if (!text) return props.items;
-  return props.items.filter((item) => `${item.label} ${item.description || ""}`.toLocaleLowerCase().includes(text));
+  if (typeof props.loader === "function") return optionItems.value;
+  if (!text) return optionItems.value;
+  return optionItems.value.filter((item) => `${item.label} ${item.description || ""}`.toLocaleLowerCase().includes(text));
 });
-const selectedItem = computed(() => props.items.find((item) => Object.is(item.value, localValue.value)));
+const selectedItem = computed(() => optionItems.value.find((item) => Object.is(item.value, localValue.value)));
 const nativeValue = computed({
   get: () => selectedItem.value ? localValue.value : "",
   set: () => {
     const index = nativeSelect.value.selectedIndex;
-    updateValue(index > 0 ? props.items[index - 1].value : null);
+    updateValue(index > 0 ? optionItems.value[index - 1].value : null);
   },
 });
 const enabledIndexes = computed(() => visibleItems.value.flatMap((item, index) => item.disabled ? [] : [index]));
@@ -148,7 +158,7 @@ function resetValue(event) {
   resetTimer = setTimeout(() => {
     if (event.defaultPrevented) return;
     localValue.value = initialValue;
-    nativeSelect.value.selectedIndex = props.items.findIndex((item) => Object.is(item.value, initialValue)) + 1;
+    nativeSelect.value.selectedIndex = optionItems.value.findIndex((item) => Object.is(item.value, initialValue)) + 1;
     closeSelect(false);
     emit("update:modelValue", initialValue);
   }, 0);
@@ -206,7 +216,7 @@ watch(localOpen, async (open, wasOpen) => {
     await nextTick();
     if (localOpen.value) (props.searchable ? searchInput.value : trigger.value)?.focus();
   } else {
-    if (wasOpen && restoreFocus) nextTick(() => trigger.value?.focus());
+    if (wasOpen && restoreFocus) nextTick(() => { if (!localOpen.value) trigger.value?.focus(); });
     restoreFocus = true;
   }
 }, { immediate: true });
@@ -257,6 +267,7 @@ onBeforeUnmount(() => {
         </span>
         <KimaIcon class="kima-select__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
+      <Transition name="kima-fade" v-bind="presenceTransition">
       <button
         v-if="clearable && selectedItem"
         class="kima-select__clear"
@@ -268,6 +279,7 @@ onBeforeUnmount(() => {
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
       </button>
+      </Transition>
     </div>
 
     <!-- 原生选项保留真实值；阻止原生事件冒泡，只发出组件自己的 change。 -->
@@ -287,7 +299,7 @@ onBeforeUnmount(() => {
     >
       <option value=""></option>
       <option
-        v-for="(item, index) in items"
+        v-for="(item, index) in optionItems"
         :key="index"
         :value="item.value"
         :disabled="item.disabled"
@@ -297,7 +309,7 @@ onBeforeUnmount(() => {
     </select>
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
+    <Transition name="kima-popup" v-bind="presenceTransition">
       <div
         v-if="localOpen"
         class="kima-select__popup"
@@ -321,7 +333,9 @@ onBeforeUnmount(() => {
           >
         </div>
 
-        <div :id="listboxId" class="kima-select__options" role="listbox" :aria-labelledby="triggerId">
+        <div :id="listboxId" class="kima-select__options" role="listbox" :aria-labelledby="triggerId" :aria-busy="remoteLoading || undefined">
+          <div v-if="remoteLoading" class="kima-select__status" role="status">加载中…</div>
+          <div v-else-if="remoteError" class="kima-select__status kima-select__status--error" role="alert">{{ remoteError }} <button type="button" @click="retryRemote">重试</button></div>
           <div
             v-for="(item, index) in visibleItems"
             :id="`${listboxId}-option-${index}`"
@@ -342,7 +356,7 @@ onBeforeUnmount(() => {
             <KimaIcon v-if="Object.is(item.value, localValue)" class="kima-select__check" :icon="Tick01Icon" :size="18" aria-hidden="true" />
           </div>
         </div>
-        <div v-if="visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
+        <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
       </div>
     </Transition>
   </div>
@@ -461,6 +475,7 @@ onBeforeUnmount(() => {
 
 /* 清除按钮是场地里的普通一项，占 28px 的圆角格，谁也不压着谁。 */
 .kima-select__clear {
+  @include kima-motion-colors;
   flex: 0 0 auto;
   display: inline-flex;
   width: 28px;
@@ -625,8 +640,11 @@ onBeforeUnmount(() => {
   color: inherit;
 }
 
-.kima-select__empty {
+.kima-select__empty,
+.kima-select__status {
   padding: var(--kima-space-3);
   text-align: center;
 }
+.kima-select__status--error { color: var(--kima-color-error); }
+.kima-select__status button { margin-inline-start: var(--kima-space-2); color: var(--kima-color-primary); background: transparent; border: 0; font: inherit; text-decoration: underline; cursor: pointer; }
 </style>

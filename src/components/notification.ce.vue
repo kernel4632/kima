@@ -13,6 +13,7 @@ position 支持 top/bottom 和 top-left/top-center/top-right/bottom-left/bottom-
 <script setup>
 import { computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, watch, useAttrs, useHost, useId } from "vue";
 import KimaIcon from "./icon.ce.vue";
+import { presenceTransition } from "../utils/motion.js";
 import {
   Alert02Icon,
   AlertCircleIcon,
@@ -167,9 +168,9 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- 通知自带一套滑入过渡（见下方 style 说明）：从它所在的那一侧滑进来。 -->
-  <Transition name="kima-notification">
+  <Transition name="kima-notification" v-bind="presenceTransition">
     <div
-      v-show="localOpen"
+      v-if="localOpen"
       v-bind="{ ...attrs, id: host ? undefined : attrs.id, title: undefined }"
       class="kima-notification"
       :class="[`kima-notification--${notificationVariant}`, `kima-notification--${notificationPosition}`]"
@@ -186,11 +187,11 @@ onBeforeUnmount(() => {
       <!-- 三栏横向排：图标 / 正文 / 关闭按钮。
        * 图标和关闭按钮都是 flex: none，只有正文会被压窄——
        * 长消息换行时它们不会被挤扁或推出容器。 -->
-      <span v-if="localOpen && notificationIcon" class="kima-notification__icon" aria-hidden="true">
+      <span v-if="notificationIcon" class="kima-notification__icon" aria-hidden="true">
         <KimaIcon :icon="notificationIcon" :size="22" />
       </span>
 
-      <div v-if="localOpen" class="kima-notification__copy">
+      <div class="kima-notification__copy">
         <strong v-if="heading || attrs.title" :id="titleId" class="kima-notification__title">{{ heading || attrs.title }}</strong>
         <span v-if="message" :id="messageId" class="kima-notification__message">{{ message }}</span>
         <!-- 操作按钮单独换行、跟正文左对齐；不跟关闭按钮抢同一行。 -->
@@ -198,7 +199,7 @@ onBeforeUnmount(() => {
       </div>
 
       <button
-        v-if="localOpen && closable"
+        v-if="closable"
         class="kima-notification__close"
         type="button"
         aria-label="关闭通知"
@@ -212,6 +213,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="scss">
+@use "../styles/mixins" as *;
 /* ---- 出场：从所在的那一侧滑进来 ----
  * 通知是从屏幕边缘来的，横向位移比通用弹层的"原地放大"更贴合它的来处。
  * 退场短、进场长：进场要让人看清是什么，退场别挡着看别的。
@@ -223,6 +225,7 @@ onBeforeUnmount(() => {
 }
 
 .kima-notification-leave-active {
+  pointer-events: none;
   transition:
     opacity var(--kima-duration-fast) var(--kima-curve-standard),
     transform var(--kima-duration-fast) var(--kima-curve-standard);
@@ -401,6 +404,9 @@ onBeforeUnmount(() => {
   color: inherit;
   background: var(--kima-color-transparent);
   cursor: pointer;
+  @include kima-state-layer;
+  @include kima-focus-ring;
+  @include kima-ripple-host;
   /* 关闭按钮是"亮起来"的反馈，跟选项行一样要有过程。 */
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);
 }
@@ -423,6 +429,12 @@ onBeforeUnmount(() => {
   .kima-notification-enter-from,
   .kima-notification-leave-to {
     transform: none;
+  }
+  .kima-notification--top,
+  .kima-notification--top-center,
+  .kima-notification--bottom,
+  .kima-notification--bottom-center {
+    transform: translateX(-50%);
   }
 }
 

@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
         </span>
         <KimaIcon class="kima-cascader__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
-      <button
+      <Transition name="kima-fade"><button
         v-if="clearable && localPath.length"
         class="kima-cascader__clear"
         type="button"
@@ -339,7 +339,7 @@ onBeforeUnmount(() => {
         @click.stop="clearValue"
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
-      </button>
+      </button></Transition>
     </div>
 
     <input
@@ -358,8 +358,9 @@ onBeforeUnmount(() => {
       @invalid="handleInvalid"
     >
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
+    <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
       <div v-if="localOpen" :id="listboxId" class="kima-cascader__popup" role="group" :aria-labelledby="triggerId" @keydown="handleKeydown">
+        <TransitionGroup name="kima-list" tag="div" class="kima-cascader__columns" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
         <div v-for="(items, column) in columns" :key="column" class="kima-cascader__column" role="listbox" :aria-label="`第 ${column + 1} 级`">
           <div
             v-for="(item, index) in items"
@@ -383,6 +384,7 @@ onBeforeUnmount(() => {
           </div>
           <div v-if="items.length === 0" class="kima-cascader__empty" role="status">暂无选项</div>
         </div>
+        </TransitionGroup>
       </div>
     </Transition>
   </div>
@@ -513,6 +515,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   cursor: pointer;
+  @include kima-motion-colors;
 
   &:hover:not(:disabled),
   &:focus-visible {
@@ -559,6 +562,8 @@ onBeforeUnmount(() => {
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
 }
+
+.kima-cascader__columns { position: relative; display: flex; }
 
 .kima-cascader__column {
   display: grid;

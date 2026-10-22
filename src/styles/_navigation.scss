@@ -1,0 +1,40 @@
+/* 导航组几何和交互复用；所有颜色来自 KIMA token。 */
+@use "mixins" as *;
+@mixin navigation-root {
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+}
+@mixin navigation-surface {
+  @include navigation-root;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4);
+}
+@mixin navigation-action {
+  @include kima-state-layer;
+  @include kima-focus-ring;
+  @include kima-ripple-host;
+  @include kima-disabled;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kima-space-2);
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: var(--kima-space-2) var(--kima-space-4);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  color: var(--kima-color-primary);
+  background: var(--kima-color-transparent);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+}
+@mixin navigation-current {
+  color: var(--kima-color-on-primary-container);
+  background: var(--kima-color-primary-container);
+  &:hover { background: var(--kima-color-primary-container-hover); }
+}

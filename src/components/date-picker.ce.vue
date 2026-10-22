@@ -223,6 +223,21 @@ function toggleCalendar() {
   else showCalendar(true);
 }
 
+function activateGrid(element) {
+  element.inert = false;
+  element.removeAttribute("aria-hidden");
+  element.id = gridId;
+  element.querySelectorAll("[data-date]").forEach((node) => { node.id = `${gridId}-day-${node.dataset.date}`; });
+}
+
+function retireGrid(element) {
+  // 旧月份在退场时仍在 DOM 中；立即移除焦点与重复日期 id。
+  element.inert = true;
+  element.setAttribute("aria-hidden", "true");
+  element.removeAttribute("id");
+  element.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+}
+
 function focusFocusedDay() {
   if (!localOpen.value || !focusedIso.value) return;
   root.value?.querySelector(`#${gridId}-day-${focusedIso.value}`)?.focus();
@@ -376,7 +391,7 @@ onBeforeUnmount(() => {
         </span>
         <KimaIcon class="kima-date-picker__icon" :icon="Calendar01Icon" :size="20" aria-hidden="true" />
       </button>
-      <button
+      <Transition name="kima-fade"><button
         v-if="clearable && localValue"
         class="kima-date-picker__clear"
         type="button"
@@ -386,7 +401,7 @@ onBeforeUnmount(() => {
         @click.stop="clearValue"
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
-      </button>
+      </button></Transition>
     </div>
 
     <!-- 隐藏输入框带着真实 ISO 值：原生表单能读到它，必填校验也能在这里触发。 -->
@@ -406,7 +421,7 @@ onBeforeUnmount(() => {
     >
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
+    <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
       <div v-if="localOpen" class="kima-date-picker__popup" @keydown="handleGridKeydown">
         <div class="kima-date-picker__head">
           <button
@@ -419,7 +434,7 @@ onBeforeUnmount(() => {
           >
             <KimaIcon :icon="ArrowLeft01Icon" :size="18" aria-hidden="true" />
           </button>
-          <span :id="titleId" class="kima-date-picker__month">{{ monthTitle }}</span>
+          <span :id="titleId" class="kima-date-picker__month"><Transition name="kima-fade" mode="out-in"><span :key="monthTitle">{{ monthTitle }}</span></Transition></span>
           <button
             class="kima-date-picker__nav"
             type="button"
@@ -432,7 +447,8 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <div :id="gridId" class="kima-date-picker__grid" role="grid" :aria-labelledby="titleId">
+        <Transition name="kima-fade" @before-enter="activateGrid" @before-leave="retireGrid">
+        <div :id="gridId" :key="`${viewYear}-${viewMonth}`" class="kima-date-picker__grid" role="grid" :aria-labelledby="titleId">
           <div class="kima-date-picker__row" role="row">
             <span
               v-for="(weekday, index) in weekdayLabels"
@@ -451,6 +467,7 @@ onBeforeUnmount(() => {
             >
               <button
                 :id="`${gridId}-day-${day.iso}`"
+                :data-date="day.iso"
                 class="kima-date-picker__day"
                 :class="{
                   'kima-date-picker__day--outside': day.outside,
@@ -467,6 +484,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
+        </Transition>
       </div>
     </Transition>
   </div>
@@ -590,6 +608,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   cursor: pointer;
+  @include kima-motion-colors;
 
   &:hover:not(:disabled),
   &:focus-visible {
@@ -660,6 +679,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   cursor: pointer;
+  @include kima-motion-colors;
 
   &:hover:not(:disabled) {
     color: var(--kima-color-primary);
@@ -676,6 +696,9 @@ onBeforeUnmount(() => {
     opacity: var(--kima-opacity-disabled);
   }
 }
+
+// 翻月时旧网格只淡出，不再占据第二份高度，也不再接收点击。
+.kima-date-picker__grid.kima-fade-leave-active { position: absolute; inset-inline: var(--kima-space-2); pointer-events: none; }
 
 .kima-date-picker__grid {
   display: grid;
@@ -717,7 +740,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-size: var(--kima-font-size-md);
   cursor: pointer;
-  transition: background-color var(--kima-duration-fast) var(--kima-ease-standard);
+  @include kima-motion-colors;
 
   &:hover:not(:disabled) {
     background: var(--kima-color-layer-3);

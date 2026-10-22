@@ -1,5 +1,12 @@
 # Tests
 
+文档站测试在 `docs.spec.js`，从源码目录发现所有组件，覆盖预览、搜索、移动导航和刷新直达。
+`code-block.spec.js` 验证代码安全展示、多行着色、原始文本复制、失败反馈和窄屏滚动。
+四组专项分别为 `input-expansion.spec.js`、`display-expansion.spec.js`、`navigation-expansion.spec.js`、`interaction-expansion.spec.js`，覆盖全部新增组件的键盘、原生插槽、状态同步、表单和清理行为。
+`pnpm shots` 拍正式文档站的桌面深浅主题与窄屏效果，输出目录独立于浏览器回归，避免互相清理追踪文件。
+`pnpm release:check` 验证真实 tarball 的发布清单和独立消费者，覆盖 Vue、
+原生模块与无需构建工具的 HTML，不从当前仓库源码导入组件。
+
 Browser tests import the actual `/src/elements.js` entry through Vite, not a mock or `dist`.
 The fixture can also mount a Vue SFC to check Vue consumers and component styles.
 
@@ -12,8 +19,7 @@ The timer tests use Playwright's clock API (Playwright 1.45 or newer).
 Use `KIMA_TEST_PORT` to choose a free port. Both desktop and mobile Chromium run the suite.
 Failures preserve a trace in `test-results/`; do not commit generated artifacts.
 
-The SSR check needs only existing Vue/Vite dependencies:
-`node --test tests/notification.ssr.test.js`.
+`pnpm test:ssr` runs all `*.ssr.test.js` files, including display rendering, countdown timer isolation and notification cleanup. `pnpm verify:lib` additionally checks the actual packaged exports and code highlighting during SSR.
 
 Table sorting deliberately remains external: the test verifies the sort event, then
 applies the caller's sort and updates `sortKey`/`sortDirection`. `items` keeps priority

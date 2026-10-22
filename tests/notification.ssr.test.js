@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { createServer } from "vite";
 
 test("SSR of an open notification does not schedule a close timer", async () => {
-  const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
+  const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
   const setTimeoutOriginal = globalThis.setTimeout;
   const timers = [];
   try {

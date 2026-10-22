@@ -97,6 +97,16 @@
    * 直接取色板里已有的容器色，不另写颜色值。 */
   --kima-color-popup: var(--kima-color-surface-container-high);
   --kima-color-popup-large: var(--kima-color-surface-container-highest);
+  /* 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 */
+  --kima-color-picker-white: #ffffff;
+  --kima-color-picker-black: #000000;
+  --kima-color-picker-red: #ff0000;
+  --kima-color-picker-yellow: #ffff00;
+  --kima-color-picker-green: #00ff00;
+  --kima-color-picker-cyan: #00ffff;
+  --kima-color-picker-blue: #0000ff;
+  --kima-color-picker-magenta: #ff00ff;
+
   /* 主色系的浅底：柔和按钮用它，一眼看出"属于主色系但不用那么强"。
    * 同样用透明度写成，铺在模糊背景上也不会糊。 */
   --kima-color-primary-soft: color-mix(in srgb, var(--kima-color-primary) 20%, transparent);
@@ -286,6 +296,41 @@ kima-time-picker {
   .kima-popup-enter-active,
   .kima-popup-leave-active {
     transition-duration: 1ms;
+  }
+}
+
+/* Content presence and keyed lists: exiting nodes stay mounted until completion.
+ * No forced absolute leave positioning: works for wrapping chips and table rows,
+ * without invalid layout or a jump to a different containing block. */
+.kima-fade-enter-active, .kima-fade-leave-active {
+  transition: opacity var(--kima-duration-medium) var(--kima-curve-standard);
+}
+.kima-content-enter-active, .kima-content-leave-active,
+.kima-list-enter-active, .kima-list-leave-active {
+  transition: opacity var(--kima-duration-medium) var(--kima-curve-standard),
+    transform var(--kima-duration-medium) var(--kima-curve-emphasized);
+}
+.kima-list-move { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized); }
+.kima-fade-enter-from, .kima-fade-leave-to,
+.kima-content-enter-from, .kima-content-leave-to,
+.kima-list-enter-from, .kima-list-leave-to { opacity: 0; }
+.kima-content-enter-from, .kima-content-leave-to,
+.kima-list-enter-from, .kima-list-leave-to { transform: translateY(var(--kima-space-1)); }
+.kima-fade-leave-active, .kima-content-leave-active,
+.kima-list-leave-active, .kima-popup-leave-active { pointer-events: none; }
+
+/* Applies only to library-owned elements/pseudo elements, not host page content.
+ * Includes hardcoded press durations and all continuous loops. No transition:all.
+ * Drawer uses real finished promises; zero-duration transition is supported there. */
+@media (prefers-reduced-motion: reduce) {
+  [class^="kima-"], [class*=" kima-"],
+  [class^="kima-"]::before, [class^="kima-"]::after,
+  [class*=" kima-"]::before, [class*=" kima-"]::after,
+  dialog[class*="kima-"]::backdrop {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
   }
 }
 

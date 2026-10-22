@@ -136,6 +136,14 @@ function handleKeyup(event) {
   @include kima-focus-ring;
   @include kima-ripple-host;
   @include kima-press;
+  // 保留按下回弹的同时，不能让 mixin 覆盖抬升/描边/禁用过渡。
+  transition:
+    transform 320ms var(--kima-spring-gentle),
+    background-color var(--kima-duration-effects) var(--kima-curve-standard),
+    color var(--kima-duration-effects) var(--kima-curve-standard),
+    border-color var(--kima-duration-effects) var(--kima-curve-standard),
+    box-shadow var(--kima-duration-effects) var(--kima-curve-standard),
+    opacity var(--kima-duration-effects) var(--kima-curve-standard);
 }
 
 /* 不可点击的卡片只是降低了存在感，不缩放（那会让人以为能点）。 */
@@ -165,5 +173,8 @@ function handleKeyup(event) {
 
 .kima-card__footer {
   justify-content: flex-end;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kima-card, .kima-card--clickable:active:not([aria-disabled="true"]) { transform: none; transition-duration: 1ms; }
 }
 </style>

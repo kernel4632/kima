@@ -12,6 +12,7 @@ import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref
 import KimaIcon from "./icon.ce.vue";
 import { ArrowDown01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../utils/ripple.js";
+import { presenceTransition } from "../utils/motion.js";
 
 defineOptions({ inheritAttrs: false });
 
@@ -234,7 +235,7 @@ function closePicker(notify = true, returnFocus = true) {
   if (!localOpen.value) return;
   localOpen.value = false;
   if (notify) emit("update:open", false);
-  if (returnFocus) nextTick(() => trigger.value?.focus());
+  if (returnFocus) nextTick(() => { if (!localOpen.value) trigger.value?.focus(); });
 }
 
 function togglePicker() {
@@ -359,6 +360,7 @@ function handlePopupKeydown(event) {
 function clearValue() {
   updateValue(null);
   closePicker(true, true);
+  nextTick(() => { if (!localOpen.value) trigger.value?.focus(); });
 }
 
 function handleOutside(event) {
@@ -440,6 +442,7 @@ onBeforeUnmount(() => {
         </span>
         <KimaIcon class="kima-time-picker__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
+      <Transition name="kima-fade" v-bind="presenceTransition">
       <button
         v-if="clearable && localValue"
         class="kima-time-picker__clear"
@@ -451,6 +454,7 @@ onBeforeUnmount(() => {
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
       </button>
+      </Transition>
     </div>
 
     <!-- 隐藏输入框保留 HH:mm 原值，让 FormData、required 和 form.reset() 使用原生表单规则。 -->
@@ -470,8 +474,8 @@ onBeforeUnmount(() => {
     >
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
-      <div v-if="localOpen" :id="popupId" class="kima-time-picker__popup" role="dialog" :aria-labelledby="label ? labelId : undefined" @keydown="handlePopupKeydown">
+    <Transition name="kima-popup" v-bind="presenceTransition">
+      <div v-if="localOpen" :id="popupId" class="kima-time-picker__popup" role="dialog" :aria-label="label || placeholder" @keydown="handlePopupKeydown">
         <div class="kima-time-picker__summary" aria-live="polite">{{ formatTime(draftHour, draftMinute) }}</div>
         <div class="kima-time-picker__columns">
           <div class="kima-time-picker__column">
@@ -661,6 +665,7 @@ onBeforeUnmount(() => {
 
 /* 清除按钮是场地里的普通一项，占 28px 的圆角格，谁也不压着谁。 */
 .kima-time-picker__clear {
+  @include kima-motion-colors;
   flex: 0 0 auto;
   display: inline-flex;
   width: 28px;
@@ -771,7 +776,7 @@ onBeforeUnmount(() => {
   background: var(--kima-color-transparent);
   font: inherit;
   cursor: pointer;
-  transition: background-color var(--kima-duration-fast) var(--kima-ease-standard), border-color var(--kima-duration-fast) var(--kima-ease-standard), color var(--kima-duration-fast) var(--kima-ease-standard);
+  @include kima-motion-colors;
 
   &:hover:not(:disabled),
   &--active {

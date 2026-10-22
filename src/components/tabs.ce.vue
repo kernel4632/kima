@@ -7,6 +7,7 @@
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useId, watch } from "vue";
+import { presenceTransition } from "../utils/motion.js";
 
 const props = defineProps({
   modelValue: {
@@ -25,11 +26,41 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "change"]);
 
+// 键盘直接聚焦组件自己的按钮，宿主是否使用 Shadow DOM 都能工作。
 const tabButtons = ref([]);
 const tabList = ref(null);
+const markerStyle = ref({ opacity: 0 });
+const markerReady = ref(false);
+let markerObserver;
+let markerFrame;
+function measureMarker() {
+  const button = tabButtons.value[activeIndex.value];
+  if (!tabList.value || !button) { markerStyle.value = { opacity: 0 }; return; }
+  const vertical = tabOrientation.value === "vertical";
+  markerStyle.value = {
+    opacity: 1,
+    width: vertical ? "var(--kima-tabs-indicator-height)" : `${Math.min(40, button.offsetWidth)}px`,
+    height: vertical ? "24px" : "var(--kima-tabs-indicator-height)",
+    transform: vertical
+      ? `translate(${button.offsetLeft + button.offsetWidth}px, ${button.offsetTop + button.offsetHeight / 2}px) translate(-100%, -50%)`
+      : `translate(${button.offsetLeft + button.offsetWidth / 2}px, ${button.offsetTop + button.offsetHeight}px) translate(-50%, -100%)`,
+  };
+  for (const element of tabButtons.value) if (element) markerObserver?.observe(element);
+}
+onMounted(() => {
+  const view = tabList.value.ownerDocument.defaultView;
+  if (view.ResizeObserver) {
+    markerObserver = new view.ResizeObserver(measureMarker);
+    markerObserver.observe(tabList.value);
+  }
+  measureMarker();
+  markerFrame = view.requestAnimationFrame(() => { markerReady.value = true; });
+});
+onBeforeUnmount(() => {
+  markerObserver?.disconnect();
+  tabList.value?.ownerDocument.defaultView.cancelAnimationFrame(markerFrame);
+});
 const localValue = shallowRef(props.modelValue);
-const indicatorStyle = ref({ display: "none" });
-let resizeObserver;
 const tabsId = `kima-tabs-${useId()}`;
 
 const tabOrientation = computed(() => props.orientation === "vertical" ? "vertical" : "horizontal");
@@ -54,10 +85,6 @@ function itemLabel(item) {
 
 function itemDisabled(item) {
   return Boolean(item && typeof item === "object" && item.disabled);
-}
-
-function setTabRef(element, index) {
-  tabButtons.value[index] = element;
 }
 
 function selectItem(item) {
@@ -115,45 +142,8 @@ function handleKeydown(index, event) {
   focusAndSelect(enabledIndexFrom((index + step + props.items.length) % props.items.length, step));
 }
 
-// Measure the selected button, including gaps, wrapped labels and container resizing.
-function measureIndicator() {
-  const button = tabButtons.value[activeIndex.value];
-  if (!button || !tabList.value) {
-    indicatorStyle.value = { display: "none" };
-    return;
-  }
-  const list = tabList.value;
-  const bounds = button.getBoundingClientRect();
-  const listBounds = list.getBoundingClientRect();
-  // DMS：指示条宽度取 标签宽 - 内缩 2×2，最小 24，并在标签内居中。
-  const inset = 2;
-  if (tabOrientation.value === "horizontal") {
-    const width = Math.max(24, bounds.width - inset * 2);
-    const left = bounds.left - listBounds.left + list.scrollLeft - list.clientLeft + (bounds.width - width) / 2;
-    indicatorStyle.value = { left: `${left}px`, width: `${width}px` };
-  } else {
-    const height = Math.max(24, bounds.height - inset * 2);
-    const top = bounds.top - listBounds.top + list.scrollTop - list.clientTop + (bounds.height - height) / 2;
-    indicatorStyle.value = { top: `${top}px`, height: `${height}px` };
-  }
-}
-
-function observeTabs() {
-  resizeObserver?.disconnect();
-  if (tabList.value) resizeObserver?.observe(tabList.value);
-  for (const button of tabButtons.value) {
-    if (button?.isConnected) resizeObserver?.observe(button);
-  }
-  measureIndicator();
-}
-
 watch(() => props.modelValue, (value) => { localValue.value = value; });
-watch([activeIndex, tabOrientation, () => props.items], () => nextTick(observeTabs), { deep: true });
-onMounted(() => {
-  resizeObserver = new ResizeObserver(measureIndicator);
-  observeTabs();
-});
-onBeforeUnmount(() => resizeObserver?.disconnect());
+watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTick(measureMarker), { deep: true, flush: "post" });
 </script>
 
 <template>
@@ -162,11 +152,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
     :class="`kima-tabs--${tabOrientation}`"
   >
     <div ref="tabList" class="kima-tabs__list" role="tablist" :aria-orientation="tabOrientation">
+      <span class="kima-tabs__marker" :class="{ 'kima-tabs__marker--ready': markerReady }" :style="markerStyle" aria-hidden="true" />
       <button
         v-for="(item, index) in items"
         :id="`${tabsId}-tab-${index}`"
         :key="itemValue(item) ?? index"
-        :ref="(element) => setTabRef(element, index)"
+        :ref="(element) => { tabButtons[index] = element; }"
         class="kima-tabs__tab"
         type="button"
         role="tab"
@@ -182,31 +173,25 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           {{ itemLabel(item) }}
         </slot>
       </button>
-      <span class="kima-tabs__indicator" :style="indicatorStyle" aria-hidden="true" />
     </div>
 
-    <section
-      v-for="(item, index) in items"
-      :id="`${tabsId}-panel-${index}`"
-      :key="index"
-      class="kima-tabs__panel"
-      role="tabpanel"
-      :aria-labelledby="`${tabsId}-tab-${index}`"
-      :hidden="index !== activeIndex"
-      tabindex="0"
-    >
-      <slot v-if="index === activeIndex" name="panel" :item="item" :index="index" :value="localValue">
-        <slot :item="item" :index="index" :value="localValue" />
-      </slot>
-    </section>
+    <div class="kima-tabs__panels">
+      <Transition v-for="(item, index) in items" :key="itemValue(item) ?? index" name="kima-content" v-bind="presenceTransition">
+        <section v-show="index === activeIndex" :id="`${tabsId}-panel-${index}`" class="kima-tabs__panel" role="tabpanel" :aria-labelledby="`${tabsId}-tab-${index}`" :inert="index !== activeIndex" :aria-hidden="index !== activeIndex || undefined" :tabindex="index === activeIndex ? 0 : -1">
+          <slot name="panel" :item="item" :index="index" :value="itemValue(item)">
+            <slot :item="item" :index="index" :value="itemValue(item)" />
+          </slot>
+        </section>
+      </Transition>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .kima-tabs {
-  --kima-tabs-height: 56px;
-  --kima-tabs-gap: 16px;
-  --kima-tabs-indicator-height: 3px;
+  --kima-tabs-height: var(--kima-tab-height);
+  --kima-tabs-gap: var(--kima-space-4);
+  --kima-tabs-indicator-height: var(--kima-tab-indicator-height);
 
   display: flex;
   min-width: 0;
@@ -228,15 +213,16 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   position: relative;
   display: flex;
   min-width: 0;
-  gap: var(--kima-tabs-gap);
-  border-bottom: 1px solid var(--kima-color-outline-variant);
+  /* 标签属于同一条导航栏，用透明表面归组，不用贯穿的分割线。 */
+  padding: var(--kima-space-1);
+  border-radius: var(--kima-radius-m);
+  background: var(--kima-color-layer-1);
 
   .kima-tabs--vertical & {
     flex-direction: column;
     width: 180px;
     flex: 0 0 180px;
-    border-right: 1px solid var(--kima-color-outline-variant);
-    border-bottom: 0;
+    align-self: flex-start;
   }
 }
 
@@ -245,14 +231,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   position: relative;
   display: inline-flex;
   min-width: 64px;
-  /* DMS：标签高度 = 标签栏高 56 - 指示条高 3。 */
-  min-height: calc(var(--kima-tabs-height) - var(--kima-tabs-indicator-height));
+  min-height: var(--kima-tabs-height);
   flex: 1 1 0;
   align-items: center;
   justify-content: center;
   padding: 0 var(--kima-space-3);
   border: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   font: inherit;
@@ -263,13 +248,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
     color var(--kima-duration-effects) var(--kima-ease-effects),
     background-color var(--kima-duration-effects) var(--kima-ease-effects);
 
-  /* DMS 状态层：primary 悬停 8%、按下 12%。 */
+  /* 只改变轻状态底色，选中项与未选中项的文字都保持原配色。 */
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--kima-color-primary) 8%, var(--kima-color-transparent));
+    background: var(--kima-color-layer-1);
   }
 
   &:active:not(:disabled) {
-    background: color-mix(in srgb, var(--kima-color-primary) 12%, var(--kima-color-transparent));
+    background: var(--kima-color-layer-2);
   }
 
   &:focus-visible {
@@ -279,6 +264,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
   &[aria-selected="true"] {
     color: var(--kima-color-primary);
+
   }
 
   &:disabled {
@@ -290,23 +276,16 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
     flex: 0 0 auto;
     min-height: 48px;
     justify-content: flex-start;
-    border-radius: var(--kima-radius-m);
+
   }
 }
 
-.kima-tabs__indicator {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  min-width: 24px;
-  height: var(--kima-tabs-indicator-height);
-  /* DMS：指示条上圆角 cornerRadiusS 8。 */
-  border-radius: var(--kima-radius-s) var(--kima-radius-s) 0 0;
-  background: var(--kima-color-primary);
-  pointer-events: none;
-}
-
+.kima-tabs__panels { display: grid; flex: 1 1 auto; min-width: 0; }
+.kima-tabs__marker { position: absolute; top: 0; left: 0; pointer-events: none; background: var(--kima-color-primary); border-radius: var(--kima-radius-full); }
+.kima-tabs__marker--ready { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized), width var(--kima-duration-slow) var(--kima-curve-emphasized), height var(--kima-duration-slow) var(--kima-curve-emphasized), opacity var(--kima-duration-effects) var(--kima-curve-standard); }
 .kima-tabs__panel {
+  grid-area: 1 / 1;
+  align-self: start;
   min-width: 0;
   flex: 1 1 auto;
   padding-top: var(--kima-tabs-gap);
@@ -322,21 +301,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   }
 }
 
-.kima-tabs--vertical .kima-tabs__indicator {
-  top: 0;
-  right: 0;
-  bottom: auto;
-  left: auto;
-  width: var(--kima-tabs-indicator-height);
-  border-radius: 0 var(--kima-radius-s) var(--kima-radius-s) 0;
-  transform: none;
-}
-
 @media (max-width: 560px) {
-  .kima-tabs__list {
-    gap: var(--kima-space-1);
-  }
-
   .kima-tabs__tab {
     padding-inline: var(--kima-space-2);
     font-size: var(--kima-font-size-sm);

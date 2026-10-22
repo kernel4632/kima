@@ -17,6 +17,7 @@ roo_task_*.md
 .playwright-mcp
 playwright-report
 dist-ssr
+artifacts
 *.local
 
 # Editor directories and files

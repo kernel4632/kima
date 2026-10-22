@@ -194,7 +194,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 
   &__check {
-    color: var(--kima-color-on-primary);
+    color: var(--kima-color-primary);
     opacity: 0;
     transition: opacity var(--kima-duration-effects) var(--kima-curve-standard);
   }
@@ -240,5 +240,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       opacity: var(--kima-opacity-disabled);
     }
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kima-switch__track, .kima-switch__thumb, .kima-switch__check { transition: none; }
 }
 </style>

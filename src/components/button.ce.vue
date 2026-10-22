@@ -62,10 +62,10 @@ const isRound = computed(() => props.round || props.shape !== "square");
     :disabled="disabled || loading"
     :aria-busy="loading || undefined"
   >
-    <span v-if="loading" class="kima-button__spinner" aria-hidden="true"></span>
-    <span v-else-if="$slots.leading || hasNativeSlot('leading')" class="kima-button__slot kima-button__slot--leading">
-      <slot name="leading" />
-    </span>
+    <Transition name="kima-fade" mode="out-in">
+      <span v-if="loading" key="loading" class="kima-button__indicator" aria-hidden="true"><span class="kima-button__spinner" /></span>
+      <span v-else-if="$slots.leading || hasNativeSlot('leading')" key="leading" class="kima-button__slot kima-button__slot--leading"><slot name="leading" /></span>
+    </Transition>
     <span class="kima-button__label"><slot /></span>
     <span v-if="$slots.trailing || hasNativeSlot('trailing')" class="kima-button__slot kima-button__slot--trailing">
       <slot name="trailing" />
@@ -156,7 +156,9 @@ const isRound = computed(() => props.round || props.shape !== "square");
     white-space: nowrap;
   }
 
-  /* DMS DankSpinner：直径取图标 20，描边 2，转一圈 1568ms。 */
+  &__indicator { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 20px; }
+
+  /* 淡入作用于外壳，旋转作用于内圈，避免两个动效抢同一属性。 */
   &__spinner {
     width: 20px;
     height: 20px;
@@ -172,5 +174,9 @@ const isRound = computed(() => props.round || props.shape !== "square");
   to {
     transform: rotate(360deg);
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kima-button, .kima-button:active:not(:disabled) { transform: none; transition-duration: 1ms; }
+  .kima-button__spinner { animation: none; }
 }
 </style>

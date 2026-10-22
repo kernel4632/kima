@@ -9,6 +9,7 @@
 import { computed, getCurrentInstance, nextTick, ref, shallowRef, useAttrs, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { useRipple } from "../utils/ripple.js";
 
 defineOptions({ inheritAttrs: false });
 
@@ -37,6 +38,8 @@ const attrs = useAttrs();
 const isCustomElement = Boolean(getCurrentInstance()?.ce);
 const forwardedAttrs = computed(() => isCustomElement ? { ...attrs, id: undefined } : attrs);
 const buttons = ref([]);
+const root = ref(null);
+useRipple(root);
 const localValue = shallowRef(props.modelValue);
 const focusedIndex = ref(-1);
 watch(() => props.modelValue, (value) => { localValue.value = value; });
@@ -137,6 +140,7 @@ function moveFocus(index, event) {
 
 <template>
   <div
+    ref="root"
     class="kima-button-group"
     :class="[
       `kima-button-group--${groupOrientation}`,
@@ -164,9 +168,7 @@ function moveFocus(index, event) {
       @focus="focusedIndex = index"
       @keydown="moveFocus(index, $event)"
     >
-      <span v-if="multiple && isSelected(item)" class="kima-button-group__check" aria-hidden="true">
-        <KimaIcon :icon="Tick02Icon" :size="16" />
-      </span>
+      <Transition name="kima-content"><span v-if="multiple && isSelected(item)" class="kima-button-group__check" aria-hidden="true"><KimaIcon :icon="Tick02Icon" :size="16" /></span></Transition>
       <slot :item="item" :index="index" :selected="isSelected(item)">{{ item.label }}</slot>
     </button>
   </div>
@@ -176,6 +178,7 @@ function moveFocus(index, event) {
 @use "../styles/mixins" as *;
 
 .kima-button-group {
+  @include kima-ripple-host;
   /* 段与段之间不留缝，整条连成一片，看起来才是一个连续的控件。 */
   display: inline-flex;
   align-items: stretch;
@@ -220,7 +223,7 @@ function moveFocus(index, event) {
 
   @include kima-state-layer;
   @include kima-focus-ring;
-  /* 每段各自带涟漪：整条不裁剪，相邻两段的亮层才能各自贴着圆角收边。 */
+  /* 各段裁剪状态层；点击涟漪由整组宿主承接。 */
   @include kima-ripple-host;
 
   /* 段与段之间用一条弱描边分开，避免相邻两段同色糊成一块。 */
@@ -271,4 +274,5 @@ function moveFocus(index, event) {
   padding-inline: var(--kima-space-8);
   font-size: var(--kima-font-size-body-large);
 }
+@media (prefers-reduced-motion: reduce) { .kima-button-group__item { transition: none; } }
 </style>

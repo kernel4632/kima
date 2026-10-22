@@ -72,7 +72,7 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
       <slot name="leading" />
     </span>
     <slot v-if="!dot && hasDefaultContent" />
-    <template v-else-if="!dot">{{ displayValue }}</template>
+    <Transition v-else-if="!dot" name="kima-fade" mode="out-in"><span :key="displayValue">{{ displayValue }}</span></Transition>
     <span v-if="$slots.trailing || hasNativeSlot('trailing')" class="kima-badge__slot kima-badge__slot--trailing" aria-hidden="true">
       <slot name="trailing" />
     </span>
@@ -80,7 +80,9 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
 </template>
 
 <style scoped lang="scss">
+@use "../styles/mixins" as *;
 .kima-badge {
+  @include kima-motion-colors;
   /* DMS DankBadge：文字高度 20（spacingL 16 + spacingXS 4），左右内边距 spacingS 8，
      字号 Small 12，字重 Medium，圆角取一半高度成药丸。 */
   min-width: 20px;

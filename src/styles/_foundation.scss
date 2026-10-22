@@ -1,0 +1,13 @@
+// 只布局，不添加背景、边框、交互或装饰性运动。
+@mixin foundation-responsive($name) {
+  --kima-#{$name}-gap: var(--kima-#{$name}-gap-base);
+  gap: var(--kima-#{$name}-gap);
+  @media (min-width: 640px) { --kima-#{$name}-gap: var(--kima-#{$name}-gap-sm); }
+  @media (min-width: 960px) { --kima-#{$name}-gap: var(--kima-#{$name}-gap-md); }
+  @media (min-width: 1280px) { --kima-#{$name}-gap: var(--kima-#{$name}-gap-lg); }
+}
+@mixin foundation-base {
+  box-sizing: border-box;
+  min-width: 0;
+  > :deep(*) { min-width: 0; }
+}

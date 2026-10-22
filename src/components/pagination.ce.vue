@@ -8,6 +8,7 @@ total 是总条目数，pageSize 是每页条目数；modelValue 从 1 开始。
 <script setup>
 import { computed, getCurrentInstance, nextTick, ref, useAttrs, useHost, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
+import { activateMotionElement, presenceTransition, retireMotionElement } from "../utils/motion.js";
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 defineOptions({ inheritAttrs: false });
@@ -75,6 +76,14 @@ function clampPage(value, count = pageCount.value) {
   return Math.max(1, Math.min(count, page));
 }
 
+const pageTransition = {
+  onBeforeLeave(element) { retireMotionElement(element); element.removeAttribute("aria-current"); },
+  onBeforeEnter(element) {
+    activateMotionElement(element);
+    if (Number(element.dataset.page) === currentPage.value) element.setAttribute("aria-current", "page");
+  },
+};
+
 function setPageButton(page, element) {
   if (element) pageButtons.set(page, element);
   else pageButtons.delete(page);
@@ -115,6 +124,7 @@ watch(pageCount, (count) => {
 </script>
 
 <template>
+  <Transition name="kima-content" v-bind="presenceTransition">
   <nav
     v-if="pageCount"
     v-bind="forwardedAttrs"
@@ -135,6 +145,7 @@ watch(pageCount, (count) => {
         <KimaIcon :icon="ArrowLeft01Icon" :size="18" aria-hidden="true" />
       </button>
 
+      <TransitionGroup name="kima-list" v-bind="pageTransition">
       <template v-for="item in pageItems" :key="item.key">
         <button
           v-if="item.type === 'page'"
@@ -143,6 +154,7 @@ watch(pageCount, (count) => {
           type="button"
           :tabindex="disabled ? -1 : 0"
           :aria-label="`第 ${item.page} 页`"
+          :data-page="item.page"
           :aria-current="item.page === currentPage ? 'page' : undefined"
           :disabled="disabled"
           @click="goTo(item.page)"
@@ -152,6 +164,7 @@ watch(pageCount, (count) => {
         </button>
         <span v-else class="kima-pagination__ellipsis" aria-hidden="true">…</span>
       </template>
+      </TransitionGroup>
 
       <button
         class="kima-pagination__button kima-pagination__button--direction"
@@ -165,9 +178,11 @@ watch(pageCount, (count) => {
       </button>
     </div>
   </nav>
+  </Transition>
 </template>
 
 <style scoped lang="scss">
+@use "../styles/mixins" as *;
 .kima-pagination {
   display: flex;
   min-width: 0;
@@ -202,7 +217,9 @@ watch(pageCount, (count) => {
   background: var(--kima-color-transparent);
   font: inherit;
   cursor: pointer;
-  transition: background-color var(--kima-duration-fast) var(--kima-ease-standard), border-color var(--kima-duration-fast) var(--kima-ease-standard), color var(--kima-duration-fast) var(--kima-ease-standard);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-motion-colors;
 
   &:hover:not(:disabled),
   &:focus-visible {
@@ -231,6 +248,14 @@ watch(pageCount, (count) => {
     cursor: not-allowed;
     opacity: var(--kima-opacity-disabled);
   }
+}
+
+.kima-pagination__button:is(.kima-list-enter-active, .kima-list-leave-active) {
+  transition: opacity var(--kima-duration-medium) var(--kima-curve-standard),
+    transform var(--kima-duration-medium) var(--kima-curve-emphasized);
+}
+.kima-pagination__button.kima-list-move {
+  transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized);
 }
 
 .kima-pagination__button--direction {

@@ -1,0 +1,28 @@
+// 展示组共用排版与语义图标色；页面表面始终透明叠层。
+@use "mixins" as *;
+
+@mixin display-base {
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+}
+
+@mixin display-panel {
+  @include display-base;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
+}
+
+@mixin display-tones {
+  --kima-display-tone: var(--kima-color-on-surface-variant);
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
+  &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
+  &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
+}

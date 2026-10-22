@@ -1,0 +1,8 @@
+@use 'interaction' as *;
+:deep(.kima-shell-menu__popup) { @include interaction-popup; width: min(260px, calc(100vw - 24px)); padding: var(--kima-space-2); }
+:deep(.kima-shell-menu__item) { @include interaction-row; &[aria-checked='true'] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); &:hover, &[data-highlighted] { background: var(--kima-color-primary-container-hover); } } }
+:deep(.kima-shell-menu__copy) { display: grid; gap: var(--kima-space-1); }
+:deep(.kima-shell-menu__item) small { font-size: var(--kima-font-size-sm); opacity: .8; }
+:deep(.kima-shell-menu__separator) { height: 1px; margin-block: var(--kima-space-2); background: var(--kima-color-outline-variant); }
+@media (prefers-reduced-motion: reduce) { .kima-shell-menu__item { transition: none; } }
+

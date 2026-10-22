@@ -4,6 +4,20 @@
   "description": "KIMA (Kinetic, Interaction, Motion, Alive) - a Material 3 style Web UI design system and component library.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kernel4632/kima.git"
+  },
+  "homepage": "https://github.com/kernel4632/kima#readme",
+  "bugs": {
+    "url": "https://github.com/kernel4632/kima/issues"
+  },
+  "keywords": [
+    "vue",
+    "web-components",
+    "design-system",
+    "kima"
+  ],
   "files": [
     "dist"
   ],
@@ -19,31 +33,55 @@
       "import": "./dist/kima-elements.js",
       "default": "./dist/kima-elements.js"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css",
+    "./theme": "./dist/kima-theme.js",
+    "./package.json": "./package.json"
   },
   "sideEffects": [
     "**/*.css",
     "./dist/kima-elements.js"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:lib": "node scripts/build-lib.js",
     "verify:lib": "node scripts/verify-package.js",
+    "verify:install": "node scripts/verify-install.js",
+    "release:check": "pnpm build:lib && pnpm verify:lib && pnpm verify:install",
+    "prepublishOnly": "pnpm release:check",
     "shots": "playwright test --config playwright.shots.config.js",
     "prepack": "pnpm build:lib",
     "preview": "vite preview --outDir site-dist",
     "test": "playwright test",
-    "test:ssr": "node --test tests/notification.ssr.test.js"
+    "test:ssr": "node --test tests/*.ssr.test.js"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.20.4",
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.12",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/vue": "^1.0.8",
+    "@lezer/highlight": "^1.2.5",
     "@material/material-color-utilities": "^0.3.0",
-    "reka-ui": "^2.11.0"
+    "@tiptap/core": "^3.32.0",
+    "@tiptap/extension-placeholder": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
+    "highlight.js": "^11.12.0",
+    "katex": "^0.19.0",
+    "qrcode-generator": "^2.0.4",
+    "reka-ui": "^2.11.0",
+    "xss": "^1.0.16"
   },
   "peerDependencies": {
     "vue": "^3.5.42"

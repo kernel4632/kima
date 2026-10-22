@@ -1,0 +1,3 @@
+import { defineConfig, devices } from '@playwright/test';
+const port=5220,baseURL=`http://127.0.0.1:${port}`;
+export default defineConfig({testDir:'./tests',testMatch:'content-expansion.spec.js',fullyParallel:true,forbidOnly:Boolean(process.env.CI),workers:2,retries:0,reporter:'list',outputDir:'test-results/content-expansion',use:{baseURL,trace:'retain-on-failure'},projects:[{name:'desktop',use:{...devices['Desktop Chrome']}},{name:'mobile',use:{...devices['Pixel 7'],browserName:'chromium'}}],webServer:{command:`pnpm exec vite --host 127.0.0.1 --port ${port} --strictPort`,url:`${baseURL}/tests/content-fixture.html`,reuseExistingServer:false}});

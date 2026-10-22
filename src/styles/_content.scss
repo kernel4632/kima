@@ -1,0 +1,46 @@
+@use './mixins' as *;
+
+// Theme-derived content roles; inherited overrides remain available to hosts.
+@mixin content-root {
+  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
+  --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
+  --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
+  --kima-heatmap-low: var(--kima-color-layer-2);
+  --kima-heatmap-high: var(--kima-color-primary-container);
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+}
+@mixin content-button {
+  @include kima-layer(2);
+  @include kima-focus-ring;
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-press;
+  @include kima-disabled;
+  min-height: var(--kima-touch-target);
+  border-radius: var(--kima-radius-full);
+  padding: var(--kima-space-2) var(--kima-space-4);
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  cursor: pointer;
+  &[aria-pressed='true'] { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
+}
+@mixin content-editor {
+  @include content-root;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  overflow: clip;
+  &:focus-within { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: 2px; }
+  &[aria-disabled='true'] { opacity: var(--kima-opacity-disabled); }
+}
+@mixin content-table {
+  width: 100%; border-collapse: collapse; font: inherit;
+  th, td { padding: var(--kima-space-2); text-align: start; }
+  tr:nth-child(even) { background: var(--kima-color-layer-1); }
+}
+@mixin content-reduced {
+  @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
+}

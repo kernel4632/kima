@@ -1,1063 +1,199 @@
-<!--
-KIMA 全览预览页：把全部组件集中在一个页面里展示样式和交互。
-调用示例：
-  pnpm dev          # 打开 http://localhost:5173 查看全览
-  pnpm build        # 构建预览页到 site-dist
-页面结构：
-  顶部栏有主题切换和搜索；左侧是组件目录；右侧按分组展示每个组件的实时交互示例。
-搜索会按组件英文名和中文名过滤，只保留匹配的展示块。
--->
+<!-- KIMA 文档站入口：站点控件直接使用组件库，目录从源码发现。
+     pnpm dev 查看；#/components/button 可直达组件并刷新保留位置。 -->
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from "vue";
-import {
-  Add01Icon,
-  FavouriteIcon,
-  Folder01Icon,
-  HeartIcon,
-  Menu01Icon,
-  Moon02Icon,
-  MoreHorizontalIcon,
-  Search01Icon,
-  Settings01Icon,
-  SparklesIcon,
-  StarIcon,
-  Sun01Icon,
-} from "@hugeicons/core-free-icons";
-import {
-  KimaBadge,
-  KimaButton,
-  KimaButtonGroup,
-  KimaCard,
-  KimaCascader,
-  KimaCheckbox,
-  KimaCombobox,
-  KimaDatePicker,
-  KimaDialog,
-  KimaDivider,
-  KimaDrawer,
-  KimaEmptyState,
-  KimaIcon,
-  KimaIconButton,
-  KimaLayout,
-  KimaMenu,
-  KimaNotification,
-  KimaPagination,
-  KimaProgress,
-  KimaSelect,
-  KimaSlider,
-  KimaSwitch,
-  KimaTable,
-  KimaTabs,
-  KimaTextField,
-  KimaTimePicker,
-  KimaTooltip,
-  KimaTree,
-  KimaVirtualScroll,
-} from "@/index";
-import { componentNames } from "@/index";
-import { applyPalette, cssName, defaultSeed, defaultVariant, resetPalette } from "@/utils/theme.js";
-// --- 主题和配色 ---
-// 演示换主题色：点一下直接改写 CSS 变量，不用改文件、不用重新构建。
-const theme = ref("dark");
-const seed = ref(defaultSeed);
-const variant = ref(defaultVariant);
-
-// 几个常用种子色，想试别的颜色改这里的 hex 就行。
-const seeds = [
-  { name: "青蓝", hex: "#61afef" },
-  { name: "紫", hex: "#6750a4" },
-  { name: "绿", hex: "#2e7d32" },
-  { name: "橙", hex: "#e65100" },
-  { name: "纯灰度", hex: "#ffffff" },
-];
-const variants = [
-  { name: "跟随种子", value: "tonal-spot" },
-  { name: "纯灰度", value: "monochrome" },
-  { name: "近灰度", value: "neutral" },
-];
-
-function applyTheme() {
-  applyPalette(seed.value, { isDark: theme.value === "dark", variant: variant.value });
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaCodeBlock, KimaTable, KimaIcon, KimaCommand } from './index.js';
+import { Menu01Icon, Sun01Icon, Moon02Icon, SparklesIcon } from '@hugeicons/core-free-icons';
+import { applyPalette } from './utils/theme.js';
+const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
+import { catalog } from './site/catalog.js';
+import manifest from '../package.json';
+const route = ref(location.hash.slice(2) || 'overview');
+function readRoute() { route.value = location.hash.slice(2) || 'overview'; }
+window.addEventListener('hashchange', readRoute);
+const commandOpen = ref(false);
+const pendingSection = ref('preview');
+function openCommand() { commandOpen.value = true; }
+function handleGlobalKeydown(event) {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    openCommand();
+  }
 }
-
-function toggleTheme() {
-  theme.value = theme.value === "dark" ? "light" : "dark";
-  document.documentElement.dataset.kimaTheme = theme.value;
-  applyTheme();
-}
-
-function chooseSeed(hex) {
-  seed.value = hex;
-  // 白色种子配跟随种子的风格会得到偏红的色板，所以顺手切到纯灰度。
-  if (hex === "#ffffff" && variant.value === "tonal-spot") variant.value = "monochrome";
-  applyTheme();
-}
-
-function chooseVariant(value) {
-  variant.value = value;
-  applyTheme();
-}
-
-function restoreDefault() {
-  seed.value = defaultSeed;
-  variant.value = defaultVariant;
-  resetPalette();
-}
-
-// --- 基础层展示 ---
-// 色板只列角色名和用途，颜色值从 CSS 变量取，不在这里再抄一份。
-const palette = [
-  { name: "surface", use: "页面底色" },
-  { name: "surface-container", use: "卡片、侧栏" },
-  { name: "surface-container-high", use: "菜单、悬停面" },
-  { name: "surface-container-highest", use: "抽屉、弹层" },
-  { name: "on-surface", use: "主文字" },
-  { name: "on-surface-variant", use: "次要文字" },
-  { name: "outline", use: "强描边" },
-  { name: "outline-variant", use: "弱描边" },
-  { name: "primary", use: "主操作" },
-  { name: "primary-container", use: "柔和主操作" },
-  { name: "secondary-container", use: "次操作" },
-  { name: "tertiary-container", use: "强调色" },
-  { name: "error", use: "危险操作" },
-  { name: "error-container", use: "危险柔和" },
-  { name: "scrim", use: "抽屉遮罩" },
-];
-const typeScale = [
-  { token: "display-small", label: "display 44" },
-  { token: "headline-small", label: "headline 28" },
-  { token: "title-large", label: "title 26" },
-  { token: "title-medium", label: "title 20" },
-  { token: "body-large", label: "body 18" },
-  { token: "body-medium", label: "body 16" },
-  { token: "label-medium", label: "label 14" },
-];
-const radii = ["xs", "s", "m", "l", "xl", "full"];
-
-const query = ref("");
-// 搜索词匹配组件英文名或本节标题时就显示这个展示块。
-function visible(...keywords) {
-  const text = query.value.trim().toLowerCase();
-  if (!text) return true;
-  return keywords.some((keyword) => keyword.toLowerCase().includes(text));
-}
-
-const sections = [
-  { id: "actions", title: "按钮与动作" },
-  { id: "form", title: "表单输入" },
-  { id: "pickers", title: "选择与日期" },
-  { id: "feedback", title: "反馈与提示" },
-  { id: "data", title: "数据展示" },
-  { id: "structure", title: "结构与导航" },
-];
-
-// --- 按钮与动作 ---
-const clicks = ref(0);
-function countClick() {
-  clicks.value += 1;
-}
-
-// --- 表单输入 ---
-const textValue = ref("");
-const password = ref("");
-const email = ref("hello@kima.dev");
-const accepted = ref(true);
-const partial = ref(false);
-const syncEnabled = ref(true);
-const volume = ref(40);
-const progressValue = ref(65);
-
-// --- 选择与日期 ---
-const countries = [
-  { value: "cn", label: "中国" },
-  { value: "jp", label: "日本", description: "东亚" },
-  { value: "de", label: "德国", description: "欧洲" },
-  { value: "br", label: "巴西", disabled: true },
-];
-const country = ref("cn");
-const tags = [
-  { value: "design", label: "设计" },
-  { value: "code", label: "开发" },
-  { value: "docs", label: "文档" },
-];
-const tag = ref(null);
-const categoryPath = ref(["tech", "web"]);
-const categoryOptions = [
-  {
-    value: "tech",
-    label: "技术",
-    children: [
-      { value: "web", label: "前端", children: [{ value: "vue", label: "Vue" }, { value: "react", label: "React" }] },
-      { value: "native", label: "原生" },
-    ],
-  },
-  { value: "life", label: "生活" },
-];
-const birthday = ref("1998-06-15");
-const dateOpen = ref(false);
-const startTime = ref("09:30");
-const timeOpen = ref(false);
-
-// --- 反馈与提示 ---
-const dialogOpen = ref(false);
-// 抽屉的三个方向各一个开关：并排展示，方便对比滑入方向。
-const drawerBottomOpen = ref(false);
-const drawerRightOpen = ref(false);
-const drawerLeftOpen = ref(false);
-// 吸附版：四档高度，拖一下就换档。当前档位让组件自己管，这里只读不回写。
-const drawerSnapOpen = ref(false);
-const drawerSnap = ref(0.4);
-const noticeOpen = ref(true);
-const noticeVariant = ref("success");
-
-// --- 数据展示 ---
-const columns = [
-  { key: "name", label: "名称", sortable: true },
-  { key: "role", label: "角色" },
-  { key: "state", label: "状态", align: "end" },
-];
-const rows = ref([
-  { id: "1", name: "林一", role: "设计", state: "在线" },
-  { id: "2", name: "赵二", role: "开发", state: "离线" },
-  { id: "3", name: "钱三", role: "测试", state: "在线" },
-]);
-const selectedRows = ref([]);
-const sort = ref({ key: "", direction: "" });
-function applySort(event) {
-  sort.value = event;
-  const direction = event.direction === "asc" ? 1 : -1;
-  rows.value = [...rows.value].sort((left, right) => (left[event.key] > right[event.key] ? direction : -direction));
-}
-
-const treeItems = [
-  {
-    value: "src",
-    label: "src",
-    children: [
-      { value: "components", label: "components", children: [{ value: "button", label: "button.ce.vue" }] },
-      { value: "styles", label: "styles" },
-    ],
-  },
-  { value: "readme", label: "README.md" },
-];
-const treeSelected = ref("button");
-const treeExpanded = ref(["src", "components"]);
-
-const page = ref(1);
-const treePageSize = 20;
-
-const virtualItems = Array.from({ length: 5000 }, (_, index) => ({ value: `row-${index}`, label: `第 ${index + 1} 行` }));
-const virtualSelected = ref(null);
-
-// --- 结构与导航 ---
-const menuValue = ref("recent");
-const menuOpen = ref(false);
-const menuItems = [
-  { value: "recent", label: "最近打开" },
-  { value: "starred", label: "已收藏" },
-  { value: "archived", label: "归档", disabled: true },
-];
-const tabValue = ref("overview");
-const tabItems = [
-  { value: "overview", label: "概览" },
-  { value: "usage", label: "用法" },
-  { value: "api", label: "API" },
-];
-const viewValue = ref("grid");
-const viewItems = [
-  { value: "grid", label: "网格" },
-  { value: "list", label: "列表" },
-  { value: "board", label: "看板" },
-];
-
-onMounted(() => {
-  document.documentElement.dataset.kimaTheme = theme.value;
-  // 首屏用 _palette.scss 里的默认色，这里不重复算一遍。
+onMounted(() => window.addEventListener('keydown', handleGlobalKeydown));
+onBeforeUnmount(() => {
+  window.removeEventListener('hashchange', readRoute);
+  window.removeEventListener('keydown', handleGlobalKeydown);
 });
-
-// 组件数量从导出清单自动算：加一个 .ce.vue 文件就自动 +1，这里不用改。
-const componentCount = componentNames.length;
-const isFiltering = computed(() => query.value.trim().length > 0);
-
-// 搜索无结果时显示空状态。判断依据是"页面上还有没有可见的展示块"：
-// 关键词都写在各自的展示块上（模板里的 visible(...)），这里读它们渲染后的实际状态，
-// 不再维护第二份关键词表——加一个组件块，空状态判断自动跟着对。
-// flush: "post" 保证在 DOM 更新完之后再读。
-const noResults = ref(false);
-watch(query, () => {
-  noResults.value = isFiltering.value
-    && ![...document.querySelectorAll(".kima-gallery__demo")].some((el) => el.getClientRects().length > 0);
-}, { flush: "post" });
+const search = ref('');
+const mobileMenu = ref(false);
+const theme = ref('dark');
+const seed = ref('#61afef');
+const seeds = [{ value: '#61afef', label: '青蓝' }, { value: '#6750a4', label: '紫色' }, { value: '#2e7d32', label: '绿色' }, { value: '#ffffff', label: '灰度' }];
+watch([theme, seed], () => {
+  document.documentElement.dataset.kimaTheme = theme.value;
+  applyPalette(seed.value, { isDark: theme.value === 'dark', variant: seed.value === '#ffffff' ? 'monochrome' : 'tonal-spot' });
+}, { immediate: true });
+const component = computed(() => catalog.find((item) => route.value === `components/${item.slug}`));
+const filtered = computed(() => catalog.filter((item) => `${item.slug} ${item.label}`.toLowerCase().includes(search.value.toLowerCase().trim())));
+const commandItems = computed(() => catalog.map((item) => ({
+  value: `components/${item.slug}`,
+  label: `${item.name} · ${item.label}`,
+  group: item.group,
+  description: item.description,
+  keywords: [item.slug, item.label, ...item.attributes.map((attribute) => attribute.name), ...item.events],
+  section: 'properties',
+})));
+function selectSearchResult(value, item) {
+  pendingSection.value = item.section || 'preview';
+  navigate(value);
+}
+const nav = computed(() => [
+  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
+  ...[...new Set(catalog.map((item) => item.group))].map((heading) => ({ heading, items: filtered.value.filter((item) => item.group === heading).map((item) => ({ slug: `components/${item.slug}`, name: `${item.name} ${item.label}` })) })),
+]);
+const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
+const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
+function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+const showSource = ref(false);
+const fullSource = ref('');
+async function toggleSource() {
+  showSource.value = !showSource.value;
+  if (!showSource.value) return;
+  const page = component.value;
+  const source = await page.loadSource();
+  if (page === component.value) fullSource.value = source;
+}
+const previewTab = ref('preview');
+const previewTabs = [{ value: 'preview', label: '实时预览' }, { value: 'source', label: '示例源码' }];
+function navigate(slug) { location.hash = `/${slug}`; mobileMenu.value = false; }
+watch(route, async () => {
+  previewTab.value = 'preview'; showSource.value = false; fullSource.value = ''; window.scrollTo({ top: 0 }); document.title = `${title.value} · KIMA`;
+  await nextTick();
+  if (pendingSection.value) document.getElementById(pendingSection.value)?.scrollIntoView({ behavior: 'smooth' });
+  pendingSection.value = 'preview';
+}, { immediate: true });
+const importCode = computed(() => component.value ? `import { Kima${component.value.name} } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';` : '');
+const themeUsage = `import { applyPalette } from '@kernel4632/kima/theme';\napplyPalette('#61afef', { isDark: true });`;
+const install = 'pnpm add @kernel4632/kima vue';
+const vueUsage = `<script setup>\nimport { KimaButton } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';\n<` + `/script>\n\n<template>\n  <KimaButton>保存更改</KimaButton>\n</template>`;
+const elementUsage = `import '@kernel4632/kima/elements';\n\n// 注册入口自带样式与 Vue 运行时\n// <kima-button>保存更改</kima-button>`;
+const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '类型' }, { key: 'default', label: '默认值' }];
 </script>
 
 <template>
-  <div class="kima-gallery">
-    <header class="kima-gallery__top">
-      <div class="kima-gallery__brand">
-        <KimaIcon :icon="SparklesIcon" :size="22" />
-        <div>
-          <strong>KIMA</strong>
-          <span>Kinetic · Interaction · Motion · Alive</span>
-        </div>
+  <div class="kima-docs">
+    <header class="kima-docs__top">
+      <div class="kima-docs__brand">
+        <KimaIconButton class="kima-docs__mobile-toggle" :icon="Menu01Icon" label="打开文档导航" variant="text" @click="mobileMenu = true" />
+        <KimaButton variant="text" @click="navigate('overview')"><template #leading><KimaIcon :icon="SparklesIcon" /></template>KIMA</KimaButton>
+        <KimaBadge :value="manifest.version" variant="primary" />
       </div>
-
-      <div class="kima-gallery__tools">
-        <!-- 换主题色：点一下整套色板立刻跟着变，不用改文件、不用重新构建 -->
-        <div class="kima-gallery__seeds">
-          <button
-            v-for="item in seeds"
-            :key="item.hex"
-            type="button"
-            class="kima-gallery__seed"
-            :class="{ 'kima-gallery__seed--active': seed === item.hex }"
-            :style="{ background: item.hex }"
-            :title="`主题色 ${item.name}（${item.hex}）`"
-            :aria-label="`主题色 ${item.name}`"
-            :aria-pressed="seed === item.hex"
-            @click="chooseSeed(item.hex)"
-          />
-        </div>
-
-        <label class="kima-gallery__variant">
-          <select :value="variant" aria-label="配色风格" @change="chooseVariant($event.target.value)">
-            <option v-for="item in variants" :key="item.value" :value="item.value">{{ item.name }}</option>
-          </select>
-        </label>
-
-        <kima-button variant="text" @click="restoreDefault">恢复默认</kima-button>
-
-        <label class="kima-gallery__search">
-          <KimaIcon :icon="Search01Icon" :size="18" aria-hidden="true" />
-          <input v-model="query" type="search" placeholder="搜索组件，例如 text / 表" aria-label="搜索组件" />
-        </label>
-        <kima-icon-button
-          :label="theme === 'dark' ? '切换到浅色' : '切换到深色'"
-          variant="outlined"
-          :icon="theme === 'dark' ? Sun01Icon : Moon02Icon"
-          @click="toggleTheme"
-        />
+      <KimaTextField v-model="search" class="kima-docs__search" label="搜索组件" type="search" placeholder="搜索组件 / Search components" clearable />
+      <KimaCommand v-model:open="commandOpen" class="kima-docs__command" label="内容搜索" trigger-label="全文搜索" placeholder="搜索组件、属性、事件或关键词…" :items="commandItems" @select="selectSearchResult" />
+      <div class="kima-docs__tools">
+        <KimaSelect v-model="seed" :items="seeds" label="主题种子" />
+        <KimaIconButton :icon="theme === 'dark' ? Sun01Icon : Moon02Icon" :label="theme === 'dark' ? '切换浅色' : '切换深色'" variant="text" @click="theme = theme === 'dark' ? 'light' : 'dark'" />
+        <KimaButton variant="tonal" @click="navigate('installation')">开始使用</KimaButton>
       </div>
     </header>
+    <div class="kima-docs__layout">
+      <aside class="kima-docs__sidebar" aria-label="文档导航">
+        <p class="kima-docs__sidebar-title">构建有生命力的界面</p>
+        <nav v-for="group in nav" :key="group.heading" :aria-label="group.heading">
+          <h2>{{ group.heading }}</h2>
+          <KimaButton v-for="item in group.items" :key="item.slug" :variant="route === item.slug ? 'tonal' : 'text'" :aria-current="route === item.slug ? 'page' : undefined" @click="navigate(item.slug)">{{ item.name }}</KimaButton>
+        </nav>
+        <p v-if="!filtered.length" role="status">没有匹配的组件。</p>
+      </aside>
+      <main class="kima-docs__content">
+        <header id="introduction" class="kima-docs__heading">
+          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : 'KINETIC · INTERACTION · MOTION · ALIVE' }}</p>
+          <h1>{{ title }}</h1>
+          <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
+        </header>
 
-    <div class="kima-gallery__body">
-      <nav class="kima-gallery__nav" aria-label="组件目录">
-        <p class="kima-gallery__count">{{ componentCount }} 个组件</p>
-        <a v-for="section in sections" :key="section.id" :href="`#${section.id}`">{{ section.title }}</a>
-        <kima-divider label="提示" />
-        <p class="kima-gallery__hint">点击控件即可交互，覆盖层组件点按钮打开。</p>
-      </nav>
-
-      <main class="kima-gallery__main">
-        <!-- 基础层：色板、字体、圆角、状态层，改主题色或尺寸先看这里 -->
-        <section v-show="visible('基础层', 'token', 'color', 'type', '基础')" id="tokens" class="kima-gallery__section">
-          <h2>基础层</h2>
-
-          <article class="kima-gallery__demo">
-            <header>
-              <h3>主题色板</h3>
-              <p>
-                当前种子色 <code>{{ seed }}</code>，风格 <code>{{ variant }}</code>。
-                整套色板由它生成，换色用 <code>applyPalette()</code>，不用重新构建。
-              </p>
-            </header>
-            <div class="kima-gallery__swatches">
-              <div v-for="swatch in palette" :key="swatch.name" class="kima-gallery__swatch">
-                <span class="kima-gallery__swatch-chip" :style="{ background: `var(--kima-color-${swatch.name})` }" />
-                <code>{{ swatch.name }}</code>
-                <small>{{ swatch.use }}</small>
-              </div>
-            </div>
-          </article>
-
-          <article class="kima-gallery__demo">
-            <header>
-              <h3>字体阶梯</h3>
-              <p>Maple Mono NF CN，semi-bold。比 M3 官方默认整体放大一号，中文走系统回退。</p>
-            </header>
-            <div class="kima-gallery__stack">
-              <p v-for="step in typeScale" :key="step.token" class="kima-gallery__type" :style="{ fontSize: `var(--kima-font-size-${step.token})` }">
-                {{ step.label }} 永远不要放弃探索
-              </p>
-            </div>
-          </article>
-
-          <article class="kima-gallery__demo">
-            <header>
-              <h3>圆角与层级</h3>
-              <p>M3 圆角刻度。层级只用在浮起来的表面上。</p>
-            </header>
-            <div class="kima-gallery__row kima-gallery__row--tall">
-              <span v-for="radius in radii" :key="radius" class="kima-gallery__radius" :style="{ borderRadius: `var(--kima-radius-${radius})` }">
-                {{ radius }}
-              </span>
-            </div>
-            <div class="kima-gallery__row kima-gallery__row--tall">
-              <span v-for="level in [1, 2, 3, 4, 5]" :key="level" class="kima-gallery__elevation" :style="{ boxShadow: `var(--kima-elevation-${level})` }">
-                {{ level }}
-              </span>
-            </div>
-          </article>
-        </section>
-
-        <!-- 按钮与动作 -->
-        <section v-show="visible('按钮与动作', 'button', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
-          <h2>按钮与动作</h2>
-
-          <article v-show="visible('button', '按钮')" class="kima-gallery__demo">
-            <header><h3>Button 按钮</h3><p>四种外观、加载和禁用状态。点击计数：{{ clicks }}</p></header>
-            <div class="kima-gallery__row">
-              <kima-button @click="countClick">填充</kima-button>
-              <kima-button variant="tonal" @click="countClick">柔和</kima-button>
-              <kima-button variant="outlined" @click="countClick">描边</kima-button>
-              <kima-button variant="text" @click="countClick">文字</kima-button>
-              <kima-button loading>加载中</kima-button>
-              <kima-button disabled>禁用</kima-button>
-              <kima-button round @click="countClick">
-                <template #leading><KimaIcon :icon="Add01Icon" :size="18" /></template>
-                新建
-              </kima-button>
-            </div>
-          </article>
-
-          <article v-show="visible('icon-button', '图标按钮')" class="kima-gallery__demo">
-            <header><h3>IconButton 图标按钮</h3><p>单个图标的可访问按钮，三种尺寸。</p></header>
-            <div class="kima-gallery__row">
-              <kima-icon-button label="收藏" :icon="HeartIcon" />
-              <kima-icon-button label="收藏" variant="tonal" :icon="FavouriteIcon" />
-              <kima-icon-button label="设置" variant="outlined" :icon="Settings01Icon" />
-              <kima-icon-button label="更多" variant="text" :icon="MoreHorizontalIcon" />
-              <kima-icon-button label="小号" size="small" variant="tonal" :icon="Menu01Icon" />
-              <kima-icon-button label="大号" size="large" :icon="StarIcon" />
-              <kima-icon-button label="加载中" loading />
-            </div>
-          </article>
-
-          <article v-show="visible('button-group', '按钮组')" class="kima-gallery__demo">
-            <header><h3>ButtonGroup 按钮组</h3><p>单选切换视图，支持方向键。</p></header>
-            <div class="kima-gallery__row">
-              <kima-button-group v-model="viewValue" :items="viewItems" />
-              <kima-button-group v-model="viewValue" :items="viewItems" size="small" orientation="vertical" />
-            </div>
-          </article>
-
-          <article v-show="visible('badge', '徽章')" class="kima-gallery__demo">
-            <header><h3>Badge 徽章</h3><p>状态、数量和圆点三种用法。</p></header>
-            <div class="kima-gallery__row">
-              <kima-badge value="8" />
-              <kima-badge :value="128" :max="99" variant="danger" aria-label="128 条未读" />
-              <kima-badge value="新" variant="primary" />
-              <kima-badge value="在线" variant="success" />
-              <kima-badge dot variant="success" aria-label="在线" />
-            </div>
-          </article>
-
-          <article v-show="visible('divider', '分割线')" class="kima-gallery__demo">
-            <header><h3>Divider 分割线</h3><p>水平、带文字和垂直三种形态。</p></header>
-            <div class="kima-gallery__stack">
-              <kima-divider />
-              <kima-divider label="或者" />
-              <div class="kima-gallery__row kima-gallery__row--tall">
-                <span>左</span>
-                <kima-divider vertical />
-                <span>右</span>
-              </div>
-            </div>
-          </article>
-
-          <article v-show="visible('card', '卡片')" class="kima-gallery__demo">
-            <header><h3>Card 卡片</h3><p>三种容器样式，可点击的卡片支持键盘。</p></header>
-            <div class="kima-gallery__grid">
-              <kima-card>
-                <template #header><strong>表面卡片</strong></template>
-                <p>默认的容器样式。</p>
-              </kima-card>
-              <kima-card variant="outlined">
-                <template #header><strong>描边卡片</strong></template>
-                <p>透明的底色配描边。</p>
-              </kima-card>
-              <kima-card variant="elevated" clickable @click="countClick">
-                <template #header><strong>可点击卡片</strong></template>
-                <p>点击计数加到上方的按钮示例。</p>
-              </kima-card>
-            </div>
-          </article>
-        </section>
-
-        <!-- 表单输入 -->
-        <section v-show="visible('表单输入', 'text-field', 'checkbox', 'switch', 'slider', 'progress')" id="form" class="kima-gallery__section">
-          <h2>表单输入</h2>
-
-          <article v-show="visible('text-field', '文本框')" class="kima-gallery__demo">
-            <header><h3>TextField 文本框</h3><p>组件只画输入区域本身。当前值：{{ textValue || "空" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-text-field v-model="textValue" placeholder="请输入昵称" clearable />
-              <kima-text-field v-model="email" type="email" placeholder="请输入邮箱" hint="用于接收通知" />
-              <kima-text-field :model-value="'错误示例'" error="这个值不符合要求" />
-              <kima-text-field v-model="password" type="password" placeholder="请输入密码" clearable />
-              <kima-text-field :model-value="''" hint="这段是说明文字" />
-              <kima-text-field :model-value="'只读'" readonly />
-            </div>
-          </article>
-
-          <article v-show="visible('checkbox', '复选框')" class="kima-gallery__demo">
-            <header><h3>Checkbox 复选框</h3><p>选中、半选和禁用。选中：{{ accepted }}</p></header>
-            <div class="kima-gallery__row">
-              <kima-checkbox v-model="accepted" label="接受条款" />
-              <kima-checkbox v-model="partial" :indeterminate="true" label="半选状态" />
-              <kima-checkbox :model-value="true" disabled label="已禁用" />
-            </div>
-          </article>
-
-          <article v-show="visible('switch', '开关')" class="kima-gallery__demo">
-            <header><h3>Switch 开关</h3><p>开关状态：{{ syncEnabled }}</p></header>
-            <div class="kima-gallery__row">
-              <kima-switch v-model="syncEnabled">启用同步</kima-switch>
-              <kima-switch :model-value="false">关闭示例</kima-switch>
-              <kima-switch :model-value="true" disabled>禁用</kima-switch>
-            </div>
-          </article>
-
-          <article v-show="visible('slider', '滑块')" class="kima-gallery__demo">
-            <header><h3>Slider 滑块</h3><p>音量：{{ volume }}</p></header>
-            <div class="kima-gallery__stack">
-              <kima-slider v-model="volume" label="音量" show-value />
-              <kima-slider :model-value="25" :min="0" :max="50" label="范围 0-50" show-value />
-              <kima-slider :model-value="60" label="禁用" disabled />
-            </div>
-          </article>
-
-          <article v-show="visible('progress', '进度条')" class="kima-gallery__demo">
-            <header><h3>Progress 进度条</h3><p>进度：{{ progressValue }}%</p></header>
-            <div class="kima-gallery__stack">
-              <kima-progress :value="progressValue" label="下载进度" />
-              <kima-progress indeterminate label="正在连接" />
-              <div class="kima-gallery__row">
-              <kima-button variant="tonal" @click="progressValue = Math.max(0, progressValue - 10)">减 10</kima-button>
-              <kima-button variant="tonal" @click="progressValue = Math.min(100, progressValue + 10)">加 10</kima-button>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <!-- 选择与日期 -->
-        <section v-show="visible('选择与日期', 'select', 'combobox', 'cascader', 'date-picker', 'time-picker')" id="pickers" class="kima-gallery__section">
-          <h2>选择与日期</h2>
-
-          <article v-show="visible('select', '选择器')" class="kima-gallery__demo">
-            <header><h3>Select 选择器</h3><p>已选：{{ country || "未选择" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-select v-model="country" label="国家" :items="countries" searchable clearable />
-              <kima-select :model-value="null" label="必填" :items="countries" required placeholder="请选择国家" />
-            </div>
-          </article>
-
-          <article v-show="visible('combobox', '组合框')" class="kima-gallery__demo">
-            <header><h3>Combobox 组合框</h3><p>输入可过滤，已选：{{ tag || "未选择" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-combobox v-model="tag" label="标签" :items="tags" clearable searchable />
-              <kima-combobox :model-value="null" label="自由输入" :items="tags" free-solo searchable />
-            </div>
-          </article>
-
-          <article v-show="visible('cascader', '级联')" class="kima-gallery__demo">
-            <header><h3>Cascader 级联选择</h3><p>路径：{{ categoryPath.join(" / ") }}</p></header>
-            <kima-cascader v-model="categoryPath" label="分类" :options="categoryOptions" clearable />
-          </article>
-
-          <article v-show="visible('date-picker', '日期')" class="kima-gallery__demo">
-            <header><h3>DatePicker 日期选择</h3><p>日期：{{ birthday || "未选择" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-date-picker v-model="birthday" v-model:open="dateOpen" label="生日" clearable />
-              <kima-date-picker
-                :model-value="'2024-06-15'"
-                min="2024-06-01"
-                max="2024-06-20"
-                label="限定范围"
-              />
-            </div>
-          </article>
-
-          <article v-show="visible('time-picker', '时间')" class="kima-gallery__demo">
-            <header><h3>TimePicker 时间选择</h3><p>时间：{{ startTime || "未选择" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-time-picker v-model="startTime" v-model:open="timeOpen" label="开始时间" :step="15" clearable />
-              <kima-time-picker :model-value="'14:00'" label="12 小时制" locale="en-US" :hour12="true" />
-            </div>
-          </article>
-        </section>
-
-        <!-- 反馈与提示 -->
-        <section v-show="visible('反馈与提示', 'notification', 'dialog', 'drawer', 'tooltip', 'empty-state')" id="feedback" class="kima-gallery__section">
-          <h2>反馈与提示</h2>
-
-          <article v-show="visible('notification', '通知')" class="kima-gallery__demo">
-            <header><h3>Notification 通知</h3><p>右上角浮层，可自动关闭。</p></header>
-            <div class="kima-gallery__row">
-              <kima-button variant="tonal" @click="noticeVariant = 'success'; noticeOpen = true">成功通知</kima-button>
-              <kima-button variant="tonal" @click="noticeVariant = 'warning'; noticeOpen = true">警告通知</kima-button>
-              <kima-button variant="tonal" @click="noticeVariant = 'danger'; noticeOpen = true">错误通知</kima-button>
-              <kima-button variant="outlined" @click="noticeVariant = 'info'; noticeOpen = true">信息通知</kima-button>
-            </div>
-          </article>
-
-          <article v-show="visible('dialog', '对话框')" class="kima-gallery__demo">
-            <header><h3>Dialog 对话框</h3><p>模态弹层，按 Esc 或点遮罩关闭。</p></header>
-            <kima-button @click="dialogOpen = true">打开对话框</kima-button>
-          </article>
-
-          <article v-show="visible('drawer', '抽屉')" class="kima-gallery__demo">
-            <header><h3>Drawer 抽屉</h3><p>从底边或侧边滑入，背景变暗模糊。底部抽屉可抓着把手往下拖关闭。</p></header>
-            <div class="kima-gallery__row">
-              <kima-button variant="tonal" @click="drawerBottomOpen = true">底部抽屉</kima-button>
-              <kima-button variant="tonal" @click="drawerRightOpen = true">右侧抽屉</kima-button>
-              <kima-button variant="tonal" @click="drawerLeftOpen = true">左侧抽屉</kima-button>
-              <kima-button variant="outlined" @click="drawerSnapOpen = true">
-                吸附抽屉（四档 · 当前 {{ Math.round(drawerSnap * 100) }}%）
-              </kima-button>
-            </div>
-          </article>
-
-          <article v-show="visible('tooltip', '提示')" class="kima-gallery__demo">
-            <header><h3>Tooltip 提示框</h3><p>悬停或聚焦触发。</p></header>
-            <div class="kima-gallery__row">
-              <kima-tooltip text="保存当前内容"><kima-button variant="outlined">底部提示</kima-button></kima-tooltip>
-              <kima-tooltip text="这段提示显示在上方" position="top"><kima-button variant="outlined">顶部提示</kima-button></kima-tooltip>
-              <kima-tooltip text="右侧说明" position="right"><kima-button variant="outlined">右侧提示</kima-button></kima-tooltip>
-            </div>
-          </article>
-
-          <article v-show="visible('empty-state', '空状态')" class="kima-gallery__demo">
-            <header><h3>EmptyState 空状态</h3><p>没有内容时的占位。</p></header>
-            <kima-empty-state heading="还没有项目" description="创建第一个项目后，它会显示在这里。">
-              <template #icon><KimaIcon :icon="Folder01Icon" :size="40" /></template>
-              <template #action><kima-button variant="tonal">创建项目</kima-button></template>
-            </kima-empty-state>
-          </article>
-        </section>
-
-        <!-- 数据展示 -->
-        <section v-show="visible('数据展示', 'table', 'tree', 'pagination', 'virtual-scroll')" id="data" class="kima-gallery__section">
-          <h2>数据展示</h2>
-
-          <article v-show="visible('table', '表格')" class="kima-gallery__demo">
-            <header><h3>Table 数据表</h3><p>已选 {{ selectedRows.length }} 行，可点表头排序。</p></header>
-            <kima-table
-              v-model="selectedRows"
-              :columns="columns"
-              :rows="rows"
-              row-key="id"
-              caption="团队成员"
-              selectable
-              striped
-              hoverable
-              :sort-key="sort.key"
-              :sort-direction="sort.direction"
-              @sort-change="applySort"
-            />
-          </article>
-
-          <article v-show="visible('tree', '树')" class="kima-gallery__demo">
-            <header><h3>Tree 树</h3><p>已选：{{ treeSelected || "未选择" }}</p></header>
-            <kima-tree
-              v-model="treeSelected"
-              v-model:expanded="treeExpanded"
-              :items="treeItems"
-              selectable
-            />
-          </article>
-
-          <article v-show="visible('pagination', '分页')" class="kima-gallery__demo">
-            <header><h3>Pagination 分页</h3><p>当前第 {{ page }} 页。</p></header>
-            <div class="kima-gallery__stack">
-              <kima-pagination v-model="page" :total="480" :page-size="treePageSize" />
-              <kima-pagination v-model="page" :total="480" :page-size="treePageSize" compact :sibling-count="1" />
-            </div>
-          </article>
-
-          <article v-show="visible('virtual-scroll', '虚拟滚动')" class="kima-gallery__demo">
-            <header><h3>VirtualScroll 虚拟滚动</h3><p>5000 行只渲染可见部分，已选：{{ virtualSelected || "未点击" }}</p></header>
-            <kima-virtual-scroll
-              v-model="virtualSelected"
-              :items="virtualItems"
-              :item-height="36"
-              height="280"
-              :overscan="3"
-            >
-              <template #default="{ item, index }">
-                <span class="kima-gallery__row-index">{{ index + 1 }}</span>
-                {{ item.label }}
-              </template>
-            </kima-virtual-scroll>
-          </article>
-        </section>
-
-        <!-- 结构与导航 -->
-        <section v-show="visible('结构与导航', 'layout', 'menu', 'tabs')" id="structure" class="kima-gallery__section">
-          <h2>结构与导航</h2>
-
-          <article v-show="visible('menu', '菜单')" class="kima-gallery__demo">
-            <header><h3>Menu 菜单</h3><p>可搜索的单选菜单，已选：{{ menuValue }}</p></header>
-            <div class="kima-gallery__row">
-              <kima-menu v-model="menuValue" v-model:open="menuOpen" :items="menuItems" label="排序" searchable />
-            </div>
-          </article>
-
-          <article v-show="visible('tabs', '标签页')" class="kima-gallery__demo">
-            <header><h3>Tabs 标签页</h3><p>当前标签：{{ tabValue }}</p></header>
-            <kima-tabs v-model="tabValue" :items="tabItems">
+        <template v-if="component">
+          <section id="preview" class="kima-docs__section">
+            <h2>交互预览</h2><p>这里运行的就是库里的组件，不是重新绘制的样图。</p>
+            <KimaTabs v-model="previewTab" :items="previewTabs">
               <template #panel="{ item }">
-                <p>{{ item.label }} 面板的内容。用方向键切换标签。</p>
+                <div v-if="item.value === 'preview'" class="kima-docs__canvas"><Examples :key="component.slug" :component="component.slug" /></div>
+                <KimaCodeBlock v-else :code="component.examples" language="vue" line-numbers />
               </template>
-            </kima-tabs>
-          </article>
-
-          <article v-show="visible('layout', '布局')" class="kima-gallery__demo">
-            <header><h3>Layout 布局容器</h3><p>页面和面板两种容器。</p></header>
-            <div class="kima-gallery__stack">
-              <kima-layout variant="panel" :max-width="520" :gap="12">
-                <template #header><strong>面板标题</strong></template>
-                <span>面板内容，最大宽度 520。</span>
-                <template #footer><kima-button variant="tonal">确定</kima-button></template>
-              </kima-layout>
-            </div>
-          </article>
-        </section>
-
-        <!-- 有搜索词但一个展示块都没命中：提示换个词。
-         * 判断读的是各展示块渲染后的实际可见性（noResults），加组件时这里不用改。 -->
-        <kima-empty-state
-          v-if="noResults"
-          heading="没有匹配的组件"
-          description="换一个关键词试试，例如 button、日期或表格。"
-          compact
-        />
+            </KimaTabs>
+          </section>
+          <section id="usage" class="kima-docs__section"><h2>使用方式</h2><p>先安装并导入全局样式，然后按需导入组件。</p><KimaCodeBlock :code="importCode" language="javascript" /></section>
+          <section id="properties" class="kima-docs__section">
+            <h2>属性参考</h2>
+            <p>属性类型和默认值直接读取组件声明，与实际组件保持同步。</p>
+            <KimaTable :columns="propColumns" :rows="component.attributes" row-key="name" />
+            <h3>公开事件</h3>
+            <p>{{ component.events.length ? component.events.join(' / ') : '该组件没有自定义事件；可交互元素保留原生事件。' }}</p>
+            <p>Vue 中直接接收参数；自定义元素通过 event.detail 数组接收参数。按钮 click 仍是原生事件。</p>
+            <KimaButton variant="text" :aria-expanded="showSource" @click="toggleSource">{{ showSource ? '收起源码' : '查看完整组件源码' }}</KimaButton>
+            <KimaCodeBlock v-if="showSource" :code="fullSource || '正在加载源码…'" :filename="`${component.slug}.ce.vue`" language="vue" line-numbers />
+          </section>
+        </template>
+        <template v-else-if="route === 'overview'">
+          <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
+            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停或切换主题。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('components/button')">探索组件</KimaButton><KimaButton variant="text" @click="navigate('theme')">了解设计语言</KimaButton></div></KimaCard>
+          </section>
+          <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><KimaCodeBlock :code="install" language="shell" /><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
+          <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><KimaCard><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></KimaCard><KimaCard><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></KimaCard><KimaCard><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></KimaCard></div></section>
+        </template>
+        <template v-else-if="route === 'installation'">
+          <section id="usage" class="kima-docs__section"><h2>1. 安装依赖</h2><KimaCodeBlock :code="install" language="shell" /><p>公共 npm 包是否可下载，以仓库 README 的发布状态为准。正式发布前可安装本地产出的 tarball。</p><h2>2. 在 Vue 中使用</h2><KimaCodeBlock :code="vueUsage" filename="App.vue" language="vue" line-numbers /><h2>3. 在原生网页中使用</h2><KimaCodeBlock :code="elementUsage" language="javascript" /></section>
+          <section id="principles" class="kima-docs__section"><h2>接入约定</h2><p>Vue 入口需显式导入样式；自定义元素入口自带样式和运行时。自定义事件参数位于 event.detail 数组中。样式不重置宿主页面。</p></section>
+        </template>
+        <template v-else-if="route === 'theme'">
+          <section id="usage" class="kima-docs__section"><h2>在整个站点体验主题</h2><p>使用顶部的种子色选择器和深浅主题按钮，实际组件与文档界面同步变化。</p><KimaCodeBlock :code="themeUsage" language="javascript" /></section><section id="principles" class="kima-docs__section"><h2>设计约束</h2><p>页面表面使用透明层次，弹层使用实色。成功、警告、危险色不随品牌种子改变；所有组件使用 --kima-* 变量。字体采用 Maple Mono 系列与系统等宽回退。</p></section>
+        </template>
+        <footer class="kima-docs__footer">KIMA · 让组件、界面与体验说同一种语言。</footer>
       </main>
+      <aside class="kima-docs__toc" aria-label="本页目录"><p>本页内容</p><KimaButton v-for="section in sections" :key="section.id" variant="text" @click="scrollToSection(section.id)">{{ section.label }}</KimaButton></aside>
     </div>
-<kima-notification
-  v-model:open="noticeOpen"
-  :variant="noticeVariant"
-  :duration="8000"
-  heading="操作完成"
-  message="四种语义各配一个图标，状态不只靠颜色表达。"
-  position="top-right"
-/>
-    />
-
-    <kima-dialog v-model:open="dialogOpen" title="确认操作" description="这个示例展示对话框的标题、说明和按钮区。">
-      <p>对话框使用原生 modal 实现，会自动隔离背景并管理键盘焦点。</p>
-      <template #footer>
-        <kima-button variant="text" @click="dialogOpen = false">取消</kima-button>
-        <kima-button @click="dialogOpen = false">确定</kima-button>
-      </template>
-    </kima-dialog>
-
-    <kima-drawer v-model:open="drawerBottomOpen" title="底部抽屉" description="抓住顶部的把手往下拖，可以拖动关闭；没拖到一半会弹回原位。">
-      <kima-text-field label="名称" :model-value="'新建项目'" />
-      <kima-text-field label="负责人" :model-value="'林一'" />
-      <template #footer>
-        <kima-button variant="text" @click="drawerBottomOpen = false">取消</kima-button>
-        <kima-button @click="drawerBottomOpen = false">完成</kima-button>
-      </template>
-    </kima-drawer>
-
-    <kima-drawer v-model:open="drawerRightOpen" placement="right" title="右侧抽屉" description="侧抽屉适合导航和详情，全高、最宽 420px。">
-      <p>按 Esc、点遮罩或点右上角的关闭按钮都能收起它。</p>
-    </kima-drawer>
-
-    <kima-drawer v-model:open="drawerLeftOpen" placement="left" title="左侧抽屉">
-      <p>方向和右侧抽屉镜像，其余行为完全一致。</p>
-      <template #footer>
-        <kima-button variant="text" @click="drawerLeftOpen = false">知道了</kima-button>
-      </template>
-    </kima-drawer>
-
-    <kima-drawer
-      v-model:open="drawerSnapOpen"
-      v-model:active-snap-point="drawerSnap"
-      title="吸附抽屉"
-      :snap-points="[0.4, 0.6, 0.8, 0.95]"
-      description="往上拖长高、往下拖变矮，松手吸到最近的一档；拖过最矮一档的 40% 就关闭。"
-    >
-      <kima-layout>
-        <kima-card v-for="index in 6" :key="index">第 {{ index }} 张卡片：档位换了但内容位置不变，只是看到的部分多少不同。</kima-card>
-      </kima-layout>
-      <template #footer>
-        <kima-button variant="text" @click="drawerSnapOpen = false">关闭</kima-button>
-      </template>
-    </kima-drawer>
+    <KimaDrawer v-model:open="mobileMenu" placement="left" title="文档导航"><nav v-for="group in nav" :key="group.heading" class="kima-docs__mobile-nav"><h2>{{ group.heading }}</h2><KimaButton v-for="item in group.items" :key="item.slug" variant="text" @click="navigate(item.slug)">{{ item.name }}</KimaButton></nav></KimaDrawer>
   </div>
 </template>
 
 <style scoped lang="scss">
-/* 预览页不带自己的底色：亚克力壁纸铺在 body 上，
- * 组件直接浮在壁纸上，才看得出它们在真实背景上的可读性。 */
-.kima-gallery {
-  min-height: 100vh;
-  color: var(--kima-color-on-surface);
-  font-family: var(--kima-font-family);
-
-  &__top {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--kima-space-3);
-    padding: var(--kima-space-3) var(--kima-space-5);
-    /* 顶栏也做成磨砂，滚动时下面的内容从它后面掠过，跟壁纸是一体的。 */
-    background: var(--kima-color-layer-2);
-    backdrop-filter: blur(20px);
-  }
-
-  &__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--kima-space-3);
-    color: var(--kima-color-primary);
-
-    strong {
-      display: block;
-      font-size: var(--kima-font-size-lg);
-      letter-spacing: 0.08em;
-      color: var(--kima-color-on-surface);
-    }
-
-    span {
-      font-size: var(--kima-font-size-xs);
-      color: var(--kima-color-on-surface-variant);
-    }
-  }
-
-  &__tools {
-    display: flex;
-    align-items: center;
-    gap: var(--kima-space-2);
-  }
-
-  /* --- 换主题色：一排种子色圆点 + 风格下拉 --- */
-
-  &__seeds {
-    display: flex;
-    align-items: center;
-    gap: var(--kima-space-1);
-  }
-
-  &__seed {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    /* 只用描边标出选中项，不加底色，免得跟种子色本身混在一起。 */
-    border: 2px solid transparent;
-    border-radius: var(--kima-radius-full);
-    cursor: pointer;
-
-    &--active {
-      border-color: var(--kima-color-on-surface);
-    }
-  }
-
-  &__variant select {
-    min-height: 40px;
-    padding: 0 var(--kima-space-2);
-    border: 0;
-    border-radius: var(--kima-radius-s);
-    color: var(--kima-color-on-surface);
-    background: var(--kima-color-layer-3);
-    font: inherit;
-    cursor: pointer;
-  }
-
-  &__search {
-    display: flex;
-    align-items: center;
-    gap: var(--kima-space-2);
-    min-height: 40px;
-    padding: 0 var(--kima-space-3);
-    border: 0;
-    border-radius: var(--kima-radius-sm);
-    color: var(--kima-color-on-surface-variant);
-    background: var(--kima-color-layer-3);
-
-    input {
-      width: 200px;
-      border: 0;
-      outline: 0;
-      color: var(--kima-color-on-surface);
-      background: var(--kima-color-transparent);
-      font: inherit;
-    }
-  }
-
-  &__body {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    align-items: start;
-    gap: var(--kima-space-5);
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: var(--kima-space-5);
-  }
-
-  &__nav {
-    position: sticky;
-    top: 84px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--kima-space-1);
-
-    a {
-      padding: var(--kima-space-2) var(--kima-space-3);
-      border-radius: var(--kima-radius-sm);
-      color: var(--kima-color-on-surface-variant);
-      text-decoration: none;
-
-      &:hover {
-        color: var(--kima-color-on-surface);
-        background: var(--kima-color-layer-3);
-      }
-    }
-  }
-
-  &__count {
-    margin: 0 0 var(--kima-space-2);
-    font-size: var(--kima-font-size-sm);
-    color: var(--kima-color-primary);
-  }
-
-  &__hint {
-    margin: 0;
-    font-size: var(--kima-font-size-xs);
-    color: var(--kima-color-on-surface-variant);
-  }
-
-  &__main {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: var(--kima-space-6);
-  }
-
-  &__section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--kima-space-4);
-
-    > h2 {
-      margin: 0;
-      color: var(--kima-color-primary);
-      font-size: var(--kima-font-size-title-large);
-    }
-  }
-
-  /* --- 基础层展示：色板、字体阶梯、圆角、层级 --- */
-
-  &__swatches {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--kima-space-3);
-  }
-
-  &__swatch {
-    display: flex;
-    flex-direction: column;
-    gap: var(--kima-space-1);
-
-    code {
-      font-size: var(--kima-font-size-label-medium);
-    }
-
-    small {
-      color: var(--kima-color-on-surface-variant);
-      font-size: var(--kima-font-size-label-small);
-    }
-  }
-
-  &__swatch-chip {
-    display: block;
-    height: 56px;
-    border-radius: var(--kima-radius-m);
-  }
-
-  &__type {
-    margin: 0;
-    line-height: var(--kima-line-height-tight);
-  }
-
-  &__radius,
-  &__elevation {
-    display: grid;
-    place-items: center;
-    width: 72px;
-    height: 72px;
-    background: var(--kima-color-layer-3);
-    color: var(--kima-color-on-surface-variant);
-    font-size: var(--kima-font-size-label-small);
-  }
-
-  /* 展示块不上容器样式：给组件一个干净的立足处，
-   * 看到的就是组件在壁纸上的真实样子，而不是被卡片衬出来的样子。 */
-  &__demo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--kima-space-4);
-
-    > header {
-      h3 {
-        margin: 0;
-        font-size: var(--kima-font-size-lg);
-      }
-
-      p {
-        margin: var(--kima-space-1) 0 0;
-        font-size: var(--kima-font-size-sm);
-        color: var(--kima-color-on-surface-variant);
-      }
-    }
-  }
-
-  &__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--kima-space-3);
-
-    &--tall {
-      min-height: 80px;
-    }
-  }
-
-  &__stack {
-    display: flex;
-    flex-direction: column;
-    gap: var(--kima-space-3);
-  }
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--kima-space-4);
-  }
-
-
-  &__row-index {
-    display: inline-block;
-    min-width: 56px;
-    color: var(--kima-color-on-surface-variant);
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-@media (max-width: 860px) {
-  .kima-gallery__body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .kima-gallery__nav {
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-}
+.kima-docs { min-height: 100vh; background: var(--kima-color-surface); color: var(--kima-color-on-surface); }
+.kima-docs__top { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 248px minmax(220px, 480px) 1fr; gap: var(--kima-space-6); align-items: center; padding: var(--kima-space-3) var(--kima-space-6); background: var(--kima-color-surface); }
+.kima-docs__brand, .kima-docs__tools, .kima-docs__actions { display: flex; align-items: center; gap: var(--kima-space-2); }
+.kima-docs__command { min-width: 0; }
+.kima-docs__brand :deep(.kima-button__label) { font-size: var(--kima-font-size-title-large); font-weight: var(--kima-font-weight-bold); }
+.kima-docs__tools { justify-content: flex-end; min-width: 0; }
+.kima-docs__tools > :first-child { width: 126px; }
+.kima-docs__mobile-toggle { display: none; }
+.kima-docs__layout { display: grid; grid-template-columns: 248px minmax(0, 1fr) 200px; gap: var(--kima-space-8); max-width: 1600px; margin: auto; padding: var(--kima-space-6); }
+.kima-docs__sidebar, .kima-docs__toc { position: sticky; top: 110px; align-self: start; max-height: calc(100dvh - 128px); overflow-y: auto; }
+.kima-docs__sidebar-title { margin: 0 0 var(--kima-space-6); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
+.kima-docs__sidebar nav { display: flex; flex-direction: column; gap: var(--kima-space-1); margin-bottom: var(--kima-space-6); }
+.kima-docs__sidebar h2, .kima-docs__mobile-nav h2 { margin: var(--kima-space-3) 0; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); }
+.kima-docs__sidebar :deep(.kima-button) { justify-content: flex-start; min-height: 44px; border-radius: var(--kima-radius-s); padding-inline: var(--kima-space-3); text-align: start; }
+.kima-docs__sidebar :deep(.kima-button__label) { white-space: normal; font-size: var(--kima-font-size-label-medium); }
+.kima-docs__content { min-width: 0; width: 100%; max-width: 840px; margin: 0 auto; padding: var(--kima-space-10) var(--kima-space-4); }
+.kima-docs__heading { margin-bottom: var(--kima-space-10); }
+.kima-docs__eyebrow { font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
+.kima-docs__heading h1 { margin: 0; font-size: clamp(32px, 4vw, 56px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.kima-docs__lead { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-body-large); line-height: 1.8; margin-top: var(--kima-space-6); }
+.kima-docs__section { margin-top: var(--kima-space-12); scroll-margin-top: 120px; }
+.kima-docs__section h2 { font-size: var(--kima-font-size-headline-small); margin: 0 0 var(--kima-space-4); }
+.kima-docs__section p { color: var(--kima-color-on-surface-variant); line-height: 1.8; }
+.kima-docs__hero-canvas { padding: var(--kima-space-8); border-radius: var(--kima-radius-m); background: var(--kima-color-layer-1); }
+.kima-docs__hero-canvas :deep(.kima-card) { padding: var(--kima-space-8); }
+.kima-docs__hero-canvas h2 { font-size: var(--kima-font-size-headline-small); line-height: 1.5; }
+.kima-docs__hero-canvas p { color: var(--kima-color-on-surface-variant); line-height: 1.8; margin-bottom: var(--kima-space-6); }
+.kima-docs__canvas { padding: var(--kima-space-6); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); min-height: 180px; }
+.kima-docs__section > .kima-code-block { margin: var(--kima-space-5) 0; }
+.kima-docs__principles { display: grid; gap: var(--kima-space-4); }
+.kima-docs__principles h3 { margin: 0; }
+.kima-docs__toc { display: flex; flex-direction: column; gap: var(--kima-space-1); padding-top: var(--kima-space-4); }
+.kima-docs__toc p { font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); }
+.kima-docs__toc :deep(.kima-button) { justify-content: flex-start; padding-inline: var(--kima-space-2); font-size: var(--kima-font-size-label-small); }
+.kima-docs__footer { margin-top: var(--kima-space-16); padding-block: var(--kima-space-6); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
+.kima-docs__mobile-nav { display: flex; flex-direction: column; }
+@media (max-width: 1200px) { .kima-docs__layout { grid-template-columns: 220px minmax(0, 1fr); } .kima-docs__toc { display: none; } .kima-docs__top { grid-template-columns: 220px minmax(180px, 1fr) auto; gap: var(--kima-space-3); } .kima-docs__tools > :last-child { display: none; } }
+@media (max-width: 760px) { .kima-docs__top { grid-template-columns: 1fr auto; padding: var(--kima-space-2); } .kima-docs__search, .kima-docs__command { grid-column: 1 / -1; grid-row: 2; } .kima-docs__command { grid-row: 3; } .kima-docs__layout { grid-template-columns: minmax(0, 1fr); padding: var(--kima-space-4); } .kima-docs__sidebar { display: none; } .kima-docs__mobile-toggle { display: inline-flex; } .kima-docs__brand { gap: 0; } .kima-docs__tools > :first-child { width: 100px; } .kima-docs__content { padding: var(--kima-space-5) 0; } .kima-docs__hero-canvas, .kima-docs__hero-canvas :deep(.kima-card), .kima-docs__canvas { padding: var(--kima-space-4); } .kima-docs__actions { flex-wrap: wrap; } }
 </style>

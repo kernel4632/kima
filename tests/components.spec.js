@@ -512,6 +512,77 @@ test("date picker and pagination host ids stay unique after internal updates", a
   }
 });
 
+for (const orientation of ["horizontal", "vertical"]) {
+  test(`tabs ${orientation} show a short indicator and keep hover text readable`, async ({ page }) => {
+    await mount(page, `<kima-tabs id="tabs" orientation="${orientation}"></kima-tabs>`, {
+      tabs: { items: [{ value: "a", label: "Alpha" }, { value: "b", label: "Beta", disabled: true }, { value: "c", label: "Gamma" }] },
+    });
+    const tabs = page.locator("#tabs [role=tab]");
+    const selected = tabs.first();
+    // 覆盖灰度和彩色主题，避免只在一种配色里看着正常。
+    for (const seed of ["#ffffff", "#61afef"]) {
+      for (const isDark of [true, false]) {
+        await page.evaluate(async ({ seed, isDark }) => {
+          const { applyPalette } = await import("/src/utils/theme.js");
+          applyPalette(seed, { isDark, variant: seed === "#ffffff" ? "monochrome" : "tonal-spot" });
+          document.body.style.background = "var(--kima-color-surface)";
+        }, { seed, isDark });
+        await page.mouse.move(0, 0);
+        await page.waitForTimeout(200);
+        const color = await selected.evaluate((element) => getComputedStyle(element).color);
+        await selected.hover();
+        await page.waitForTimeout(200);
+        await expect(selected).toHaveCSS("color", color);
+        for (const tab of [selected, tabs.last()]) {
+          await tab.hover();
+          await page.waitForTimeout(200);
+          const contrast = await tab.evaluate((element) => {
+            // 用画布合成真实的透明层，再算文字与背景的对比度。
+            const canvas = document.createElement("canvas");
+            canvas.width = canvas.height = 1;
+            const context = canvas.getContext("2d");
+            const style = getComputedStyle(element);
+            context.fillStyle = getComputedStyle(document.body).backgroundColor;
+            context.fillRect(0, 0, 1, 1);
+            for (const node of [element.parentElement, element]) {
+              context.fillStyle = getComputedStyle(node).backgroundColor;
+              context.fillRect(0, 0, 1, 1);
+            }
+            const background = context.getImageData(0, 0, 1, 1).data;
+            context.fillStyle = style.color;
+            context.fillRect(0, 0, 1, 1);
+            const foreground = context.getImageData(0, 0, 1, 1).data;
+            const luminance = (rgb) => Array.from(rgb).slice(0, 3).map((value) => {
+              const channel = value / 255;
+              return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+            }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+            const values = [luminance(background), luminance(foreground)];
+            return (Math.max(...values) + 0.05) / (Math.min(...values) + 0.05);
+          });
+          expect(contrast).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+    const marker = page.locator("#tabs .kima-tabs__marker");
+    const markerStyle = await marker.evaluate((element) => ({
+      width: parseFloat(getComputedStyle(element).width),
+      height: parseFloat(getComputedStyle(element).height),
+      transitionProperty: getComputedStyle(element).transitionProperty,
+    }));
+    expect(markerStyle).toMatchObject(orientation === "horizontal" ? { width: 40, height: 4 } : { width: 4, height: 24 });
+    expect(markerStyle.transitionProperty).toContain("transform");
+    await selected.press(orientation === "horizontal" ? "ArrowRight" : "ArrowDown");
+    await expect(tabs.last()).toBeFocused();
+    await expect(tabs.last()).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator('#tabs [role="tabpanel"][aria-hidden="true"]')).toHaveCount(2);
+    await expect(page.locator('#tabs [role="tabpanel"][aria-hidden="true"]:not([inert])')).toHaveCount(0);
+    await expect(page.locator('#tabs [role="tabpanel"]:not([aria-hidden="true"])')).toHaveCount(1);
+    await tabs.last().press("Home");
+    await expect(selected).toBeFocused();
+    await expect(selected).toHaveAttribute("aria-selected", "true");
+  });
+}
+
 test("menu tabs and groups respond without event roundtrips", async ({ page }) => {
   const items = [{ value: "a", label: "Alpha" }, { value: "b", label: "Beta", disabled: true }, { value: "c", label: "Gamma" }];
   await mount(page, '<kima-menu id="menu"></kima-menu><kima-tabs id="tabs"></kima-tabs><kima-button-group id="group" multiple></kima-button-group>', { menu: { items }, tabs: { items }, group: { items } });
@@ -1081,6 +1152,16 @@ test("table with caption paints four rounded corners and remains scrollable", as
       document.body.style.background = "var(--kima-color-surface)";
     }, theme);
     const table = await page.locator("#table .kima-table").boundingBox();
+    const shape = await page.locator("#table").evaluate((host) => ({
+      scroll: getComputedStyle(host.querySelector(".kima-table__scroll")).borderRadius,
+      caption: getComputedStyle(host.querySelector("caption")).borderRadius,
+      head: getComputedStyle(host.querySelector("thead th:first-child")).borderRadius,
+      tail: getComputedStyle(host.querySelector("tbody:last-child tr:last-child td:first-child")).borderRadius,
+    }));
+    expect(shape).toEqual({ scroll: "12px", caption: "0px", head: "0px", tail: "0px" });
+    expect(await page.locator("#table th, #table td").evaluateAll((cells) =>
+      cells.every((cell) => getComputedStyle(cell).borderBottomWidth === "0px")
+    )).toBe(true);
     const image = await page.screenshot({ clip: table, scale: "css" });
     const colors = await page.evaluate(async (base64) => {
       const blob = await (await fetch(`data:image/png;base64,${base64}`)).blob();
@@ -1135,32 +1216,36 @@ test("table selection is local, accessible, keyed and externally overridable", a
   expect(await events(page, "table", "row-click")).toHaveLength(0);
 });
 
-test("table sorting is an external contract and keyed DOM survives reorder", async ({ page }) => {
+test("table sorts locally without host roundtrips and controlled state stays authoritative", async ({ page }) => {
   await mount(page, '<kima-table id="table" row-key="id"></kima-table>', { table: { columns: [{ key: "score", label: "Score", sortable: true }], rows: [{ id: "b", score: 20 }, { id: "a", score: 10 }] } });
   const sort = page.locator("#table .kima-table__sort-button");
+  const bodyRows = page.locator("#table tbody tr");
   await page.evaluate(() => { window.firstRow = document.querySelector("#table tbody tr"); });
   await sort.click();
   expect((await events(page, "table", "sort-change"))[0].detail).toEqual([{ key: "score", direction: "asc" }]);
-  await expect(page.locator("#table tbody tr")).toHaveText(["20", "10"]);
-  await page.evaluate(() => {
-    const table = document.getElementById("table");
-    const { key, direction } = window.fixture.events.find((event) => event.type === "sort-change").detail[0];
-    table.sortKey = key;
-    table.sortDirection = direction;
-    table.rows = [...table.rows].sort((a, b) => a[key] - b[key]);
-  });
-  await expect(page.locator("#table tbody tr")).toHaveText(["10", "20"]);
+  await expect(bodyRows).toHaveText(["10", "20"]);
   expect(await page.evaluate(() => window.firstRow === document.querySelector("#table tbody tr:last-child"))).toBe(true);
+  expect(await page.locator('#table').evaluate(table => table.rows.map(row => row.score))).toEqual([20, 10]);
   await expect(page.locator("#table th")).toHaveAttribute("aria-sort", "ascending");
   await sort.click();
+  await expect(bodyRows).toHaveText(["20", "10"]);
   expect((await events(page, "table", "sort-change"))[1].detail).toEqual([{ key: "score", direction: "desc" }]);
+  await page.locator('#table').evaluate(table => { table.sortKey = 'score'; table.sortDirection = 'asc'; });
+  await expect(bodyRows).toHaveText(["10", "20"]);
+  await sort.click();
+  expect((await events(page, "table", "sort-change"))[2].detail).toEqual([{ key: "score", direction: "desc" }]);
+  await expect(bodyRows).toHaveText(["10", "20"]);
+  await expect(page.locator("#table th")).toHaveAttribute("aria-sort", "ascending");
+  await page.locator('#table').evaluate(table => { table.sortDirection = 'desc'; });
+  await expect(bodyRows).toHaveText(["20", "10"]);
+  await expect(page.locator("#table th")).toHaveAttribute("aria-sort", "descending");
 });
 
 test("table items keeps documented precedence including an empty array", async ({ page }) => {
   await mount(page, '<kima-table id="table"><span slot="empty">Empty items</span></kima-table>', { table: { columns: [{ key: "name", label: "Name" }], rows: [{ id: "a", name: "Alice" }], items: [] } });
-  await expect(page.locator("#table tbody")).toHaveText("Empty items");
+  await expect(page.locator("#table tbody").filter({ hasText: "Empty items" })).toHaveText("Empty items");
   await page.evaluate(() => { document.getElementById("table").items = undefined; });
-  await expect(page.locator("#table tbody")).toHaveText("Alice");
+  await expect(page.locator("#table tbody").filter({ hasText: "Alice" })).toHaveText("Alice");
 });
 
 test("native empty-state named slots survive whitespace without an icon gap", async ({ page }) => {

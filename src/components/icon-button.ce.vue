@@ -84,9 +84,8 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
     :aria-busy="loading || undefined"
     :title="attrs.title || accessibleLabel()"
   >
-    <span v-if="loading" class="kima-icon-button__spinner" aria-hidden="true"></span>
-    <span v-else class="kima-icon-button__icon" aria-hidden="true">
-      <slot><KimaIcon :icon="buttonIcon" :size="iconSize" /></slot>
+    <span class="kima-icon-button__visual" aria-hidden="true">
+      <Transition name="kima-fade"><span v-if="loading" key="spinner" class="kima-icon-button__spinner"></span><span v-else key="icon" class="kima-icon-button__icon"><slot><KimaIcon :icon="buttonIcon" :size="iconSize" /></slot></span></Transition>
     </span>
   </button>
 </template>
@@ -163,6 +162,9 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
     background: var(--kima-color-transparent);
     border: var(--kima-outline-width) solid var(--kima-color-outline);
   }
+
+  &__visual { display: grid; place-items: center; }
+  &__visual > * { grid-area: 1 / 1; }
 
   &__icon,
   &__spinner {

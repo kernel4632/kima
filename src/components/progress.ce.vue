@@ -35,7 +35,7 @@ const safeValue = computed(() => Number.isFinite(props.value) ? Math.max(0, Math
         :max="safeMax"
         :aria-label="attrs['aria-label'] || label || undefined"
       />
-      <span v-if="indeterminate" class="kima-progress__motion" aria-hidden="true"><span /></span>
+      <Transition name="kima-fade"><span v-if="indeterminate" class="kima-progress__motion" aria-hidden="true"><span /></span></Transition>
     </span>
   </div>
 </template>
@@ -63,11 +63,13 @@ const safeValue = computed(() => Number.isFinite(props.value) ? Math.max(0, Math
   }
 
   &__bar::-webkit-progress-value {
+    transition: width var(--kima-duration-medium) var(--kima-curve-standard);
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-primary);
   }
 
   &__bar::-moz-progress-bar {
+    transition: width var(--kima-duration-medium) var(--kima-curve-standard);
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-primary);
   }
@@ -104,6 +106,8 @@ const safeValue = computed(() => Number.isFinite(props.value) ? Math.max(0, Math
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .kima-progress__bar::-webkit-progress-value { transition: none; }
+  .kima-progress__bar::-moz-progress-bar { transition: none; }
   .kima-progress__motion > span {
     margin-inline: auto;
     animation: none;

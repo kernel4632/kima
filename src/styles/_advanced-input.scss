@@ -1,0 +1,14 @@
+@use "mixins" as *;
+@use "input" as *;
+@mixin advanced-root { @include input-root; min-width: 0; }
+@mixin advanced-action {
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-focus-ring;
+  @include kima-press;
+  box-sizing: border-box; min-height: var(--kima-touch-target); padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
+  &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
+}
+@mixin advanced-field { @include input-surface; @include input-control; width: 100%; border-radius: var(--kima-radius-m); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
+@mixin advanced-native { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; clip-path: inset(50%); overflow: hidden; }

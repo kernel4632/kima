@@ -10,6 +10,16 @@
  * - kima-disabled：统一的禁用表现。
  */
 
+/* Explicit visual state properties; never delay semantics, typing, or layout. */
+@mixin kima-motion-colors {
+  transition:
+    color var(--kima-duration-effects) var(--kima-curve-standard),
+    background-color var(--kima-duration-effects) var(--kima-curve-standard),
+    border-color var(--kima-duration-effects) var(--kima-curve-standard),
+    box-shadow var(--kima-duration-effects) var(--kima-curve-standard),
+    opacity var(--kima-duration-effects) var(--kima-curve-standard);
+}
+
 /* ---- 状态层：悬停 / 聚焦 / 按下 ----
  * 用 ::after 铺满，颜色取 currentColor，所以任何底色的控件都能直接套。 */
 @mixin kima-state-layer {

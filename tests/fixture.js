@@ -6,7 +6,7 @@ import VueFixture from "./vue-fixture.vue";
 const root = document.getElementById("fixture");
 let app;
 const events = [];
-const eventNames = ["click", "change", "update:modelValue", "update:open", "update:activeSnapPoint", "close", "sort-change", "row-click"];
+const eventNames = ["click", "change", "update:modelValue", "update:open", "update:activeSnapPoint", "close", "sort-change", "row-click", "filter-change", "cell-edit", "expand", "copy", "copy-error", "load", "error"];
 
 window.fixture = {
   events,

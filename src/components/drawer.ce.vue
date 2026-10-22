@@ -84,6 +84,7 @@ const placement = computed(() => {
 
 const dialogId = useId();
 const titleId = `kima-drawer-title-${dialogId}`;
+const descriptionId = `kima-drawer-description-${dialogId}`;
 // ---- 拖拽与吸附（仅底部抽屉）----
 // 两种模式走同一条路径：
 //   没给 snapPoints —— 一档（打开时的高度），往下拖过 40% 关闭；
@@ -243,6 +244,7 @@ function measureShift() {
 const stage = ref("");
 const stageClass = computed(() => (stage.value ? `kima-drawer--${stage.value}` : ""));
 let playToken = 0;
+let cancelSlideWait;
 
 // ---- 打开时锁住页面滚动 ----
 // 不锁的话：抽屉盖着的页面还能滚，背景会跟着动（和遮罩"聚焦当前内容"的意图相反）。
@@ -277,13 +279,27 @@ function nextFrame() {
   });
 }
 
-// 读 token 拿时长，不在这里另写数字：token 是全库动效的唯一来源。
-function slideDuration() {
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue("--kima-duration-slow").trim();
-  if (!raw) return 300;
-  const value = raw.endsWith("ms") ? parseFloat(raw) : parseFloat(raw) * 1000;
-  return Number.isFinite(value) ? value : 300;
+// getAnimations 会刷新样式，拿到这次退场实际创建的 CSS transition。
+// 不按 token 自己计时：CSS 起点、延迟、反向缩短与 reduced-motion 都由浏览器决定。
+// 取消会使 finished 拒绝；若同一轮退场换了过渡（例如拖拽结束），继续等替代过渡。
+async function waitForSlide(token) {
+  let cancel;
+  const cancelled = new Promise((resolve) => { cancel = resolve; });
+  cancelSlideWait = cancel;
+  try {
+    while (token === playToken && panel.value) {
+      const transitions = panel.value.getAnimations().filter((animation) =>
+        animation.transitionProperty === "transform" && animation.playState !== "finished"
+      );
+      if (!transitions.length) return;
+      await Promise.race([
+        Promise.allSettled(transitions.map((animation) => animation.finished)),
+        cancelled,
+      ]);
+    }
+  } finally {
+    if (cancelSlideWait === cancel) cancelSlideWait = undefined;
+  }
 }
 
 async function enterDialog() {
@@ -292,6 +308,7 @@ async function enterDialog() {
   // ++playToken 同时也是"取消上一次未播完的退场"的信号：
   // leaveDialog 醒来发现 token 变了就会直接收手，不会再把 dialog 关掉。
   const token = ++playToken;
+  cancelSlideWait?.();
   // 两种入口：从未打开过，或上一次的退场还没播完又要打开。
   if (!element.open) {
     // 先锁滚动再 showModal：顺序反了的话，中间那一下页面是能滚的。
@@ -320,7 +337,13 @@ async function leaveDialog() {
   // 档位可能已经变高，关闭位移要按当前面板尺寸重算。
   measureShift();
   stage.value = "leaving";
-  await new Promise((resolve) => setTimeout(resolve, slideDuration()));
+  await nextTick();
+  if (token !== playToken) return;
+  await waitForSlide(token);
+  if (token !== playToken) return;
+  // finished 在绘制前的微任务中兑现；立即 close 会丢掉屏外终点这一帧。
+  // 先让终点真正绘制，再关闭，保持最后可见帧完整退场；不猜测 CSS 时长。
+  await nextFrame();
   // 退场途中又被重新打开（快速连点）时，别把刚打开的面板关掉。
   if (token !== playToken) return;
   // 顺序很重要：先关 dialog（元素立刻不可见），再撤掉退场状态。
@@ -330,6 +353,7 @@ async function leaveDialog() {
   // close() 之后元素已经 display:none，此刻内联样式怎么变都不会被看见，
   // 可以安全地回到干净状态（而不是把面板永久留在屏外）。
   await nextTick();
+  if (token !== playToken) return;
   stage.value = "";
   // 隐藏后才恢复默认档位，避免退场过程中高度突然变矮。
   if (snaps.value.length && props.activeSnapPoint == null) innerSnap.value = null;
@@ -368,7 +392,7 @@ function handleCancel(event) {
 
 function handleNativeClose() {
   // 原生关掉（比如浏览器自己触发）时也要解锁页面滚动。
-  if (!dialog.value.open) {
+  if (dialog.value && !dialog.value.open) {
     lockPageScroll(false);
     close("native");
   }
@@ -400,6 +424,9 @@ onMounted(() => {
   window.addEventListener("resize", onViewportResize);
 });
 onBeforeUnmount(() => {
+  ++playToken;
+  cancelSlideWait?.();
+  panel.value?.getAnimations().forEach((animation) => animation.cancel());
   window.removeEventListener("resize", onViewportResize);
   if (dialog.value?.open) dialog.value.close();
   // 组件被直接卸载（宿主移除节点、路由切走）时也要解锁，否则页面永远滚不动。
@@ -497,7 +524,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
   /* display 由 JS 的 enterDialog / leaveDialog 状态机全权控制：
-   * showModal() 打开、element.close() 关闭，时机由 JS setTimeout 保证；
+   * showModal() 打开、element.close() 在面板实际过渡完成后关闭；
    * 不用 allow-discrete 延迟 display，否则两套机制叠加会产生闪回。 */
 
   &[open] {

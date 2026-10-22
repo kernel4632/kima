@@ -10,7 +10,9 @@ Vue 用 v-model 和 v-model:open 同步状态；调用示例：
 <script setup>
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
+import { useRemoteOptions } from "../utils/remote-options.js";
 import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
+import { useRipple } from "../utils/ripple.js";
 
 defineOptions({ inheritAttrs: false });
 
@@ -41,14 +43,19 @@ const props = defineProps({
   },
   open: Boolean,
   freeSolo: Boolean,
+  loader: { type: Function, default: undefined },
+  debounce: { type: Number, default: 200 },
+  retry: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(["input", "update:modelValue", "change", "update:open"]);
+const emit = defineEmits(["input", "update:modelValue", "change", "update:open", "options-loading", "options-load", "options-error"]);
 const attrs = useAttrs();
 const host = getCurrentInstance()?.ce ? useHost() : null;
 const forwardedAttrs = computed(() => host ? { ...attrs, id: undefined } : attrs);
 
 const root = ref(null);
+const control = ref(null);
+useRipple(control);
 const input = ref(null);
 const nativeInput = ref(null);
 const optionElements = ref([]);
@@ -65,11 +72,15 @@ let form;
 let initialValue;
 let restoreFocus = true;
 
-const selectedItem = computed(() => props.items.find((item) => Object.is(item?.value, localValue.value)) || null);
+const remoteLoader = computed(() => props.loader);
+const remoteQuery = computed(() => query.value);
+const { items: remoteItems, loading: remoteLoading, error: remoteError, retry: retryRemote } = useRemoteOptions(remoteLoader, remoteQuery, computed(() => props.debounce), computed(() => props.retry), emit);
+const optionItems = computed(() => typeof props.loader === "function" ? remoteItems.value : props.items);
+const selectedItem = computed(() => optionItems.value.find((item) => Object.is(item?.value, localValue.value)) || null);
 const visibleItems = computed(() => {
   const text = props.searchable ? query.value.trim().toLocaleLowerCase() : "";
-  if (!text) return props.items;
-  return props.items.filter((item) => `${item?.label || ""} ${item?.description || ""}`.toLocaleLowerCase().includes(text));
+  if (typeof props.loader === "function" || !text) return optionItems.value;
+  return optionItems.value.filter((item) => `${item?.label || ""} ${item?.description || ""}`.toLocaleLowerCase().includes(text));
 });
 const nativeValue = computed(() => localValue.value === null || localValue.value === undefined ? "" : String(localValue.value));
 const activeId = computed(() => localOpen.value && activeIndex.value >= 0 ? `${listboxId}-option-${activeIndex.value}` : undefined);
@@ -234,7 +245,7 @@ function handleReset(event) {
     const changed = !Object.is(localValue.value, initialValue);
     localValue.value = initialValue;
     committedValue.value = initialValue;
-    query.value = props.items.find((item) => Object.is(item?.value, initialValue))?.label || (props.freeSolo && initialValue != null ? String(initialValue) : "");
+    query.value = optionItems.value.find((item) => Object.is(item?.value, initialValue))?.label || (props.freeSolo && initialValue != null ? String(initialValue) : "");
     closeCombobox(false);
     if (nativeInput.value) nativeInput.value.value = initialValue == null ? "" : String(initialValue);
     if (changed) emit("update:modelValue", initialValue);
@@ -244,7 +255,7 @@ function handleReset(event) {
 watch(() => props.modelValue, (value) => {
   localValue.value = value;
   committedValue.value = value;
-  query.value = props.items.find((item) => Object.is(item?.value, value))?.label || (props.freeSolo && value != null ? String(value) : "");
+  query.value = optionItems.value.find((item) => Object.is(item?.value, value))?.label || (props.freeSolo && value != null ? String(value) : "");
 });
 watch(() => props.items, () => {
   if (!localOpen.value) query.value = selectedText();
@@ -287,7 +298,7 @@ onBeforeUnmount(() => {
     class="kima-combobox"
     :class="{ 'kima-combobox--open': localOpen, 'kima-combobox--disabled': disabled }"
   >
-    <div class="kima-combobox__control">
+    <div ref="control" class="kima-combobox__control" :aria-disabled="disabled || undefined">
       <KimaIcon v-if="searchable" class="kima-combobox__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
       <input
         :id="inputId"
@@ -312,7 +323,7 @@ onBeforeUnmount(() => {
         @change.stop="commitInput"
         @keydown="handleKeydown"
       >
-      <button
+      <Transition name="kima-fade"><button
         v-if="canClear"
         class="kima-combobox__clear"
         type="button"
@@ -322,7 +333,7 @@ onBeforeUnmount(() => {
         @click="clearValue"
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
-      </button>
+      </button></Transition>
       <button class="kima-combobox__toggle" type="button" :disabled="disabled" aria-label="显示选项" @mousedown.prevent @click="localOpen ? closeCombobox(true) : openCombobox()">
         <KimaIcon class="kima-combobox__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
@@ -344,9 +355,11 @@ onBeforeUnmount(() => {
     >
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
+    <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
       <div v-if="localOpen" class="kima-combobox__popup">
-        <div :id="listboxId" class="kima-combobox__options" role="listbox" :aria-labelledby="inputId">
+        <div :id="listboxId" class="kima-combobox__options" role="listbox" :aria-labelledby="inputId" :aria-busy="remoteLoading || undefined">
+          <div v-if="remoteLoading" class="kima-combobox__status" role="status">加载中…</div>
+          <div v-else-if="remoteError" class="kima-combobox__status kima-combobox__status--error" role="alert">{{ remoteError }} <button type="button" @click="retryRemote">重试</button></div>
           <div
             v-for="(item, index) in visibleItems"
             :id="`${listboxId}-option-${index}`"
@@ -365,9 +378,9 @@ onBeforeUnmount(() => {
               <span class="kima-combobox__option-label">{{ item.label }}</span>
               <span v-if="item.description" class="kima-combobox__option-description">{{ item.description }}</span>
             </span>
-            <KimaIcon v-if="Object.is(item.value, localValue)" class="kima-combobox__check" :icon="Tick01Icon" :size="18" aria-hidden="true" />
+            <Transition name="kima-fade"><KimaIcon v-if="Object.is(item.value, localValue)" class="kima-combobox__check" :icon="Tick01Icon" :size="18" aria-hidden="true" /></Transition>
           </div>
-          <div v-if="visibleItems.length === 0" class="kima-combobox__empty" role="status">没有匹配选项</div>
+          <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-combobox__empty" role="status">没有匹配选项</div>
         </div>
       </div>
     </Transition>
@@ -375,6 +388,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="scss">
+@use "../styles/mixins" as *;
 .kima-combobox {
   position: relative;
   display: inline-flex;
@@ -391,6 +405,8 @@ onBeforeUnmount(() => {
  * 谁在谁就占自己那一格，多一个少一个由 flex 自动重排——
  * 不用绝对定位去猜坐标，也就不会出现图标叠在一起的情况。 */
 .kima-combobox__control {
+  @include kima-state-layer;
+  @include kima-ripple-host;
   position: relative;
   display: flex;
   height: var(--kima-field-height);
@@ -468,6 +484,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-transparent);
   cursor: pointer;
+  @include kima-motion-colors;
 
   &:hover:not(:disabled),
   &:focus-visible {
@@ -597,10 +614,13 @@ onBeforeUnmount(() => {
   color: inherit;
 }
 
-.kima-combobox__empty {
+.kima-combobox__empty,
+.kima-combobox__status {
   padding: var(--kima-space-3);
   text-align: center;
 }
+.kima-combobox__status--error { color: var(--kima-color-error); }
+.kima-combobox__status button { margin-inline-start: var(--kima-space-2); color: var(--kima-color-primary); background: transparent; border: 0; font: inherit; text-decoration: underline; cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   .kima-combobox__arrow,

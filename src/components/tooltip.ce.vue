@@ -14,6 +14,7 @@
 <script setup>
 import { Comment, computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useId, useSlots, watch } from "vue";
 import { useNativeSlots } from "../utils/native-slots.js";
+import { presenceTransition } from "../utils/motion.js";
 
 defineOptions({ inheritAttrs: false });
 
@@ -209,7 +210,7 @@ onBeforeUnmount(() => {
     </span>
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup">
+    <Transition name="kima-popup" v-bind="presenceTransition">
       <span
         v-if="tooltipOpen"
         :id="tooltipId"

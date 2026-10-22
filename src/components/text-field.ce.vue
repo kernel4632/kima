@@ -11,6 +11,8 @@
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useId, watch } from "vue";
+import { collapseTransition, presenceTransition } from "../utils/motion.js";
+import { useRipple } from "../utils/ripple.js";
 import KimaIcon from "./icon.ce.vue";
 import {
   Cancel01Icon,
@@ -57,6 +59,8 @@ const emit = defineEmits(["update:modelValue", "change"]);
 const attrs = useAttrs();
 const baseId = useId();
 const input = ref(null);
+const control = ref(null);
+useRipple(control);
 const passwordVisible = ref(false);
 const localValue = ref(props.modelValue);
 let composing = false;
@@ -165,7 +169,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     ]"
     :style="attrs.style"
   >
-    <div class="kima-text-field__control">
+    <div ref="control" class="kima-text-field__control" :aria-disabled="disabled || undefined">
       <input
         ref="input"
         v-bind="inputAttrs()"
@@ -200,6 +204,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
             color="currentColor"
           />
         </button>
+        <Transition name="kima-fade" v-bind="presenceTransition">
         <button
           v-if="canClear"
           class="kima-text-field__action"
@@ -210,9 +215,11 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
         >
           <KimaIcon :icon="Cancel01Icon" :size="18" color="currentColor" />
         </button>
+        </Transition>
       </div>
+      <Transition v-else name="kima-fade" v-bind="presenceTransition">
       <button
-      v-else-if="canClear"
+        v-if="canClear"
         class="kima-text-field__action kima-text-field__action--clear"
         type="button"
         aria-label="清除内容"
@@ -221,15 +228,21 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       >
         <KimaIcon :icon="Cancel01Icon" :size="18" color="currentColor" />
       </button>
+      </Transition>
     </div>
 
-    <p v-if="error || hint" class="kima-text-field__message" :id="error ? errorId : hintId">
-      {{ error || hint }}
-    </p>
+    <Transition :css="false" v-bind="{ ...collapseTransition, ...presenceTransition }">
+      <div v-show="error || hint" class="kima-text-field__message-wrap" :inert="!(error || hint)" :aria-hidden="!(error || hint) || undefined">
+        <Transition name="kima-fade" v-bind="presenceTransition">
+          <p v-if="error || hint" :key="`${error ? 'error' : 'hint'}:${error || hint}`" class="kima-text-field__message" :class="{ 'kima-text-field__message--error': !!error }" :id="error ? errorId : hintId" :role="error ? 'alert' : undefined">{{ error || hint }}</p>
+        </Transition>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <style scoped lang="scss">
+@use "../styles/mixins" as *;
 .kima-text-field {
   display: block;
   width: 100%;
@@ -241,6 +254,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
    * 聚焦时叠上一圈主色（用 inset 阴影，不占位置也不会把元素撑大），
    * 告诉键盘操作的人现在落在哪个框里。 */
   &__control {
+    @include kima-state-layer;
+    @include kima-ripple-host;
     display: flex;
     align-items: center;
     height: var(--kima-field-height);
@@ -275,6 +290,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
   /* 输入框铺满剩下的宽度，右侧的按钮组各占各的位置，自动排开。 */
   &__control input {
+    @include kima-motion-colors;
     flex: 1 1 auto;
     min-width: 0;
     height: 100%;
@@ -313,6 +329,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 
   &__action {
+    @include kima-motion-colors;
     width: 32px;
     height: 32px;
     display: inline-flex;
@@ -351,7 +368,9 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     margin-right: var(--kima-space-1);
   }
 
+  &__message-wrap { display: grid; }
   &__message {
+    grid-area: 1 / 1;
     min-height: 1.2em;
     /* 上边挨着输入框一段小间距，左右缩进跟输入文字对齐。 */
     margin: var(--kima-space-1) var(--kima-field-padding) 0;
@@ -360,7 +379,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     line-height: 1.2;
   }
 
-  &--error &__message {
+  &__message--error {
     color: var(--kima-color-error);
   }
 }

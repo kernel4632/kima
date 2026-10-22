@@ -131,6 +131,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   font-size: var(--kima-font-size-body-large);
   cursor: pointer;
   user-select: none;
+  @include kima-motion-colors;
 
   &__input {
     position: absolute;
@@ -240,5 +241,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       opacity: var(--kima-opacity-disabled);
     }
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kima-checkbox__mark { transition: none; }
 }
 </style>

@@ -9,7 +9,7 @@ KIMA 是一个面向高专注、高体验 Web 应用的 UI 设计系统与组件
 本文件是本仓库的最高协作约束。任何会话在改代码前先读本文件。
 
 > 仓库已从旧的 FEYO 改名到 KIMA，源码、样式、脚本、测试、文档里的名字都统一成 `kima`。
-> 组件本身还是旧的占位实现，下一步重做基础层（见下方「迁移状态」）。
+> 基础层和组件已重做；当前目录有 145 个组件入口。能力边界见[逐项矩阵](docs/component-comparison.md)，最终验证状态见[路线图](docs/component-roadmap.md)，不能把文件存在写成全量验收通过。
 
 ## 技术栈（固定，不要替换）
 
@@ -101,7 +101,7 @@ src/
     _mixins.scss    共用交互 mixin（状态层、焦点环、表面、禁用）
     index.scss      开发预览页的基础样式
   components/       组件，一个组件一个 xxx.ce.vue 文件，直接平铺，放进来就自动登记
-  utils/            不属于单个组件的共用小工具，两个以上才建这个目录（现在只有 native-slots.js）
+  utils/            共用工具（主题、动效、输入/日期、导航、配置、内容等），按实际复用维护
   App.vue           开发预览页
   main.js           开发入口
 ```
@@ -112,8 +112,9 @@ src/
 pnpm install     # 安装依赖
 pnpm dev         # 本地开发
 pnpm build       # 生产构建
-pnpm build:lib   # 组件库构建（两个 dist 入口）
+pnpm build:lib   # 组件库构建（Vue / elements / theme 三个 JS 入口及 Vue 样式）
 pnpm verify:lib  # 校验打包产物
+pnpm verify:install # 真实 tarball 的隔离消费者校验
 pnpm test        # 浏览器交互测试
 pnpm test:ssr    # SSR 测试
 ```
@@ -122,7 +123,7 @@ pnpm test:ssr    # SSR 测试
 
 - 修改前先看项目现有写法，保持风格一致，优先最小改动。
 - 组件用 SCSS，`<style scoped lang="scss">`，颜色一律走 token。
-- 换主题色只改 `scripts/palette.js` 里的 `seed`，再运行 `node scripts/palette.js`；不要手改 `_palette.scss`。
+- 默认主题来源为 `src/utils/theme.js`，`scripts/palette.js` 生成首屏色板；运行时用 `applyPalette()` 换色。不要手改 `_palette.scss`，不要在组件另建一套色板。
 - 不凭空增加框架或抽象层。
 - 完成一个可用改动后运行 `pnpm build`；组件库改动还要跑 `pnpm build:lib` 和 `pnpm verify:lib`。
 - 改完一点且处于能用状态（构建和测试通过）就立刻提交并推送，不要攒着。
@@ -176,8 +177,7 @@ pnpm test:ssr    # SSR 测试
 
 ### 复用旧资产时的注意
 
-- 旧组件已实现自动发现、Vue 导出、Web Components 注册、浏览器/SSR 测试这套**工程骨架可以直接留用**，
-  只改名即可。
+- 自动发现、Vue 导出、Web Components 注册、浏览器/SSR 测试的工程骨架已沿用；新增入口仍须核对文档/示例接入和真实构建产物，不能只凭自动发现宣布验收完成。
 - `docs/reference.md` 是旧的 DMS 研究笔记，**已过时**，仅作历史参考，不再作为设计依据。
 
 ## 设计参考
