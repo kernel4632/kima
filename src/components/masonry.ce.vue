@@ -14,6 +14,6 @@ onBeforeUnmount(() => observer?.disconnect());
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-masonry" role="group" :aria-label="label" data-flow="column-major" :style="{columnCount: count, '--kima-masonry-gap': cssSize(gap)}"><slot /></div></template>
 <style scoped lang="scss">
-.kima-masonry { column-gap: var(--kima-masonry-gap); transition: column-gap var(--kima-duration-medium) var(--kima-curve-standard); :deep(> *) { break-inside: avoid; margin-block: 0 var(--kima-masonry-gap); } :deep(img) { max-width: 100%; height: auto; } }
+.kima-masonry { width: 100%; column-gap: var(--kima-masonry-gap); transition: column-gap var(--kima-duration-medium) var(--kima-curve-standard); :deep(> *) { break-inside: avoid; margin-block: 0 var(--kima-masonry-gap); } :deep(img) { max-width: 100%; height: auto; } }
 @media (prefers-reduced-motion: reduce) { .kima-masonry { transition: none; } }
 </style>

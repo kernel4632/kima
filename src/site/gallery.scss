@@ -1,0 +1,141 @@
+/* 文档站演示区布局：唯一来源。
+ * 每组示例只描述“组件怎么用”，不再各自定义演示区内外边距、表面和标题。
+ * 舞台是列向 flex：短组件居中，宽组件由自身 width:100% 拉满。
+ */
+@use "../styles/tokens";
+
+.kima-examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kima-space-5);
+  width: 100%;
+  min-width: 0;
+}
+
+.kima-gallery__body {
+  width: 100%;
+  min-width: 0;
+}
+
+.kima-gallery__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kima-space-4);
+  width: 100%;
+  min-width: 0;
+}
+
+.kima-gallery__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kima-space-4);
+  width: 100%;
+  min-width: 0;
+}
+
+/* 页面标题与导语已经说明当前组件，演示区里不再重复一层说明块。
+ * 只隐藏演示自带的 header：组件根节点可能就是 h2/h3，不能按标签一刀切。 */
+.kima-gallery__section > h2,
+.kima-gallery__demo > header {
+  display: none;
+}
+
+.kima-gallery__demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kima-space-5);
+  width: 100%;
+  min-width: 0;
+  text-align: start;
+}
+
+.kima-gallery__demo > * {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* 表单和分组容器本身就是一块场地，横向铺满，内部再各自排布。 */
+.kima-gallery__demo > form,
+.kima-gallery__demo > .kima-gallery__row,
+.kima-gallery__demo > .kima-gallery__grid,
+.kima-gallery__demo > .kima-gallery__stack,
+.kima-gallery__demo > .kima-examples {
+  width: 100%;
+}
+
+.kima-gallery__demo > form {
+  max-width: 620px;
+}
+
+/* 表单里重复的演示标题由页面标题承担；提交按钮按内容宽度居中，不拉满整行。 */
+.kima-gallery__demo > form > h3 {
+  display: none;
+}
+
+.kima-gallery__demo form > .kima-button {
+  justify-self: center;
+}
+
+/* 这些组件本身就是一块宽场地，居中会把它压成缩略图。 */
+.kima-gallery__demo > :is(.kima-chart, .kima-heatmap, .kima-code-block, .kima-log-viewer, .kima-progress-group, .kima-descriptions, .kima-transfer, .kima-tabs, .kima-grid, .kima-listbox, .kima-tree, .kima-virtual-tree, .kima-virtual-scroll, .kima-masonry, .kima-stack) {
+  width: 100%;
+}
+
+/* 表单控件统一到可读宽度：横向铺满所在格子，但不把整页拉成一条。 */
+.kima-gallery__demo :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-cascader, .kima-multi-select, .kima-tree-select, .kima-virtual-select, .kima-date-picker, .kima-time-picker, .kima-date-range-picker, .kima-time-range-picker, .kima-datetime-picker, .kima-datetime-range-picker, .kima-period-picker, .kima-date-field, .kima-time-field, .kima-time-select, .kima-masked-input, .kima-json-input, .kima-number-field, .kima-tags-input, .kima-pin-input, .kima-color-picker, .kima-slider, .kima-range-slider, .kima-file-upload, .kima-upload-manager) {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.kima-gallery__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kima-space-3);
+}
+
+.kima-gallery__row--tall {
+  min-height: 80px;
+}
+
+.kima-gallery__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kima-space-4);
+}
+
+.kima-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--kima-space-4);
+  align-items: start;
+}
+
+.kima-gallery__row-index {
+  display: inline-block;
+  min-width: 56px;
+  color: var(--kima-color-on-surface-variant);
+}
+
+/* 示例里的状态输出是“读数”，用一层轻底把长 JSON 收在演示区内。 */
+.kima-gallery__demo output:empty {
+  display: none;
+}
+
+.kima-gallery__demo output {
+  display: block;
+  max-width: 100%;
+  max-height: 9em;
+  overflow: auto;
+  padding: var(--kima-space-3) var(--kima-space-4);
+  border-radius: var(--kima-radius-s);
+  background: var(--kima-color-layer-1);
+  color: var(--kima-color-on-surface-variant);
+  font-size: var(--kima-font-size-label-medium);
+  overflow-wrap: anywhere;
+}

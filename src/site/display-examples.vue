@@ -57,11 +57,9 @@ function restart() { finished.value = false; deadline.value = Date.now() + 5000;
 
 <style scoped lang="scss">
 .kima-display-demo {
-  display: grid; gap: var(--kima-space-6); min-width: 0; width: 100%; box-sizing: border-box; padding: var(--kima-space-6); color: var(--kima-color-on-surface); font-family: var(--kima-font-family);
-  h2 { margin: 0 0 var(--kima-space-3); font-size: var(--kima-font-size-headline-small); }
-  header p { margin: 0; color: var(--kima-color-on-surface-variant); }
-  &__row { display: flex; flex-wrap: wrap; gap: var(--kima-space-4); align-items: center; }
-  &__stack { display: grid; gap: var(--kima-space-4); justify-items: start; > * { max-width: 100%; } > .kima-alert, > .kima-skeleton { width: 100%; } }
-  &__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--kima-space-4); }
+  min-width: 0; width: 100%; box-sizing: border-box; color: var(--kima-color-on-surface); font-family: var(--kima-font-family);
+  &__row { display: flex; flex-wrap: wrap; gap: var(--kima-space-4); align-items: center; justify-content: center; }
+  &__stack { display: grid; gap: var(--kima-space-4); width: 100%; justify-items: center; > * { max-width: 100%; } > .kima-alert, > .kima-skeleton { width: 100%; } }
+  &__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--kima-space-4); width: 100%; }
 }
 </style>

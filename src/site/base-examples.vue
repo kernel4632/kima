@@ -45,8 +45,8 @@ import {
   KimaVirtualScroll,
 } from "@/index";
 const props = defineProps({ component: { type: String, required: true } });
+// 每个分组只在包含当前组件时渲染；空分组会留下 flex gap，把演示区撑高。
 function visible(...keywords) {
-  if (["按钮与动作", "表单输入", "选择与日期", "反馈与提示", "数据展示", "结构与导航"].includes(keywords[0])) return true;
   return keywords.includes(props.component);
 }
 
@@ -178,16 +178,17 @@ applyPalette(theme.seed, theme);
 `;
 </script>
 <template>
-<div class="kima-examples">
     <div class="kima-gallery__body">
       <div class="kima-gallery__main">
-        <div v-if="component === 'icon'" class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
+        <article v-if="component === 'icon'" class="kima-gallery__demo">
+          <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
+        </article>
         <article v-if="component === 'code-block'" class="kima-gallery__demo">
           <KimaCodeBlock :code="codeExample" language="javascript" filename="theme.js" line-numbers />
           <KimaCodeBlock code="pnpm add @kernel4632/kima vue" language="shell" />
         </article>
         <!-- 按钮与动作 -->
-        <section v-show="visible('按钮与动作', 'button', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
+        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'button-group', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
           <h2>按钮与动作</h2>
 
           <article v-show="visible('button', '按钮')" class="kima-gallery__demo">
@@ -223,7 +224,7 @@ applyPalette(theme.seed, theme);
             <header><h3>ButtonGroup 按钮组</h3><p>单选切换视图，支持方向键。</p></header>
             <div class="kima-gallery__row">
               <kima-button-group v-model="viewValue" :items="viewItems" />
-              <kima-button-group v-model="viewValue" :items="viewItems" size="small" orientation="vertical" />
+              <kima-button-group v-model="viewValue" :items="viewItems" size="small" />
             </div>
           </article>
 
@@ -563,16 +564,4 @@ applyPalette(theme.seed, theme);
         <kima-button variant="text" @click="drawerSnapOpen = false">关闭</kima-button>
       </template>
     </kima-drawer>
-
-</div>
-</template>
-<style scoped lang="scss">
-.kima-gallery__body { min-width: 0; }
-.kima-gallery__main { display: flex; flex-direction: column; gap: var(--kima-space-4); }
-.kima-gallery__section > h2, .kima-gallery__demo > header { display: none; }
-.kima-gallery__section, .kima-gallery__demo, .kima-gallery__stack { display: flex; min-width: 0; flex-direction: column; gap: var(--kima-space-4); }
-.kima-gallery__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3); }
-.kima-gallery__row--tall { min-height: 80px; }
-.kima-gallery__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: var(--kima-space-4); }
-.kima-gallery__row-index { display: inline-block; min-width: 56px; color: var(--kima-color-on-surface-variant); }
-</style>
+    </template>

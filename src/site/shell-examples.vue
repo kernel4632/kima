@@ -24,5 +24,5 @@ const actions = [{value:'export',label:'导出',children:[{value:'pdf',label:'PD
   <KimaGradientText v-else-if="component === 'gradient-text'" as="h2">专注、交互、动效、鲜活</KimaGradientText>
 </article></template>
 <style scoped lang="scss">
-.kima-shell-demo { box-sizing: border-box; width: 100%; min-width: 0; padding: var(--kima-space-6); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); &__scope { margin-top: var(--kima-space-4); padding: var(--kima-space-6); background: var(--kima-color-surface); border-radius: var(--kima-radius-l); } &__tile { display: block; box-sizing: border-box; padding: var(--kima-space-4); background: var(--kima-color-layer-2); color: var(--kima-color-primary); border-radius: var(--kima-radius-m); } }
+.kima-shell-demo { box-sizing: border-box; width: 100%; min-width: 0; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); &__scope { margin-top: var(--kima-space-4); padding: var(--kima-space-6); background: var(--kima-color-surface); border-radius: var(--kima-radius-l); } &__tile { display: block; box-sizing: border-box; padding: var(--kima-space-4); background: var(--kima-color-layer-2); color: var(--kima-color-primary); border-radius: var(--kima-radius-m); } }
 </style>

@@ -31,5 +31,5 @@ function submit(event){status.value=JSON.stringify(Object.fromEntries(new FormDa
   </article>
 </template>
 <style scoped lang="scss">
-.kima-content-example{display:grid;gap:var(--kima-space-4);min-width:0;padding:var(--kima-space-4);color:var(--kima-color-on-surface);font-family:var(--kima-font-family);form{display:grid;gap:var(--kima-space-4);min-width:0}label{display:flex;align-items:center;gap:var(--kima-space-2);flex-wrap:wrap}&__options,&__actions{display:flex;flex-wrap:wrap;gap:var(--kima-space-3)}&__status{white-space:pre-wrap;overflow-wrap:anywhere;font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant)}}
+.kima-content-example{min-width:0;width:100%;color:var(--kima-color-on-surface);font-family:var(--kima-font-family);form{display:grid;gap:var(--kima-space-4);min-width:0;max-width:none;width:100%}label{display:flex;align-items:center;gap:var(--kima-space-2);flex-wrap:wrap}&__options,&__actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--kima-space-3)}&__status{white-space:pre-wrap;overflow-wrap:anywhere;font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant)}}
 </style>

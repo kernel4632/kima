@@ -27,7 +27,6 @@ const steps = [{ target: '#kima-utility-tour-first', title: '选择项目', desc
 </script>
 <template>
   <article v-if="utilityCatalog[component]" :key="component" class="kima-gallery__demo kima-utility-demo" :data-utility="component">
-    <h3>{{ utilityCatalog[component].label }}</h3>
     <template v-if="component === 'tour'"><Button @click="open = true">开始导览</Button><p id="kima-utility-tour-first">当前项目：KIMA</p><Button id="kima-utility-tour-second" variant="tonal">保存项目</Button><Tour v-model:open="open" :steps="steps"/></template>
     <QrCode v-else-if="component === 'qr-code'" value="https://kima.example/你好" label="KIMA 示例链接"/>
     <Watermark v-else-if="component === 'watermark'" :text="['KIMA', '仅供预览']"><p class="kima-utility-demo__document">项目预览 · 文本水印是视觉提示，可被移除，不提供安全保护。</p></Watermark>
@@ -46,5 +45,5 @@ const steps = [{ target: '#kima-utility-tour-first', title: '选择项目', desc
   </article>
 </template>
 <style scoped lang="scss">
-.kima-utility-demo { min-width: 0; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); display: grid; gap: var(--kima-space-4); padding: var(--kima-space-5); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); &__tools { display: flex; flex-wrap: wrap; gap: var(--kima-space-2); } &__document { padding: var(--kima-space-6); min-height: 240px; } &__scroll { height: 240px; overflow: auto; } &__tall { min-height: 720px; } h3 { margin: 0; } }
+.kima-utility-demo { min-width: 0; width: 100%; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); &__tools { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--kima-space-2); } &__document { padding: var(--kima-space-6); min-height: 240px; } &__scroll { width: 100%; height: 240px; overflow: auto; } &__tall { min-height: 720px; } }
 </style>

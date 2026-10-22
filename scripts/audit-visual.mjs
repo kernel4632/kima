@@ -22,7 +22,7 @@ const report = [];
 async function measure() {
   return page.evaluate(() => {
     const canvas = document.querySelector('.kima-docs__canvas');
-    const demo = canvas?.querySelector('.kima-gallery__demo');
+    const demo = [...(canvas?.querySelectorAll('.kima-gallery__demo') || [])].find((element) => element.offsetParent !== null);
     if (!canvas || !demo) return { missing: true };
     const box = (element) => {
       const rect = element.getBoundingClientRect();
@@ -40,9 +40,17 @@ async function measure() {
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
     });
     const demoRect = demo.getBoundingClientRect();
+    const clipped = (element) => {
+      for (let node = element.parentElement; node && node !== demo; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        if (['hidden', 'clip', 'auto', 'scroll'].includes(style.overflowX)) return true;
+      }
+      return false;
+    };
     const overflow = visible
       .filter((element) => {
         const rect = element.getBoundingClientRect();
+        if (clipped(element)) return false;
         return rect.right > demoRect.right + 1.5 || rect.left < demoRect.left - 1.5;
       })
       .slice(0, 8)
@@ -80,6 +88,7 @@ for (const slug of slugs) {
   try {
     await page.goto(`${base}/#/components/${slug}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForSelector('.kima-docs__canvas .kima-gallery__demo', { timeout: 8000 }).catch(() => {});
+    await page.addStyleTag({ content: '.kima-docs__top { display: none !important; }' }).catch(() => {});
     await page.waitForTimeout(450);
     const result = await measure();
     const canvas = page.locator('.kima-docs__canvas').first();

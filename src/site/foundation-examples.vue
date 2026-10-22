@@ -27,7 +27,6 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
 </script>
 <template>
   <article v-if="foundationCatalog[component]" :key="component" class="kima-gallery__demo kima-foundation-example" :data-foundation="component">
-    <h3>{{ foundationCatalog[component].label }}</h3>
     <template v-if="component === 'grid'">
       <KimaGrid :columns="{ base: 1, sm: 2, md: 3 }" :gap="4">
         <div v-for="index in 6" :key="index" class="kima-foundation-example__cell">栅格 {{ index }}</div>
@@ -87,18 +86,15 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
 </template>
 <style scoped lang="scss">
 .kima-foundation-example {
-  display: grid;
-  gap: var(--kima-space-5);
   min-width: 0;
-  padding: var(--kima-space-5);
+  width: 100%;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  h3 { margin: 0; }
   &__cell { display: grid; min-height: 88px; place-items: center; padding: var(--kima-space-4); border-radius: var(--kima-radius-m); background: var(--kima-color-layer-1); text-align: center; }
   &__head { display: block; padding: var(--kima-space-3); border-radius: var(--kima-radius-s); background: var(--kima-color-layer-2); }
-  &__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); }
+  &__tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--kima-space-3); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); }
   &__prose { max-width: 64ch; margin: 0; line-height: var(--kima-line-height-loose); }
-  &__times { display: flex; flex-wrap: wrap; gap: var(--kima-space-4); }
+  &__times { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--kima-space-4); }
   a { color: var(--kima-color-primary); }
 }
 </style>

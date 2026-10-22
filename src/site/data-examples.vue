@@ -70,9 +70,8 @@ function addNotification() { const id = `notice-${Date.now()}`; notifications.va
 </template>
 
 <style scoped lang="scss">
-.kima-data-demo { display: grid; gap: var(--kima-space-6); min-width: 0; width: 100%; box-sizing: border-box; padding: var(--kima-space-6); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); }
-.kima-data-demo h2 { margin: 0 0 var(--kima-space-3); font-size: var(--kima-font-size-headline-small); } .kima-data-demo header p { margin: 0; color: var(--kima-color-on-surface-variant); line-height: var(--kima-line-height-loose); }
-.kima-data-demo__stack { display: grid; gap: var(--kima-space-4); min-width: 0; } .kima-data-demo__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-4); min-width: 0; }
+.kima-data-demo { min-width: 0; width: 100%; box-sizing: border-box; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); }
+.kima-data-demo__stack { display: grid; gap: var(--kima-space-4); width: 100%; min-width: 0; } .kima-data-demo__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--kima-space-4); min-width: 0; }
 .kima-data-demo__feed { display: grid; max-height: 360px; gap: var(--kima-space-2); overflow: auto; padding: var(--kima-space-4); border-radius: var(--kima-radius-m); background: var(--kima-color-layer-1); } .kima-data-demo__feed p { margin: 0; padding: var(--kima-space-3); border-radius: var(--kima-radius-s); background: var(--kima-color-layer-2); }
 .kima-data-demo code { max-width: 100%; overflow-wrap: anywhere; color: var(--kima-color-primary); } .kima-data-demo output { color: var(--kima-color-on-surface-variant); }
 </style>

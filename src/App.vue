@@ -185,7 +185,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__hero-canvas :deep(.kima-card) { padding: var(--kima-space-8); }
 .kima-docs__hero-canvas h2 { font-size: var(--kima-font-size-headline-small); line-height: 1.5; }
 .kima-docs__hero-canvas p { color: var(--kima-color-on-surface-variant); line-height: 1.8; margin-bottom: var(--kima-space-6); }
-.kima-docs__canvas { padding: var(--kima-space-6); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); min-height: 180px; }
+.kima-docs__canvas { display: flex; flex-direction: column; justify-content: center; padding: var(--kima-space-6); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); min-height: 180px; }
 .kima-docs__section > .kima-code-block { margin: var(--kima-space-5) 0; }
 .kima-docs__principles { display: grid; gap: var(--kima-space-4); }
 .kima-docs__principles h3 { margin: 0; }

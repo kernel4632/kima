@@ -23,7 +23,6 @@ const summary=computed(()=>range.value.join(' 至 '));
 </script>
 <template>
   <article class="kima-gallery__demo kima-advanced-input-example">
-    <h3>{{ props.component }}</h3>
     <KimaForm v-if="props.component==='form'" :handle-submit="handleSubmit">
       <template #default="{pending}"><KimaField hint="填写工作姓名，输入 fail 演示异步失败"><KimaTextField v-model="formName" label="姓名" name="person" required /></KimaField><KimaButton type="submit" :loading="pending">异步提交</KimaButton><KimaButton type="reset" variant="text">重置</KimaButton></template>
       <template #status><output role="status">{{ status }}</output></template>
@@ -43,5 +42,5 @@ const summary=computed(()=>range.value.join(' 至 '));
   </article>
 </template>
 <style scoped lang="scss">
-.kima-advanced-input-example {display:grid;gap:var(--kima-space-4);padding:var(--kima-space-4);color:var(--kima-color-on-surface);font-family:var(--kima-font-family);min-width:0;h3{margin:0;font-size:var(--kima-font-size-body-large);} &__form{display:grid;gap:var(--kima-space-4);min-width:0;} output{overflow-wrap:anywhere;color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium);} &__actions{display:flex;flex-wrap:wrap;gap:var(--kima-space-2);} }
+.kima-advanced-input-example {color:var(--kima-color-on-surface);font-family:var(--kima-font-family);min-width:0;width:100%; &__form{display:grid;gap:var(--kima-space-4);min-width:0;} output{overflow-wrap:anywhere;color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium);} &__actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--kima-space-2);} }
 </style>
