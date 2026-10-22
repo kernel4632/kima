@@ -97,6 +97,18 @@
   margin-inline: 0;
 }
 
+/* 组合容器（前缀/后缀、字段组）里的控件必须填满容器，否则前后缀会被甩到两端。 */
+.kima-gallery__demo :is(.kima-input-group, .kima-field-group) :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox) {
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* 组合容器本身也收在同一条可读宽度里，前缀和输入不会被拉开一整屏。 */
+.kima-gallery__demo > :is(.kima-input-group, .kima-field-group) {
+  width: 100%;
+  max-width: 520px;
+}
+
 /* 输入类控件自带固有宽度（input 的 size 默认值）。作为栅格项时，
  * 默认的 min-width:auto 会把字段撑出手机屏幕，这里让容器可以被压缩。 */
 .kima-gallery__demo :is(form, .kima-field, .kima-field-group, label) {

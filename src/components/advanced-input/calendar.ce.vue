@@ -96,7 +96,7 @@ defineExpose({ focus: () => focus(tabDate.value || month.value), navigate });
   &__row { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:2px; text-align:center; > span { font-size:var(--kima-font-size-label-small); padding-block:var(--kima-space-2); color:var(--kima-color-on-surface-variant); } }
   &__day { @include kima-motion-colors; @include kima-focus-ring; width:100%; aspect-ratio:1; min-height:40px; padding:0; border:0; border-radius:var(--kima-radius-full); background:var(--kima-color-transparent); color:inherit; font:inherit; cursor:pointer;
     &:hover:not(:disabled) { background:var(--kima-color-layer-3); }
-    &.is-outside { color:var(--kima-color-on-surface-variant); }
+    &.is-outside { color:var(--kima-color-on-surface-variant); opacity:.45; }
     &.is-today { box-shadow:inset 0 0 0 1px var(--kima-color-primary); }
     &.is-range { background:var(--kima-color-primary-container); color:var(--kima-color-on-primary-container); &:hover:not(:disabled){background:var(--kima-color-primary-container-hover);} }
     &.is-selected { background:var(--kima-color-primary); color:var(--kima-color-on-primary); }
