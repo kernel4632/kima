@@ -75,7 +75,8 @@ function handleCancel(event) {
 }
 
 function handleNativeClose() {
-  if (!dialog.value.open) close("native");
+  // 卸载时原生 close 事件可能在 ref 清空之后才到，这里不能直接读 dialog.value。
+  if (dialog.value && !dialog.value.open) close("native");
 }
 
 function handleKeydown(event) {

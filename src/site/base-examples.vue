@@ -355,12 +355,13 @@ applyPalette(theme.seed, theme);
           <article v-show="visible('date-picker', '日期')" class="kima-gallery__demo">
             <header><h3>DatePicker 日期选择</h3><p>日期：{{ birthday || "未选择" }}</p></header>
             <div class="kima-gallery__grid">
-              <kima-date-picker v-model="birthday" v-model:open="dateOpen" label="生日" clearable />
+              <kima-date-picker v-model="birthday" v-model:open="dateOpen" label="生日" locale="zh-CN" clearable />
               <kima-date-picker
                 :model-value="'2024-06-15'"
                 min="2024-06-01"
                 max="2024-06-20"
                 label="限定范围"
+                locale="zh-CN"
               />
             </div>
           </article>
@@ -368,7 +369,7 @@ applyPalette(theme.seed, theme);
           <article v-show="visible('time-picker', '时间')" class="kima-gallery__demo">
             <header><h3>TimePicker 时间选择</h3><p>时间：{{ startTime || "未选择" }}</p></header>
             <div class="kima-gallery__grid">
-              <kima-time-picker v-model="startTime" v-model:open="timeOpen" label="开始时间" :step="15" clearable />
+              <kima-time-picker v-model="startTime" v-model:open="timeOpen" label="开始时间" locale="zh-CN" :step="15" clearable />
               <kima-time-picker :model-value="'14:00'" label="12 小时制" locale="en-US" :hour12="true" />
             </div>
           </article>
@@ -531,8 +532,8 @@ applyPalette(theme.seed, theme);
     </kima-dialog>
 
     <kima-drawer v-model:open="drawerBottomOpen" title="底部抽屉" description="抓住顶部的把手往下拖，可以拖动关闭；没拖到一半会弹回原位。">
-      <kima-text-field label="名称" :model-value="'新建项目'" />
-      <kima-text-field label="负责人" :model-value="'林一'" />
+      <label class="kima-demo-field">名称<kima-text-field label="名称" :model-value="'新建项目'" /></label>
+      <label class="kima-demo-field">负责人<kima-text-field label="负责人" :model-value="'林一'" /></label>
       <template #footer>
         <kima-button variant="text" @click="drawerBottomOpen = false">取消</kima-button>
         <kima-button @click="drawerBottomOpen = false">完成</kima-button>
@@ -565,3 +566,6 @@ applyPalette(theme.seed, theme);
       </template>
     </kima-drawer>
     </template>
+    <style scoped lang="scss">
+    .kima-demo-field { display: grid; gap: var(--kima-space-1); }
+    </style>
