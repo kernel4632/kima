@@ -111,6 +111,7 @@ HOP：约束见[协作规范](../AGENTS.md)，组件逐项来源唯一维护在[
 | 全量 Chromium | `pnpm test -- --workers=2 --output test-results/final-145`：716/716，desktop 358 + mobile 358，退出 0 |
 | SSR | `pnpm test:ssr`：17/17，退出 0，警告/错误 0 |
 | 动效与截图 | 动效专项 170/170；`pnpm shots` 5223：5/5；关键截图含日期、上传、虚拟表格、富文本、图表、菜单和移动端深浅主题 |
+| 逐页视觉审查 | 桌面 1440×1000 与手机 390×844 各 145 页，演示区几何/横向滚动/越界/零尺寸检查 0 待修；弹层打开态另拍 22 页；方法与边界见[视觉审查](visual-audit.md) |
 | tarball 隔离安装 | `pnpm verify:install`：22/22，退出 0；Vue、native、standalone 静态 HTTP 及 tree-shaking 证据见 final-package-verification |
 | npm / Git | npm 身份 401，未公开发布；本次改动未提交、未推送 |
 
