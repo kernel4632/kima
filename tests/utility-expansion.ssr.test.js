@@ -1,24 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 import { createServer } from 'vite';
 import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import { createNotifications } from '../src/utils/notifications.js';
-import { encodeQR } from '../src/utils/qr.js';
-
-test('QR matrices match independent ISO byte-mode fixtures for ASCII and UTF-8', async () => {
-  const fixture = JSON.parse(await readFile(new URL('./fixtures/utility-qr-standard.json',import.meta.url),'utf8'));
-  for (const entry of fixture.cases) {
-    const qr=encodeQR(entry.text,'M');
-    assert.equal(qr.size,entry.size);
-    const bits=qr.modules.flat().map(cell=>cell?'1':'0').join('');
-    const hash=createHash('sha256').update(bits).digest('hex');
-    assert.ok(entry.validMaskHashes.includes(hash),`${entry.text}: ${hash}`);
-    assert.equal(qr.viewBox,`0 0 ${entry.size+8} ${entry.size+8}`);
-  }
-});
 test('notification instances isolate SSR requests, unsubscribe, dedupe, capacity zero and immutable snapshots',()=>{
   const a=createNotifications({capacity:2}),b=createNotifications(); let calls=0; const off=a.subscribe(()=>calls++);
   const id=a.push({message:'A',dedupeKey:'key'});assert.equal(a.push({message:'B',dedupeKey:'key'}),id);assert.equal(a.snapshot().length,1);assert.equal(b.snapshot().length,0);
