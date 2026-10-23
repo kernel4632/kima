@@ -33,6 +33,10 @@
       "import": "./dist/kima-elements.js",
       "default": "./dist/kima-elements.js"
     },
+    "./elements/core": {
+      "import": "./dist/kima-elements-core.js",
+      "default": "./dist/kima-elements-core.js"
+    },
     "./style.css": "./dist/style.css",
     "./theme": "./dist/kima-theme.js",
     "./package.json": "./package.json"

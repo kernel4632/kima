@@ -96,14 +96,15 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
     const buttonBytes = report.builds.button.jsBytes;
     assert.ok(buttonBytes < 200_000, `Button-only includes unexpected code: ${buttonBytes} bytes`);
     const modules = metadata.button.flatMap(chunk => chunk.modules);
-    assert.ok(modules.some(module => module.id.replaceAll('\\', '/').includes('@kernel4632/kima/dist/vue/components/button.ce.js')), '必须消费真实发布包的按钮模块');
+    // 组件按文档分组放在子目录里，路径中间多一层组名。
+    assert.ok(modules.some(module => /@kernel4632\/kima\/dist\/vue\/components\/(?:[^/]+\/)?button\.ce\.js$/.test(module.id.replaceAll('\\', '/'))), '必须消费真实发布包的按钮模块');
     for (const module of modules) assert.doesNotMatch(module.id.replaceAll('\\', '/'), /\/(?:@codemirror|@lezer|@tiptap|prosemirror-[^/]+|katex|qrcode-generator|highlight\.js)\//, 'Button-only must not include engine modules');
     for (const [name, exports] of Object.entries(controls)) {
       if (name === 'button') continue;
       assert.ok(report.builds[name].jsBytes > buttonBytes + 1_000, `${name} engine positive control must add real code`);
       const component = exports[1].slice(4).replace(/[A-Z]/g, (letter, index) => `${index ? '-' : ''}${letter.toLowerCase()}`);
       const rendered = metadata[name].flatMap(chunk => chunk.modules);
-      assert.ok(rendered.some(module => module.id.replaceAll('\\', '/').endsWith(`/components/${component}.ce.js`) && module.renderedLength > 0), `${name} positive control component missing in build metadata`);
+      assert.ok(rendered.some(module => { const id = module.id.replaceAll('\\', '/'); return id.includes('/components/') && id.endsWith(`/${component}.ce.js`) && module.renderedLength > 0; }), `${name} positive control component missing in build metadata`);
       const engine = { code: '/@codemirror/', rich: '/@tiptap/', equation: '/katex/', qr: '/qrcode-generator/', highlight: '/highlight.js/' }[name];
       assert.ok(rendered.some(module => module.id.replaceAll('\\', '/').includes(engine) && module.renderedLength > 0), `${name} positive control engine missing in build metadata`);
     }

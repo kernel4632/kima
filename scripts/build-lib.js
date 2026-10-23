@@ -12,7 +12,7 @@ const vueExternals = [...Object.keys(manifest.dependencies), ...Object.keys(mani
 const report = { startedAt: new Date().toISOString(), exitCode: 1, outputs: [] };
 await mkdir(new URL('artifacts/', root), { recursive: true });
 try {
-  for (const mode of ['lib', 'elements', 'theme']) {
+  for (const mode of ['lib', 'elements', 'elements-core', 'theme']) {
     await build({ configFile, mode,
       // Preserve engine package boundaries so consumer bundlers can remove unused engines.
       ...(mode === 'lib' ? { build: { rolldownOptions: {
@@ -25,13 +25,14 @@ try {
           if (output.type !== 'chunk') continue;
           const bytes = Buffer.byteLength(output.code), gzipBytes = gzipSync(output.code).length;
           report.outputs.push({ mode, fileName: output.fileName, bytes, gzipBytes, imports: output.imports, dynamicImports: output.dynamicImports });
-          if (mode === 'elements' || mode === 'theme') {
+          if (mode === 'elements' || mode === 'elements-core' || mode === 'theme') {
             assert.deepEqual(output.imports, [], `${mode} must have no external/static imports`);
             assert.deepEqual(output.dynamicImports, [], `${mode} must have no browser runtime dynamic imports`);
           }
           if (mode === 'elements') console.warn(`SIZE WARNING: /elements eagerly includes ALL components and engines: ${bytes} bytes (${(bytes / 1e6).toFixed(2)} MB); gzip ${gzipBytes} bytes. Vue named imports support tree shaking.`);
+          if (mode === 'elements-core') console.log(`/elements/core: ${bytes} bytes (${(bytes / 1e6).toFixed(2)} MB); gzip ${gzipBytes} bytes.`);
         }
-        if (mode === 'elements' || mode === 'theme') assert.equal(Object.values(bundle).filter(output => output.type === 'chunk').length, 1, `${mode} must remain a single standalone JS file`);
+        if (mode === 'elements' || mode === 'elements-core' || mode === 'theme') assert.equal(Object.values(bundle).filter(output => output.type === 'chunk').length, 1, `${mode} must remain a single standalone JS file`);
       } }],
     });
   }

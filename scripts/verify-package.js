@@ -5,6 +5,7 @@ import { gzipSync } from 'node:zlib';
 import { babelParse } from 'vue/compiler-sfc';
 import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
+import { componentTiers } from '../src/component-tiers.js';
 
 const root = new URL('../', import.meta.url);
 const report = { startedAt: new Date().toISOString(), exitCode: 1, components: 0, checks: [], sizes: {} };
@@ -29,12 +30,20 @@ try {
   // Imports are inside the failure boundary so SSR failures also leave an exit artifact.
   const library = await import('../dist/kima.js');
   const { elements } = await import('../dist/kima-elements.js');
+  const { elements: coreElements } = await import('../dist/kima-elements-core.js');
   const { generatePalette } = await import('../dist/kima-theme.js');
+  check('Core elements entry only registers core tier', () => {
+    assert.deepEqual(Object.keys(coreElements).sort(), componentTiers.core.map((slug) => `kima-${slug}`).sort());
+    for (const [tag, component] of Object.entries(coreElements)) {
+      assert.ok(elements[tag], `core tag missing from full entry: ${tag}`);
+      assert.ok(component.styles?.length, `missing inline element CSS for ${tag}`);
+    }
+  });
   check('SSR theme entry', () => assert.ok(Object.keys(generatePalette('#61afef')).length > 20));
   const codeHtml = await renderToString(createSSRApp({ render: () => h(library.KimaCodeBlock, { code: 'const value = 42;', language: 'javascript' }) }));
   check('SSR syntax highlighting', () => assert.match(codeHtml, /hljs-keyword/));
   const css = await readFile(new URL('dist/style.css', root), 'utf8');
-  for (const file of ['kima.js', 'kima-elements.js', 'kima-theme.js', 'style.css']) {
+  for (const file of ['kima.js', 'kima-elements.js', 'kima-elements-core.js', 'kima-theme.js', 'style.css']) {
     const content = await readFile(new URL(`dist/${file}`, root));
     report.sizes[file] = { bytes: content.length, gzipBytes: gzipSync(content).length };
   }
@@ -48,7 +57,7 @@ try {
   }
   await measureVue(new URL('dist/vue/', root));
   report.vueModules = { files: vueModules.length + 1, bytes: vueModules.reduce((sum, content) => sum + content.length, report.sizes['kima.js'].bytes), excludesExternalDependencies: true };
-  for (const file of ['kima-elements.js', 'kima-theme.js']) {
+  for (const file of ['kima-elements.js', 'kima-elements-core.js', 'kima-theme.js']) {
     const code = await readFile(new URL(`dist/${file}`, root), 'utf8');
     check(`${file}: AST standalone static/re-export/dynamic imports`, () => {
       const ast = babelParse(code, { sourceType: 'module' });
@@ -94,7 +103,8 @@ try {
     });
   }
   const size = report.sizes['kima-elements.js'];
-  console.warn(`SIZE WARNING: default /elements includes ALL engines: ${size.bytes} bytes (${(size.bytes / 1e6).toFixed(2)} MB), gzip ${size.gzipBytes} bytes. Not an on-demand entry; use Vue named imports.`);
+  const coreSize = report.sizes['kima-elements-core.js'];
+  console.warn(`SIZE WARNING: default /elements includes ALL engines: ${size.bytes} bytes (${(size.bytes / 1e6).toFixed(2)} MB), gzip ${size.gzipBytes} bytes. Prefer /elements/core (${(coreSize.bytes / 1e3).toFixed(0)} KB, gzip ${(coreSize.gzipBytes / 1e3).toFixed(0)} KB) or Vue named imports.`);
   report.exitCode = 0;
 } catch (error) {
   report.failure = error.stack || String(error);
