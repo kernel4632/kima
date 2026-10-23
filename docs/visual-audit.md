@@ -39,6 +39,21 @@ node scripts/audit-native.mjs http://127.0.0.1:5188
 `shots/` 已忽略，截图与报告不入库。每页报告在 `report.json`，包含演示区尺寸、横向滚动、
 越界元素、零尺寸自定义元素和页面错误。脚本会临时隐藏文档站顶栏，避免粘性定位盖住截图。
 
+## 弹层表面
+
+- 弹层是浮在内容之上的独立平面，**必须实色**（`kima-popup` / `interaction-popup`），
+  不能只靠 `kima-layer` 半透明叠层，否则背后的文字会透上来。
+- 内容由 Reka 渲染并**传送到 body** 的弹层（菜单、子菜单、上下文菜单、悬浮卡、多选/树选择面板），
+  元素上没有本组件的 `data-v` 标记，普通 scoped 规则匹配不到 → 表面写成
+  `:global(.kima-x__popup)`。菜单和子菜单就是因为这条丢了整块底色。
+- 检查命令（打开每个弹层后量实际背景）：
+
+```powershell
+node shots/audit/states.mjs                       # 逐个弹层截图（桌面）
+$env:THEME='light'; node shots/audit/states.mjs   # 浅色主题
+node shots/audit/popup-bg-probe.mjs               # 打印悬浮节点的标签/背景/阴影
+```
+
 ## 不同宽度的检查
 
 ```powershell
@@ -105,6 +120,7 @@ node shots/audit/responsive.mjs virtual-table
 | 每次换页标题被顶出屏幕 | `pendingSection` 初值是 `preview`，任何路由变化都滚动到预览 | 初值留空，只有搜索结果才跳节 |
 | Grid 的区域格子是空的，内容堆在下面 | 示例用 `slot="head"`，Vue 组件只认 `<template #head>` | 改成命名插槽模板 |
 | 输入组的前后缀被塞进输入区，字段被挤溢出 2px | 同上，`slot="prefix"` 落进了默认插槽 | 改成 `<template #prefix>` |
+| 菜单、子菜单弹层完全没有底色 | 内容被 Reka 传送到 body，没有 `data-v`，scoped 的 `.kima-menu__popup` 规则不命中 | 表面规则改成 `:global(.kima-x__popup)`；同类弹层一并改掉 |
 | 虚拟表格的复选框是浏览器默认白方块 | 选择列直接用了原生 `input[type=checkbox]` | 换成 `KimaCheckbox`（和表格的 `role="checkbox"` 一致） |
 | 复选组里是系统复选框 | 只给了 `accent-color`，画出来还是系统方框 | 方框和勾自己画，原生输入只留语义和点击面 |
 | 图表形式、编辑器语言是系统下拉 | 示例用了 `kima-native-select` | 示例换成 `KimaSelect`；`native-select` 只在自己的页面演示 |
