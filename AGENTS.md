@@ -120,6 +120,9 @@ src/
     shell/          应用壳与装饰
   utils/            共用工具（主题、动效、输入/日期、导航、配置、内容等），按实际复用维护
   component-paths.js 由 scripts/components.js 生成，slug → 分组路径，测试与工具使用
+  component-tiers.js 组件分档（core / extras / experimental），新增组件必须在这里选一档
+  elements.js       自定义元素全量入口（145 个）
+  elements-core.js  由 scripts/components.js 生成，只注册 core 档的自定义元素入口
   App.vue           开发预览页
   main.js           开发入口
 ```
@@ -139,6 +142,10 @@ pnpm test:ssr    # SSR 测试
 
 ## 开发约定
 
+- **组件分档**：新增 `.ce.vue` 必须在 [`src/component-tiers.js`](src/component-tiers.js:1) 里选一档
+  （core / extras / experimental），漏了分档或写了不存在的组件，构建会直接失败。
+  core 走最高水位（逐页审查、跨浏览器、读屏、中间帧），另两档只保证渲染与交互反馈。
+  自定义元素入口：`/elements` 全量，`/elements/core` 只注册 core 档。
 - 修改前先看项目现有写法，保持风格一致，优先最小改动。
 - 组件用 SCSS，`<style scoped lang="scss">`，颜色一律走 token。
 - 默认主题来源为 `src/utils/theme.js`，`scripts/palette.js` 生成首屏色板；运行时用 `applyPalette()` 换色。不要手改 `_palette.scss`，不要在组件另建一套色板。

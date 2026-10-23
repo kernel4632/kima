@@ -88,10 +88,23 @@ applyPalette('#61afef', { isDark: true });
 | --- | --- |
 | `@kernel4632/kima` | 具名 Vue 组件导出、componentNames、代码块语言登记工具 |
 | `@kernel4632/kima/style.css` | Vue 消费者所需样式和 token |
-| `@kernel4632/kima/elements` | 独立自定义元素注册与内置样式 |
+| `@kernel4632/kima/elements` | 独立自定义元素注册与内置样式（全量 145 个） |
+| `@kernel4632/kima/elements/core` | 只注册 core 档（默认推荐）；3.86MB → 1.57MB |
 | `@kernel4632/kima/theme` | 动态配色生成与应用工具 |
 
-构建脚本生成三个 JS 产物：[Vue 组件入口](scripts/build-lib.js:1)、[独立自定义元素入口](src/elements.js:1)、[主题工具入口](src/utils/theme.js:1)，另输出 Vue 消费者使用的样式。组件从[源码目录](src/components/)自动发现，本次文档核对为 **145 个**；完整清单见[入口索引](docs/component-index.md)。两种使用方式（Vue / 原生网页）不等于只有两个 JS 构建入口。
+构建脚本生成四个 JS 产物：[Vue 组件入口](scripts/build-lib.js:1)、[全量自定义元素入口](src/elements.js:1)、[core 自定义元素入口](src/elements-core.js:1)、[主题工具入口](src/utils/theme.js:1)，另输出 Vue 消费者使用的样式。组件从[源码目录](src/components/)自动发现，本次文档核对为 **145 个**；完整清单见[入口索引](docs/component-index.md)。
+
+## 维护分层
+
+145 个入口不可能都按最高水位维护，所以组件分三档，**唯一来源**是 [`src/component-tiers.js`](src/component-tiers.js:1)：
+
+| 档位 | 数量 | 维护水位 | 注册方式 |
+| --- | --- | --- | --- |
+| core | 44 | 逐页视觉审查、跨浏览器、键盘与读屏、动画中间帧 | `/elements/core` 默认注册 |
+| extras | 84 | 保证渲染、键盘可达、有交互反馈 | 按需，`/elements` 全量或自己注册 |
+| experimental | 17 | 只保证能渲染、有状态反馈，接口可能调整 | 按需，文档页标「实验」 |
+
+判断规则：每个应用都会用 → core；只有一类应用会用 → extras；只是原生控件的皮肤或装饰 → 并进基础控件或 experimental。新增 `.ce.vue` 必须在分档表里选一档，否则构建直接失败。
 
 代码块的语法分词由 `highlight.js` 完成，内置它的 common 语言集（35 种，另含 dockerfile；`vue`/`ts`/`sh`/`yml` 等常见别名已注册）。内置集之外的语言由宿主补登记，不把 190 多种语法全量塞进包里：
 
@@ -121,11 +134,11 @@ node scripts/audit-montage.mjs
 
 代码示例统一使用 `KimaCodeBlock`，提供指定语言着色、文件名、行号、换行和复制反馈；未知语言安全回退为纯文本。常用语言随包提供，不依赖网络着色服务。
 
-当前源码有 **145 个独立组件入口**，包含日期/表单、虚拟化、utility、布局排版、嵌套菜单/应用壳及内容扩展。图表/热力图、Tiptap 富文本、CodeMirror 代码编辑器和 KaTeX MathML 公式已有真实实现，相关依赖已进入核心 bundle；不再将它们写成尚未提供的附加包。
+当前源码有 **145 个独立组件入口**，包含日期/表单、虚拟化、utility、布局排版、嵌套菜单/应用壳及内容扩展。重型依赖集中在 extras 档（highlight.js 随代码块、CodeMirror、Tiptap、图表），所以日常控件用 `/elements/core` 不会带上它们。
 
 公开目录逐项来源和边界见 [145 项能力对照](docs/component-comparison.md)，G00–G50 的处置见[能力路线图](docs/component-roadmap.md)。表格没有固定列、分组表头/行分组或自动分页；颜色提供 HSV/alpha 与 HEX 编辑，RGB/HSL 是读数，不含取色器、多色彩空间；日期时间使用无时区本地模型，不处理 DST。图表不包含缩放平移/堆叠/饼图，编辑器不提供协作或代码执行。server auth、transport、CMS 和商业模板属于宿主/业务层范围，不列核心缺失。
 
-最终整合验收已实际完成：生产站 145/145 路由均有唯一可见 demo 且无 page error；浏览器全量 716/716（桌面 358、移动 358），SSR 17/17，动效专项 170/170；真实 tarball 隔离消费者 22/22；正式站截图 5/5。完整命令、退出码和日志见[最终回归记录](docs/final-regression.md)、[真实产物验收](docs/final-package-verification.md)及 `artifacts/final-site-production-smoke.log`。`build:lib`/`verify:lib` 保留全量 elements 3.72 MB 的体积警告；Vue 具名导入仍支持 tree shaking。当前版本尚未公开发布，工作区改动未提交、未推送。
+当前验收以命令实际输出为准：`pnpm test` 一条冒烟（入口注册、真实点击、弹层 Escape、表单值）；`pnpm test:ssr` 16 项；`node scripts/audit-visual.mjs` 桌面与手机各 145 页、`flagged=0`；`pnpm build` / `build:lib` / `verify:lib` 全过（145 组件、12 项产物检查，含 core 入口只注册 core 档的断言）。历史全量回归数字与日志见[最终回归记录](docs/final-regression.md)和[真实产物验收](docs/final-package-verification.md)。当前版本尚未公开发布。
 
 ## 发布
 

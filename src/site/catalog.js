@@ -3,6 +3,7 @@
  * 分组元数据统一取自 groups.js（示例视图注册与 catalog 共用同一映射）。
  */
 import metadata from 'virtual:kima-docs';
+import { tierOf } from '../component-tiers.js';
 import { groupEntries } from './groups.js';
 const extensions = groupEntries;
 const sources = import.meta.glob('../components/**/*.ce.vue', { query: '?raw', import: 'default' });
@@ -20,6 +21,8 @@ const groups = {
 export const catalog = metadata.map((item) => ({
   ...item,
   name: item.slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join(''),
+  // 分档来自 src/component-tiers.js，文档页直接显示维护水位。
+  tier: tierOf(item.slug) || 'extras',
   label: extensions[item.slug]?.label || labels[item.slug] || item.slug,
   group: extensions[item.slug]?.group || Object.keys(groups).find((name) => groups[name].includes(item.slug)) || '其他组件',
   loadSource: sourcesBySlug[item.slug],

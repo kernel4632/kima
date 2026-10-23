@@ -4,7 +4,19 @@
 
 当前 [组件目录](../src/components/)实际有 **145 个组件入口**，完整清单见[入口索引](component-index.md)，逐项实现边界与公开目录来源见[能力矩阵](component-comparison.md)。数量是源码事实，不是与任一参考库全部 API 等价或公开发布的证明。
 
-最终整合已完成事实验收：生产站 145/145 路由唯一可见 demo、无 page error；浏览器全量 716/716（桌面 358、移动 358）；SSR 17/17 且无告警/错误；动效专项 170/170；真实 tarball 隔离消费者 22/22；正式站截图 5/5。对应日志见[最终回归记录](final-regression.md)、[真实产物验收](final-package-verification.md)和 `artifacts/`。所有改动仍在工作区，未提交、未推送；npm 身份检查 401，尚未公开发布。
+当前验收以命令实际输出为准：`pnpm test` 一条冒烟；`pnpm test:ssr` 16 项；`node scripts/audit-visual.mjs` 桌面与手机各 145 页、`flagged=0`；`build`/`build:lib`/`verify:lib` 全过（145 组件、12 项产物检查）。历史全量回归日志见[最终回归记录](final-regression.md)、[真实产物验收](final-package-verification.md)和 `artifacts/`。npm 身份检查 401，尚未公开发布。
+
+## 维护分层
+
+145 个入口不可能都按最高水位维护。档位唯一来源是 [`src/component-tiers.js`](../src/component-tiers.js:1)，判断标准写在文件头：
+
+| 档位 | 数量 | 维护水位 | 注册方式 |
+| --- | --- | --- | --- |
+| core | 44 | 逐页视觉审查、跨浏览器、键盘与读屏、动画中间帧 | `/elements/core` 默认注册 |
+| extras | 84 | 渲染、键盘可达、有交互反馈；不做逐页视觉打磨 | 按需 |
+| experimental | 17 | 能渲染、有状态反馈；接口可能调整 | 按需 |
+
+文档站组件页会显示当前组件所属档位。新增 `.ce.vue` 必须在分档表里选一档，`scripts/components.js` 会校验，漏了构建直接失败。
 
 ## 口径与来源
 

@@ -7,6 +7,7 @@ import { Menu01Icon, Sun01Icon, Moon02Icon, SparklesIcon } from '@hugeicons/core
 import { applyPalette } from './utils/theme.js';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 import { catalog } from './site/catalog.js';
+import { tierMeta } from './component-tiers.js';
 import manifest from '../package.json';
 const route = ref(location.hash.slice(2) || 'overview');
 function readRoute() { route.value = location.hash.slice(2) || 'overview'; }
@@ -112,7 +113,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
       </aside>
       <main class="kima-docs__content">
         <header id="introduction" class="kima-docs__heading">
-          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : 'KINETIC · INTERACTION · MOTION · ALIVE' }}</p>
+          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : 'KINETIC · INTERACTION · MOTION · ALIVE' }}<span v-if="component" class="kima-docs__tier" :data-tier="component.tier" :title="tierMeta[component.tier].hint">{{ tierMeta[component.tier].label }}</span></p>
           <h1>{{ title }}</h1>
           <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
         </header>
@@ -184,7 +185,9 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__sidebar :deep(.kima-button__label) { white-space: normal; font-size: var(--kima-font-size-label-medium); }
 .kima-docs__content { min-width: 0; width: 100%; max-width: 840px; margin: 0 auto; padding: var(--kima-space-10) var(--kima-space-4); }
 .kima-docs__heading { margin-bottom: var(--kima-space-10); }
-.kima-docs__eyebrow { font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
+.kima-docs__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
+/* 维护水位：核心/扩展/实验。颜色只用来区分优先级，不承担状态语义。 */
+.kima-docs__tier { padding: 2px var(--kima-space-2); border-radius: var(--kima-radius-full); letter-spacing: 0; background: var(--kima-color-layer-3); color: var(--kima-color-on-surface-variant); &[data-tier="core"] { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); } &[data-tier="experimental"] { color: var(--kima-color-warning); } }
 .kima-docs__heading h1 { margin: 0; font-size: clamp(32px, 4vw, 56px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .kima-docs__lead { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-body-large); line-height: 1.8; margin-top: var(--kima-space-6); }
 .kima-docs__section { margin-top: var(--kima-space-12); scroll-margin-top: 120px; }
