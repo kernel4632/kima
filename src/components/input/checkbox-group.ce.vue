@@ -4,6 +4,8 @@
 -->
 <script setup>
 import { computed, ref } from "vue";
+import { MinusSignIcon, Tick02Icon } from "@hugeicons/core-free-icons";
+import KimaIcon from "../core/icon.ce.vue";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
 defineOptions({ inheritAttrs: false });
@@ -29,8 +31,14 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
 <template>
   <fieldset ref="root" v-bind="controlAttrs" :class="['kima-checkbox-group', attrs.class]" :style="attrs.style" :aria-label="controlAttrs['aria-label'] || label" :aria-orientation="orientation" :disabled="disabled" :aria-disabled="disabled || undefined">
     <label v-for="(item, index) in items" :key="item.value" class="kima-checkbox-group__item" :aria-disabled="disabled || item.disabled || undefined" :class="{ 'kima-checkbox-group__item--disabled': disabled || item.disabled }">
-      <input type="checkbox" :name="name" :value="item.value" :checked="local.includes(item.value)" :disabled="disabled || item.disabled" :required="required && !hasSelection && index === firstEnabled" @input.stop @change.stop="toggle(item.value, $event.target.checked)" />
-      <span>{{ item.label }}</span>
+      <!-- 原生 input 只留语义和整块的点击面，方框和勾都是自己画的：
+           accent-color 画出来的是系统复选框，深浅主题下都跟库里的方框对不上。 -->
+      <input class="kima-checkbox-group__input" type="checkbox" :name="name" :value="item.value" :checked="local.includes(item.value)" :disabled="disabled || item.disabled" :required="required && !hasSelection && index === firstEnabled" @input.stop @change.stop="toggle(item.value, $event.target.checked)" />
+      <span class="kima-checkbox-group__box" aria-hidden="true">
+        <KimaIcon class="kima-checkbox-group__mark kima-checkbox-group__mark--tick" :icon="Tick02Icon" :size="20" />
+        <KimaIcon class="kima-checkbox-group__mark kima-checkbox-group__mark--dash" :icon="MinusSignIcon" :size="20" />
+      </span>
+      <span class="kima-checkbox-group__label">{{ item.label }}</span>
     </label>
   </fieldset>
 </template>
@@ -63,6 +71,37 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
     &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
     &--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
   }
-  input { width: 24px; height: 24px; margin: 0; accent-color: var(--kima-color-primary); cursor: inherit; }
+
+  /* 输入框铺满整行，点哪儿都能勾上；它本身透明，视觉全交给方框。 */
+  &__input { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: inherit; }
+
+  &__box {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--kima-color-outline);
+    border-radius: var(--kima-radius-xs);
+    background-color: var(--kima-color-transparent);
+    transition:
+      background-color var(--kima-duration-effects) var(--kima-curve-standard),
+      border-color var(--kima-duration-effects) var(--kima-curve-standard);
+  }
+
+  &__mark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: var(--kima-color-on-primary);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform var(--kima-duration-medium) var(--kima-spring-snappy);
+  }
+
+  &__item:has(input:checked) &__box { border-color: var(--kima-color-primary); background-color: var(--kima-color-primary); }
+  &__item:has(input:checked) &__mark--tick { transform: translate(-50%, -50%) scale(1); }
+
+  &__label { min-width: 0; line-height: 1.4; }
 }
 </style>

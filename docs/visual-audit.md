@@ -25,7 +25,16 @@ node scripts/audit-montage.mjs
 
 # 宽度审查：每页组件根宽度 vs 舞台宽度，`*` 表示按内容收缩
 node scripts/audit-width.mjs http://127.0.0.1:5188
+
+# 原生控件审查：列出演示区里仍是浏览器默认外观的 checkbox / select / progress
+node scripts/audit-native.mjs http://127.0.0.1:5188
 ```
+
+原生控件审查只看“外观是不是浏览器默认”：字段内部的 `input[type=text]` 由 KIMA 画表面，不算；
+`appearance` 不是 `none` 又没有遮住的 `checkbox` / `radio` / `select` 才算。
+`kima-native-select` 是有意保留的系统菜单。**已知边界**：穿梭框的两个多选列表仍是原生
+`select[multiple]`，`date-range-picker` / `datetime-*` / `period-picker` / `time-range-picker`
+的输入仍是原生日期时间控件（表面是 KIMA 的，弹出的还是系统面板），这几处还没换。
 
 `shots/` 已忽略，截图与报告不入库。每页报告在 `report.json`，包含演示区尺寸、横向滚动、
 越界元素、零尺寸自定义元素和页面错误。脚本会临时隐藏文档站顶栏，避免粘性定位盖住截图。
@@ -97,6 +106,8 @@ node shots/audit/responsive.mjs virtual-table
 | Grid 的区域格子是空的，内容堆在下面 | 示例用 `slot="head"`，Vue 组件只认 `<template #head>` | 改成命名插槽模板 |
 | 输入组的前后缀被塞进输入区，字段被挤溢出 2px | 同上，`slot="prefix"` 落进了默认插槽 | 改成 `<template #prefix>` |
 | 虚拟表格的复选框是浏览器默认白方块 | 选择列直接用了原生 `input[type=checkbox]` | 换成 `KimaCheckbox`（和表格的 `role="checkbox"` 一致） |
+| 复选组里是系统复选框 | 只给了 `accent-color`，画出来还是系统方框 | 方框和勾自己画，原生输入只留语义和点击面 |
+| 图表形式、编辑器语言是系统下拉 | 示例用了 `kima-native-select` | 示例换成 `KimaSelect`；`native-select` 只在自己的页面演示 |
 | 透明度手柄在 100% 时被裁掉一半 | 手柄中心按比例定位，两端没有留半宽 | `left: clamp(10px, 比例, calc(100% - 10px))` |
 | 组件页导语里印着调用示例 HTML | 注释一行里既有描述也有“调用示例：<kima-…>” | 文档元数据只取“调用示例”之前的描述 |
 | 提示框圆角 4px、字号偏大 | 硬编码 `border-radius: 4px` 和未定义的 `--kima-font-size-sm` | 回到 `radius-s` 与 `label-medium` |
