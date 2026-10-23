@@ -29,5 +29,6 @@ watch(() => props.disabled, (value) => { if (value) updateOpen(false); });
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
 .kima-hover-card { @include interaction-root; display: inline-block; }
-:deep(.kima-hover-card__popup) { @include interaction-popup; h3 { margin: 0 0 var(--kima-space-3); } }
+/* 传送到 body 的内容拿不到 data-v，表面规则按类名全局命中。 */
+:global(.kima-hover-card__popup) { @include interaction-popup; h3 { margin: 0 0 var(--kima-space-3); } }
 </style>

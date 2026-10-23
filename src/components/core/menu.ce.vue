@@ -51,7 +51,10 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 @use '../../styles/shell-menu';
 .kima-menu { @include interaction-root; position: relative; display: inline-flex; min-width: 180px; &--open { z-index: 60; } }
 .kima-menu__trigger { @include kima-state-layer; @include kima-ripple-host; @include kima-focus-ring; @include kima-motion-colors; display: flex; width: 100%; min-height: 56px; align-items: center; justify-content: space-between; gap: var(--kima-space-3); padding: 0 var(--kima-space-4); border: 0; border-radius: var(--kima-radius-m); color: var(--kima-color-on-surface); background: var(--kima-color-layer-2); font: inherit; cursor: pointer; &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } }
-.kima-menu__popup { @include interaction-popup; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
+/* 菜单内容由 Reka 渲染并传送到 body，元素上没有本组件的 data-v 标记，
+ * 普通 scoped 规则匹配不到它——弹层就会完全没有底色。
+ * 这里用 :global 按类名命中（类名带 kima-menu 前缀，不会污染宿主页面）。 */
+:global(.kima-menu__popup) { @include interaction-popup; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
 .kima-menu__search-wrap { display: flex; align-items: center; gap: var(--kima-space-2); }
 .kima-menu__search { @include interaction-search; }
 </style>

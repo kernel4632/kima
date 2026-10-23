@@ -33,6 +33,9 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
 @use "../../styles/interaction" as *;
 @use '../../styles/shell-menu';
 @use "../../styles/mixins" as *;
-.kima-context-menu { @include interaction-root; &__trigger { @include kima-layer(1); @include kima-focus-ring; padding: var(--kima-space-6); border-radius: var(--kima-radius-m); } :deep(.kima-context-menu__popup) { @include interaction-popup; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); } &__item { @include interaction-row; } small { color: var(--kima-color-on-surface-variant); } }
+.kima-context-menu { @include interaction-root; &__trigger { @include kima-layer(1); @include kima-focus-ring; padding: var(--kima-space-6); border-radius: var(--kima-radius-m); } &__item { @include interaction-row; } small { color: var(--kima-color-on-surface-variant); } }
+/* 菜单内容由 Reka 渲染并可能传送到 body：那里没有本组件的 data-v 祖先，
+ * :deep 命中不了，弹层会连底色都没有。表面规则按类名全局命中。 */
+:global(.kima-context-menu__popup) { @include interaction-popup; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); }
 .kima-context-menu__trigger { @include kima-motion-colors; }
 </style>

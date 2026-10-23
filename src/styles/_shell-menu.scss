@@ -1,5 +1,7 @@
 @use 'interaction' as *;
-:deep(.kima-shell-menu__popup) { @include interaction-popup; width: min(260px, calc(100vw - 24px)); padding: var(--kima-space-2); }
+/* 子菜单内容会被 Reka 传送到 body：那里没有本组件的 data-v 祖先，
+ * :deep 的世代选择器命中不了，弹层就会连底色都没有。按类名全局命中。 */
+:global(.kima-shell-menu__popup) { @include interaction-popup; width: min(260px, calc(100vw - 24px)); padding: var(--kima-space-2); }
 :deep(.kima-shell-menu__item) { @include interaction-row; &[aria-checked='true'] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); &:hover, &[data-highlighted] { background: var(--kima-color-primary-container-hover); } } }
 :deep(.kima-shell-menu__copy) { display: grid; gap: var(--kima-space-1); }
 :deep(.kima-shell-menu__item) small { font-size: var(--kima-font-size-sm); opacity: .8; }

@@ -53,5 +53,7 @@ function navigate(event, index) {
 @use "../../styles/interaction" as *;
 @use '../../styles/shell-menu';
 @use "../../styles/mixins" as *;
-.kima-menubar { @include interaction-root; @include kima-layer(1); display: flex; flex-wrap: wrap; gap: var(--kima-space-2); padding: var(--kima-space-2); border-radius: var(--kima-radius-m); :deep(.kima-menubar__popup) { @include interaction-popup; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); } &__item { @include interaction-row; } small { color: var(--kima-color-on-surface-variant); } }
+.kima-menubar { @include interaction-root; @include kima-layer(1); display: flex; flex-wrap: wrap; gap: var(--kima-space-2); padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__item { @include interaction-row; } small { color: var(--kima-color-on-surface-variant); } }
+/* 传送到 body 的内容拿不到 data-v，表面规则按类名全局命中。 */
+:global(.kima-menubar__popup) { @include interaction-popup; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); }
 </style>

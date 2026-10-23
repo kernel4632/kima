@@ -30,5 +30,5 @@ function escape(event) { dismissInteraction(event, () => setOpen(false)); }
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
 .kima-popover { @include interaction-root; display: inline-block; max-width: 100%; }
-:deep(.kima-popover__popup) { @include interaction-popup; }
+:global(.kima-popover__popup) { @include interaction-popup; }
 </style>

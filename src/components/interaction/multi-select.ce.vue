@@ -51,5 +51,7 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
 </template>
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
-.kima-multi-select { @include interaction-root; position: relative; display: grid; gap: var(--kima-space-3); max-width: 100%; &__control, &__chips { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } :deep(.kima-multi-select__popup) { @include interaction-popup; padding: var(--kima-space-2); } &__chip, &__clear { display: inline-flex; } &__chips:empty { display: none; } &__search { @include interaction-search; } &__list { outline: none; } &__item { @include interaction-row; } &__native { @include interaction-native; } small { display: block; color: var(--kima-color-on-surface-variant); } }
+.kima-multi-select { @include interaction-root; position: relative; display: grid; gap: var(--kima-space-3); max-width: 100%; &__control, &__chips { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } &__chip, &__clear { display: inline-flex; } &__chips:empty { display: none; } &__search { @include interaction-search; } &__list { outline: none; } &__item { @include interaction-row; } &__native { @include interaction-native; } small { display: block; color: var(--kima-color-on-surface-variant); } }
+/* 弹层内容由 Reka 渲染，可能被传送到 body：表面规则不能依赖 data-v 祖先。 */
+:global(.kima-multi-select__popup) { @include interaction-popup; padding: var(--kima-space-2); }
 </style>

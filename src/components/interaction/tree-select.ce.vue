@@ -42,5 +42,7 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
 </template>
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
-.kima-tree-select { @include interaction-root; position: relative; &__control { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } :deep(.kima-tree-select__popup) { @include interaction-popup; padding: var(--kima-space-2); } &__native { @include interaction-native; } :deep(.kima-button__label) { white-space: normal; overflow-wrap: anywhere; } }
+.kima-tree-select { @include interaction-root; position: relative; &__control { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } &__native { @include interaction-native; } :deep(.kima-button__label) { white-space: normal; overflow-wrap: anywhere; } }
+/* 弹层内容由 Reka 渲染，可能被传送到 body：表面规则不能依赖 data-v 祖先。 */
+:global(.kima-tree-select__popup) { @include interaction-popup; padding: var(--kima-space-2); }
 </style>
