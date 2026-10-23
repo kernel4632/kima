@@ -122,13 +122,17 @@ async function copyCode() {
   font-weight: var(--kima-font-weight-semi-bold);
   @include kima-layer(1);
 
+  /* 顶栏是一层独立的小场地：给它自己一层浅底，和代码正文分开，
+   * 上下内边距压到 4px，别让"文件名那行"和第一行代码之间空出一条带。 */
   &__toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: var(--kima-space-2);
-    padding: var(--kima-space-2) var(--kima-space-4);
+    padding: var(--kima-space-1) var(--kima-space-4);
+    border-radius: var(--kima-radius-m) var(--kima-radius-m) 0 0;
+    background: var(--kima-color-layer-2);
   }
   &__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--kima-space-3); min-width: 0; }
   &__filename { overflow-wrap: anywhere; font-size: var(--kima-font-size-label-medium); }
@@ -140,11 +144,12 @@ async function copyCode() {
     max-height: 32rem;
     overflow: auto;
     margin: 0;
-    padding: var(--kima-space-4) var(--kima-space-5) var(--kima-space-6);
-    border-radius: var(--kima-radius-m);
+    padding: var(--kima-space-2) var(--kima-space-4) var(--kima-space-4);
+    border-radius: 0 0 var(--kima-radius-m) var(--kima-radius-m);
     font: inherit;
     font-size: var(--kima-font-size-body-small);
-    line-height: var(--kima-line-height-loose);
+    /* 代码的节奏由行本身承担：1.6 比正文的 1.7 紧一点，一屏能多看两行。 */
+    line-height: var(--kima-line-height-code);
     tab-size: 2;
     @include kima-focus-ring;
   }
@@ -157,9 +162,52 @@ async function copyCode() {
   // 反馈由读屏即时播报；失败时也给视觉用户提供具体操作。
   &__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   &__status--error { position: static; display: block; width: auto; height: auto; clip-path: none; padding: 0 var(--kima-space-5) var(--kima-space-3); font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); }
-  :deep(.hljs-keyword), :deep(.hljs-tag), :deep(.hljs-selector-tag) { color: var(--kima-color-primary); }
-  :deep(.hljs-string), :deep(.hljs-attr), :deep(.hljs-selector-class) { color: var(--kima-color-code-string); }
-  :deep(.hljs-number), :deep(.hljs-literal), :deep(.hljs-built_in), :deep(.hljs-title) { color: var(--kima-color-code-number); }
-  :deep(.hljs-comment), :deep(.hljs-meta) { color: var(--kima-color-on-surface-variant); }
+  /* 语法着色分五层：关键字（品牌色）、字符串（绿）、数字/常量（橙）、
+   * 函数与类型（紫）、属性与变量（粉）；注释和标点退到次要文字色。
+   * 只给 4 个 token 的话，一段 Vue 代码除了字符串几乎全是同一个颜色。 */
+  :deep(.hljs-keyword),
+  :deep(.hljs-name),
+  :deep(.hljs-selector-tag),
+  :deep(.hljs-section),
+  :deep(.hljs-doctag),
+  :deep(.hljs-meta .hljs-keyword) { color: var(--kima-color-code-keyword); }
+
+  :deep(.hljs-string),
+  :deep(.hljs-regexp),
+  :deep(.hljs-addition),
+  :deep(.hljs-meta .hljs-string) { color: var(--kima-color-code-string); }
+
+  :deep(.hljs-number),
+  :deep(.hljs-literal),
+  :deep(.hljs-symbol),
+  :deep(.hljs-bullet),
+  :deep(.hljs-link),
+  :deep(.hljs-selector-attr) { color: var(--kima-color-code-number); }
+
+  :deep(.hljs-title),
+  :deep(.hljs-type),
+  :deep(.hljs-built_in),
+  :deep(.hljs-template-tag),
+  :deep(.hljs-selector-pseudo) { color: var(--kima-color-code-function); }
+
+  :deep(.hljs-attr),
+  :deep(.hljs-attribute),
+  :deep(.hljs-property),
+  :deep(.hljs-variable),
+  :deep(.hljs-selector-class),
+  :deep(.hljs-selector-id),
+  :deep(.hljs-template-variable) { color: var(--kima-color-code-property); }
+
+  :deep(.hljs-comment),
+  :deep(.hljs-quote),
+  :deep(.hljs-meta) { color: var(--kima-color-code-comment); font-style: italic; }
+
+  :deep(.hljs-tag),
+  :deep(.hljs-punctuation),
+  :deep(.hljs-operator) { color: var(--kima-color-code-punctuation); }
+
+  :deep(.hljs-deletion) { color: var(--kima-color-error); }
+  :deep(.hljs-emphasis) { font-style: italic; }
+  :deep(.hljs-strong) { font-weight: 700; }
 }
 </style>

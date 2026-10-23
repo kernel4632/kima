@@ -121,6 +121,8 @@ node shots/audit/responsive.mjs virtual-table
 | Grid 的区域格子是空的，内容堆在下面 | 示例用 `slot="head"`，Vue 组件只认 `<template #head>` | 改成命名插槽模板 |
 | 输入组的前后缀被塞进输入区，字段被挤溢出 2px | 同上，`slot="prefix"` 落进了默认插槽 | 改成 `<template #prefix>` |
 | 菜单、子菜单弹层完全没有底色 | 内容被 Reka 传送到 body，没有 `data-v`，scoped 的 `.kima-menu__popup` 规则不命中 | 表面规则改成 `:global(.kima-x__popup)`；同类弹层一并改掉 |
+| 代码块顶栏和第一行代码之间空出一条带 | 顶栏下内边距 8 + 正文上内边距 16，行高又是 1.7 | 顶栏压到 4px 并铺一层浅底，正文上内边距 8，代码行高单独用 `--kima-line-height-code`(1.6) |
+| 代码几乎只有一种颜色 | hljs 只映射了 keyword/string/number/comment 四类 | 关键字、字符串、数字常量、函数类型、属性变量各一档，注释斜体、标点退次要色（`--kima-color-code-*`） |
 | 虚拟表格的复选框是浏览器默认白方块 | 选择列直接用了原生 `input[type=checkbox]` | 换成 `KimaCheckbox`（和表格的 `role="checkbox"` 一致） |
 | 复选组里是系统复选框 | 只给了 `accent-color`，画出来还是系统方框 | 方框和勾自己画，原生输入只留语义和点击面 |
 | 图表形式、编辑器语言是系统下拉 | 示例用了 `kima-native-select` | 示例换成 `KimaSelect`；`native-select` 只在自己的页面演示 |

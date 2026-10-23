@@ -198,9 +198,18 @@
   --kima-color-warning: #ffb95c;
   --kima-color-on-warning: #3d2600;
 
-  /* 代码高亮的附加色：只用于语法着色，不表达状态语义。 */
+  /* 代码语法色：只服务可读性，不表达状态语义。
+   * 关键字跟主色走（换种子整套变），字符串/数字借用固定的语义色相，
+   * 函数名和属性名各给一个专属色相，这样一段代码里能分出五层，不是只有"蓝和灰"。
+   * 浅色主题下这两档会压深（见下面 :root[data-kima-theme="light"]）。 */
+  --kima-color-code-keyword: var(--kima-color-primary);
   --kima-color-code-string: var(--kima-color-success);
   --kima-color-code-number: var(--kima-color-warning);
+  --kima-color-code-function: #c9a6ff;
+  --kima-color-code-property: #f0a8c4;
+  --kima-color-code-comment: var(--kima-color-on-surface-variant);
+  --kima-color-code-punctuation: var(--kima-color-on-surface-variant);
+  --kima-line-height-code: 1.6;
 
   /* ---- 兼容别名：旧的占位组件还在用这些名字 ----
    * 值都指向上面某一档，逐个组件重做后这些名字会消失，新组件不要再引。 */
@@ -251,6 +260,9 @@
   --kima-color-on-success: #ffffff;
   --kima-color-warning: #8a5200;
   --kima-color-on-warning: #ffffff;
+  /* 代码语法色同理：色相不动，明度压到浅底上读得清。 */
+  --kima-color-code-function: #6a4bb0;
+  --kima-color-code-property: #9b3a62;
 }
 
 /* ---- 块级组件的宿主默认 ----
