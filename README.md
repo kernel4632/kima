@@ -128,6 +128,7 @@ pnpm shots
 # 逐页视觉审查：桌面与手机各跑一遍，截图落在 shots/audit*
 node scripts/audit-visual.mjs http://127.0.0.1:5188
 node scripts/audit-montage.mjs
+# 只审 core 档（44 页）：$env:KIMA_AUDIT_TIER = 'core'
 ```
 
 文档站采用顶栏、左侧组件导航、中央文档与实时预览、右侧页内目录。使用 `#/components/button` 等地址可直接进入组件页。属性表来自组件源码，实际演示使用库内组件。顶栏全文命令搜索会检索组件名称、中文描述、属性和事件；`Ctrl/Cmd+K` 打开，方向键、Enter、Escape 和焦点返回均可用。

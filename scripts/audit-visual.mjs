@@ -5,6 +5,7 @@
 import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { componentPaths } from '../src/component-paths.js';
+import { componentTiers } from '../src/component-tiers.js';
 
 const base = process.argv[2] || process.env.KIMA_AUDIT_BASE || 'http://127.0.0.1:5188';
 const width = Number(process.env.KIMA_AUDIT_WIDTH || 1440);
@@ -14,7 +15,10 @@ const root = new URL('../', import.meta.url);
 const output = new URL(`shots/audit${suffix}/`, root);
 await mkdir(output, { recursive: true });
 
-const slugs = Object.keys(componentPaths).sort();
+// KIMA_AUDIT_TIER=core 时只审 core 档（逐页高水位）；不设就跑全部 145 页。
+const tier = process.env.KIMA_AUDIT_TIER;
+if (tier && !componentTiers[tier]) throw new Error(`Unknown KIMA_AUDIT_TIER: ${tier}`);
+const slugs = (tier ? componentTiers[tier] : Object.keys(componentPaths)).sort();
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });

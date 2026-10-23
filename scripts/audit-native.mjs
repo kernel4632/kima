@@ -5,13 +5,16 @@
  */
 import { chromium } from '@playwright/test';
 import { componentPaths } from '../src/component-paths.js';
+import { componentTiers } from '../src/component-tiers.js';
 
 const base = process.argv[2] || 'http://127.0.0.1:5188';
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const findings = [];
+const tier = process.env.KIMA_AUDIT_TIER;
+const slugs = (tier && componentTiers[tier] ? componentTiers[tier] : Object.keys(componentPaths)).sort();
 
-for (const slug of Object.keys(componentPaths).sort()) {
+for (const slug of slugs) {
   await page.goto(`${base}/#/components/${slug}`, { waitUntil: 'domcontentloaded' }).catch(() => {});
   await page.waitForSelector('.kima-docs__canvas .kima-gallery__demo', { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(200);
@@ -33,11 +36,17 @@ for (const slug of Object.keys(componentPaths).sort()) {
         width: Math.round(element.getBoundingClientRect().width),
         cls: String(element.className || '').split(/\s+/)[0],
       }))
-      .filter((item) => item.tag === 'progress' || item.appearance !== 'none');
+      // 只认浏览器自己画外观的控件：文本框/数字框表面是我们画的，不算。
+      .filter((item) => {
+        if (item.appearance === 'none') return false;
+        if (item.tag === 'select') return true;
+        if (item.tag === 'progress') return true;
+        return ['checkbox', 'radio', 'color', 'date', 'time', 'datetime-local', 'month', 'week', 'file', 'range', 'image'].includes(item.type);
+      });
   });
   if (hits.length) findings.push({ slug, hits });
 }
 
 await browser.close();
-console.log(`pages=${Object.keys(componentPaths).length} flagged=${findings.length}`);
+console.log(`pages=${slugs.length} flagged=${findings.length}`);
 for (const item of findings) console.log(item.slug.padEnd(24), JSON.stringify(item.hits));
