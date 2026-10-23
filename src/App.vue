@@ -12,7 +12,9 @@ const route = ref(location.hash.slice(2) || 'overview');
 function readRoute() { route.value = location.hash.slice(2) || 'overview'; }
 window.addEventListener('hashchange', readRoute);
 const commandOpen = ref(false);
-const pendingSection = ref('preview');
+/* 只有从搜索结果进来才需要跳到某一节；普通点导航应该停在页面顶部，
+ * 否则每次换页都会先滚到预览，标题反而被顶出屏幕。 */
+const pendingSection = ref('');
 function openCommand() { commandOpen.value = true; }
 function handleGlobalKeydown(event) {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -70,8 +72,10 @@ function navigate(slug) { location.hash = `/${slug}`; mobileMenu.value = false; 
 watch(route, async () => {
   previewTab.value = 'preview'; showSource.value = false; fullSource.value = ''; window.scrollTo({ top: 0 }); document.title = `${title.value} · KIMA`;
   await nextTick();
-  if (pendingSection.value) document.getElementById(pendingSection.value)?.scrollIntoView({ behavior: 'smooth' });
-  pendingSection.value = 'preview';
+  if (pendingSection.value) {
+    document.getElementById(pendingSection.value)?.scrollIntoView({ behavior: 'smooth' });
+    pendingSection.value = '';
+  }
 }, { immediate: true });
 const importCode = computed(() => component.value ? `import { Kima${component.value.name} } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';` : '');
 const themeUsage = `import { applyPalette } from '@kernel4632/kima/theme';\napplyPalette('#61afef', { isDark: true });`;
@@ -159,15 +163,20 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 
 <style scoped lang="scss">
 .kima-docs { min-height: 100vh; background: var(--kima-color-surface); color: var(--kima-color-on-surface); }
-.kima-docs__top { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 248px minmax(220px, 480px) 1fr; gap: var(--kima-space-6); align-items: center; padding: var(--kima-space-3) var(--kima-space-6); background: var(--kima-color-surface); }
+
+/* 顶栏用弹性排布，不用定宽栅格：栅格列数是固定的，多一个控件就会掉到第二行，
+ * 第二行又只剩品牌那一列宽，主题选择被压窄、按钮和品牌叠在一起。 */
+.kima-docs__top { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3) var(--kima-space-5); padding: var(--kima-space-3) var(--kima-space-6); background: var(--kima-color-surface); }
 .kima-docs__brand, .kima-docs__tools, .kima-docs__actions { display: flex; align-items: center; gap: var(--kima-space-2); }
-.kima-docs__command { min-width: 0; }
+.kima-docs__brand { flex: 0 0 auto; }
+.kima-docs__search { flex: 1 1 240px; max-width: 420px; min-width: 180px; }
+.kima-docs__command { flex: 0 0 auto; min-width: 0; }
 .kima-docs__brand :deep(.kima-button__label) { font-size: var(--kima-font-size-title-large); font-weight: var(--kima-font-weight-bold); }
-.kima-docs__tools { justify-content: flex-end; min-width: 0; }
-.kima-docs__tools > :first-child { width: 150px; }
+.kima-docs__tools { flex: 0 0 auto; justify-content: flex-end; margin-inline-start: auto; min-width: 0; }
+.kima-docs__tools > :first-child { flex: 0 0 150px; width: 150px; }
 .kima-docs__mobile-toggle { display: none; }
 .kima-docs__layout { display: grid; grid-template-columns: 248px minmax(0, 1fr) 200px; gap: var(--kima-space-8); max-width: 1600px; margin: auto; padding: var(--kima-space-6); }
-.kima-docs__sidebar, .kima-docs__toc { position: sticky; top: 110px; align-self: start; max-height: calc(100dvh - 128px); overflow-y: auto; }
+.kima-docs__sidebar, .kima-docs__toc { position: sticky; top: 96px; align-self: start; max-height: calc(100dvh - 112px); overflow-y: auto; }
 .kima-docs__sidebar-title { margin: 0 0 var(--kima-space-6); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
 .kima-docs__sidebar nav { display: flex; flex-direction: column; gap: var(--kima-space-1); margin-bottom: var(--kima-space-6); }
 .kima-docs__sidebar h2, .kima-docs__mobile-nav h2 { margin: var(--kima-space-3) 0; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); }
@@ -194,6 +203,35 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__toc :deep(.kima-button) { justify-content: flex-start; padding-inline: var(--kima-space-2); font-size: var(--kima-font-size-label-small); }
 .kima-docs__footer { margin-top: var(--kima-space-16); padding-block: var(--kima-space-6); color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
 .kima-docs__mobile-nav { display: flex; flex-direction: column; }
-@media (max-width: 1200px) { .kima-docs__layout { grid-template-columns: 220px minmax(0, 1fr); } .kima-docs__toc { display: none; } .kima-docs__top { grid-template-columns: 220px minmax(180px, 1fr) auto; gap: var(--kima-space-3); } .kima-docs__tools > :last-child { display: none; } }
-@media (max-width: 760px) { .kima-docs__top { grid-template-columns: 1fr auto; padding: var(--kima-space-2); } .kima-docs__search, .kima-docs__command { grid-column: 1 / -1; grid-row: 2; } .kima-docs__command { grid-row: 3; } .kima-docs__layout { grid-template-columns: minmax(0, 1fr); padding: var(--kima-space-4); } .kima-docs__sidebar { display: none; } .kima-docs__mobile-toggle { display: inline-flex; } .kima-docs__brand { gap: 0; } .kima-docs__tools > :first-child { width: 132px; } .kima-docs__content { padding: var(--kima-space-5) 0; } .kima-docs__hero-canvas, .kima-docs__hero-canvas :deep(.kima-card), .kima-docs__canvas { padding: var(--kima-space-4); } .kima-docs__actions { flex-wrap: wrap; } }
+@media (max-width: 1200px) { .kima-docs__layout { grid-template-columns: 220px minmax(0, 1fr); } .kima-docs__toc { display: none; } .kima-docs__tools > :last-child { display: none; } }
+
+/* 900 就换成单列：768 宽再并一个 220 侧栏，正文只剩五百出头，长标题会挤成两三行。 */
+@media (max-width: 900px) {
+  .kima-docs__layout { grid-template-columns: minmax(0, 1fr); padding: var(--kima-space-4); }
+  .kima-docs__sidebar { display: none; }
+  .kima-docs__mobile-toggle { display: inline-flex; }
+  .kima-docs__content { padding: var(--kima-space-6) 0; }
+
+  /* 侧栏在 900 以下藏起来了，搜索框就只剩下装饰作用：
+   * 它过滤的是被藏起来的目录，输入了也看不到结果。这里换成全文搜索面板。 */
+  .kima-docs__search { display: none; }
+  .kima-docs__brand { order: 1; gap: var(--kima-space-1); }
+  .kima-docs__tools { order: 2; }
+  .kima-docs__command { order: 3; }
+}
+
+@media (max-width: 760px) {
+  .kima-docs__top { gap: var(--kima-space-2) var(--kima-space-3); padding: var(--kima-space-2) var(--kima-space-4); }
+  .kima-docs__hero-canvas, .kima-docs__hero-canvas :deep(.kima-card), .kima-docs__canvas { padding: var(--kima-space-4); }
+  .kima-docs__actions { flex-wrap: wrap; }
+}
+
+/* 窄手机（390 这一类）一行只放得下导航和主题两样：
+ * 版本号退场，主题选择收窄，KIMA 字标的内边距也收紧，别让它们分两行占掉半屏。 */
+@media (max-width: 480px) {
+  .kima-docs__brand :deep(.kima-badge) { display: none; }
+  .kima-docs__brand :deep(.kima-button) { padding-inline: var(--kima-space-2); }
+  .kima-docs__tools { gap: var(--kima-space-1); }
+  .kima-docs__tools > :first-child { flex: 0 0 116px; width: 116px; }
+}
 </style>

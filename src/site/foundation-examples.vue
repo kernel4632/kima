@@ -31,10 +31,12 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
       <KimaGrid :columns="{ base: 1, sm: 2, md: 3 }" :gap="4">
         <div v-for="index in 6" :key="index" class="kima-foundation-example__cell">栅格 {{ index }}</div>
       </KimaGrid>
+      <!-- Vue 里命名插槽要写成 <template #head>；写成 slot="head" 只会落进默认插槽，
+           areas 里的格子就全是空的，内容还额外堆在下面一层。 -->
       <KimaGrid :areas="['head head', 'side main']" :gap="3">
-        <strong slot="head" class="kima-foundation-example__head">跨两列的区域标题</strong>
-        <div slot="side" class="kima-foundation-example__cell">侧栏</div>
-        <div slot="main" class="kima-foundation-example__cell">主内容</div>
+        <template #head><strong class="kima-foundation-example__head">跨两列的区域标题</strong></template>
+        <template #side><div class="kima-foundation-example__cell">侧栏</div></template>
+        <template #main><div class="kima-foundation-example__cell">主内容</div></template>
       </KimaGrid>
     </template>
     <KimaFlex v-else-if="component === 'flex'" direction="row" wrap="wrap" :gap="4" align="center" justify="space-between">
@@ -55,9 +57,9 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
       <p role="status">分组状态：{{ groupValid ? '有效' : '待填写' }}</p>
     </template>
     <KimaInputGroup v-else-if="component === 'input-group'" label="预算金额">
-      <span slot="prefix">¥</span>
+      <template #prefix><span>¥</span></template>
       <KimaTextField label="预算金额" name="foundation-budget" placeholder="0.00" />
-      <span slot="suffix">元</span>
+      <template #suffix><span>元</span></template>
     </KimaInputGroup>
     <KimaPageHeader v-else-if="component === 'page-header'" heading="项目成员" description="管理当前空间的成员与邀请状态。">
       <template #breadcrumbs><KimaLink href="#workspace">工作区</KimaLink> / <span>成员</span></template>

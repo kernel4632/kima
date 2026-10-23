@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 import KimaAccordion from "../components/navigation/accordion.ce.vue";
 import KimaCollapsible from "../components/navigation/collapsible.ce.vue";
 import KimaBreadcrumb from "../components/navigation/breadcrumb.ce.vue";
@@ -22,6 +22,13 @@ const open = ref(true);
 const page = ref("overview");
 const step = ref(1);
 const size = ref(35);
+/* 手机上横向分栏只剩一百来像素，正文会一字一行竖着排。
+ * 窄屏改成上下分栏，把手仍然是原来那个（方向键和拖拽逻辑跟着 orientation 走）。 */
+const narrow = ref(false);
+const query = typeof window === "undefined" ? null : window.matchMedia("(max-width: 560px)");
+function syncNarrow(event) { narrow.value = event.matches; }
+if (query) { narrow.value = query.matches; query.addEventListener("change", syncNarrow); }
+onBeforeUnmount(() => query?.removeEventListener("change", syncNarrow));
 const slide = ref(0);
 const overflow = ref(false);
 const actions = ref(0);
@@ -42,7 +49,7 @@ const slides = [{ title: "Kinetic · 动起来", content: "用动效引导注意
     <KimaNavigationMenu v-else-if="component === 'navigation-menu'" v-model="page" :items="navigation" />
     <div v-else-if="component === 'anchor'" class="kima-navigation-demo__columns"><KimaAnchor :items="sections" target="#navigation-reader" :offset="16" /><KimaScrollArea id="navigation-reader" label="指南正文" :max-height="360"><section v-for="item in sections" :id="item.href.slice(1)" :key="item.href" class="kima-navigation-demo__section"><h3>{{ item.label }}</h3><p>目录跟随正文滚动，点击链接可定位到对应章节。</p></section></KimaScrollArea></div>
     <div v-else-if="component === 'back-top'" class="kima-navigation-demo__stack"><KimaScrollArea id="navigation-long-reader" label="可滚动的长文" :max-height="280"><div v-for="n in 12" :key="n" class="kima-navigation-demo__paragraph">第 {{ n }} 段 · 向下滚动后，返回顶部操作会出现。</div></KimaScrollArea><KimaBackTop target="#navigation-long-reader" :threshold="80" :fixed="false" /></div>
-    <div v-else-if="component === 'splitter'"><KimaSplitter v-model="size" :min="20" :max="75"><template #first><h3>项目目录</h3><p>拖动中间把手调整分栏。</p></template><template #second><h3>内容工作区</h3><p>也可以聚焦把手，使用方向键或 Home / End 调整。</p></template></KimaSplitter><output>左侧比例：{{ size }}%</output></div>
+    <div v-else-if="component === 'splitter'"><KimaSplitter v-model="size" :min="20" :max="75" :orientation="narrow ? 'vertical' : 'horizontal'"><template #first><h3>项目目录</h3><p>拖动中间把手调整分栏。</p></template><template #second><h3>内容工作区</h3><p>也可以聚焦把手，使用方向键或 Home / End 调整。</p></template></KimaSplitter><output>分栏比例：{{ size }}%</output></div>
     <KimaScrollArea v-else-if="component === 'scroll-area'" label="最近更新" :max-height="260"><p v-for="n in 16" :key="n" class="kima-navigation-demo__paragraph">更新 {{ n }} · 原生滚动、键盘访问、保留完整内容。</p></KimaScrollArea>
     <div v-else-if="component === 'toolbar'" class="kima-navigation-demo__stack"><KimaToolbar label="编辑工具"><KimaButton @click="actions++">保存</KimaButton><KimaButton variant="tonal" disabled>撤销</KimaButton><KimaButton variant="tonal" @click="actions++">预览</KimaButton><KimaLink href="#publish">发布说明</KimaLink></KimaToolbar><output>操作次数：{{ actions }} · 方向键跳过禁用项</output></div>
     <div v-else-if="component === 'visually-hidden'"><KimaButton aria-describedby="navigation-hidden-help">分享项目</KimaButton><KimaVisuallyHidden id="navigation-hidden-help">分享链接将允许协作者查看项目，不会授予编辑权限。</KimaVisuallyHidden><p>辅助说明仅供读屏，不占据视觉版面，也不是装饰分隔线。</p></div>

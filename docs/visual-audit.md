@@ -30,6 +30,20 @@ node scripts/audit-width.mjs http://127.0.0.1:5188
 `shots/` 已忽略，截图与报告不入库。每页报告在 `report.json`，包含演示区尺寸、横向滚动、
 越界元素、零尺寸自定义元素和页面错误。脚本会临时隐藏文档站顶栏，避免粘性定位盖住截图。
 
+## 不同宽度的检查
+
+```powershell
+# 四档宽度截同一页（1440 / 1024 / 768 / 390），看顶栏、侧栏、演示区怎么换行
+node shots/audit/responsive.mjs overview
+node shots/audit/responsive.mjs virtual-table
+```
+
+- 断点只有三档：**1200**（收掉右侧目录）、**900**（换单列、侧栏进抽屉、顶栏分两行）、
+  **480**（窄手机：藏版本号、收窄主题选择）。
+- 顶栏是弹性排布，不是定宽栅格：栅格列数固定，多一个控件就掉到第二行，第二行只剩品牌那一列宽。
+- 900 以下不显示头部搜索框：它过滤的是被收进抽屉的目录，输入了也看不到结果，改用全文搜索面板。
+- 横向分栏在窄屏改竖向（splitter 示例按 `matchMedia` 切换 `orientation`），否则一侧只剩一百来像素。
+
 ## 演示区契约（唯一来源）
 
 布局只写在 [`src/site/gallery.scss`](../src/site/gallery.scss:1)：
@@ -78,6 +92,13 @@ node scripts/audit-width.mjs http://127.0.0.1:5188
 | 标签页换页、轮播换张后高度突然塌下去 | 退场面板淡出的 200ms 里仍占着格子高度 | 退场面板绝对定位，容器高度立刻等于新面板，再由 `useContentMotion` 补过渡 |
 | 字段组提示消失时整组瞬间变矮 | 提示文字和 `v-show` 同一次更新，收起时量到的自然高度是 0 | 更新前 `rememberCollapseHeight` 记下旧高度，动画从旧高度收到 0 |
 | 展开全文时高度一帧跳到位 | 只做了透明度动画 | `useContentMotion` 同时补高度插值 |
+| 桌面顶栏挤成两行、主题选择被压成“青…” | 顶栏是 3 列栅格但放了 4 个控件 | 改 flex 排布 + 900/480 两档断点 |
+| 每次换页标题被顶出屏幕 | `pendingSection` 初值是 `preview`，任何路由变化都滚动到预览 | 初值留空，只有搜索结果才跳节 |
+| Grid 的区域格子是空的，内容堆在下面 | 示例用 `slot="head"`，Vue 组件只认 `<template #head>` | 改成命名插槽模板 |
+| 输入组的前后缀被塞进输入区，字段被挤溢出 2px | 同上，`slot="prefix"` 落进了默认插槽 | 改成 `<template #prefix>` |
+| 虚拟表格的复选框是浏览器默认白方块 | 选择列直接用了原生 `input[type=checkbox]` | 换成 `KimaCheckbox`（和表格的 `role="checkbox"` 一致） |
+| 透明度手柄在 100% 时被裁掉一半 | 手柄中心按比例定位，两端没有留半宽 | `left: clamp(10px, 比例, calc(100% - 10px))` |
+| 组件页导语里印着调用示例 HTML | 注释一行里既有描述也有“调用示例：<kima-…>” | 文档元数据只取“调用示例”之前的描述 |
 | 提示框圆角 4px、字号偏大 | 硬编码 `border-radius: 4px` 和未定义的 `--kima-font-size-sm` | 回到 `radius-s` 与 `label-medium` |
 | 演示读数被画成输入框 | 全局 `output` 样式命中了组件内部读数 | 只作用于演示自己的直接子级 `output` |
 | 顶部种子选择显示成“青.” | 选择器宽度不够 | 桌面 150、手机 132 |

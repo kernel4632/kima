@@ -39,7 +39,9 @@ export function docsPlugin() {
         });
         const emit = declarations.find((node) => node.init?.callee?.name === 'defineEmits')?.init.arguments[0];
         const events = emit?.elements?.map((node) => node.value) || [];
-        const description = source.match(/<!--\s*([^\n]+)/)?.[1] || filename;
+        /* 说明只取第一句注释里的描述：很多组件的注释把“调用示例：<kima-x …>”
+         * 写在同一行，整段拿去当导语会把示例 HTML 也印在页面标题下面。 */
+        const description = (source.match(/<!--\s*([^\n]+)/)?.[1] || filename).split(/调用示例[：:]/)[0].trim();
         const examples = source.match(/调用示例[：:]([\s\S]*?)-->/)?.[1]?.trim() || `<kima-${filename.replace('.ce.vue', '')} />`;
         entries.push({ slug: filename.replace('.ce.vue', ''), attributes, events, description, examples });
       }
