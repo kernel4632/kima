@@ -58,9 +58,15 @@ try {
       assert.doesNotMatch(code, /\bprocess(?:\.env|\s*\[)/, 'Standalone must not depend on Node process globals');
     });
   }
+  // 主入口除组件外还导出代码块的语言登记工具；它们不算组件，但必须在产物里。
+  const libraryExtras = ['codeLanguages', 'hasCodeLanguage', 'registerCodeLanguage'];
   check('Export registry parity', () => {
-    assert.deepEqual(library.componentNames, Object.keys(library).filter(name => name !== 'componentNames'));
+    assert.deepEqual(library.componentNames, Object.keys(library).filter(name => name !== 'componentNames' && !libraryExtras.includes(name)));
     assert.equal(library.componentNames.length, Object.keys(elements).length);
+    for (const name of libraryExtras) assert.equal(typeof library[name], name === 'codeLanguages' ? 'object' : 'function', `Missing ${name}`);
+    assert.ok(library.codeLanguages.length >= 35, 'Code block must ship the highlight.js common set');
+    assert.equal(library.hasCodeLanguage('vue'), true);
+    assert.equal(library.hasCodeLanguage('ts'), true);
   });
   check('CSS tokens and host isolation', () => {
     assert.match(css, /--kima-color-primary:/);

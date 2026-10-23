@@ -49,6 +49,9 @@ export async function generateExports() {
     "",
     `export const componentNames = ${JSON.stringify(components.map(({ exportName }) => exportName), null, 2)};`,
     "",
+    '/* 代码块的内置语言是 highlight.js 的 common 集；其余语言由宿主补登记。 */',
+    'export { registerCodeLanguage, hasCodeLanguage, codeLanguages } from "./utils/code-highlight.js";',
+    "",
   ].join("\n");
   const entry = new URL("../src/index.js", import.meta.url);
   // Avoid unnecessary source changes and dev reloads when the component set is unchanged.

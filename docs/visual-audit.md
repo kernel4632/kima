@@ -39,6 +39,18 @@ node scripts/audit-native.mjs http://127.0.0.1:5188
 `shots/` 已忽略，截图与报告不入库。每页报告在 `report.json`，包含演示区尺寸、横向滚动、
 越界元素、零尺寸自定义元素和页面错误。脚本会临时隐藏文档站顶栏，避免粘性定位盖住截图。
 
+## 语法着色
+
+- **分词**用 `highlight.js`（MIT），**颜色**是我们的：hljs 只输出语义类（`hljs-keyword`…），
+  映射写在 [`code-block.ce.vue`](src/components/core/code-block.ce.vue:160)，颜色全部走 `--kima-color-code-*`
+  token，深色/浅色各一套。
+- **语言**内置 highlight.js 的 common 集（35 种 + dockerfile，别名见
+  [`utils/code-highlight.js`](../src/utils/code-highlight.js:1)）。其余语言由宿主
+  `registerCodeLanguage(name, grammar)` 补登记，避免把 190 多种语法全量打进包里。
+  没登记的语言按纯文本展示，不猜。
+- **覆盖检查**：`node scripts/audit-hljs-theme.mjs` 拿官方主题的类名清单对比映射，
+  缺一个类就报错（`params` / `subst` 等标识符类故意保持正文色，列在脚本的 intentional 里）。
+
 ## 弹层表面
 
 - 弹层是浮在内容之上的独立平面，**必须实色**（`kima-popup` / `interaction-popup`），

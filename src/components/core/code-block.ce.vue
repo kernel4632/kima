@@ -1,30 +1,14 @@
 <!--
 代码块：阅读与复制源码，支持语法着色、行号和自动换行，颜色跟随 KIMA 主题。
-语言支持 HTML / Vue、JavaScript、CSS / SCSS、JSON、Shell；其他语言按纯文本展示。
+分词用 highlight.js，已内置它的 common 语言集（36 种 + dockerfile），别名见 utils/code-highlight.js；
+其余语言用 registerCodeLanguage() 按需登记，未登记的语言按纯文本展示。
 调用示例：
   <kima-code-block code="pnpm add @kernel4632/kima vue" language="shell" />
   <kima-code-block :code="source" language="vue" filename="App.vue" line-numbers />
 -->
-<script>
-import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import xml from 'highlight.js/lib/languages/xml';
-import css from 'highlight.js/lib/languages/css';
-import scss from 'highlight.js/lib/languages/scss';
-import json from 'highlight.js/lib/languages/json';
-import bash from 'highlight.js/lib/languages/bash';
-
-// 独立实例不修改宿主项目的 highlight.js 配置，也不打包全部语言。
-const highlighter = hljs.newInstance();
-for (const [name, grammar] of Object.entries({ javascript, xml, css, scss, json, bash })) {
-  highlighter.registerLanguage(name, grammar);
-}
-highlighter.registerAliases(['html', 'vue'], { languageName: 'xml' });
-highlighter.registerAliases(['shell'], { languageName: 'bash' });
-</script>
-
 <script setup>
 import { computed, getCurrentInstance, ref, useAttrs, watch } from 'vue';
+import { highlightCodeLines } from '../../utils/code-highlight.js';
 import KimaButton from './button.ce.vue';
 
 defineOptions({ inheritAttrs: false });
@@ -47,28 +31,7 @@ const status = ref('');
 watch(() => props.wrap, (value) => { wrapping.value = value; });
 watch(() => props.code, () => { status.value = ''; });
 
-const lines = computed(() => {
-  const language = props.language.toLowerCase();
-  const html = highlighter.getLanguage(language)
-    ? highlighter.highlight(props.code, { language, ignoreIllegals: true }).value
-    : props.code.replace(/[&<>]/g, (character) => String.fromCharCode(38) + ({ '&': 'amp;', '<': 'lt;', '>': 'gt;' })[character]);
-  // 着色跨行时，逐行补齐 span，保留多行字符串和注释的语义及行号对齐。
-  const open = [];
-  const rows = [];
-  let row = '';
-  for (const token of html.split(/(<span\b[^>]*>|<\/span>|\n)/)) {
-    if (token === '\n') {
-      rows.push(row + '</span>'.repeat(open.length));
-      row = open.join('');
-    } else {
-      row += token;
-      if (token.startsWith('<span')) open.push(token);
-      else if (token === '</span>') open.pop();
-    }
-  }
-  rows.push(row + '</span>'.repeat(open.length));
-  return rows;
-});
+const lines = computed(() => highlightCodeLines(props.code, props.language));
 
 async function copyCode() {
   if (copying.value) return;
@@ -170,7 +133,8 @@ async function copyCode() {
   :deep(.hljs-selector-tag),
   :deep(.hljs-section),
   :deep(.hljs-doctag),
-  :deep(.hljs-meta .hljs-keyword) { color: var(--kima-color-code-keyword); }
+  :deep(.hljs-meta .hljs-keyword),
+  :deep(.hljs-function) { color: var(--kima-color-code-keyword); }
 
   :deep(.hljs-string),
   :deep(.hljs-regexp),
@@ -182,13 +146,15 @@ async function copyCode() {
   :deep(.hljs-symbol),
   :deep(.hljs-bullet),
   :deep(.hljs-link),
-  :deep(.hljs-selector-attr) { color: var(--kima-color-code-number); }
+  :deep(.hljs-selector-attr),
+  :deep(.hljs-char.escape_) { color: var(--kima-color-code-number); }
 
   :deep(.hljs-title),
   :deep(.hljs-type),
   :deep(.hljs-built_in),
   :deep(.hljs-template-tag),
-  :deep(.hljs-selector-pseudo) { color: var(--kima-color-code-function); }
+  :deep(.hljs-selector-pseudo),
+  :deep(.hljs-formula) { color: var(--kima-color-code-function); }
 
   :deep(.hljs-attr),
   :deep(.hljs-attribute),
@@ -196,7 +162,8 @@ async function copyCode() {
   :deep(.hljs-variable),
   :deep(.hljs-selector-class),
   :deep(.hljs-selector-id),
-  :deep(.hljs-template-variable) { color: var(--kima-color-code-property); }
+  :deep(.hljs-template-variable),
+  :deep(.hljs-code) { color: var(--kima-color-code-property); }
 
   :deep(.hljs-comment),
   :deep(.hljs-quote),

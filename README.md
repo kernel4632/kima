@@ -86,12 +86,20 @@ applyPalette('#61afef', { isDark: true });
 
 | 入口 | 用途 |
 | --- | --- |
-| `@kernel4632/kima` | 具名 Vue 组件导出及 componentNames |
+| `@kernel4632/kima` | 具名 Vue 组件导出、componentNames、代码块语言登记工具 |
 | `@kernel4632/kima/style.css` | Vue 消费者所需样式和 token |
 | `@kernel4632/kima/elements` | 独立自定义元素注册与内置样式 |
 | `@kernel4632/kima/theme` | 动态配色生成与应用工具 |
 
 构建脚本生成三个 JS 产物：[Vue 组件入口](scripts/build-lib.js:1)、[独立自定义元素入口](src/elements.js:1)、[主题工具入口](src/utils/theme.js:1)，另输出 Vue 消费者使用的样式。组件从[源码目录](src/components/)自动发现，本次文档核对为 **145 个**；完整清单见[入口索引](docs/component-index.md)。两种使用方式（Vue / 原生网页）不等于只有两个 JS 构建入口。
+
+代码块的语法分词由 `highlight.js` 完成，内置它的 common 语言集（35 种，另含 dockerfile；`vue`/`ts`/`sh`/`yml` 等常见别名已注册）。内置集之外的语言由宿主补登记，不把 190 多种语法全量塞进包里：
+
+```js
+import dart from 'highlight.js/lib/languages/dart';
+import { registerCodeLanguage } from '@kernel4632/kima';
+registerCodeLanguage('dart', dart);
+```
 
 ## 开发与验收
 

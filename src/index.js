@@ -298,3 +298,6 @@ export const componentNames = [
   "KimaVisuallyHidden",
   "KimaWatermark"
 ];
+
+/* 代码块的内置语言是 highlight.js 的 common 集；其余语言由宿主补登记。 */
+export { registerCodeLanguage, hasCodeLanguage, codeLanguages } from "./utils/code-highlight.js";
