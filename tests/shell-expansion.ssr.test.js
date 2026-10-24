@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { createServer } from 'vite';
 import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
-test('six shell entries and four menu/navigation enhancements SSR without browser globals', async () => {
+test('shell entries and menu/navigation enhancements SSR without browser globals', async () => {
   const server = await createServer({server:{middlewareMode:true,hmr:false,ws:false},appType:'custom'});
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
-    for (const slug of ['sidebar','app-shell','config-provider','masonry','marquee','gradient-text','menu','context-menu','menubar','navigation-menu']) {
+    for (const slug of ['sidebar','app-shell','config-provider','masonry','marquee','menu','context-menu','menubar','navigation-menu']) {
       const Component = (await server.ssrLoadModule(componentPaths[slug])).default;
       const html = await renderToString(createSSRApp({render:() => h(Component,{items:[{value:'guide',label:'指南',href:'#guide',children:[{value:'start',label:'开始',href:'#start'}]}]}, {default:() => '内容',main:() => '正文',header:() => '头部',footer:() => '页脚'})}));
       assert.ok(html.includes(`kima-${slug}`),slug);

@@ -12,8 +12,6 @@ export const displayCatalog = {
   timeline: { label: "时间线", group: "展示与反馈" },
   statistic: { label: "统计数值", group: "展示与反馈" },
   countdown: { label: "倒计时", group: "展示与反馈" },
-  kbd: { label: "键盘快捷键", group: "展示与反馈" },
   blockquote: { label: "引用", group: "展示与反馈" },
   highlight: { label: "文本高亮", group: "展示与反馈" },
-  "aspect-ratio": { label: "宽高比", group: "展示与反馈" },
 };

@@ -13,7 +13,6 @@ export { default as KimaAnchor } from "./components/navigation/anchor.ce.vue";
 export { default as KimaAngleSlider } from "./components/form-completion/angle-slider.ce.vue";
 export { default as KimaAnimatedNumber } from "./components/utility/animated-number.ce.vue";
 export { default as KimaAppShell } from "./components/shell/app-shell.ce.vue";
-export { default as KimaAspectRatio } from "./components/display/aspect-ratio.ce.vue";
 export { default as KimaAvatar } from "./components/display/avatar.ce.vue";
 export { default as KimaAvatarGroup } from "./components/display/avatar-group.ce.vue";
 export { default as KimaBackTop } from "./components/navigation/back-top.ce.vue";
@@ -44,8 +43,6 @@ export { default as KimaCountdown } from "./components/display/countdown.ce.vue"
 export { default as KimaDateField } from "./components/form-completion/date-field.ce.vue";
 export { default as KimaDatePicker } from "./components/core/date-picker.ce.vue";
 export { default as KimaDateRangePicker } from "./components/advanced-input/date-range-picker.ce.vue";
-export { default as KimaDatetimePicker } from "./components/advanced-input/datetime-picker.ce.vue";
-export { default as KimaDatetimeRangePicker } from "./components/form-completion/datetime-range-picker.ce.vue";
 export { default as KimaDescriptions } from "./components/display/descriptions.ce.vue";
 export { default as KimaDialog } from "./components/core/dialog.ce.vue";
 export { default as KimaDivider } from "./components/core/divider.ce.vue";
@@ -61,7 +58,6 @@ export { default as KimaFileUpload } from "./components/input/file-upload.ce.vue
 export { default as KimaFlex } from "./components/foundation/flex.ce.vue";
 export { default as KimaFloatButton } from "./components/utility/float-button.ce.vue";
 export { default as KimaForm } from "./components/form-completion/form.ce.vue";
-export { default as KimaGradientText } from "./components/shell/gradient-text.ce.vue";
 export { default as KimaGrid } from "./components/foundation/grid.ce.vue";
 export { default as KimaHeatmap } from "./components/content/heatmap.ce.vue";
 export { default as KimaHighlight } from "./components/display/highlight.ce.vue";
@@ -73,7 +69,6 @@ export { default as KimaImagePreview } from "./components/data/image-preview.ce.
 export { default as KimaInfiniteScroll } from "./components/data/infinite-scroll.ce.vue";
 export { default as KimaInputGroup } from "./components/foundation/input-group.ce.vue";
 export { default as KimaJsonInput } from "./components/form-completion/json-input.ce.vue";
-export { default as KimaKbd } from "./components/display/kbd.ce.vue";
 export { default as KimaLayout } from "./components/core/layout.ce.vue";
 export { default as KimaLink } from "./components/navigation/link.ce.vue";
 export { default as KimaList } from "./components/display/list.ce.vue";
@@ -82,7 +77,6 @@ export { default as KimaLoadingBar } from "./components/utility/loading-bar.ce.v
 export { default as KimaLoadingOverlay } from "./components/interaction/loading-overlay.ce.vue";
 export { default as KimaLogViewer } from "./components/utility/log-viewer.ce.vue";
 export { default as KimaLongText } from "./components/data/long-text.ce.vue";
-export { default as KimaMark } from "./components/foundation/mark.ce.vue";
 export { default as KimaMarquee } from "./components/shell/marquee.ce.vue";
 export { default as KimaMaskedInput } from "./components/form-completion/masked-input.ce.vue";
 export { default as KimaMasonry } from "./components/shell/masonry.ce.vue";
@@ -90,7 +84,6 @@ export { default as KimaMention } from "./components/advanced-input/mention.ce.v
 export { default as KimaMenu } from "./components/core/menu.ce.vue";
 export { default as KimaMenubar } from "./components/interaction/menubar.ce.vue";
 export { default as KimaMultiSelect } from "./components/interaction/multi-select.ce.vue";
-export { default as KimaNativeSelect } from "./components/input/native-select.ce.vue";
 export { default as KimaNavigationMenu } from "./components/navigation/navigation-menu.ce.vue";
 export { default as KimaNotification } from "./components/core/notification.ce.vue";
 export { default as KimaNotificationQueue } from "./components/utility/notification-queue.ce.vue";
@@ -119,7 +112,6 @@ export { default as KimaSkeleton } from "./components/display/skeleton.ce.vue";
 export { default as KimaSlider } from "./components/core/slider.ce.vue";
 export { default as KimaSpinner } from "./components/display/spinner.ce.vue";
 export { default as KimaSplitter } from "./components/navigation/splitter.ce.vue";
-export { default as KimaStack } from "./components/foundation/stack.ce.vue";
 export { default as KimaStatistic } from "./components/display/statistic.ce.vue";
 export { default as KimaStepper } from "./components/navigation/stepper.ce.vue";
 export { default as KimaSwitch } from "./components/core/switch.ce.vue";
@@ -133,7 +125,6 @@ export { default as KimaTimeDisplay } from "./components/foundation/time-display
 export { default as KimaTimeField } from "./components/form-completion/time-field.ce.vue";
 export { default as KimaTimePicker } from "./components/core/time-picker.ce.vue";
 export { default as KimaTimeRangePicker } from "./components/advanced-input/time-range-picker.ce.vue";
-export { default as KimaTimeSelect } from "./components/form-completion/time-select.ce.vue";
 export { default as KimaTimeline } from "./components/display/timeline.ce.vue";
 export { default as KimaToggle } from "./components/input/toggle.ce.vue";
 export { default as KimaToolbar } from "./components/navigation/toolbar.ce.vue";
@@ -160,7 +151,6 @@ export const componentNames = [
   "KimaAngleSlider",
   "KimaAnimatedNumber",
   "KimaAppShell",
-  "KimaAspectRatio",
   "KimaAvatar",
   "KimaAvatarGroup",
   "KimaBackTop",
@@ -191,8 +181,6 @@ export const componentNames = [
   "KimaDateField",
   "KimaDatePicker",
   "KimaDateRangePicker",
-  "KimaDatetimePicker",
-  "KimaDatetimeRangePicker",
   "KimaDescriptions",
   "KimaDialog",
   "KimaDivider",
@@ -208,7 +196,6 @@ export const componentNames = [
   "KimaFlex",
   "KimaFloatButton",
   "KimaForm",
-  "KimaGradientText",
   "KimaGrid",
   "KimaHeatmap",
   "KimaHighlight",
@@ -220,7 +207,6 @@ export const componentNames = [
   "KimaInfiniteScroll",
   "KimaInputGroup",
   "KimaJsonInput",
-  "KimaKbd",
   "KimaLayout",
   "KimaLink",
   "KimaList",
@@ -229,7 +215,6 @@ export const componentNames = [
   "KimaLoadingOverlay",
   "KimaLogViewer",
   "KimaLongText",
-  "KimaMark",
   "KimaMarquee",
   "KimaMaskedInput",
   "KimaMasonry",
@@ -237,7 +222,6 @@ export const componentNames = [
   "KimaMenu",
   "KimaMenubar",
   "KimaMultiSelect",
-  "KimaNativeSelect",
   "KimaNavigationMenu",
   "KimaNotification",
   "KimaNotificationQueue",
@@ -266,7 +250,6 @@ export const componentNames = [
   "KimaSlider",
   "KimaSpinner",
   "KimaSplitter",
-  "KimaStack",
   "KimaStatistic",
   "KimaStepper",
   "KimaSwitch",
@@ -280,7 +263,6 @@ export const componentNames = [
   "KimaTimeField",
   "KimaTimePicker",
   "KimaTimeRangePicker",
-  "KimaTimeSelect",
   "KimaTimeline",
   "KimaToggle",
   "KimaToolbar",

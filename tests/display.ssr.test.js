@@ -5,7 +5,7 @@ import { createServer } from "vite";
 import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 
-const slugs = ["avatar", "avatar-group", "image", "skeleton", "spinner", "alert", "result", "descriptions", "list", "timeline", "statistic", "countdown", "kbd", "blockquote", "highlight", "aspect-ratio"];
+const slugs = ["avatar", "avatar-group", "image", "skeleton", "spinner", "alert", "result", "descriptions", "list", "timeline", "statistic", "countdown", "blockquote", "highlight"];
 test("all display components SSR safely; countdown schedules no timer or finish", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');

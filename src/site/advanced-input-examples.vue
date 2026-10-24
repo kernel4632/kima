@@ -5,7 +5,6 @@ import KimaRangeSlider from "../components/advanced-input/range-slider.ce.vue";
 import KimaCalendar from "../components/advanced-input/calendar.ce.vue";
 import KimaDateRangePicker from "../components/advanced-input/date-range-picker.ce.vue";
 import KimaTimeRangePicker from "../components/advanced-input/time-range-picker.ce.vue";
-import KimaDatetimePicker from "../components/advanced-input/datetime-picker.ce.vue";
 import KimaMention from "../components/advanced-input/mention.ce.vue";
 import KimaForm from "../components/form-completion/form.ce.vue";
 import KimaEditable from "../components/advanced-input/editable.ce.vue";
@@ -14,7 +13,7 @@ import KimaField from "../components/input/field.ce.vue";
 import KimaTextField from "../components/core/text-field.ce.vue";
 import KimaButton from "../components/core/button.ce.vue";
 const props = defineProps({ component: { type: String, required: true } });
-const range=ref([20,80]),day=ref('2026-06-01'),dates=ref(['2026-06-01',null]),times=ref(['22:00','02:00']),datetime=ref('2026-06-01T09:30'),message=ref(''),editable=ref('可以行内编辑的说明'),transferred=ref(['a']),formName=ref(''),status=ref('');
+const range=ref([20,80]),day=ref('2026-06-01'),dates=ref(['2026-06-01',null]),times=ref(['22:00','02:00']),message=ref(''),editable=ref('可以行内编辑的说明'),transferred=ref(['a']),formName=ref(''),status=ref('');
 const suggestions=[{value:'kai',label:'凯'},{value:'kima',label:'KIMA'},{value:'design',label:'设计组'}];
 const choices=[{value:'a',label:'设计'},{value:'b',label:'开发'},{value:'c',label:'文档',disabled:true},{value:'d',label:'测试'}];
 const saveHandler=async value=>{await new Promise(resolve=>setTimeout(resolve,100));if(value.trim()==='fail')throw new Error('保存失败，草稿仍保留');};
@@ -32,7 +31,6 @@ const summary=computed(()=>range.value.join(' 至 '));
       <template v-else-if="props.component==='calendar'"><KimaCalendar v-model="day" name="day" required label="选择日期" min="2025-01-01" /><output>{{ day || '尚未选择' }}</output></template>
       <template v-else-if="props.component==='date-range-picker'"><KimaDateRangePicker v-model="dates" start-name="date-start" end-name="date-end" required /><output>{{ dates.join(' 至 ') }}</output></template>
       <template v-else-if="props.component==='time-range-picker'"><KimaTimeRangePicker v-model="times" start-name="time-start" end-name="time-end" required /><output>22:00–02:00 为 4 小时，起止相同为 24 小时</output></template>
-      <template v-else-if="props.component==='datetime-picker'"><KimaDatetimePicker v-model="datetime" name="local-datetime" label="预约时间" required /><output>{{ datetime }}（本地时间，无时区）</output></template>
       <template v-else-if="props.component==='mention'"><KimaMention v-model="message" name="message" :items="suggestions" label="消息" placeholder="输入 @ 查看建议" /><output>{{ message }}</output></template>
       <template v-else-if="props.component==='editable'"><KimaEditable v-model="editable" name="description" label="说明" :save-handler="saveHandler" /><output>Enter 保存、Escape 取消；输入 fail 演示保留失败草稿。</output></template>
       <template v-else-if="props.component==='transfer'"><KimaTransfer v-model="transferred" :options="choices" name="groups" label="分配小组" /><output>{{ transferred.join(', ') }}</output></template>

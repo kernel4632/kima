@@ -3,14 +3,12 @@
 import { ref } from 'vue';
 import KimaGrid from '../components/foundation/grid.ce.vue';
 import KimaFlex from '../components/foundation/flex.ce.vue';
-import KimaStack from '../components/foundation/stack.ce.vue';
 import KimaFieldGroup from '../components/foundation/field-group.ce.vue';
 import KimaInputGroup from '../components/foundation/input-group.ce.vue';
 import KimaPageHeader from '../components/foundation/page-header.ce.vue';
 import KimaBanner from '../components/foundation/banner.ce.vue';
 import KimaErrorState from '../components/foundation/error-state.ce.vue';
 import KimaTypography from '../components/foundation/typography.ce.vue';
-import KimaMark from '../components/foundation/mark.ce.vue';
 import KimaTimeDisplay from '../components/foundation/time-display.ce.vue';
 import KimaTextField from '../components/core/text-field.ce.vue';
 import KimaButton from '../components/core/button.ce.vue';
@@ -39,16 +37,18 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
         <template #main><div class="kima-foundation-example__cell">主内容</div></template>
       </KimaGrid>
     </template>
-    <KimaFlex v-else-if="component === 'flex'" direction="row" wrap="wrap" :gap="4" align="center" justify="space-between">
-      <KimaButton variant="tonal">左对齐动作</KimaButton>
-      <span>自动换行的弹性区域</span>
-      <KimaButton>右侧动作</KimaButton>
-    </KimaFlex>
-    <KimaStack v-else-if="component === 'stack'" :gap="4" align="stretch">
-      <div class="kima-foundation-example__cell">第一层</div>
-      <div class="kima-foundation-example__cell">第二层</div>
-      <div class="kima-foundation-example__cell">第三层</div>
-    </KimaStack>
+    <template v-else-if="component === 'flex'">
+      <KimaFlex direction="row" wrap="wrap" :gap="4" align="center" justify="space-between">
+        <KimaButton variant="tonal">左对齐动作</KimaButton>
+        <span>自动换行的弹性区域</span>
+        <KimaButton>右侧动作</KimaButton>
+      </KimaFlex>
+      <KimaFlex direction="column" wrap="nowrap" :gap="4" align="stretch">
+        <div class="kima-foundation-example__cell">第一层</div>
+        <div class="kima-foundation-example__cell">第二层</div>
+        <div class="kima-foundation-example__cell">第三层</div>
+      </KimaFlex>
+    </template>
     <template v-else-if="component === 'field-group'">
       <KimaFieldGroup legend="通知渠道" hint="至少填写一种联系方式；分组会在输入后更新有效性。" required @validity-change="groupValid = $event.valid">
         <KimaTextField label="工作邮箱" name="foundation-mail" type="email" placeholder="name@example.com" />
@@ -78,7 +78,6 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
       <KimaTypography type="body" color="muted">正文尺寸与颜色只来自 token 白名单，组件不生成输入标签。</KimaTypography>
       <KimaTypography type="caption">说明文字使用 caption 语义。</KimaTypography>
     </template>
-    <p v-else-if="component === 'mark'" class="kima-foundation-example__prose">搜索结果：<KimaMark>动态配色</KimaMark> 负责品牌色，<KimaMark tone="error">过期缓存键</KimaMark> 使用固定错误色。</p>
     <div v-else-if="component === 'time-display'" class="kima-foundation-example__times">
       <KimaTimeDisplay value="2026-06-01T01:30:00Z" mode="datetime" locale="zh-CN" time-zone="UTC" />
       <KimaTimeDisplay value="2026-06-01" mode="date" locale="zh-CN" time-zone="UTC" date-style="full" />

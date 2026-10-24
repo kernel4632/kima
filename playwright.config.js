@@ -17,7 +17,7 @@ export default defineConfig({
   projects: [{ name: "desktop", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: `pnpm exec vite --host 127.0.0.1 --port ${port} --strictPort`,
-    url: `${baseURL}/tests/fixture.html`,
+    url: `${baseURL}/tests/smoke-fixture.html`,
     reuseExistingServer: !process.env.CI,
   },
 });

@@ -5,11 +5,9 @@ import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 
 const samples = {
-  "datetime-range-picker": ["2026-01-01T09:00", "2026-01-01T10:00"],
   "period-picker": ["2026-01", "2026-02"],
   "date-field": "2026-01-01",
   "time-field": "09:00",
-  "time-select": "09:00",
   "dynamic-input": [{ id: "row-1", value: "x" }],
   "masked-input": "2026-01-01",
   "json-input": '{"ok":true}',

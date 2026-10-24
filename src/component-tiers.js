@@ -1,6 +1,6 @@
 /* 组件分档：唯一来源。
  *
- * 分档解决的是一件事：145 个入口不可能都按最高水位维护。
+ * 分档解决的是一件事：当前全部入口不可能都按最高水位维护。
  * 维护成本要花在"每个应用都会用、而且最代表 KIMA 手感"的那部分上。
  *
  * core（默认注册，最高水位）
@@ -55,7 +55,6 @@ export const componentTiers = {
     "skeleton",
     "slider",
     "spinner",
-    "stack",
     "switch",
     "table",
     "tabs",
@@ -89,8 +88,6 @@ export const componentTiers = {
     "copy-button",
     "date-field",
     "date-range-picker",
-    "datetime-picker",
-    "datetime-range-picker",
     "descriptions",
     "dynamic-input",
     "editable",
@@ -114,7 +111,6 @@ export const componentTiers = {
     "mention",
     "menubar",
     "multi-select",
-    "native-select",
     "navigation-menu",
     "notification-queue",
     "overflow-list",
@@ -138,7 +134,6 @@ export const componentTiers = {
     "tags-input",
     "time-field",
     "time-range-picker",
-    "time-select",
     "timeline",
     "toggle",
     "toolbar",
@@ -156,15 +151,11 @@ export const componentTiers = {
     "affix",
     "angle-slider",
     "animated-number",
-    "aspect-ratio",
     "blockquote",
     "countdown",
     "equation",
-    "gradient-text",
     "highlight",
-    "kbd",
     "loading-bar",
-    "mark",
     "marquee",
     "masonry",
     "statistic",

@@ -4,7 +4,7 @@
  *              <kima-button type="submit">Save</kima-button>
  * Only tokens and component CSS are installed; the host page keeps its own reset.
  *
- * 这是全量入口（145 个）。只想要日常控件时用 "@kernel4632/kima/elements/core"，
+ * 这是全量入口，包含当前目录的全部组件。只想要日常控件时用 "@kernel4632/kima/elements/core"，
  * 它按 src/component-tiers.js 的 core 档注册，体积小得多。
  */
 import { defineKimaElements } from "./utils/register-elements.js";

@@ -2,19 +2,19 @@
 
 ## 当前事实
 
-当前 [组件目录](../src/components/)实际有 **145 个组件入口**，完整清单见[入口索引](component-index.md)，逐项实现边界与公开目录来源见[能力矩阵](component-comparison.md)。数量是源码事实，不是与任一参考库全部 API 等价或公开发布的证明。
+当前 [组件目录](../src/components/)实际有 **136 个组件入口**，完整清单见[入口索引](component-index.md)，逐项实现边界与公开目录来源见[能力矩阵](component-comparison.md)。数量是源码事实，不是与任一参考库全部 API 等价或公开发布的证明。
 
-当前验收以命令实际输出为准：`pnpm test` 一条冒烟；`pnpm test:ssr` 16 项；`node scripts/audit-visual.mjs` 桌面与手机各 145 页、`flagged=0`；`build`/`build:lib`/`verify:lib` 全过（145 组件、12 项产物检查）。历史全量回归日志见[最终回归记录](final-regression.md)、[真实产物验收](final-package-verification.md)和 `artifacts/`。npm 身份检查 401，尚未公开发布。
+第一批已移除 9 个低价值入口，详见[删减与迁移](component-pruning.md)。本轮站点及组件库构建通过、产物 136 个组件/13 项核验通过、冒烟冷启动复跑 6.6 秒、SSR 16/16、隔离消费者 22/22、生产路由 136/136 无运行错误。旧回归数据属于历史证据，不能作为剩余组件的完整验收承诺。
 
 ## 维护分层
 
-145 个入口不可能都按最高水位维护。档位唯一来源是 [`src/component-tiers.js`](../src/component-tiers.js:1)，判断标准写在文件头：
+先审查入口必要性，再决定维护投入；分档不为薄包装提供永久保留理由。档位唯一来源是 [`src/component-tiers.js`](../src/component-tiers.js:1)，判断标准写在文件头：
 
 | 档位 | 数量 | 维护水位 | 注册方式 |
 | --- | --- | --- | --- |
-| core | 44 | 逐页视觉审查、跨浏览器、键盘与读屏、动画中间帧 | `/elements/core` 默认注册 |
-| extras | 84 | 渲染、键盘可达、有交互反馈；不做逐页视觉打磨 | 按需 |
-| experimental | 17 | 能渲染、有状态反馈；接口可能调整 | 按需 |
+| core | 43 | 逐页视觉审查、跨浏览器、键盘与读屏、动画中间帧 | `/elements/core` 默认注册 |
+| extras | 80 | 渲染、键盘可达、有交互反馈；不做逐页视觉打磨 | 按需 |
+| experimental | 13 | 能渲染、有状态反馈；接口可能调整 | 按需 |
 
 文档站组件页会显示当前组件所属档位。新增 `.ce.vue` 必须在分档表里选一档，`scripts/components.js` 会校验，漏了构建直接失败。
 
@@ -39,9 +39,9 @@ HOP：约束见[协作规范](../AGENTS.md)，组件逐项来源唯一维护在[
 | G01 | 独立日历 / 已实现 | [calendar](../src/components/advanced-input/calendar.ce.vue:1)：内联月网格、跨月键盘、上下限/禁用日期、单 Tab 入口及原生校验 | E/N/U/R/S Calendar | AI |
 | G02 | 日期范围 / 已实现，有限范围 | [date-range-picker](../src/components/advanced-input/date-range-picker.ce.vue:1)：双月内联、起止输入、未完成值、区间高亮及禁用日校验；不是弹出范围面板，没有独立范围字段入口 | R Date Range Field / Date Range Picker / Range Calendar；S Range Calendar | AI |
 | G03 | 时间范围 / 已实现 | [time-range-picker](../src/components/advanced-input/time-range-picker.ce.vue:1)：起止 HH:mm、分钟步长、端点边界、跨午夜策略；默认相同时刻为 24 小时，关闭 overnight 后为零时长；不含秒范围与跨午夜可用窗口规则 | R Time Range Field；E/N Time Picker 同族 | AI |
-| G04 | 日期时间及范围 / 已实现，有限范围 | [datetime-picker](../src/components/advanced-input/datetime-picker.ce.vue:1)和[datetime-range-picker](../src/components/form-completion/datetime-range-picker.ce.vue:1)：本地无时区值、起止顺序、原生上下限/reset；单值 step 按分钟，范围 step 直接传原生秒。没有 offset/epoch 转换或 DST 策略 | E DateTime Picker；N Date Picker 同族 | AI / FC |
+| G04 | 日期时间及范围 / 薄包装已移除 | 原生日期时间输入不再包装为完整选择器；需要时组合 date-field/time-field，并由宿主处理本地模型、上下限、步长和顺序校验，见[迁移](component-pruning.md) | E DateTime Picker；N Date Picker 同族 | 不沿用旧包装验收 |
 | G05 | 月/年及范围 / 已实现，有限范围 | [period-picker](../src/components/form-completion/period-picker.ce.vue:1)：month/year 单值与范围、顺序校验，依赖原生 month/number；不是独立月/年网格。上下限依赖原生 validity，不宣称所有组合边界已验收 | R Month Picker / Month Range Picker / Year Picker / Year Range Picker（快照 Alpha） | FC |
-| G06 | 分段日期/时间与预设时刻 / 已实现，有限范围 | [date-field](../src/components/form-completion/date-field.ce.vue:1)、[time-field](../src/components/form-completion/time-field.ce.vue:1)、[time-select](../src/components/form-completion/time-select.ce.vue:1)：年月日/时分秒分段及预设列表；独立日期面板由 calendar 承担，不是任意日历体系 | R Date Field / Time Field；U InputDate / InputTime；E Time Select | FC |
+| G06 | 分段日期/时间与预设时刻 / 保留字段，合并预设选择 | [date-field](../src/components/form-completion/date-field.ce.vue:1)、[time-field](../src/components/form-completion/time-field.ce.vue:1) 保留；预设时刻直接使用 [select](../src/components/core/select.ce.vue:1) 的选项数据，不再有 time-select 入口 | R Date Field / Time Field；E Time Select | FC |
 | G07 | 行内编辑 / 已实现 | [editable](../src/components/advanced-input/editable.ce.vue:1)：显示/草稿、保存/取消、异步失败保留、焦点返回；失焦不自动提交，不是富文本 | R Editable | AI |
 | G08 | 穿梭框 / 已实现 | [transfer](../src/components/advanced-input/transfer.ce.vue:1)：双列表、筛选、批量移动、禁用和原生表单；不虚拟化 | E/N/A Transfer | AI |
 | G09 | 提及 / 已实现，有限范围 | [mention](../src/components/advanced-input/mention.ce.vue:1)：光标片段替换、IME、键盘、本地候选；远程请求取消/乱序由宿主管理 | E Mention；N Mention；A Mentions | AI |
@@ -83,21 +83,23 @@ HOP：约束见[协作规范](../AGENTS.md)，组件逐项来源唯一维护在[
 
 | 编号 | 能力 / 状态 | 源码事实与支持边界 | 公开目录来源 | 测试来源 |
 | --- | --- | --- | --- | --- |
-| G29 | 布局与分组 / 已实现 | [grid](../src/components/foundation/grid.ce.vue:1)、[flex](../src/components/foundation/flex.ce.vue:1)、[stack](../src/components/foundation/stack.ce.vue:1)、[field-group](../src/components/foundation/field-group.ce.vue:1)、[input-group](../src/components/foundation/input-group.ce.vue:1)、[masonry](../src/components/shell/masonry.ce.vue:1)：响应式布局/命名区域、语义字段组合、列优先瀑布流；不自动平衡最短列或改变焦点顺序 | E Layout / Space；N Flex / Grid；A Grid / Flex / Masonry；M Flex / Grid / Stack；U FieldGroup；S Input Group | FO / SH |
+| G29 | 布局与分组 / 已实现 | [grid](../src/components/foundation/grid.ce.vue:1)、[flex](../src/components/foundation/flex.ce.vue:1)（纵向堆叠并入 flex）、[field-group](../src/components/foundation/field-group.ce.vue:1)、[input-group](../src/components/foundation/input-group.ce.vue:1)、[masonry](../src/components/shell/masonry.ce.vue:1)：响应式布局/命名区域、语义字段组合、列优先瀑布流；不自动平衡最短列或改变焦点顺序 | E Layout / Space；N Flex / Grid；A Grid / Flex / Masonry；M Flex / Grid / Stack；U FieldGroup；S Input Group | FO / SH |
 | G30 | 页头/横幅/错误恢复 / 已实现 | [page-header](../src/components/foundation/page-header.ce.vue:1)、[banner](../src/components/foundation/banner.ce.vue:1)、[error-state](../src/components/foundation/error-state.ce.vue:1)：行动区、持久提示、异步重试/resetKey；错误组件不是跨 CE app 的 Error Boundary，页面模板由宿主组合 | E/N Page Header；U Banner / Error / PageHeader；N Thing 相邻 | FO |
-| G31 | 排版与标记 / 已实现 | [typography](../src/components/foundation/typography.ce.vue:1)、[mark](../src/components/foundation/mark.ce.vue:1)及既有引用/代码等；字段不画可见标签的设计保持不变；无整页富排版解析器 | E/N/A/M/S Typography；M Mark；R/S Label 是语义关联参考 | FO |
+| G31 | 排版与标记 / 保留排版，移除标记包装 | [typography](../src/components/foundation/typography.ce.vue:1) 保留；mark 使用原生语义与局部样式，不单列入口 | E/N/A/M/S Typography；M Mark | FO |
 | G33 | 应用配置 / 已实现，有限范围 | [config-provider](../src/components/shell/config-provider.ce.vue:1)：局部主题/种子、locale、方向与减少动效，Vue 注入和 CE 作用域；不宣称全库每个文案自动翻译，无完整语言选择 UI/通用服务注册器 | E/N/A Config Provider；U App / Theme / LocaleSelect | SH |
 | G36 | 动效/焦点/传送 / 基础设施 | [共享动效](../src/utils/motion.js:1)、Reka 行为、原生 modal 与内部插槽/焦点工具已有；不为外部每个底层原语建立可视入口，也不宣称全量工具 API 等价 | M Overlay / FocusTrap / Portal / Transition / Hooks；N Collapse Transition；S 效果工具 | 共享动效及各组源码；本次不改动动效文档 |
 | G37 | 图表/热力图 / 已实现，有限范围 | [chart](../src/components/content/chart.ce.vue:1)：line/bar/area/scatter、负值/缺值、图例/键盘与数据表；[heatmap](../src/components/content/heatmap.ce.vue:1)：二维强度与键盘；没有缩放平移、堆叠、饼图、统计聚合 | U Chart；S Chart / Charts；N Heatmap；A Charts 为独立生态 | CO |
 | G38 | 富文本/代码编辑 / 已实现，有限范围 | [rich-text-editor](../src/components/content/rich-text-editor.ce.vue:1)：Tiptap/ProseMirror、清洗 HTML 模型与真实选区；[code-editor](../src/components/content/code-editor.ce.vue:1)：CodeMirror 6、JS/JSON/HTML/CSS、查找/历史。依赖已进入核心 bundle，不再写作“尚待附加包”；无协作、代码执行、远程补全或完整 IDE | U Editor；M Extensions 仅入口证据；代码编辑器无七库直接目录证据，属本地实现扩展 | CO |
 | G39 | 数学公式 / 已实现 | [equation](../src/components/content/equation.ce.vue:1)：KaTeX 输出 MathML、安全错误、禁任意资源命令；非任意宏/HTML 输出，排版依赖浏览器数学字体 | N Equation | CO |
-| G40 | 装饰/持续运动 / 已实现可选子集 | [marquee](../src/components/shell/marquee.ce.vue:1)：默认静态、显式开启动画、悬停/焦点暂停与减少动效；[gradient-text](../src/components/shell/gradient-text.ce.vue:1)：文字效果；BorderBeam 等没有实现，非核心必补 | N Marquee / Gradient Text；M/U Marquee；A BorderBeam | SH |
+| G40 | 装饰/持续运动 / 收缩范围 | [marquee](../src/components/shell/marquee.ce.vue:1) 暂保留；gradient-text 纯装饰退出公开目录；其他装饰不为覆盖率新增 | N Marquee / Gradient Text；M/U Marquee | SH |
 | G41 | 文档内容系统 / 已实现站点范围 | [文档站](../src/App.vue:1)已有组件元数据全文命令搜索、快捷键、路由与页内目录；CMS 索引、上下篇、远程全文服务是宿主内容系统范围 | U ContentNavigation / ContentSearch / ContentSurround / ContentToc / PageAnchors | FE / DOC |
 | G42 | 应用壳与业务模板 / 已实现壳，模板非核心 | [app-shell](../src/components/shell/app-shell.ce.vue:1)与[sidebar](../src/components/shell/sidebar.ce.vue:1)：区域插槽、跳过链接、响应式抽屉、嵌套导航/折叠；不是完整 Dashboard/Pricing/Blog/Auth/Chat/AI 产品。server auth、transport 与商业模板不列核心缺失 | M AppShell；U Header/Footer/Main/Sidebar、Dashboard/Page/Auth/Chat；S Sidebar / AI Elements；A Pro 生态 | SH |
 | G49 | 专用滚动 / 待查外部语义 | [scroll-area](../src/components/navigation/scroll-area.ce.vue:1)已有原生具名滚动；M Scroller 仅有目录证据，未查详情，不猜是否需要额外行为 | M Scroller | NAV（只证明 KIMA 滚动区） |
 | G50 | 不明新目录项 / 待查外部语义 | S Marker、A Listy、S Trace/Questionnaire 等仅目录/业务候选；不猜成地图或新核心控件，不计已完成等价对标 | S Marker / Trace / Questionnaire；A Listy | 无对应能力断言 |
 
 ## 核验来源与验证状态
+
+> 以下保留的是删减前的历史专项与集成证据，不表示本轮 136 项已完成所有验收。当前入口集合由自动生成的[索引](component-index.md)确定。
 
 下表链接是源码、用例和最终验收证据。旧专项记录保留在各组文档；本页不把历史较小目录的结果重复计入 145 项最终验收。
 

@@ -16,14 +16,14 @@ test('local civil parsing never accepts offsets or rollover dates', () => {
   assert.equal(timeMinutes('24:00'),null);
 });
 
-test('all nine advanced input components SSR render with nonempty local models',async()=>{
+test('advanced input components SSR render with nonempty local models',async()=>{
   const server=await createServer({server:{middlewareMode:true,hmr:false,ws:false},appType:'custom'});
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   const values={
     'range-slider':{modelValue:[20,80]},calendar:{modelValue:'2026-06-01'},
     'date-range-picker':{modelValue:['2026-06-01','2026-06-10']},
     'time-range-picker':{modelValue:['22:00','02:00']},
-    'datetime-picker':{modelValue:'2026-06-01T09:30'},mention:{modelValue:'Hello @Kai',items:['Kai']},
+    mention:{modelValue:'Hello @Kai',items:['Kai']},
     form:{},editable:{modelValue:'说明'},transfer:{modelValue:['a'],options:[{value:'a',label:'Alpha'},{value:'b',label:'Beta'}]},
   };
   try {
@@ -32,7 +32,6 @@ test('all nine advanced input components SSR render with nonempty local models',
       const html=await renderToString(createSSRApp({render:()=>h(component,{...props,name:'entry'},slug==='form'?{default:()=>h('input',{name:'child',required:true})}:undefined)}));
       assert.ok(html.includes(`kima-${slug}`),slug);
       if(slug==='date-range-picker') assert.equal((html.match(/role="grid"/g)||[]).length,2);
-      if(slug==='datetime-picker') assert.match(html,/2026-06-01T09:30/);
     }
   } finally { await server.close(); }
 });

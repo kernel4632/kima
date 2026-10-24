@@ -88,7 +88,7 @@
 - 静态不适用：caption 不做动画，避免图注跟随图片状态抖动。
 - 验证风险：浏览器缓存可能让 load 事件同步或异步到达；当前请求匹配已防止旧事件污染，Chromium 慢请求交叉场景已通过。
 
-### 39. [`kbd.ce.vue`](../src/components/display/kbd.ce.vue)
+### 39. [`kbd.ce.vue`（已移除）](component-pruning.md)
 
 - 交互：键盘快捷键静态语义展示，支持数组和插槽。
 - 已有动效：无。
@@ -152,7 +152,7 @@
 - 静态不适用：原生 hidden select 本身不可见，不做视觉过渡。
 - 验证风险：用户传入重复 value 会破坏 key 唯一性；当前契约已注明 value 唯一，Chromium 键盘/搜索/清空/reset 已通过。
 
-### 47. [`native-select.ce.vue`](../src/components/input/native-select.ce.vue)
+### 47. [`native-select.ce.vue`（已移除）](component-pruning.md)
 
 - 交互：原生 select、multiple、原生校验、reset、移动端系统选择界面。
 - 已有动效：输入表面 focus-within 和颜色状态过渡；选项菜单由浏览器绘制。

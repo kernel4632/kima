@@ -15,7 +15,7 @@ const root = new URL('../', import.meta.url);
 const output = new URL(`shots/audit${suffix}/`, root);
 await mkdir(output, { recursive: true });
 
-// KIMA_AUDIT_TIER=core 时只审 core 档（逐页高水位）；不设就跑全部 145 页。
+// KIMA_AUDIT_TIER=core 时只审 core 档（逐页高水位）；不设就跑全部 当前全部页面。
 const tier = process.env.KIMA_AUDIT_TIER;
 if (tier && !componentTiers[tier]) throw new Error(`Unknown KIMA_AUDIT_TIER: ${tier}`);
 const slugs = (tier ? componentTiers[tier] : Object.keys(componentPaths)).sort();

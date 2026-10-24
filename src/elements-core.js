@@ -38,7 +38,6 @@ import KimaSelect from "./components/core/select.ce.vue";
 import KimaSkeleton from "./components/display/skeleton.ce.vue";
 import KimaSlider from "./components/core/slider.ce.vue";
 import KimaSpinner from "./components/display/spinner.ce.vue";
-import KimaStack from "./components/foundation/stack.ce.vue";
 import KimaSwitch from "./components/core/switch.ce.vue";
 import KimaTable from "./components/data/table.ce.vue";
 import KimaTabs from "./components/core/tabs.ce.vue";
@@ -84,7 +83,6 @@ export const elements = defineKimaElements({
   "skeleton": KimaSkeleton,
   "slider": KimaSlider,
   "spinner": KimaSpinner,
-  "stack": KimaStack,
   "switch": KimaSwitch,
   "table": KimaTable,
   "tabs": KimaTabs,

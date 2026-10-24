@@ -1,12 +1,11 @@
 import assert from 'node:assert/strict';
-import { readdir } from 'node:fs/promises';
 import { chromium, expect } from '@playwright/test';
+import { componentPaths } from '../src/component-paths.js';
 
 const port = Number(process.env.KIMA_SITE_PORT || 5225);
 const base = `http://127.0.0.1:${port}`;
-const components = (await readdir(new URL('../src/components/', import.meta.url)))
-  .filter((file) => file.endsWith('.ce.vue'))
-  .map((file) => file.replace('.ce.vue', ''));
+const components = Object.keys(componentPaths);
+assert.ok(components.length > 0, 'production route audit must not silently check zero components');
 const browser = await chromium.launch();
 const page = await browser.newPage();
 const errors = [];

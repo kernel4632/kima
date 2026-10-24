@@ -67,6 +67,12 @@ const volume = ref(40);
 const progressValue = ref(65);
 
 // --- 选择与日期 ---
+const presetTime = ref('09:00');
+const presetTimes = [
+  { value: '09:00', label: '09:00 · 上午', description: '工作日' },
+  { value: '12:30', label: '12:30 · 午间' },
+  { value: '18:00', label: '18:00 · 不可用', disabled: true },
+];
 const countries = [
   { value: "cn", label: "中国" },
   { value: "jp", label: "日本", description: "东亚" },
@@ -336,6 +342,7 @@ applyPalette(theme.seed, theme);
             <div class="kima-gallery__grid">
               <kima-select v-model="country" label="国家" :items="countries" searchable clearable />
               <kima-select :model-value="null" label="必填" :items="countries" required placeholder="请选择国家" />
+              <kima-select v-model="presetTime" label="预设时刻" :items="presetTimes" clearable placeholder="选择时刻" />
             </div>
           </article>
 

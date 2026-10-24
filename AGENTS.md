@@ -9,7 +9,7 @@ KIMA 是一个面向高专注、高体验 Web 应用的 UI 设计系统与组件
 本文件是本仓库的最高协作约束。任何会话在改代码前先读本文件。
 
 > 仓库已从旧的 FEYO 改名到 KIMA，源码、样式、脚本、测试、文档里的名字都统一成 `kima`。
-> 基础层和组件已重做；当前目录有 145 个组件入口。能力边界见[逐项矩阵](docs/component-comparison.md)，最终验证状态见[路线图](docs/component-roadmap.md)，不能把文件存在写成全量验收通过。
+> 基础层和组件已重做；当前目录有 136 个组件入口。能力边界见[逐项矩阵](docs/component-comparison.md)，最终验证状态见[路线图](docs/component-roadmap.md)，不能把文件存在写成全量验收通过。
 
 ## 技术栈（固定，不要替换）
 
@@ -121,7 +121,7 @@ src/
   utils/            共用工具（主题、动效、输入/日期、导航、配置、内容等），按实际复用维护
   component-paths.js 由 scripts/components.js 生成，slug → 分组路径，测试与工具使用
   component-tiers.js 组件分档（core / extras / experimental），新增组件必须在这里选一档
-  elements.js       自定义元素全量入口（145 个）
+  elements.js       自定义元素全量入口（136 个）
   elements-core.js  由 scripts/components.js 生成，只注册 core 档的自定义元素入口
   App.vue           开发预览页
   main.js           开发入口
@@ -142,6 +142,7 @@ pnpm test:ssr    # SSR 测试
 
 ## 开发约定
 
+- **组件必要性**：不为目录覆盖率增加薄包装；只有排版或现有组件组合的用法优先写示例。删除入口必须同时清理分档、导出、演示、测试与文档，不留同名空壳。
 - **组件分档**：新增 `.ce.vue` 必须在 [`src/component-tiers.js`](src/component-tiers.js:1) 里选一档
   （core / extras / experimental），漏了分档或写了不存在的组件，构建会直接失败。
   core 走最高水位（逐页审查、跨浏览器、读屏、中间帧），另两档只保证渲染与交互反馈。

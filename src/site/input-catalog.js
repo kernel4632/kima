@@ -10,7 +10,6 @@ export const inputCatalog = {
   "color-picker": { label: "颜色选择", group: "表单与选择" },
   toggle: { label: "切换按钮", group: "表单与选择" },
   "checkbox-group": { label: "复选组", group: "表单与选择" },
-  "native-select": { label: "原生选择器", group: "表单与选择" },
   field: { label: "字段辅助说明", group: "表单与选择" },
 };
 export default inputCatalog;

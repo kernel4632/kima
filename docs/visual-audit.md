@@ -29,19 +29,19 @@ node scripts/audit-width.mjs http://127.0.0.1:5188
 # 原生控件审查：列出演示区里仍是浏览器默认外观的 checkbox / select / 日期时间输入
 node scripts/audit-native.mjs http://127.0.0.1:5188
 
-# 只审 core 档（44 页，最高水位）；不设变量就是全部 145 页
+# 只审 core 档（数量取分档表）；不设变量就跑当前全部页面
 $env:KIMA_AUDIT_TIER = 'core'
 node scripts/audit-visual.mjs http://127.0.0.1:5188
 node scripts/audit-native.mjs http://127.0.0.1:5188
 Remove-Item Env:KIMA_AUDIT_TIER
 ```
 
-`KIMA_AUDIT_TIER` 直接读 [`src/component-tiers.js`](../src/component-tiers.js:1)，和构建用的是同一份分档。当前事实：core 44 页原生控件审查 **0 命中**；8 个仍是系统外观的页面全部在 extras（日期/时间范围输入、穿梭框多选、native-select、颜色输入）。
+`KIMA_AUDIT_TIER` 直接读 [`src/component-tiers.js`](../src/component-tiers.js:1)，和构建用的是同一份分档。删减前审查数字是历史证据；当前分档见分档表，原生外观边界需按现有入口重查。
 
 原生控件审查只看“外观是不是浏览器默认”：字段内部的 `input[type=text]` 由 KIMA 画表面，不算；
 `appearance` 不是 `none` 又没有遮住的 `checkbox` / `radio` / `select` 才算。
-`kima-native-select` 是有意保留的系统菜单。**已知边界**：穿梭框的两个多选列表仍是原生
-`select[multiple]`，`date-range-picker` / `datetime-*` / `period-picker` / `time-range-picker`
+`native-select` 薄包装已移除，宿主确需系统菜单时直接使用原生控件。**已知边界**：穿梭框的两个多选列表仍是原生
+`select[multiple]`，`date-range-picker` / `period-picker` / `time-range-picker`
 的输入仍是原生日期时间控件（表面是 KIMA 的，弹出的还是系统面板），这几处还没换。
 
 `shots/` 已忽略，截图与报告不入库。每页报告在 `report.json`，包含演示区尺寸、横向滚动、

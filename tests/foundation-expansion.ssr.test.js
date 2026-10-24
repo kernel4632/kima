@@ -7,18 +7,16 @@ import { renderToString } from 'vue/server-renderer';
 const samples = [
   ['grid', { columns: { base: 1, sm: 2 }, gap: 3, areas: ['head head', 'side main'] }, { head: () => 'Head', side: () => 'Side', main: () => 'Main' }],
   ['flex', { direction: 'column', gap: 2 }, { default: () => 'Flex content' }],
-  ['stack', { gap: 2, align: 'center' }, { default: () => 'Stack content' }],
   ['field-group', { legend: '联系', hint: '至少一项', required: true }, { default: () => h('input', { name: 'mail' }) }],
   ['input-group', { label: '预算' }, { default: () => h('input', { name: 'amount' }) }],
   ['page-header', { heading: '成员', description: '管理成员' }, { actions: () => 'Action' }],
   ['banner', { heading: '维护', variant: 'warning', closable: true }, { default: () => '今晚维护' }],
   ['error-state', { heading: '加载失败', description: '请重试', code: 'NETWORK' }, { default: () => '补充信息' }],
   ['typography', { type: 'heading', level: 2, size: 'headline-medium' }, { default: () => '语义标题' }],
-  ['mark', { text: '<script>safe</script>' }, {}],
   ['time-display', { value: '2026-06-01T01:30:00Z', mode: 'datetime', locale: 'en-GB', timeZone: 'UTC' }, {}],
 ];
 
-test('all eleven foundation components SSR render without browser globals', async () => {
+test('foundation components SSR render without browser globals', async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
@@ -34,11 +32,6 @@ test('all eleven foundation components SSR render without browser globals', asyn
       if (slug === 'banner') assert.match(html, /role="alert"/);
       if (slug === 'error-state') assert.match(html, /加载失败/);
       if (slug === 'typography') assert.match(html, /<h2[^>]*class="kima-typography/);
-      if (slug === 'mark') {
-        assert.match(html, /<mark[^>]*class="kima-mark/);
-        assert.match(html, /safe/);
-        assert.doesNotMatch(html, /<script>safe<\/script>/);
-      }
       if (slug === 'time-display') {
         assert.match(html, /datetime="2026-06-01T01:30:00.000Z"/);
         assert.match(html, /01:30/);

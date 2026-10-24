@@ -1,10 +1,8 @@
 <script setup>
 import { ref } from "vue";
-import KimaDatetimeRangePicker from "../components/form-completion/datetime-range-picker.ce.vue";
 import KimaPeriodPicker from "../components/form-completion/period-picker.ce.vue";
 import KimaDateField from "../components/form-completion/date-field.ce.vue";
 import KimaTimeField from "../components/form-completion/time-field.ce.vue";
-import KimaTimeSelect from "../components/form-completion/time-select.ce.vue";
 import KimaDynamicInput from "../components/form-completion/dynamic-input.ce.vue";
 import KimaMaskedInput from "../components/form-completion/masked-input.ce.vue";
 import KimaJsonInput from "../components/form-completion/json-input.ce.vue";
@@ -16,8 +14,7 @@ import KimaTextField from "../components/core/text-field.ce.vue";
 import KimaField from "../components/input/field.ce.vue";
 import KimaButton from "../components/core/button.ce.vue";
 const props = defineProps({ component: { type: String, required: true } });
-const range=ref(["2026-06-01T09:00","2026-06-01T10:30"]),period=ref(["2026-06","2026-08"]),date=ref("2026-06-01"),time=ref("09:30:00"),preset=ref("09:00"),rows=ref([{id:"initial",key:"name",value:"KIMA"}]),masked=ref(""),json=ref('{\n  "ready": true\n}'),angle=ref(225),color=ref("#61afef"),person=ref(""),uploadTasks=ref([]),status=ref("");
-const presets=[{value:"09:00",label:"09:00 · 上午",description:"工作日"},{value:"12:30",label:"12:30 · 午间"},{value:"18:00",label:"18:00 · 禁用",disabled:true}];
+const period=ref(["2026-06","2026-08"]),date=ref("2026-06-01"),time=ref("09:30:00"),rows=ref([{id:"initial",key:"name",value:"KIMA"}]),masked=ref(""),json=ref('{\n  "ready": true\n}'),angle=ref(225),color=ref("#61afef"),person=ref(""),uploadTasks=ref([]),status=ref("");
 const rules={person:{validator:async(value,{model,context})=>{await new Promise(resolve=>setTimeout(resolve,context.delay||40));return value?.trim().length>=2&&model.confirm===value?true:"姓名至少两字，且需与确认项一致";}}};
 function upload(file,{signal,onProgress}){return new Promise((resolve,reject)=>{let value=0;const timer=setInterval(()=>{if(signal.aborted){clearInterval(timer);reject(new DOMException("已取消","AbortError"));return;}value+=25;onProgress(value);if(value>=100){clearInterval(timer);resolve({id:file.name,url:`/uploads/${encodeURIComponent(file.name)}`});}},40);signal.addEventListener("abort",()=>{clearInterval(timer);reject(new DOMException("已取消","AbortError"));},{once:true});});}
 </script>
@@ -44,11 +41,9 @@ function upload(file,{signal,onProgress}){return new Promise((resolve,reject)=>{
     </form>
 
     <form v-else class="kima-form-completion-example__form" @submit.prevent="status = JSON.stringify([...new FormData($event.target)])">
-      <label v-if="props.component === 'datetime-range-picker'" class="kima-form-completion-example__field">预约区间<KimaDatetimeRangePicker v-model="range" name="appointment" required step="900" /></label>
-      <label v-else-if="props.component === 'period-picker'" class="kima-form-completion-example__field">结算周期<KimaPeriodPicker v-model="period" mode="month" range name="period" required min="2025-01" max="2027-12" /></label>
+      <label v-if="props.component === 'period-picker'" class="kima-form-completion-example__field">结算周期<KimaPeriodPicker v-model="period" mode="month" range name="period" required min="2025-01" max="2027-12" /></label>
       <label v-else-if="props.component === 'date-field'" class="kima-form-completion-example__field">预约日期<KimaDateField v-model="date" name="day" label="预约日期" required min="2025-01-01" /></label>
       <label v-else-if="props.component === 'time-field'" class="kima-form-completion-example__field">开始时间<KimaTimeField v-model="time" name="time" label="开始时间" seconds required /></label>
-      <label v-else-if="props.component === 'time-select'" class="kima-form-completion-example__field">预设时刻<KimaTimeSelect v-model="preset" :items="presets" name="preset" label="预设时刻" required /></label>
       <div v-else-if="props.component === 'dynamic-input'" class="kima-form-completion-example__field">
         <span>字段列表</span>
         <KimaDynamicInput v-model="rows" :create="() => ({ key: '', value: '' })">

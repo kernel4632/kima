@@ -47,7 +47,7 @@
 | 84 | [calendar](../src/components/advanced-input/calendar.ce.vue:1) | 六月→七月、跨月方向键焦点 | content-update-frames、calendar-reversal-zero；新网格淡化，无旧月退场；快速回月/零时长专项 |
 | 85 | [date-range-picker](../src/components/advanced-input/date-range-picker.ce.vue:1) | 双月上一月，标题真实变化 | 子日历承担翻月；普通五帧采样，双月快速反向未独立测；系统日期面板不由库动画 |
 | 86 | [time-range-picker](../src/components/advanced-input/time-range-picker.ce.vue:1) | 结束时间 10→11，间隔立即变 2h | 原生时间输入/文本输出即时；无独立退场，反向不适用 |
-| 87 | [datetime-picker](../src/components/advanced-input/datetime-picker.ce.vue:1) | 原生本地日期时间修改 | 系统面板无库内动画；场地焦点反馈采样；不对输入值补间 |
+| 87 | [datetime-picker（已移除）](component-pruning.md) | 原生本地日期时间修改 | 系统面板无库内动画；场地焦点反馈采样；不对输入值补间 |
 | 88 | [mention](../src/components/advanced-input/mention.ce.vue:1) | 输入 @ 打开两项建议，Escape 关闭 | mention-presence：真实进/退场、退出隔离、快关快开、减少运动 |
 | 89 | [form](../src/components/form-completion/form.ce.vue:1) | 异步提交失败，显示错误内容 | 错误高度过渡五帧；提交立即拦截，校验/事件不等动画；错误收起反向未独立测 |
 | 90 | [editable](../src/components/advanced-input/editable.ce.vue:1) | 展示→编辑，输入即时获得焦点 | editable-presence：编辑区进/退场和快速取消/重开；原生 hidden 值不包动画 |
@@ -61,11 +61,11 @@
 | 98 | [ring-progress](../src/components/data/ring-progress.ce.vue:1) | 20→80，语义立即为 80 | numeric-continuous：真实 dashoffset 中间帧和反向到 10；reduced 无运动 |
 | 99 | [copy-button](../src/components/data/copy-button.ce.vue:1) | 真实按钮触发模拟成功的剪贴板 API，文案/状态更新 | copy-infinite-frames：文案交叉帧；剪贴板权限/失败不由此测试覆盖；自动恢复快反未独立测 |
 | 100 | [long-text](../src/components/data/long-text.ce.vue:1) | 一行折叠→展开全文，展开语义即时 | content-update-frames；局部内容淡化，不人为动画截断行数；收起反向未独立测 |
-| 101 | [datetime-range-picker](../src/components/form-completion/datetime-range-picker.ce.vue:1) | 结束早于开始，错误立即显示 | 原生输入/校验及时；无保留旧错误退场；系统面板动画不适用 |
+| 101 | [datetime-range-picker（已移除）](component-pruning.md) | 结束早于开始，错误立即显示 | 原生输入/校验及时；无保留旧错误退场；系统面板动画不适用 |
 | 102 | [period-picker](../src/components/form-completion/period-picker.ce.vue:1) | 月份 06→07 | 原生 month/year 编辑即时；系统面板不可控制；独立退场/反向不适用 |
 | 103 | [date-field](../src/components/form-completion/date-field.ce.vue:1) | 年/月/日逐段填写，hidden 提交值成立 | 自动前移焦点即时；不对字符/光标运动；独立退场不适用 |
 | 104 | [time-field](../src/components/form-completion/time-field.ce.vue:1) | 时/分逐段填写，hidden 09:30 | 默认两段初始化已修；即时表单值；独立退场不适用 |
-| 105 | [time-select](../src/components/form-completion/time-select.ce.vue:1) | 打开预设选项 | 复用 select 的 popup；普通五帧和 reduced 状态；该包装的快反未独立测 |
+| 105 | [time-select（已移除）](component-pruning.md) | 打开预设选项 | 复用 select 的 popup；普通五帧和 reduced 状态；该包装的快反未独立测 |
 | 106 | [dynamic-input](../src/components/form-completion/dynamic-input.ce.vue:1) | 删除第一行，活动列表立即只剩一行 | list-exits：真实透明度/位移退场且 inert；本轮修复覆盖；重排反向未独立测 |
 | 107 | [masked-input](../src/components/form-completion/masked-input.ce.vue:1) | 输入 ab-12 保留即时文本 | 掩码/光标必须即时；不加字符动画；无独立退场 |
 | 108 | [json-input](../src/components/form-completion/json-input.ce.vue:1) | 有效 JSON→语法错误，格式化即时禁用 | content-update-frames：消息区域真实帧；旧校验不保留；编辑区不淡化；快速内容工具有续接处理 |
@@ -86,14 +86,14 @@
 | 123 | [tag-group](../src/components/utility/tag-group.ce.vue:1) | Delete Alpha，hidden 提交立即删除 | list-exits：实际芯片退场/inert；roving 不选退场按钮；同值快速恢复未独立测 |
 | 124 | [grid](../src/components/foundation/grid.ce.vue:1) | 静态格子内容渲染 | 无独立交互/显隐状态，不对布局根施加强制运动；退场/反向不适用 |
 | 125 | [flex](../src/components/foundation/flex.ce.vue:1) | 静态弹性内容渲染 | 同上；响应式重排即时，无独立运动状态 |
-| 126 | [stack](../src/components/foundation/stack.ce.vue:1) | 静态堆叠渲染 | 同上；不动画焦点顺序或阅读顺序 |
+| 126 | [stack（已移除）](component-pruning.md) | 静态堆叠渲染 | 同上；不动画焦点顺序或阅读顺序 |
 | 127 | [field-group](../src/components/foundation/field-group.ce.vue:1) | hint→error，内部控件立即 invalid/关联 | content-update-frames：当前消息淡化；旧消息不保留可访问 ID；高度退场未单独实现 |
 | 128 | [input-group](../src/components/foundation/input-group.ce.vue:1) | 内部原生输入渲染 | 组合布局无独立状态，控件反馈由内部组件负责；退场/反向不适用 |
 | 129 | [page-header](../src/components/foundation/page-header.ce.vue:1) | 标题/说明渲染 | 静态页面结构，不把路由文本变化强行动画化 |
 | 130 | [banner](../src/components/foundation/banner.ce.vue:1) | 关闭、恢复横幅 | banner-collapse：实测高度帧/退场隔离、快速反向/reduced |
 | 131 | [error-state](../src/components/foundation/error-state.ce.vue:1) | retry→pending→失败文案 | pending 复用按钮加载交叉；消息即时不保留旧错误；重试内容反向未独立测 |
 | 132 | [typography](../src/components/foundation/typography.ce.vue:1) | 原生文本语义渲染 | 静态排版，无独立运动/退场 |
-| 133 | [mark](../src/components/foundation/mark.ce.vue:1) | 原生标记渲染 | 静态行内标记，不对阅读文字做出入场 |
+| 133 | [mark（已移除）](component-pruning.md) | 原生标记渲染 | 静态行内标记，不对阅读文字做出入场 |
 | 134 | [time-display](../src/components/foundation/time-display.ce.vue:1) | 固定日期格式化渲染 | 无计时器/交互状态；文本准确性优先，无独立运动 |
 | 135 | [chart](../src/components/content/chart.ce.vue:1) | 打开/收起数据表 | chart-collapse 真实高度、退出隔离、快反/reduced；数据刷新 useContentMotion，图例全路径未独立测 |
 | 136 | [heatmap](../src/components/content/heatmap.ce.vue:1) | 打开/收起数据表 | heatmap-collapse 同上；值更新不保留过期网格；格子选择即时 |
@@ -105,7 +105,7 @@
 | 142 | [config-provider](../src/components/shell/config-provider.ce.vue:1) | 配置容器/内容渲染 | 行为/主题作用域，无独立进退；局部零时长由 calendar 专项检查，不强制主题运动 |
 | 143 | [masonry](../src/components/shell/masonry.ce.vue:1) | 原生列布局内容渲染 | columns/图片重排不引入独立进退；已有 gap 过渡，动态 gap 未独立测 |
 | 144 | [marquee](../src/components/shell/marquee.ce.vue:1) | 显式 animated 后暂停；reduced 停用 | 轨道实测样式/五帧，副本 inert；无独立退场；恢复/hover 全路径未独立测 |
-| 145 | [gradient-text](../src/components/shell/gradient-text.ce.vue:1) | 显式 animated 文本可见 | numeric-continuous：真实连续动画进度；reduced 无动画；静态默认不运动 |
+| 145 | [gradient-text（已移除）](component-pruning.md) | 显式 animated 文本可见 | numeric-continuous：真实连续动画进度；reduced 无动画；静态默认不运动 |
 
 ## 表格及既有增强
 

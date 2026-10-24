@@ -1,6 +1,6 @@
 # KIMA 组件能力对照矩阵
 
-本参考面向维护者和接入者，按当前 [组件目录](../src/components/)逐项核对 **145 个入口**，每个入口只出现一行，包含源码、实际边界和公开目录来源。标签与 Vue 导出见[入口索引](component-index.md)，G00–G50 处置与实际验证状态见[路线图](component-roadmap.md)。
+本参考面向维护者和接入者，按当前 [组件目录](../src/components/)逐项核对 **136 个入口**，每个入口只出现一行，包含源码、实际边界和公开目录来源。标签与 Vue 导出见[入口索引](component-index.md)，G00–G50 处置与实际验证状态见[路线图](component-roadmap.md)。
 
 入口存在不表示与参考库 API 等价、最终回归通过或已发布。本次读取本地源码、各组用例与历史公开目录快照；外部来源仍是目录级证据，不声称本次重新访问官网。代码编辑器等没有直接目录证据的本地扩展如实注明，不伪造来源。HOP 约束见[协作规范](../AGENTS.md)；API 默认值由源码提取，不在这里抄写。
 
@@ -22,7 +22,7 @@
 
 清洗原则：同一个组件的章节锚点和重复链接合并；去除总览、安装、变更日志、编辑链接、社交链接、页脚生态导航及内部工具页面。Button 页中的属性/插槽锚点不另算组件；E 的 Border/Color/Typography 等设计说明、A 的 Util/Changelog 不拿来充当缺失控件。S 的 AI Elements、U 的业务组合以及 A 的生态链接另外分类，不能静默混入核心数量。快照是采集时点证据，不声称以后官网目录不变。
 
-## 145 个入口逐项实现与来源
+## 136 个入口逐项实现与来源
 
 | slug / 实现证据 | 中文能力 | 实际边界 | 对应来源与原名称 |
 | --- | --- | --- | --- |
@@ -34,7 +34,6 @@
 | [angle-slider](../src/components/form-completion/angle-slider.ce.vue:1) | 角度输入 | 角度环绕、指针/键盘及原生提交；不是图形编辑器 | M AngleSlider |
 | [animated-number](../src/components/utility/animated-number.ce.vue:1) | 数字补间 | 真实中间值、快速反向更新、准确终值与减少动效；非趋势图 | N Number Animation；M RollingNumber |
 | [app-shell](../src/components/shell/app-shell.ce.vue:1) | 响应式应用壳 | header/sidebar/main/footer 插槽、跳过链接、窄屏模态抽屉；不是商业 Dashboard 模板 | M AppShell；U Header / Footer / Main / Sidebar |
-| [aspect-ratio](../src/components/display/aspect-ratio.ce.vue:1) | 固定宽高比 | 内容比例容器，非法比例回退；不负责图片裁剪编辑 | R Aspect Ratio；M AspectRatio；S Aspect Ratio |
 | [avatar](../src/components/display/avatar.ce.vue:1) | 头像 | 图片失败回退到文字/图标，可访问姓名；不默认可点击 | E Avatar；R Avatar；U Avatar |
 | [avatar-group](../src/components/display/avatar-group.ce.vue:1) | 头像组 | 数组/插槽组合、数量折叠；不是成员管理或溢出成员弹层 | U AvatarGroup |
 | [back-top](../src/components/navigation/back-top.ce.vue:1) | 返回顶部 | 阈值显隐、窗口/容器滚动与减少动效；不是通用悬浮动作组 | E Backtop；N Back Top |
@@ -65,8 +64,6 @@
 | [date-field](../src/components/form-completion/date-field.ce.vue:1) | 分段日期输入 | 年月日分段、键盘/完整性校验与原生提交；本地公历，无时区转换 | R Date Field；U InputDate |
 | [date-picker](../src/components/core/date-picker.ce.vue:1) | 单日选择 | 本地单日、月历弹层、上下限与表单；范围/独立日历/日期时间由其他入口提供，无时区模型 | E Date Picker；R Date Picker；S Date Picker |
 | [date-range-picker](../src/components/advanced-input/date-range-picker.ce.vue:1) | 日期范围 | 双月内联、起止原生输入、未完成范围/禁用日校验；不是弹出式范围面板 | R Date Range Picker / Date Range Field / Range Calendar；S Range Calendar |
-| [datetime-picker](../src/components/advanced-input/datetime-picker.ce.vue:1) | 本地日期时间 | 原生 datetime-local、本地分钟值、上下限/step/reset；不接受 offset/Z/epoch，不提供 DST 策略 | E DateTime Picker；N Date Picker 同族 |
-| [datetime-range-picker](../src/components/form-completion/datetime-range-picker.ce.vue:1) | 本地日期时间范围 | 起止本地值、顺序校验、原生上下限，step 按秒；不转换时区 | E DateTime Picker 同族；范围作为本地扩展，不由目录名称证明等价 |
 | [descriptions](../src/components/display/descriptions.ce.vue:1) | 键值详情列表 | 语义键值、列数与内容插槽；不是表单字段或可编辑详情页 | E Descriptions；N Descriptions；M DataList |
 | [dialog](../src/components/core/dialog.ce.vue:1) | 模态对话框 | 原生模态平面、关闭策略和插槽；确认业务由宿主组合，不等于独立 Alert Dialog 契约 | E Dialog；R Dialog；A Modal |
 | [divider](../src/components/core/divider.ce.vue:1) | 语义分隔线 | 横竖、内缩和文字；不是视觉隐藏辅助 | E Divider；R Separator；U Separator |
@@ -82,7 +79,6 @@
 | [flex](../src/components/foundation/flex.ce.vue:1) | 弹性布局 | 方向/换行/对齐及 token 间距；不自动换序或增加底色 | N/A/M Flex |
 | [float-button](../src/components/utility/float-button.ce.vue:1) | 悬浮动作组 | 展开动作、禁用跳过、Escape/外点关闭与焦点恢复；无业务批量动作管理 | A FloatButton；N Float Button；M ActionBar 相邻 |
 | [form](../src/components/form-completion/form.ce.vue:1) | 表单协调与规则 | 原生 validity、dirty/touched、同步/异步 rules、过期字段结果隔离；无 schema 适配/嵌套路径和同名多值模型引擎 | E/N/A/R/U Form；M Form 独立包；S 表单集成 |
-| [gradient-text](../src/components/shell/gradient-text.ce.vue:1) | 渐变文字 | 主题 token 渐变与减少动效回退；装饰能力，不改变文字语义 | N Gradient Text |
 | [grid](../src/components/foundation/grid.ce.vue:1) | 响应式栅格 | 列数/间距及 areas 命名区域、声明顺序投影；不是最短列瀑布流 | N/A/M Grid；E Layout |
 | [heatmap](../src/components/content/heatmap.ce.vue:1) | 热力图 | 二维强度、缺失值、图例/键盘/数据表；无地理地图/统计聚合 | N Heatmap；U/S Chart 相邻 |
 | [highlight](../src/components/display/highlight.ce.vue:1) | 关键词高亮 | 纯文本关键词、大小写选项；不是正则搜索、语法着色或 HTML 渲染 | N Highlight；M Highlight |
@@ -94,7 +90,6 @@
 | [infinite-scroll](../src/components/data/infinite-scroll.ce.vue:1) | 无限加载协调 | 防重复加载、结束/错误/重试、按钮替代；数据请求由宿主提供，不等于虚拟化 | E/N Infinite Scroll |
 | [input-group](../src/components/foundation/input-group.ce.vue:1) | 复合输入排版 | prefix/default/suffix、真实子控件；不生成可见标签或第二层输入表面 | S Input Group；U FieldGroup 相邻 |
 | [json-input](../src/components/form-completion/json-input.ce.vue:1) | JSON 文本输入 | 解析错误、格式化与纯文本模型；不执行代码，无 schema/树编辑 | M JsonInput |
-| [kbd](../src/components/display/kbd.ce.vue:1) | 快捷键提示 | 按键组合展示；不注册全局快捷键 | U Kbd；M Kbd；S Kbd |
 | [layout](../src/components/core/layout.ce.vue:1) | 页面宽度容器 | 最大宽/间距/内边距；grid/flex/stack/app-shell 分别提供其他布局能力 | E Layout Container；N Layout；U Container |
 | [link](../src/components/navigation/link.ce.vue:1) | 文本链接 | 真链接、新窗口安全关系、禁用与当前位置；不内置路由器 | E Link；U Link；M Anchor（文本链接，不是页内目录） |
 | [list](../src/components/display/list.ce.vue:1) | 内容列表 | 有序/无序、标题/说明与行动插槽；没有分页、虚拟化或数据请求 | N List；M List；S Item（内容条目相邻） |
@@ -103,7 +98,6 @@
 | [loading-overlay](../src/components/interaction/loading-overlay.ce.vue:1) | 区域加载遮罩 | 保留内容节点、区域忙碌状态、可选区域隔离/焦点恢复；不是全页请求拦截器 | E Loading；M LoadingOverlay |
 | [log-viewer](../src/components/utility/log-viewer.ce.vue:1) | 本地日志查看 | 追加/裁剪、暂停跟尾、过滤/导出；server auth/transport 由宿主负责 | N Log |
 | [long-text](../src/components/data/long-text.ce.vue:1) | 长文本收展 | 行截断与显式展开/收起；不代替按项溢出列表 | N Ellipsis；M Spoiler |
-| [mark](../src/components/foundation/mark.ce.vue:1) | 行内标记 | 原生 mark 语义、字面文本/插槽；不解析 HTML 或切分关键词 | M Mark |
 | [marquee](../src/components/shell/marquee.ce.vue:1) | 可选跑马灯 | 默认静态、显式启用、悬停/焦点暂停、减少动效与副本隔离；非默认持续运动 | N/M/U Marquee |
 | [masked-input](../src/components/form-completion/masked-input.ce.vue:1) | 固定掩码输入 | 数字/字母/字母数字占位与完整性检查；不宣称所有光标/IME/任意掩码行为完整 | M MaskInput |
 | [masonry](../src/components/shell/masonry.ce.vue:1) | 列优先瀑布流 | 响应式列、尺寸变化、原生子节点；列优先阅读/焦点顺序，不做最短列平衡 | A Masonry；M 布局族相邻 |
@@ -111,7 +105,6 @@
 | [menu](../src/components/core/menu.ce.vue:1) | 嵌套动作/选择菜单 | 搜索、单值选择、子菜单、checkbox/radio、键盘；不是页面路由或任意 Mega Menu | E Dropdown；N Dropdown / Popselect；R Dropdown Menu |
 | [menubar](../src/components/interaction/menubar.ce.vue:1) | 应用操作菜单栏 | 菜单间/内及子菜单键盘、checkbox/radio；页面导航另用 navigation-menu | R Menubar；M Menubar；S Menubar |
 | [multi-select](../src/components/interaction/multi-select.ce.vue:1) | 自绘多选 | 本地过滤、移除/清空、键盘、同名多值表单；禁用已选项保留，没有虚拟化/远程加载 | M MultiSelect；U SelectMenu（同类选择入口，非等价断言） |
-| [native-select](../src/components/input/native-select.ce.vue:1) | 系统选择器 | 原生单/多选、系统交互与表单；不承诺跨系统一致面板，不提供自绘搜索 | M NativeSelect；S Native Select |
 | [navigation-menu](../src/components/navigation/navigation-menu.ce.vue:1) | 嵌套页面导航 | 嵌套真链接、展开/当前项、键盘与窄屏；不推导路由权限或任意 Mega Menu 版式 | R Navigation Menu；U NavigationMenu；S Navigation Menu |
 | [notification](../src/components/core/notification.ce.vue:1) | 单条通知 | 自动/手动关闭、悬停/聚焦暂停；容量/队列/去重由独立 notification-queue 提供 | E Message / Notification；N Message / Notification；R Toast |
 | [notification-queue](../src/components/utility/notification-queue.ce.vue:1) | 通知队列 | 容量/去重/堆叠与实例 push/update/dismiss；不默认全局单例或持久化 | E/N/A Message / Notification；R Toast；S Sonner / Toast |
@@ -140,7 +133,6 @@
 | [slider](../src/components/core/slider.ce.vue:1) | 单值滑块 | 原生单手柄、步长、上下限与表单；没有双手柄范围值 | E Slider；R Slider；M Slider |
 | [spinner](../src/components/display/spinner.ce.vue:1) | 加载指示器 | 具名状态或纯装饰；不请求数据，不阻止区域交互 | N Spin；M Loader；S Spinner |
 | [splitter](../src/components/navigation/splitter.ce.vue:1) | 可调整双分栏 | 指针拖动、键盘、横竖和百分比边界；不是任意多面板停靠布局 | E Splitter；R Splitter；S Resizable |
-| [stack](../src/components/foundation/stack.ce.vue:1) | 堆叠布局 | 纵横方向、对齐与 token 间距；不接管子项高度/滚动 | M Stack / Group；N/A Space 相邻 |
 | [statistic](../src/components/display/statistic.ce.vue:1) | 统计数值 | 本地化数值、精度、货币/百分比格式、前后缀；不是趋势图或数字动画 | E Statistic；N Statistic；M NumberFormatter |
 | [stepper](../src/components/navigation/stepper.ce.vue:1) | 步骤导航 | 当前/完成显示、横竖与线性限制；线性限制不代表业务校验已通过，无步骤表单引擎 | E Steps；R Stepper；M Stepper |
 | [switch](../src/components/core/switch.ce.vue:1) | 即时状态开关 | 布尔状态、原生提交；不是工具栏按压按钮 | E Switch；R Switch；A Switch |
@@ -154,7 +146,6 @@
 | [time-field](../src/components/form-completion/time-field.ce.vue:1) | 分段时间输入 | 时分/可选秒、分段键盘与原生有效性；无时区/DST 策略 | R Time Field；U InputTime |
 | [time-picker](../src/components/core/time-picker.ce.vue:1) | 单时间选择 | 小时/分钟、12/24 小时显示、分钟步长和上下限；没有秒、时间范围或日期时间统一模型 | E Time Picker / Time Select（相邻预设时刻能力）；N Time Picker |
 | [time-range-picker](../src/components/advanced-input/time-range-picker.ce.vue:1) | 时间范围 | HH:mm、步长/上下限、可选跨午夜/相同时刻策略；非跨午夜可用窗口规则 | R Time Range Field；E/N Time Picker 同族 |
-| [time-select](../src/components/form-completion/time-select.ce.vue:1) | 预设时刻选择 | 显式预设列表、禁用/键盘与表单；不是任意时间范围 | E Time Select |
 | [timeline](../src/components/display/timeline.ce.vue:1) | 时间线 | 按输入顺序显示事件、时间与状态；不排序、不虚拟化、不代替可操作步骤导航 | E Timeline；N Timeline；U Timeline |
 | [toggle](../src/components/input/toggle.ce.vue:1) | 按压切换按钮 | 布尔按压语义、表单和重置；不是状态开关轨道 | R Toggle；M Toggle；S Toggle |
 | [toolbar](../src/components/navigation/toolbar.ce.vue:1) | 操作工具栏 | 真实子控件焦点管理、跳过禁用、横竖；不吞输入框方向键，不伪装成菜单 | R Toolbar；M Toolbar |

@@ -1,4 +1,4 @@
-// 只注册冒烟需要的三个入口，避免为 3 条用例编译全部 145 个组件。
+// 只注册冒烟需要的三个入口，不编译完整组件库。
 import { defineCustomElement } from "vue";
 import Button from "../src/components/core/button.ce.vue";
 import Dialog from "../src/components/core/dialog.ce.vue";

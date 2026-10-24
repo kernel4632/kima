@@ -102,4 +102,23 @@ export async function generateExports() {
   ].join("\n");
   const pathEntry = new URL("../src/component-paths.js", import.meta.url);
   if (await readFile(pathEntry, "utf8").catch(() => "") !== pathContent) await writeFile(pathEntry, pathContent);
+
+  // 公开入口索引同样由目录生成；删掉源码后不能还留着一份过时的手工清单。
+  const indexContent = [
+    `# KIMA 组件入口索引（${components.length}）`,
+    "",
+    "由 scripts/components.js 根据组件目录与分档表生成，不手工维护第二份清单。",
+    "档位是维护目标，不代表跨浏览器、读屏或视觉验收已经通过。",
+    "删减与替代方式见[迁移说明](component-pruning.md)，能力边界见[矩阵](component-comparison.md)。",
+    "",
+    "| # | 标签 | Vue 导出 | 档位 | 源码 |",
+    "| ---: | --- | --- | --- | --- |",
+    ...components.map(({ slug, exportName, relative }, index) => {
+      const link = `../src/components/${relative}:1`;
+      return `| ${index + 1} | [<kima-${slug}>](${link}) | [${exportName}](${link}) | ${tierBySlug.get(slug)} | [${slug}](${link}) |`;
+    }),
+    "",
+  ].join("\n");
+  const indexEntry = new URL("../docs/component-index.md", import.meta.url);
+  if (await readFile(indexEntry, "utf8").catch(() => "") !== indexContent) await writeFile(indexEntry, indexContent);
 }

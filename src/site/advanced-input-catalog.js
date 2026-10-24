@@ -4,7 +4,6 @@ export const advancedInputCatalog = {
   calendar: { label: "内联日历", group: "日期与表单高频能力" },
   "date-range-picker": { label: "日期范围", group: "日期与表单高频能力" },
   "time-range-picker": { label: "时间范围", group: "日期与表单高频能力" },
-  "datetime-picker": { label: "日期时间", group: "日期与表单高频能力" },
   mention: { label: "提及建议", group: "日期与表单高频能力" },
   form: { label: "表单状态", group: "日期与表单高频能力" },
   editable: { label: "行内编辑", group: "日期与表单高频能力" },

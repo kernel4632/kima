@@ -81,7 +81,12 @@ try {
     assert.match(css, /--kima-color-primary:/);
     assert.doesNotMatch(css, /(?:^|\})\s*(?:html|body|\*)(?:[\s,{.:>])/, 'Library CSS must not reset host page');
   });
-  for (const file of await componentFiles(new URL('src/components/', root))) {
+  const sourceFiles = await componentFiles(new URL('src/components/', root));
+  check('Published entries exactly match current source files', () => {
+    const tags = sourceFiles.map(file => `kima-${file.slice(0, -'.ce.vue'.length)}`).sort();
+    assert.deepEqual(Object.keys(elements).sort(), tags, 'Removed components must not survive in the published registry');
+  });
+  for (const file of sourceFiles) {
     const tag = `kima-${file.slice(0, -'.ce.vue'.length)}`;
     const name = `Kima${tag.slice(5).split('-').map(word => word[0].toUpperCase() + word.slice(1)).join('')}`;
     assert.ok(library[name], `Missing named Vue export ${name}`);

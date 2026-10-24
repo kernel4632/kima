@@ -12,10 +12,8 @@ import KimaList from "../components/display/list.ce.vue";
 import KimaTimeline from "../components/display/timeline.ce.vue";
 import KimaStatistic from "../components/display/statistic.ce.vue";
 import KimaCountdown from "../components/display/countdown.ce.vue";
-import KimaKbd from "../components/display/kbd.ce.vue";
 import KimaBlockquote from "../components/display/blockquote.ce.vue";
 import KimaHighlight from "../components/display/highlight.ce.vue";
-import KimaAspectRatio from "../components/display/aspect-ratio.ce.vue";
 import KimaButton from "../components/core/button.ce.vue";
 import { displayCatalog } from "./display-catalog.js";
 
@@ -48,10 +46,8 @@ function restart() { finished.value = false; deadline.value = Date.now() + 5000;
     <KimaTimeline v-else-if="component === 'timeline'" :items="events" label="发布进程" />
     <div v-else-if="component === 'statistic'" class="kima-display-demo__grid"><KimaStatistic label="总访问量" :value="123456.78" :precision="1" suffix="次" /><KimaStatistic label="本月收入" :value="8192.5" :options="{ style: 'currency', currency: 'CNY' }" /><KimaStatistic label="完成比例" :value="0.875" :options="{ style: 'percent', maximumFractionDigits: 1 }" /></div>
     <div v-else-if="component === 'countdown'" class="kima-display-demo__stack"><KimaCountdown :value="deadline" label="距离下一次同步" @finish="finished = true" /><output>{{ finished ? '计时结束' : '计时中' }}</output><KimaButton variant="tonal" @click="restart">重新计时 5 秒</KimaButton></div>
-    <div v-else-if="component === 'kbd'" class="kima-display-demo__row"><span>打开搜索</span><KimaKbd :keys="['Ctrl', 'K']" label="Control 加 K" /><span>确认</span><KimaKbd :keys="['Enter']" /></div>
     <KimaBlockquote v-else-if="component === 'blockquote'" author="KIMA" source="设计原则" cite="https://m3.material.io">交互体验第一，好看第二。用动效引导注意力，让下一步清晰可见。</KimaBlockquote>
     <div v-else-if="component === 'highlight'" class="kima-display-demo__stack"><KimaHighlight text="KIMA 让交互鲜活：Kima 支持安全的纯文本关键词高亮。" :keywords="['KIMA', '交互', '纯文本']" /><KimaHighlight text="<script>不会作为 HTML 执行</script>，a+b 也不是正则。" :keywords="['<script>', 'a+b']" /></div>
-    <KimaAspectRatio v-else-if="component === 'aspect-ratio'" :ratio="16 / 9"><img src="/th.jpg" alt="固定 16 比 9 的风景" /></KimaAspectRatio>
   </article>
 </template>
 

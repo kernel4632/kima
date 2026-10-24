@@ -11,7 +11,6 @@ import KimaFileUpload from "../components/input/file-upload.ce.vue";
 import KimaColorPicker from "../components/form-completion/color-picker.ce.vue";
 import KimaToggle from "../components/input/toggle.ce.vue";
 import KimaCheckboxGroup from "../components/input/checkbox-group.ce.vue";
-import KimaNativeSelect from "../components/input/native-select.ce.vue";
 import KimaField from "../components/input/field.ce.vue";
 import KimaTextField from "../components/core/text-field.ce.vue";
 import KimaButton from "../components/core/button.ce.vue";
@@ -26,7 +25,6 @@ const files = ref([]);
 const color = ref("#61afef");
 const pressed = ref(false);
 const checked = ref(["design"]);
-const selected = ref("design");
 const email = ref("");
 const fileError = ref("");
 const submitted = ref("");
@@ -53,7 +51,6 @@ function submit(event) {
       <template v-else-if="props.component === 'color-picker'"><h3>原生面板与 HEX 编辑</h3><KimaColorPicker v-model="color" label="画笔颜色" name="color" required /><output>{{ color }}</output></template>
       <template v-else-if="props.component === 'toggle'"><h3>工具栏按压状态</h3><KimaToggle v-model="pressed" name="bold" label="粗体">粗体</KimaToggle><output>{{ pressed ? '已启用粗体' : '未启用粗体' }}</output></template>
       <template v-else-if="props.component === 'checkbox-group'"><h3>选择多个方向 · 至少一项</h3><KimaCheckboxGroup v-model="checked" label="方向" name="directions" :options="options" required /><output>{{ checked.join(' / ') }}</output></template>
-      <template v-else-if="props.component === 'native-select'"><h3>系统原生选择菜单</h3><KimaNativeSelect v-model="selected" label="方向" name="direction" :options="options" required /><output>{{ selected }}</output></template>
       <template v-else-if="props.component === 'field'"><h3>辅助说明与错误，不绘制字段标签</h3><KimaField hint="请输入用于通知的邮箱" :error="email && !email.includes('@') ? '邮箱需要包含 @' : ''"><KimaTextField v-model="email" label="邮箱" type="email" name="email" required /></KimaField></template>
       <div class="kima-input-example__actions"><KimaButton type="submit">读取表单</KimaButton><KimaButton type="reset" variant="text">重置</KimaButton></div>
       <output aria-live="polite">{{ submitted }}</output>

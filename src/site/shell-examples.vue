@@ -5,7 +5,6 @@ import KimaAppShell from '../components/shell/app-shell.ce.vue';
 import KimaConfigProvider from '../components/shell/config-provider.ce.vue';
 import KimaMasonry from '../components/shell/masonry.ce.vue';
 import KimaMarquee from '../components/shell/marquee.ce.vue';
-import KimaGradientText from '../components/shell/gradient-text.ce.vue';
 import KimaNavigationMenu from '../components/navigation/navigation-menu.ce.vue';
 import KimaMenu from '../components/core/menu.ce.vue';
 import KimaButton from '../components/core/button.ce.vue';
@@ -21,7 +20,6 @@ const actions = [{value:'export',label:'导出',children:[{value:'pdf',label:'PD
   <div v-else-if="component === 'config-provider'"><KimaButton @click="mode = mode === 'light' ? 'dark' : 'light'">切换局部明暗</KimaButton><KimaConfigProvider :theme="mode" seed="#61afef" variant="tonal-spot" locale="zh-CN" class="kima-shell-demo__scope"><p>局部 {{ mode }} 主题</p><KimaButton>局部按钮</KimaButton><KimaMenu :items="actions" label="局部操作" /></KimaConfigProvider></div>
   <KimaMasonry v-else-if="component === 'masonry'" :columns="{base:1,sm:2,lg:3}"><KimaLink v-for="n in 8" :key="n" href="#shell-masonry" class="kima-shell-demo__tile" :style="{minHeight: `${90 + n % 3 * 45}px`}">内容 {{ n }} · 列优先阅读顺序</KimaLink></KimaMasonry>
   <KimaMarquee v-else-if="component === 'marquee'" animated><KimaLink v-for="n in 5" :key="n" href="#shell-marquee">更新 {{ n }} · 聚焦暂停</KimaLink></KimaMarquee>
-  <KimaGradientText v-else-if="component === 'gradient-text'" as="h2">专注、交互、动效、鲜活</KimaGradientText>
 </article></template>
 <style scoped lang="scss">
 .kima-shell-demo { box-sizing: border-box; width: 100%; min-width: 0; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); &__scope { margin-top: var(--kima-space-4); padding: var(--kima-space-6); background: var(--kima-color-surface); border-radius: var(--kima-radius-l); } &__tile { display: block; box-sizing: border-box; padding: var(--kima-space-4); background: var(--kima-color-layer-2); color: var(--kima-color-primary); border-radius: var(--kima-radius-m); } }

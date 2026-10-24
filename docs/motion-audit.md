@@ -43,7 +43,7 @@
 | 1 | [accordion.ce.vue](../src/components/navigation/accordion.ce.vue) | 审查单选/多选展开、禁用、方向键和面板插槽。即时隐藏改为共享实测高度过渡；过渡外壳无 padding，内层承接内容间距；保留挂载并即时禁止关闭区域的焦点和交互。加减字符改为箭头旋转，减少动态效果时不旋转。依赖父任务的 [collapseTransition](../src/utils/motion.js)。 |
 | 2 | [alert.ce.vue](../src/components/display/alert.ce.vue) | 审查外部开关、本地关闭、语义变体、动作插槽和原生插槽。增加高度退场外壳，关闭期间立即不可交互；语义文字/图标颜色接入共享颜色过渡。初始隐藏不执行入场。新增外壳可能影响调用方直接对子级布局的假设，需联调检查。 |
 | 3 | [anchor.ce.vue](../src/components/navigation/anchor.ce.vue) | 审查滚动跟踪、目标容器重连、偏移、点击导航、当前项和卸载清理。已有滚动行为通过共享工具尊重减少动态效果，当前项反馈由链接组件承接。本组无需新增动画，保留。 |
-| 4 | [aspect-ratio.ce.vue](../src/components/display/aspect-ratio.ce.vue) | 纯比例布局容器，无自有交互/显隐状态。比例变化属于使用者布局数据，不添加尺寸补间，保留。 |
+| 4 | [aspect-ratio.ce.vue（已移除）](component-pruning.md) | 纯比例布局容器，无自有交互/显隐状态。比例变化属于使用者布局数据，不添加尺寸补间，保留。 |
 | 5 | [avatar-group.ce.vue](../src/components/display/avatar-group.ce.vue) | 审查成员增删、max 截断、剩余数量及默认插槽。数组回退内容接入共享列表过渡，增加局部定位容器；自定义插槽保持由调用方管理。成员未提供 id 时仍沿用索引身份，重排动效准确性取决于调用方提供稳定 id。 |
 | 6 | [avatar.ce.vue](../src/components/display/avatar.ce.vue) | 审查图片载入、失败、换源、姓名/图标回退及可访问名称。增加加载完成状态；加载期间显示回退，成功淡入图片/淡出回退；失败继续显示回退；换源重置状态。固定网格轨道，避免长姓名或图片固有尺寸撑大头像；减少动态效果关闭图片淡入。 |
 | 7 | [back-top.ce.vue](../src/components/navigation/back-top.ce.vue) | 审查阈值显隐、滚动目标、禁用、点击和卸载。即时隐藏改为共享内容过渡，保留按钮与插槽挂载，隐藏/退场立即不可交互。平滑返回顶部仍沿用已有减少动态效果处理。 |
@@ -180,7 +180,7 @@
 - 静态不适用：caption 不做动画，避免图注跟随图片状态抖动。
 - 验证风险：浏览器缓存可能让 load 事件同步或异步到达；当前请求匹配已防止旧事件污染，Chromium 慢请求交叉场景已通过。
 
-### 39. [`kbd.ce.vue`](../src/components/display/kbd.ce.vue)
+### 39. [`kbd.ce.vue`（已移除）](component-pruning.md)
 
 - 交互：键盘快捷键静态语义展示，支持数组和插槽。
 - 已有动效：无。
@@ -244,7 +244,7 @@
 - 静态不适用：原生 hidden select 本身不可见，不做视觉过渡。
 - 验证风险：用户传入重复 value 会破坏 key 唯一性；当前契约已注明 value 唯一，Chromium 键盘/搜索/清空/reset 已通过。
 
-### 47. [`native-select.ce.vue`](../src/components/input/native-select.ce.vue)
+### 47. [`native-select.ce.vue`（已移除）](component-pruning.md)
 
 - 交互：原生 select、multiple、原生校验、reset、移动端系统选择界面。
 - 已有动效：输入表面 focus-within 和颜色状态过渡；选项菜单由浏览器绘制。
