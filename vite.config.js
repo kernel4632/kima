@@ -20,6 +20,8 @@ export default defineConfig(async ({ mode }) => {
   return {
     root: fileURLToPath(new URL("./", import.meta.url)),
     publicDir: library ? false : "public",
+    // Do not scan ignored screenshots/old consumers as application entry points.
+    optimizeDeps: { entries: mode === "smoke" ? ["tests/smoke-fixture.html"] : ["index.html", "tests/fixture.html"] },
     // The self-contained browser entry must not depend on Node globals.
     define: elements ? { "process.env.NODE_ENV": JSON.stringify("production") } : {},
     // Ordinary Vue mounts need extracted CSS; only elements need component.styles.

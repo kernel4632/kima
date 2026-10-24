@@ -27,6 +27,19 @@ function walk(node, visit) {
   for (const [key, child] of Object.entries(node)) if (!['loc', 'start', 'end', 'extra', 'comments', 'tokens'].includes(key)) walk(child, visit);
 }
 try {
+  const manifest = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+  check('Both registration entries are declared side-effectful', () => {
+    for (const file of ['./dist/kima-elements.js', './dist/kima-elements-core.js']) assert.ok(manifest.sideEffects.includes(file), `Missing side effect: ${file}`);
+  });
+  for (const target of Object.values(manifest.exports).flatMap(value => typeof value === 'string' ? [value] : Object.values(value))) await readFile(new URL(target, root));
+  report.checks.push('All declared export targets exist');
+  const notices = await readFile(new URL('dist/THIRD_PARTY_NOTICES.txt', root), 'utf8');
+  check('Standalone third-party license texts are shipped', () => {
+    for (const name of ['vue@', 'reka-ui@', 'highlight.js@', '@material/material-color-utilities@', '@hugeicons/vue@']) assert.ok(notices.includes(name), `Missing notice: ${name}`);
+    assert.match(notices, /Redistribution and use in source and binary forms/);
+    assert.match(notices, /Apache License/);
+    assert.match(notices, /Permission is hereby granted/);
+  });
   // Imports are inside the failure boundary so SSR failures also leave an exit artifact.
   const library = await import('../dist/kima.js');
   const { elements } = await import('../dist/kima-elements.js');

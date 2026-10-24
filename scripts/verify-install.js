@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { gzipSync } from 'node:zlib';
-import { chromium, expect } from '@playwright/test';
+import { chromium, firefox, webkit, expect } from '@playwright/test';
+import { componentTiers } from '../src/component-tiers.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const artifacts = join(root, 'artifacts');
@@ -50,13 +51,13 @@ try {
   const tarball = resolve(artifacts, packed.filename);
   report.tarball = { filename: packed.filename, bytes: packed.size, unpackedBytes: packed.unpackedSize, integrity: packed.integrity };
   const files = packed.files.map(file => file.path);
-  for (const file of ['dist/kima.js', 'dist/kima-elements.js', 'dist/kima-theme.js', 'dist/style.css', 'README.md', 'LICENSE']) assert.ok(files.includes(file), `缺少发布文件 ${file}`);
+  for (const file of ['dist/kima.js', 'dist/kima-elements.js', 'dist/kima-elements-core.js', 'dist/kima-theme.js', 'dist/style.css', 'dist/THIRD_PARTY_NOTICES.txt', 'README.md', 'LICENSE']) assert.ok(files.includes(file), `缺少发布文件 ${file}`);
   assert.ok(files.every(file => file.startsWith('dist/') || ['package.json', 'README.md', 'LICENSE'].includes(file)), '不应打包源码、测试或站点资产');
   consumer = await mkdtemp(join(tmpdir(), 'kima-consumer-'));
   report.isolatedDirectory = consumer;
   await writeFile(join(consumer, 'package.json'), JSON.stringify({ private: true, type: 'module' }));
   console.log(`Installing ${packed.filename} into isolated consumer...`);
-  const installLog = npm(['install', '--ignore-scripts', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', tarball, 'vue@^3.5.42', 'vite@^8.3.0'], consumer);
+  const installLog = npm(['install', '--ignore-scripts', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', tarball, 'vue@^3.5.42', 'vite@^8.3.5'], consumer);
   await writeFile(join(artifacts, 'verify-install-npm.log'), installLog);
   console.log(installLog);
   await writeFile(join(consumer, 'index.html'), documentShell('<div id="app"></div>', '/vue.js'));
@@ -77,6 +78,11 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
 ])}}).mount('#app');`);
   await writeFile(join(consumer, 'native.html'), documentShell(nativeBody, '/native.js'));
   await writeFile(join(consumer, 'native.js'), `import '@kernel4632/kima/elements';\n${nativeSetup}`);
+  const coreBody = '<kima-button id="action">Core action</kima-button><output id="result">0</output><kima-text-field label="Core input"></kima-text-field>';
+  const coreSetup = `document.querySelector('#action').addEventListener('click',()=>document.querySelector('#result').textContent='1');`;
+  await writeFile(join(consumer, 'core.html'), documentShell(coreBody, '/core.js'));
+  // Deliberately use a bare import: a binding import would mask a missing sideEffects declaration.
+  await writeFile(join(consumer, 'core.js'), `import '@kernel4632/kima/elements/core';\n${coreSetup}`);
   const controls = { button: ['KimaButton'], code: ['KimaButton', 'KimaCodeEditor'], rich: ['KimaButton', 'KimaRichTextEditor'], equation: ['KimaButton', 'KimaEquation'], qr: ['KimaButton', 'KimaQrCode'], highlight: ['KimaButton', 'KimaCodeBlock'] };
   for (const [name, exports] of Object.entries(controls)) {
     await writeFile(join(consumer, `${name}.html`), documentShell('<div id="app"></div>', `/${name}.js`));
@@ -84,7 +90,7 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
   }
   // Capture actual output module metadata, not a grep for minified engine strings.
   await writeFile(join(consumer, 'build.mjs'), `import {build} from 'vite';import {writeFile} from 'node:fs/promises';
-const reports={};for(const [name,input] of Object.entries({production:{vue:'index.html',native:'native.html'},${Object.keys(controls).map(name => `${name}:'${name}.html'`).join(',')}})){
+const reports={};for(const [name,input] of Object.entries({production:{vue:'index.html',native:'native.html',core:'core.html'},${Object.keys(controls).map(name => `${name}:'${name}.html'`).join(',')}})){
 await build({configFile:false,logLevel:'warn',plugins:[{name:'consumer-output-evidence',generateBundle(_,bundle){reports[name]=Object.values(bundle).filter(v=>v.type==='chunk').map(chunk=>({fileName:chunk.fileName,bytes:Buffer.byteLength(chunk.code),imports:chunk.imports,dynamicImports:chunk.dynamicImports,modules:Object.entries(chunk.modules).map(([id,module])=>({id,renderedLength:module.renderedLength,renderedExports:module.renderedExports,removedExports:module.removedExports}))}));}}],build:{outDir:name==='production'?'dist':'control-'+name,rolldownOptions:{input}}});}
 await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   const buildLog = execFileSync(process.execPath, ['build.mjs'], { cwd: consumer, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -119,6 +125,14 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   // standalone has precisely one library file plus a consumer-owned setup script, no CSS or node_modules.
   await writeFile(join(consumer, 'dist/standalone.html'), documentShell(nativeBody, './standalone.js'));
   await writeFile(join(consumer, 'dist/standalone.js'), `import './kima-elements.js';\n${nativeSetup}`);
+  await copyFile(join(consumer, 'node_modules/@kernel4632/kima/dist/kima-elements-core.js'), join(consumer, 'dist/kima-elements-core.js'));
+  await writeFile(join(consumer, 'dist/core-standalone.html'), documentShell(coreBody, './core-standalone.js'));
+  await writeFile(join(consumer, 'dist/core-standalone.js'), `import './kima-elements-core.js';\n${coreSetup}`);
+  for (const [first, second] of [['core', 'full'], ['full', 'core']]) {
+    const file = name => name === 'core' ? 'kima-elements-core.js' : 'kima-elements.js';
+    await writeFile(join(consumer, `dist/${first}-then-${second}.html`), documentShell(coreBody, `./${first}-then-${second}.js`));
+    await writeFile(join(consumer, `dist/${first}-then-${second}.js`), `import './${file(first)}';\n${coreSetup}\nwindow.loadOther=()=>import('./${file(second)}');`);
+  }
   server = createServer(async (request, response) => {
     const path = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
     const file = resolve(consumer, 'dist', `.${path === '/' ? '/index.html' : path}`);
@@ -246,6 +260,50 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
     assert.ok(requests.includes('/kima-elements.js'));
     assert.deepEqual([...new Set(requests)].sort(), ['/kima-elements.js', '/standalone.html', '/standalone.js']);
   });
+  const fullCssLength = await page.locator('#kima-component-styles').evaluate(node => node.textContent.length);
+  async function coreChecks(name, path) {
+    await test(`${name}: core registration, native interaction and inline styles`, async () => {
+      await page.goto(origin + path);
+      const button = page.getByRole('button', { name: 'Core action', exact: true });
+      await expect(button).toBeVisible();
+      assert.ok(parseFloat(await style(button, 'border-radius')) >= 12);
+      await button.click(); await expect(page.locator('#result')).toHaveText('1');
+      await page.getByRole('textbox', { name: 'Core input', exact: true }).fill('Published core');
+      const registered = await page.evaluate(slugs => slugs.filter(slug => customElements.get(`kima-${slug}`)), Object.values(componentTiers).flat());
+      assert.deepEqual(registered.sort(), [...componentTiers.core].sort(), 'Core must register exactly its tier, without extras');
+      await expect(page.locator('#kima-component-styles')).toHaveCount(1);
+    });
+  }
+  await coreChecks('Chromium production bare import', '/core.html');
+  await coreChecks('Chromium standalone', '/core-standalone.html');
+  await page.screenshot({ path: join(artifacts, 'verify-install-core.png'), fullPage: true });
+  for (const [first, second] of [['core', 'full'], ['full', 'core']]) {
+    await test(`${first} then ${second}: stable constructors and nonduplicated CSS`, async () => {
+      await page.goto(`${origin}/${first}-then-${second}.html`);
+      await expect(page.getByRole('button', { name: 'Core action', exact: true })).toBeVisible();
+      const result = await page.evaluate(async () => {
+        const constructor = customElements.get('kima-button');
+        await window.loadOther(); await window.loadOther();
+        return { stable: constructor === customElements.get('kima-button'), cssLength: document.getElementById('kima-component-styles').textContent.length, extra: Boolean(customElements.get('kima-code-editor')) };
+      });
+      assert.equal(result.stable, true); assert.equal(result.extra, true);
+      assert.equal(result.cssLength, fullCssLength);
+      await expect(page.locator('#kima-component-styles')).toHaveCount(1);
+      await page.getByRole('button', { name: 'Core action', exact: true }).click();
+      await expect(page.locator('#result')).toHaveText('1');
+    });
+  }
+  // Small release-consumer smoke only; not a claim of all-component cross-browser/a11y review.
+  for (const engine of [firefox, webkit]) {
+    const otherBrowser = await engine.launch();
+    const previousPage = page;
+    try {
+      page = await otherBrowser.newPage();
+      page.on('pageerror', error => report.errors.push(`${engine.name()}: ${error.message}`));
+      await coreChecks(`${engine.name()} production bare import`, '/core.html');
+      await coreChecks(`${engine.name()} standalone`, '/core-standalone.html');
+    } finally { page = previousPage; await otherBrowser.close(); }
+  }
   // Serve the button-only result as a second production root, then restore for diagnostics.
   await mkdir(join(consumer, 'dist/button-control'), { recursive: true });
   async function copyTree(from, to) {
