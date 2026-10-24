@@ -62,12 +62,14 @@ try {
   console.log(installLog);
   await writeFile(join(consumer, 'index.html'), documentShell('<div id="app"></div>', '/vue.js'));
   await writeFile(join(consumer, 'vue.js'), `import {createApp,h,ref} from 'vue';
-import {KimaButton,KimaTextarea,KimaRadioGroup,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
-${['button', 'textarea', 'radio-group', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
+import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
+${['button', 'text-field', 'select', 'textarea', 'radio-group', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
 import {applyPalette} from '@kernel4632/kima/theme';
 applyPalette('#61afef');
 createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref('');return()=>h('main',[
  h(KimaButton,{onClick:()=>count.value++},()=> 'Vue '+count.value),
+ h('div',{id:'field-width',style:{width:'760px',maxWidth:'100%',display:'flex',flexDirection:'column',gap:'16px'}},[
+   h(KimaTextField,{label:'Provider name'}),h(KimaSelect,{label:'Provider type',items:[{value:'a',label:'Provider A'}]})]),
  h(KimaTextarea,{modelValue:notes.value,'onUpdate:modelValue':v=>notes.value=v,label:'Notes'}),h('output',{id:'notes'},notes.value),
  h(KimaRadioGroup,{label:'Direction',options:[{value:'design',label:'Design'},{value:'code',label:'Code'}]}),
  h(KimaPopover,{label:'Details',contentLabel:'Project details'},()=>h('p','Installed popover')),
@@ -78,7 +80,7 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
 ])}}).mount('#app');`);
   await writeFile(join(consumer, 'native.html'), documentShell(nativeBody, '/native.js'));
   await writeFile(join(consumer, 'native.js'), `import '@kernel4632/kima/elements';\n${nativeSetup}`);
-  const coreBody = '<kima-button id="action">Core action</kima-button><output id="result">0</output><kima-text-field label="Core input"></kima-text-field>';
+  const coreBody = '<kima-button id="action">Core action</kima-button><output id="result">0</output><div id="field-width" style="width:760px;max-width:100%;display:flex;flex-direction:column;gap:16px"><kima-text-field label="Core input"></kima-text-field><kima-select label="Core select"></kima-select></div>';
   const coreSetup = `document.querySelector('#action').addEventListener('click',()=>document.querySelector('#result').textContent='1');`;
   await writeFile(join(consumer, 'core.html'), documentShell(coreBody, '/core.js'));
   // Deliberately use a bare import: a binding import would mask a missing sideEffects declaration.
@@ -168,8 +170,23 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   page.on('response', response => { if (response.status() >= 400) report.errors.push(`HTTP ${response.status()} ${response.url()}`); });
   page.on('requestfailed', request => report.errors.push(`Request failed ${request.url()}: ${request.failure()?.errorText}`));
   const style = (locator, property) => locator.evaluate((node, property) => getComputedStyle(node).getPropertyValue(property), property);
+  async function fieldWidths(name) {
+    await test(`${name}: select and text field fill the same responsive column`, async () => {
+      const column = page.locator('#field-width');
+      for (const width of [760, 280]) {
+        await column.evaluate((node, width) => node.style.width = `${width}px`, width);
+        const input = await column.locator('.kima-text-field').boundingBox();
+        const select = await column.locator('.kima-select').boundingBox();
+        assert.ok(input && select);
+        assert.ok(Math.abs(input.width - width) < 1, `Input must fill ${width}px`);
+        assert.ok(Math.abs(select.width - input.width) < 1, `Select ${select.width}px differs from input ${input.width}px`);
+      }
+      await column.evaluate(node => node.style.width = '760px');
+    });
+  }
   async function interactions(kind, path) {
     await page.goto(origin + path);
+    if (kind === 'Vue') await fieldWidths(kind);
     await test(`${kind}: button click + actual style`, async () => {
       const button = page.getByRole('button', { name: kind === 'Vue' ? 'Vue 0' : 'Native action', exact: true });
       await expect(button).toBeVisible();
@@ -287,6 +304,7 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
       assert.deepEqual(registered.sort(), [...componentTiers.core].sort(), 'Core must register exactly its tier, without extras');
       await expect(page.locator('#kima-component-styles')).toHaveCount(1);
     });
+    await fieldWidths(name);
   }
   await coreChecks('Chromium production bare import', '/core.html');
   await coreChecks('Chromium standalone', '/core-standalone.html');

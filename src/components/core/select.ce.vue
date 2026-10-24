@@ -369,7 +369,6 @@ onBeforeUnmount(() => {
   position: relative;
   display: inline-flex;
   width: 100%;
-  max-width: 320px;
   min-width: 0;
   flex-direction: column;
   gap: var(--kima-space-1);
