@@ -6,6 +6,8 @@ KIMA 是面向 Web 应用的 UI 设计系统与组件库，提供 **Vue 组件**
 
 以 Material You 为设计参考，KIMA 采用大控件、宽松布局和圆角表面，用动效引导注意力，让交互反馈清晰、自然。
 
+KIMA 适合希望采用统一、大尺寸控件和宽松留白的应用，不以融入高密度桌面工具栏为目标。默认不提供紧凑密度预设；若界面必须保持小字号、低行高和密集表单，应先评估设计方向是否匹配，而不是依靠覆盖内部样式接入。文本框的可见标签由应用排版，组件只负责可访问名与输入交互。
+
 ## 特性
 
 - **两种接入方式**：Vue 中按需导入，或使用自定义元素接入其他 Web 项目。
@@ -30,13 +32,14 @@ Vue 组件需要宿主提供兼容的 Vue 3 运行时，版本要求见 [peerDep
 
 ## 在 Vue 中使用
 
-按需导入组件，并在应用入口引入一次组件样式：
+按需导入组件及对应样式。每个组件样式入口已包含共享 token 和内部依赖组件的样式，无需手工补齐子组件：
 
 ```vue
 <script setup>
 import { ref } from 'vue';
 import { KimaButton, KimaTextField } from '@kernel4632/kima';
-import '@kernel4632/kima/style.css';
+import '@kernel4632/kima/styles/button.css';
+import '@kernel4632/kima/styles/text-field.css';
 
 const name = ref('');
 const savedName = ref('');
@@ -56,7 +59,27 @@ const savedName = ref('');
 </template>
 ```
 
-文本框的可访问名不会渲染为可见标签，标签文字由应用自行排版。具名导入支持构建工具移除未使用的组件与内容引擎；组件样式是统一样式文件。
+文本框的可访问名不会渲染为可见标签，标签文字由应用自行排版。具名导入支持构建工具移除未使用的组件与内容引擎。
+
+样式入口使用组件的短横线名称，例如按钮、文本框和日期选择器分别对应以下路径。选择组件样式时，不要同时导入全量样式，否则仍会加载全部 CSS：
+
+```js
+import '@kernel4632/kima/styles/button.css';
+import '@kernel4632/kima/styles/text-field.css';
+import '@kernel4632/kima/styles/date-picker.css';
+```
+
+也可以选择核心组合或全量样式，适合使用较多组件的应用：
+
+```js
+// 核心档组件与它们的内部依赖。
+import '@kernel4632/kima/styles/core.css';
+
+// 全量样式，兼容已有接入；不会随 Vue 具名导入自动裁剪。
+import '@kernel4632/kima/style.css';
+```
+
+按组件入口通过标准 CSS 导入引用共享文件，构建工具可合并、去重；无须额外安装样式插件。样式裁剪是显式选择入口，不是根据模板自动分析。
 
 ## 在原生网页中使用
 
@@ -167,7 +190,7 @@ body {
 | 入口 | 用途 |
 | --- | --- |
 | 主入口 | Vue 组件的具名导出，以及代码块语言登记工具 |
-| [Vue 样式](https://www.npmjs.com/package/@kernel4632/kima?activeTab=code) | Vue 组件使用的样式与设计 token |
+| [Vue 样式](https://www.npmjs.com/package/@kernel4632/kima?activeTab=code) | 按组件、核心组合或兼容全量样式，包含设计 token |
 | [核心元素入口](https://github.com/kernel4632/kima/blob/main/src/elements-core.js) | 常用基础组件，自带运行时和样式 |
 | [全量元素入口](https://github.com/kernel4632/kima/blob/main/src/elements.js) | 全部自定义元素，包含内容引擎 |
 | [主题入口](https://github.com/kernel4632/kima/blob/main/src/utils/theme.js) | 配色生成、应用与重置 |
@@ -176,7 +199,7 @@ body {
 
 ```js
 import { KimaButton } from '@kernel4632/kima';
-import '@kernel4632/kima/style.css';
+import '@kernel4632/kima/styles/button.css';
 import '@kernel4632/kima/elements/core';
 import '@kernel4632/kima/elements';
 import { applyPalette } from '@kernel4632/kima/theme';

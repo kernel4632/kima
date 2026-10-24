@@ -63,7 +63,7 @@ try {
   await writeFile(join(consumer, 'index.html'), documentShell('<div id="app"></div>', '/vue.js'));
   await writeFile(join(consumer, 'vue.js'), `import {createApp,h,ref} from 'vue';
 import {KimaButton,KimaTextarea,KimaRadioGroup,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
-import '@kernel4632/kima/style.css';
+${['button', 'textarea', 'radio-group', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
 import {applyPalette} from '@kernel4632/kima/theme';
 applyPalette('#61afef');
 createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref('');return()=>h('main',[
@@ -86,11 +86,15 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
   const controls = { button: ['KimaButton'], code: ['KimaButton', 'KimaCodeEditor'], rich: ['KimaButton', 'KimaRichTextEditor'], equation: ['KimaButton', 'KimaEquation'], qr: ['KimaButton', 'KimaQrCode'], highlight: ['KimaButton', 'KimaCodeBlock'] };
   for (const [name, exports] of Object.entries(controls)) {
     await writeFile(join(consumer, `${name}.html`), documentShell('<div id="app"></div>', `/${name}.js`));
-    await writeFile(join(consumer, `${name}.js`), `import {createApp,h} from 'vue';import {${exports.join(',')}} from '@kernel4632/kima';createApp({render:()=>h('main',[${exports.map(value => `h(${value},null,()=> 'Tree shaking button')`).join(',') }])}).mount('#app');`);
+    await writeFile(join(consumer, `${name}.js`), `import {createApp,h} from 'vue';import {${exports.join(',')}} from '@kernel4632/kima';import '@kernel4632/kima/styles/button.css';createApp({render:()=>h('main',[${exports.map(value => `h(${value},null,()=> 'Tree shaking button')`).join(',') }])}).mount('#app');`);
+  }
+  for (const [name, css] of [['core-css', 'styles/core.css'], ['legacy-css', 'style.css']]) {
+    await writeFile(join(consumer, `${name}.html`), documentShell('<div id="app"></div>', `/${name}.js`));
+    await writeFile(join(consumer, `${name}.js`), `import {createApp,h} from 'vue';import {KimaButton} from '@kernel4632/kima';import '@kernel4632/kima/${css}';createApp({render:()=>h(KimaButton,null,()=> '${name}')}).mount('#app');`);
   }
   // Capture actual output module metadata, not a grep for minified engine strings.
   await writeFile(join(consumer, 'build.mjs'), `import {build} from 'vite';import {writeFile} from 'node:fs/promises';
-const reports={};for(const [name,input] of Object.entries({production:{vue:'index.html',native:'native.html',core:'core.html'},${Object.keys(controls).map(name => `${name}:'${name}.html'`).join(',')}})){
+const reports={};for(const [name,input] of Object.entries({production:{vue:'index.html',native:'native.html',core:'core.html',coreCss:'core-css.html',legacyCss:'legacy-css.html'},${Object.keys(controls).map(name => `${name}:'${name}.html'`).join(',')}})){
 await build({configFile:false,logLevel:'warn',plugins:[{name:'consumer-output-evidence',generateBundle(_,bundle){reports[name]=Object.values(bundle).filter(v=>v.type==='chunk').map(chunk=>({fileName:chunk.fileName,bytes:Buffer.byteLength(chunk.code),imports:chunk.imports,dynamicImports:chunk.dynamicImports,modules:Object.entries(chunk.modules).map(([id,module])=>({id,renderedLength:module.renderedLength,renderedExports:module.renderedExports,removedExports:module.removedExports}))}));}}],build:{outDir:name==='production'?'dist':'control-'+name,rolldownOptions:{input}}});}
 await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   const buildLog = execFileSync(process.execPath, ['build.mjs'], { cwd: consumer, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -98,6 +102,16 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   const metadata = JSON.parse(await readFile(join(consumer, 'consumer-builds.json'), 'utf8'));
   await writeFile(join(artifacts, 'verify-install-build-modules.json'), JSON.stringify(metadata, null, 2));
   for (const [name, chunks] of Object.entries(metadata)) report.builds[name] = { jsBytes: chunks.reduce((sum, chunk) => sum + chunk.bytes, 0), chunks: chunks.length };
+  await test('button-only component CSS is small and excludes unrelated styles', async () => {
+    const assets = await readdir(join(consumer, 'control-button/assets'));
+    const sheets = await Promise.all(assets.filter(file => file.endsWith('.css')).map(file => readFile(join(consumer, 'control-button/assets', file), 'utf8')));
+    const css = sheets.join('\n');
+    report.buttonCssBytes = Buffer.byteLength(css);
+    assert.ok(report.buttonCssBytes > 1_000 && report.buttonCssBytes < 30_000, `Unexpected button CSS: ${report.buttonCssBytes}`);
+    assert.match(css, /--kima-color-primary:/);
+    assert.match(css, /\.kima-button/);
+    assert.doesNotMatch(css, /\.kima-(?:text-field|code-editor|rich-text-editor|shell-menu|date-picker)[\s.:{_]/);
+  });
   await test('button-only named import tree shaking (module metadata + five positive size controls)', async () => {
     const buttonBytes = report.builds.button.jsBytes;
     assert.ok(buttonBytes < 200_000, `Button-only includes unexpected code: ${buttonBytes} bytes`);
@@ -318,8 +332,23 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
   await copyTree(join(consumer, 'control-button/assets'), join(consumer, 'dist/assets'));
   await test('button-only tree-shaken production bundle mounts in browser', async () => {
     await page.goto(`${origin}/button-control/button.html`);
-    await expect(page.getByRole('button', { name: 'Tree shaking button' })).toBeVisible();
+    const button = page.getByRole('button', { name: 'Tree shaking button' });
+    await expect(button).toBeVisible();
+    assert.ok(parseFloat(await style(button, 'border-radius')) >= 12);
+    assert.ok(parseFloat(await style(button, 'min-height')) >= 40);
+    await button.click();
+    await page.screenshot({ path: join(artifacts, 'verify-install-button-css.png') });
   });
+  for (const name of ['core-css', 'legacy-css']) {
+    await test(`${name}: compatible styled button in production consumer`, async () => {
+      await page.goto(`${origin}/${name}.html`);
+      const button = page.getByRole('button', { name, exact: true });
+      await expect(button).toBeVisible();
+      assert.ok(parseFloat(await style(button, 'border-radius')) >= 12);
+      assert.ok(parseFloat(await style(button, 'min-height')) >= 40);
+      await button.click();
+    });
+  }
   await test('all production consumers: no runtime, network, or console errors', async () => {
     assert.deepEqual(report.errors, []);
     assert.deepEqual(report.consoleMessages.filter(message => message.type === 'error'), []);

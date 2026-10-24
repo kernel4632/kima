@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import { thirdPartyNotices } from './third-party-notices.js';
+import { emitComponentStyles } from './component-styles.js';
 
 const root = new URL('../', import.meta.url);
 const configFile = fileURLToPath(new URL('vite.config.js', root));
@@ -17,13 +18,14 @@ try {
   for (const mode of ['lib', 'elements', 'elements-core', 'theme']) {
     await build({ configFile, mode,
       // Preserve engine package boundaries so consumer bundlers can remove unused engines.
-      ...(mode === 'lib' ? { build: { rolldownOptions: {
+      ...(mode === 'lib' ? { build: { cssCodeSplit: true, rolldownOptions: {
         external: vueExternals.map(name => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:/|$)`)),
         output: { preserveModules: true, preserveModulesRoot: fileURLToPath(new URL('src/', root)), entryFileNames: chunk => chunk.name === 'index' ? 'kima.js' : 'vue/[name].js' },
       } } } : {}),
       ...(mode === 'elements' ? { define: { 'process.env.LOG': 'undefined', 'process.env': '{}' } } : {}),
       plugins: [{ name: 'kima-final-output-invariants', async generateBundle(_, bundle) {
         if (mode !== 'lib') await notices.collect(bundle);
+        else report.componentStyles = emitComponentStyles(bundle, asset => this.emitFile(asset));
         for (const output of Object.values(bundle)) {
           if (output.type !== 'chunk') continue;
           const bytes = Buffer.byteLength(output.code), gzipBytes = gzipSync(output.code).length;

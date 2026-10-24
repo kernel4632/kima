@@ -31,7 +31,7 @@ try {
   check('Both registration entries are declared side-effectful', () => {
     for (const file of ['./dist/kima-elements.js', './dist/kima-elements-core.js']) assert.ok(manifest.sideEffects.includes(file), `Missing side effect: ${file}`);
   });
-  for (const target of Object.values(manifest.exports).flatMap(value => typeof value === 'string' ? [value] : Object.values(value))) await readFile(new URL(target, root));
+  for (const target of Object.values(manifest.exports).flatMap(value => typeof value === 'string' ? [value] : Object.values(value)).filter(target => !target.includes('*'))) await readFile(new URL(target, root));
   report.checks.push('All declared export targets exist');
   const notices = await readFile(new URL('dist/THIRD_PARTY_NOTICES.txt', root), 'utf8');
   check('Standalone third-party license texts are shipped', () => {
@@ -109,6 +109,16 @@ try {
     report.components++;
   }
   check('Source discovery matches actual exports', () => assert.equal(report.components, library.componentNames.length, 'Build is stale'));
+  for (const slug of [...sourceFiles.map(file => file.slice(0, -'.ce.vue'.length)), 'core']) {
+    const entry = new URL(`dist/styles/${slug}.css`, root);
+    const imports = [...(await readFile(entry, 'utf8')).matchAll(/@import "([^"]+)";/g)].map(match => match[1]);
+    assert.ok(imports.includes('_tokens.css'), `Missing tokens: ${slug}`);
+    assert.equal(imports.length, new Set(imports).size, `Duplicate CSS dependency: ${slug}`);
+    const contents = await Promise.all(imports.map(file => readFile(new URL(file, entry), 'utf8')));
+    assert.ok(contents.every(content => content.length > 0));
+    if (slug !== 'core') assert.ok(contents.join('\n').includes(elements[`kima-${slug}`].__scopeId), `Missing own scoped CSS: ${slug}`);
+  }
+  report.checks.push('All component CSS entries resolve tokens and transitive style assets');
   for (const [tag, selectors] of Object.entries({
     'kima-code-editor': ['.cm-editor', '.cm-textfield', '.cm-panel.cm-search'],
     'kima-rich-text-editor': ['.tiptap', ':first-child', 'text-decoration:underline'],

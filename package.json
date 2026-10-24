@@ -38,6 +38,7 @@
       "default": "./dist/kima-elements-core.js"
     },
     "./style.css": "./dist/style.css",
+    "./styles/*.css": "./dist/styles/*.css",
     "./theme": "./dist/kima-theme.js",
     "./package.json": "./package.json"
   },
