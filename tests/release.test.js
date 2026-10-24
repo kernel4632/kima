@@ -1,6 +1,7 @@
 /* Release policy is tested without publishing or requiring credentials. */
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import config from '../release.config.js';
 
@@ -16,6 +17,11 @@ test('release policy: docs/fixes patch, features minor, breaking changes major',
   assert.equal(await analyze(['feat!: 删除旧接口\n\nBREAKING CHANGE: 旧接口已移除']), 'major');
   assert.equal(await analyze(['refactor: 删除旧接口\n\nBREAKING CHANGE: 旧接口已移除']), 'major');
   assert.equal(await analyze(['chore(release): 发布 0.6.1 [skip ci]', 'feat: 新能力']), 'minor');
+});
+
+test('npm official registry uses the exact trusted-publishing URL', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(manifest.publishConfig.registry, 'https://registry.npmjs.org/');
 });
 
 test('release config keeps version writeback before GitHub release', () => {
