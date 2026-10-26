@@ -67,7 +67,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # npm Trusted Publishing requires npm >=11.5.1; do not configure a token.
       - run: npm install --global npm@11
-      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      # Validate already completed the browser checks. Release only needs npm/semantic-release;
+      # downloading three browser engines here can consume the entire GitHub job timeout.
       # npm publish invokes prepublishOnly: real tarball consumers run with the new version.
       - run: pnpm exec semantic-release
         env:

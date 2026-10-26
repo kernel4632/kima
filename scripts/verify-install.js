@@ -62,17 +62,23 @@ try {
   console.log(installLog);
   await writeFile(join(consumer, 'index.html'), documentShell('<div id="app"></div>', '/vue.js'));
   await writeFile(join(consumer, 'vue.js'), `import {createApp,h,ref} from 'vue';
-import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaListbox,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
-${['button', 'text-field', 'select', 'textarea', 'radio-group', 'listbox', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
+import {File01Icon} from '@hugeicons/core-free-icons';
+import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaListbox,KimaList,KimaDrawer,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
+${['button', 'text-field', 'select', 'textarea', 'radio-group', 'listbox', 'list', 'drawer', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => "import '@kernel4632/kima/styles/" + slug + ".css';").join('\n')}
 import {applyPalette} from '@kernel4632/kima/theme';
 applyPalette('#61afef');
-createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref('');return()=>h('main',[
+createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref(''),drawerOpen=ref(false);return()=>h('main',[
  h(KimaButton,{onClick:()=>count.value++},()=> 'Vue '+count.value),
  h('div',{id:'field-width',style:{width:'760px',maxWidth:'100%',display:'flex',flexDirection:'column',gap:'16px'}},[
    h(KimaTextField,{label:'Provider name'}),h(KimaSelect,{label:'Provider type',items:[{value:'a',label:'Provider A'}]})]),
  h(KimaTextarea,{modelValue:notes.value,'onUpdate:modelValue':v=>notes.value=v,label:'Notes'}),h('output',{id:'notes'},notes.value),
- h(KimaRadioGroup,{label:'Direction',options:[{value:'design',label:'Design'},{value:'code',label:'Code',description:'Implementation mode'}]}),
- h(KimaListbox,{label:'Permissions',options:[{value:'read',label:'Read',description:'Read files'},{value:'write',label:'Write'}],modelValue:selected.value,'onUpdate:modelValue':v=>selected.value=v}),
+ h(KimaRadioGroup,{label:'Direction',name:'direction',options:[{value:'design',label:'Design',description:'Design mode'},{value:'code',label:'Code',description:'Implementation mode'},{value:'locked',label:'Locked',disabled:true}],modelValue:'design'}),
+ h(KimaListbox,{id:'permissions',label:'Permissions',name:'permission',options:[{value:'read',label:'Read',description:'Read files'},{value:'write',label:'Write',icon:File01Icon}],modelValue:selected.value,'onUpdate:modelValue':v=>selected.value=v}),
+ h(KimaListbox,{id:'custom-permissions',label:'Custom permissions',options:[{value:'read',label:'Read',description:'Read files'},{value:'write',label:'Write'}],modelValue:'read'},{option:({item,selected})=>h('div',{class:'consumer-custom-option','data-selected':String(selected)},[h('strong',item.label),h('small',item.description || 'No description')])}),
+ h(KimaList,{id:'plain-list',variant:'plain',gap:20,items:[{id:'one',title:'Plain one'},{id:'two',title:'Plain two'}]}),
+ h(KimaMenu,{label:'More actions',iconOnly:true,size:'small',items:[{value:'run',label:'Run task'}]}),
+ h('button',{id:'drawer-open',onClick:()=>drawerOpen.value=true},'Open long drawer'),
+ h(KimaDrawer,{open:drawerOpen.value,title:'Persistent heading',onClose:()=>drawerOpen.value=false},{default:()=>Array.from({length:24},(_,i)=>h('p',{class:'drawer-test-row'},'Long content row '+(i+1))),footer:()=>h('button',{id:'drawer-footer'},'Drawer action')}),
  h(KimaPopover,{label:'Details',contentLabel:'Project details'},()=>h('p','Installed popover')),
  h(KimaCodeEditor,{modelValue:code.value,'onUpdate:modelValue':v=>code.value=v,label:'Package code'}),h('output',{id:'code-value'},code.value),
  h(KimaRichTextEditor,{modelValue:rich.value,'onUpdate:modelValue':v=>rich.value=v,label:'Package document'}),h('output',{id:'rich-value'},rich.value),
@@ -216,10 +222,41 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
       await expect(page.getByRole('textbox', { name: 'Notes', exact: true })).toHaveValue('Installed input');
       if (kind === 'Vue') {
         await expect(page.locator('#notes')).toHaveText('Installed input');
-        await expect(page.getByRole('option', { name: 'Read Read files', exact: false })).toBeVisible();
-        await page.getByRole('option', { name: 'Read Read files', exact: false }).click();
+        const readOption = page.locator('#permissions [role="option"]', { hasText: 'Read' }).first();
+        await expect(readOption).toBeVisible();
+        await readOption.click();
+        await expect(readOption).toHaveAttribute('aria-selected', 'true');
+        await expect(readOption.locator('svg')).toHaveCount(1);
+        await expect(page.locator('input[type="hidden"][name="permission"]')).toHaveValue('read');
         await page.getByRole('radio', { name: /^Code/ }).check();
         await expect(page.getByRole('radio', { name: /^Code/ })).toBeChecked();
+        assert.equal(await style(page.locator('.kima-radio-group__item--disabled'), 'cursor'), 'not-allowed');
+        const customListboxOption = page.locator('#custom-permissions .consumer-custom-option').first();
+        await expect(customListboxOption).toContainText('Read files');
+        await expect(customListboxOption).toHaveAttribute('data-selected', 'true');
+        const menuTrigger = page.getByRole('button', { name: 'More actions', exact: true });
+        await expect(menuTrigger).toBeVisible();
+        assert.ok(parseFloat(await style(menuTrigger, 'min-height')) <= 48);
+        await menuTrigger.click();
+        await expect(page.getByRole('menuitemradio', { name: 'Run task' })).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(menuTrigger).toBeFocused();
+        const plainItem = page.locator('#plain-list .kima-list__item').first();
+        assert.equal(await style(plainItem, 'padding-top'), '0px');
+        assert.equal(await style(page.locator('#plain-list'), 'row-gap'), '20px');
+        await page.setViewportSize({ width: 320, height: 700 });
+        await page.locator('#drawer-open').click();
+        const drawer = page.getByRole('dialog', { name: 'Persistent heading' });
+        await expect(drawer).toBeVisible();
+        const close = drawer.getByRole('button', { name: '关闭' });
+        await expect(close).toBeVisible();
+        const initialHeaderY = await drawer.locator('.kima-drawer__header').evaluate(node => node.getBoundingClientRect().top);
+        await drawer.locator('.kima-drawer__body').evaluate(node => { node.scrollTop = node.scrollHeight; });
+        assert.equal(await drawer.locator('.kima-drawer__header').evaluate(node => node.getBoundingClientRect().top), initialHeaderY, 'Drawer header must stay fixed while body scrolls');
+        await expect(close).toBeVisible();
+        await expect(drawer.locator('#drawer-footer')).toBeVisible();
+        await close.click();
+        await page.setViewportSize({ width: 1440, height: 1000 });
       }
       await page.getByRole('button', { name: 'Details', exact: true }).click();
       await expect(page.getByRole('dialog', { name: 'Project details' })).toBeVisible();
