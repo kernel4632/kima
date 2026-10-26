@@ -12,6 +12,13 @@ import { gzipSync } from 'node:zlib';
 import { chromium, firefox, webkit, expect } from '@playwright/test';
 import { componentTiers } from '../src/component-tiers.js';
 
+const requestedBrowsers = new Set(
+  (process.env.KIMA_VERIFY_BROWSERS || 'chromium,firefox,webkit')
+    .split(',')
+    .map((name) => name.trim().toLowerCase())
+    .filter(Boolean),
+);
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 const artifacts = join(root, 'artifacts');
 const report = { startedAt: new Date().toISOString(), exitCode: 1, tests: [], builds: {}, errors: [], consoleMessages: [], requests: [] };
@@ -382,7 +389,7 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
     });
   }
   // Small release-consumer smoke only; not a claim of all-component cross-browser/a11y review.
-  for (const engine of [firefox, webkit]) {
+  for (const engine of [firefox, webkit].filter((engine) => requestedBrowsers.has(engine.name()))) {
     const otherBrowser = await engine.launch();
     const previousPage = page;
     try {
