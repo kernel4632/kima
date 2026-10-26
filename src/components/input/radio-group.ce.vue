@@ -79,7 +79,7 @@ function onKey(event) {
     cursor: pointer;
     &:has(input:checked) { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
     &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
-    &__item--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
+    &--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
     &__copy { display: grid; min-width: 0; flex: 1 1 auto; gap: var(--kima-space-1); }
     &__copy small { color: var(--kima-color-on-surface-variant); }
   }
