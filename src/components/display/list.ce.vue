@@ -8,6 +8,8 @@ defineOptions({ inheritAttrs: false });
 const props = defineProps({
   items: { type: Array, default: () => [] },
   ordered: Boolean,
+  variant: { type: String, default: 'default' },
+  gap: { type: [String, Number], default: '' },
   label: { type: String, default: "列表" },
   emptyText: { type: String, default: "暂无条目" },
 });
@@ -28,7 +30,7 @@ function itemKey(item, index) {
 }
 </script>
 <template>
-  <component :is="ordered ? 'ol' : 'ul'" ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-list" :aria-label="label">
+  <component :is="ordered ? 'ol' : 'ul'" ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-list" :class="{ 'kima-list--plain': variant === 'plain' }" :style="{ '--kima-list-gap': typeof gap === 'number' ? `${gap}px` : gap || undefined }" :aria-label="label">
     <slot><TransitionGroup name="kima-list" v-bind="presenceTransition"><li v-for="(item, index) in items" :key="itemKey(item, index)" class="kima-list__item"><slot name="item" :item="item" :index="index"><div class="kima-list__body"><strong>{{ item !== null && typeof item === 'object' ? item.title : item }}</strong><p v-if="item?.description">{{ item.description }}</p></div><div v-if="$slots.action" class="kima-list__action"><slot name="action" :item="item" :index="index" /></div></slot></li><li v-if="!items.length && !hasNativeSlot('default')" key="empty" class="kima-list__empty">{{ emptyText }}</li></TransitionGroup></slot>
   </component>
 </template>
@@ -38,9 +40,10 @@ function itemKey(item, index) {
 .kima-list {
   @include display-base;
   @include kima-block-host;
-  display: grid; gap: var(--kima-space-3); margin: 0; padding: 0; list-style-position: inside;
+  display: grid; gap: var(--kima-list-gap, var(--kima-space-3)); margin: 0; padding: 0; list-style-position: inside;
   &:is(ul) { list-style: none; }
   &__item { @include kima-layer; min-height: var(--kima-list-item-height); padding: var(--kima-space-5); border-radius: var(--kima-radius-m); }
+  &--plain { .kima-list__item { min-height: 0; padding: 0; border-radius: 0; background: transparent; } }
   &:is(ul) &__item { display: flex; align-items: center; gap: var(--kima-space-4); }
   &__body { flex: 1; min-width: 0; }
   p { margin: var(--kima-space-2) 0 0; color: var(--kima-color-on-surface-variant); }

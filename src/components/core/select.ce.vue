@@ -53,6 +53,8 @@ const emit = defineEmits(["update:modelValue", "change", "update:open", "options
 
 const root = ref(null);
 const trigger = ref(null);
+const popup = ref(null);
+const popupStyle = ref({});
 // 整块场地（__control）是"点得动的东西"，按下时整块亮一下。
 // 亮层铺满整块底、由场地自己的圆角裁边，触发器或清除按钮都算在场地上。
 const control = ref(null);
@@ -200,8 +202,30 @@ function handleKeydown(event) {
 }
 
 // --- 外部点击与焦点离开：composedPath 也能识别 Shadow DOM 内部点击 ---
+function positionPopup() {
+  const anchor = trigger.value;
+  if (!anchor || !localOpen.value || typeof window === "undefined") return;
+  const rect = anchor.getBoundingClientRect();
+  const gap = 8;
+  const below = Math.max(0, window.innerHeight - rect.bottom - gap);
+  const above = Math.max(0, rect.top - gap);
+  const openUp = below < 240 && above > below;
+  const preferredSpace = openUp ? above : below;
+  const available = Math.min(360, Math.max(0, preferredSpace));
+  const proposedTop = openUp ? rect.top - available - gap : rect.bottom + gap;
+  const top = Math.max(gap, Math.min(proposedTop, window.innerHeight - available - gap));
+  popupStyle.value = {
+    position: "fixed",
+    top: `${top}px`,
+    left: `${Math.max(gap, Math.min(rect.left, window.innerWidth - rect.width - gap))}px`,
+    width: `${rect.width}px`,
+    maxHeight: `${available}px`,
+  };
+}
+
 function handleOutside(event) {
-  if (localOpen.value && !event.composedPath().includes(root.value)) closeSelect(false);
+  const path = event.composedPath();
+  if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) closeSelect(false);
 }
 
 watch(() => props.modelValue, (value) => { localValue.value = value; });
@@ -214,7 +238,10 @@ watch(localOpen, async (open, wasOpen) => {
     const selected = visibleItems.value.findIndex((item) => Object.is(item.value, localValue.value) && !item.disabled);
     highlight(selected >= 0 ? selected : (enabledIndexes.value[0] ?? -1));
     await nextTick();
-    if (localOpen.value) (props.searchable ? searchInput.value : trigger.value)?.focus();
+    if (localOpen.value) {
+      positionPopup();
+      (props.searchable ? searchInput.value : trigger.value)?.focus();
+    }
   } else {
     if (wasOpen && restoreFocus) nextTick(() => { if (!localOpen.value) trigger.value?.focus(); });
     restoreFocus = true;
@@ -234,12 +261,16 @@ onMounted(() => {
   ownerDocument = root.value.ownerDocument;
   ownerDocument.addEventListener("pointerdown", handleOutside);
   ownerDocument.addEventListener("focusin", handleOutside);
+  ownerDocument.addEventListener("scroll", positionPopup, true);
+  window.addEventListener("resize", positionPopup);
 });
 onBeforeUnmount(() => {
   clearTimeout(resetTimer);
   form?.removeEventListener("reset", resetValue);
   ownerDocument.removeEventListener("pointerdown", handleOutside);
   ownerDocument.removeEventListener("focusin", handleOutside);
+  ownerDocument.removeEventListener("scroll", positionPopup, true);
+  window.removeEventListener("resize", positionPopup);
 });
 </script>
 
@@ -309,10 +340,13 @@ onBeforeUnmount(() => {
     </select>
 
     <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Transition name="kima-popup" v-bind="presenceTransition">
+    <Teleport to="body" :disabled="typeof document === 'undefined'">
+      <Transition name="kima-popup" v-bind="presenceTransition">
       <div
         v-if="localOpen"
+        ref="popup"
         class="kima-select__popup"
+        :style="popupStyle"
       >
         <div v-if="searchable" class="kima-select__search-wrap">
           <KimaIcon class="kima-select__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
@@ -358,7 +392,8 @@ onBeforeUnmount(() => {
         </div>
         <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
       </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -518,9 +553,9 @@ onBeforeUnmount(() => {
 
 .kima-select__popup {
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   z-index: 20;
-  top: calc(100% + var(--kima-space-2));
+  top: 0;
   left: 0;
   width: 100%;
   max-height: min(360px, 50vh);

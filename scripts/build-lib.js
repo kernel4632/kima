@@ -25,7 +25,20 @@ try {
       ...(mode === 'elements' ? { define: { 'process.env.LOG': 'undefined', 'process.env': '{}' } } : {}),
       plugins: [{ name: 'kima-final-output-invariants', async generateBundle(_, bundle) {
         if (mode !== 'lib') await notices.collect(bundle);
-        else report.componentStyles = emitComponentStyles(bundle, asset => this.emitFile(asset));
+        else {
+          // Vite can hash preserved JS and extracted CSS independently. Keep the runtime scope authoritative.
+          for (const [fileName, output] of Object.entries(bundle)) {
+            if (output.type !== 'asset' || !fileName.endsWith('.css')) continue;
+            const match = fileName.match(/^components\/(.+?)\.ce\.vue_vue_type_style_index_\d+_scoped_[a-f0-9]+_lang\.css$/);
+            if (!match) continue;
+            const componentChunk = bundle[`vue/components/${match[1]}.ce.js`];
+            assert.ok(componentChunk?.type === 'chunk', `Missing component JS for CSS scope ${fileName}`);
+            const scope = componentChunk.code.match(/__scopeId.{0,40}data-v-([a-f0-9]+)/)?.[1];
+            assert.ok(scope, `Cannot determine runtime CSS scope for ${fileName}`);
+            output.source = String(output.source).replace(/data-v-[a-f0-9]+/g, `data-v-${scope}`);
+          }
+          report.componentStyles = emitComponentStyles(bundle, asset => this.emitFile(asset));
+        }
         for (const output of Object.values(bundle)) {
           if (output.type !== 'chunk') continue;
           const bytes = Buffer.byteLength(output.code), gzipBytes = gzipSync(output.code).length;

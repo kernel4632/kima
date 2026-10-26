@@ -118,7 +118,17 @@ try {
     assert.ok(contents.every(content => content.length > 0));
     if (slug !== 'core') assert.ok(contents.join('\n').includes(elements[`kima-${slug}`].__scopeId), `Missing own scoped CSS: ${slug}`);
   }
-  report.checks.push('All component CSS entries resolve tokens and transitive style assets');
+  const publishedScopes = new Set(Object.values(elements).map(component => component.__scopeId));
+  for (const slug of sourceFiles.map(file => file.slice(0, -'.ce.vue'.length))) {
+    const entry = new URL(`dist/styles/${slug}.css`, root);
+    const imports = [...(await readFile(entry, 'utf8')).matchAll(/@import "([^"]+)";/g)].map(match => match[1]);
+    const scoped = (await Promise.all(imports.map(file => readFile(new URL(file, entry), 'utf8')))).join('\n');
+    const runtimeScope = elements[`kima-${slug}`].__scopeId;
+    const scopes = [...new Set([...scoped.matchAll(/data-v-[a-f0-9]+/g)].map(match => match[0]))];
+    assert.ok(scopes.includes(runtimeScope), `${slug}: CSS must include own runtime scope ${runtimeScope}`);
+    assert.ok(scopes.every(scope => publishedScopes.has(scope)), `${slug}: CSS contains unpublished scope ${scopes.join(', ')}`);
+  }
+  report.checks.push('All component CSS entries resolve tokens, transitive styles and runtime scope IDs');
   for (const [tag, selectors] of Object.entries({
     'kima-code-editor': ['.cm-editor', '.cm-textfield', '.cm-panel.cm-search'],
     'kima-rich-text-editor': ['.tiptap', ':first-child', 'text-decoration:underline'],

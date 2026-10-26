@@ -6,6 +6,8 @@
 import { computed, ref } from "vue";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
+import KimaIcon from "../core/icon.ce.vue";
+import { Tick01Icon } from "@hugeicons/core-free-icons";
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
   modelValue: { type: [String, Number], default: "" },
@@ -43,7 +45,11 @@ function onKey(event) {
   <fieldset ref="root" v-bind="controlAttrs" :class="['kima-radio-group', attrs.class]" :style="attrs.style" role="radiogroup" :aria-label="controlAttrs['aria-label'] || label" :aria-required="required || undefined" :aria-orientation="orientation" :disabled="disabled" :aria-disabled="disabled || undefined" @keydown="onKey">
     <label v-for="(item, index) in items" :key="item.value" class="kima-radio-group__item" :class="{ 'kima-radio-group__item--disabled': item.disabled }">
       <input type="radio" :name="name" :value="item.value" :checked="local === item.value" :disabled="disabled || item.disabled" :required="required" :tabindex="index === activeIndex ? 0 : -1" @input.stop @change.stop="update(item.value)" />
-      <span>{{ item.label }}</span>
+      <slot name="option" :item="item" :selected="local === item.value" :disabled="disabled || item.disabled">
+        <KimaIcon v-if="item.icon" :icon="item.icon" :size="20" aria-hidden="true" />
+        <span class="kima-radio-group__copy"><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span>
+        <KimaIcon v-if="local === item.value" :icon="Tick01Icon" :size="18" aria-hidden="true" />
+      </slot>
     </label>
   </fieldset>
 </template>
@@ -73,7 +79,9 @@ function onKey(event) {
     cursor: pointer;
     &:has(input:checked) { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
     &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
-    &--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
+    &__item--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
+    &__copy { display: grid; min-width: 0; flex: 1 1 auto; gap: var(--kima-space-1); }
+    &__copy small { color: var(--kima-color-on-surface-variant); }
   }
   input { appearance: none; width: 24px; height: 24px; flex-shrink: 0; margin: 0; border: 2px solid var(--kima-color-outline); border-radius: var(--kima-radius-full); outline: 0; cursor: inherit; }
   input { @include kima-motion-colors; transition-property: border-width, border-color, background-color; }

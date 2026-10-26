@@ -488,10 +488,8 @@ onBeforeUnmount(() => {
         </button>
       </header>
 
-      <p v-if="description" :id="descriptionId" class="kima-drawer__description">
-        {{ description }}
-      </p>
-      <div v-if="$slots.default || hasNativeSlot('default')" class="kima-drawer__body">
+      <div v-if="description || $slots.default || hasNativeSlot('default')" class="kima-drawer__body">
+        <p v-if="description" :id="descriptionId" class="kima-drawer__description">{{ description }}</p>
         <slot />
       </div>
       <footer v-if="$slots.footer || hasNativeSlot('footer')" class="kima-drawer__footer">
@@ -559,6 +557,9 @@ onBeforeUnmount(() => {
   .kima-drawer__panel {
     width: 100%;
     max-height: 90dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     border-radius: var(--kima-radius-xl) var(--kima-radius-xl) 0 0;
     /* height 也进过渡：吸附模式换档要有段落感，不能瞬移。 */
     transition:
@@ -575,8 +576,9 @@ onBeforeUnmount(() => {
     overflow: hidden;
   }
 
-  &.kima-drawer--snapping .kima-drawer__body {
+  .kima-drawer__body {
     flex: 1 1 auto;
+    min-height: 0;
     overflow: auto;
   }
 
@@ -624,7 +626,7 @@ onBeforeUnmount(() => {
 /* ---- 面板本体 ---- */
 .kima-drawer__panel {
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
   padding: var(--kima-space-6);
   outline: none;
   /* 弹层必须实色（kima-popup 给的就是实色底）。
@@ -669,6 +671,7 @@ onBeforeUnmount(() => {
 
 .kima-drawer__header,
 .kima-drawer__footer {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: var(--kima-space-3);
@@ -723,9 +726,12 @@ onBeforeUnmount(() => {
   }
 }
 
-.kima-drawer__description,
 .kima-drawer__body {
   margin: var(--kima-space-5) 0 0;
+}
+
+.kima-drawer__description {
+  margin: 0;
 }
 
 .kima-drawer__description {
@@ -735,6 +741,9 @@ onBeforeUnmount(() => {
 
 .kima-drawer__body {
   min-width: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 
 .kima-drawer__footer {

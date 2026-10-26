@@ -62,8 +62,8 @@ try {
   console.log(installLog);
   await writeFile(join(consumer, 'index.html'), documentShell('<div id="app"></div>', '/vue.js'));
   await writeFile(join(consumer, 'vue.js'), `import {createApp,h,ref} from 'vue';
-import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
-${['button', 'text-field', 'select', 'textarea', 'radio-group', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
+import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaListbox,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
+${['button', 'text-field', 'select', 'textarea', 'radio-group', 'listbox', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => `import '@kernel4632/kima/styles/${slug}.css';`).join('\n')}
 import {applyPalette} from '@kernel4632/kima/theme';
 applyPalette('#61afef');
 createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref('');return()=>h('main',[
@@ -71,7 +71,8 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
  h('div',{id:'field-width',style:{width:'760px',maxWidth:'100%',display:'flex',flexDirection:'column',gap:'16px'}},[
    h(KimaTextField,{label:'Provider name'}),h(KimaSelect,{label:'Provider type',items:[{value:'a',label:'Provider A'}]})]),
  h(KimaTextarea,{modelValue:notes.value,'onUpdate:modelValue':v=>notes.value=v,label:'Notes'}),h('output',{id:'notes'},notes.value),
- h(KimaRadioGroup,{label:'Direction',options:[{value:'design',label:'Design'},{value:'code',label:'Code'}]}),
+ h(KimaRadioGroup,{label:'Direction',options:[{value:'design',label:'Design'},{value:'code',label:'Code',description:'Implementation mode'}]}),
+ h(KimaListbox,{label:'Permissions',options:[{value:'read',label:'Read',description:'Read files'},{value:'write',label:'Write'}],modelValue:selected.value,'onUpdate:modelValue':v=>selected.value=v}),
  h(KimaPopover,{label:'Details',contentLabel:'Project details'},()=>h('p','Installed popover')),
  h(KimaCodeEditor,{modelValue:code.value,'onUpdate:modelValue':v=>code.value=v,label:'Package code'}),h('output',{id:'code-value'},code.value),
  h(KimaRichTextEditor,{modelValue:rich.value,'onUpdate:modelValue':v=>rich.value=v,label:'Package document'}),h('output',{id:'rich-value'},rich.value),
@@ -80,8 +81,8 @@ createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initi
 ])}}).mount('#app');`);
   await writeFile(join(consumer, 'native.html'), documentShell(nativeBody, '/native.js'));
   await writeFile(join(consumer, 'native.js'), `import '@kernel4632/kima/elements';\n${nativeSetup}`);
-  const coreBody = '<kima-button id="action">Core action</kima-button><output id="result">0</output><div id="field-width" style="width:760px;max-width:100%;display:flex;flex-direction:column;gap:16px"><kima-text-field label="Core input"></kima-text-field><kima-select label="Core select"></kima-select></div>';
-  const coreSetup = `document.querySelector('#action').addEventListener('click',()=>document.querySelector('#result').textContent='1');`;
+  const coreBody = '<kima-button id="action">Core action</kima-button><output id="result">0</output><div id="field-width" style="width:760px;max-width:100%;display:flex;flex-direction:column;gap:16px"><kima-text-field label="Core input"></kima-text-field><kima-select label="Core select"></kima-select></div><kima-radio-group id="radio" label="Mode"></kima-radio-group>';
+  const coreSetup = `const radio=document.querySelector('#radio');radio.options=[{value:'design',label:'Design',description:'Design mode'},{value:'code',label:'Code'}];document.querySelector('#action').addEventListener('click',()=>document.querySelector('#result').textContent='1');`;
   await writeFile(join(consumer, 'core.html'), documentShell(coreBody, '/core.js'));
   // Deliberately use a bare import: a binding import would mask a missing sideEffects declaration.
   await writeFile(join(consumer, 'core.js'), `import '@kernel4632/kima/elements/core';\n${coreSetup}`);
@@ -182,6 +183,16 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
         assert.ok(Math.abs(select.width - input.width) < 1, `Select ${select.width}px differs from input ${input.width}px`);
       }
       await column.evaluate(node => node.style.width = '760px');
+      await column.evaluate(node => { node.style.height = '80px'; node.style.overflow = 'auto'; });
+      await column.locator('.kima-select__trigger').click();
+      const popup = page.locator('.kima-select__popup');
+      await expect(popup).toBeVisible();
+      assert.equal(await style(popup, 'position'), 'fixed', 'Select popup must escape scroll containers');
+      const popupBox = await popup.boundingBox();
+      const popupDiagnostic = await popup.evaluate(node => ({ top: node.getBoundingClientRect().top, bottom: node.getBoundingClientRect().bottom, height: node.getBoundingClientRect().height, inline: node.getAttribute('style'), maxHeight: getComputedStyle(node).maxHeight }));
+      assert.ok(popupBox && popupBox.y + popupBox.height <= 1000, `Select popup must remain in viewport: ${JSON.stringify({ popupBox, popupDiagnostic })}`);
+      await page.keyboard.press('Escape');
+      await column.evaluate(node => { node.style.height = ''; node.style.overflow = ''; });
     });
   }
   async function interactions(kind, path) {
@@ -197,11 +208,18 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
     });
     await test(`${kind}: textarea + popover close`, async () => {
       await page.getByRole('textbox', { name: 'Notes', exact: true }).fill('Installed input');
+      const nativeSelect = page.locator('.kima-select__native');
+      if (await nativeSelect.count()) {
+        const nativeBox = await nativeSelect.boundingBox();
+        assert.ok(nativeBox && nativeBox.width <= 2 && nativeBox.height <= 2, 'Native select must remain visually hidden');
+      }
       await expect(page.getByRole('textbox', { name: 'Notes', exact: true })).toHaveValue('Installed input');
       if (kind === 'Vue') {
         await expect(page.locator('#notes')).toHaveText('Installed input');
-        await page.getByRole('radio', { name: 'Code', exact: true }).check();
-        await expect(page.getByRole('radio', { name: 'Code', exact: true })).toBeChecked();
+        await expect(page.getByRole('option', { name: 'Read Read files', exact: false })).toBeVisible();
+        await page.getByRole('option', { name: 'Read Read files', exact: false }).click();
+        await page.getByRole('radio', { name: /^Code/ }).check();
+        await expect(page.getByRole('radio', { name: /^Code/ })).toBeChecked();
       }
       await page.getByRole('button', { name: 'Details', exact: true }).click();
       await expect(page.getByRole('dialog', { name: 'Project details' })).toBeVisible();
@@ -300,6 +318,7 @@ await writeFile('consumer-builds.json',JSON.stringify(reports,null,2));`);
       assert.ok(parseFloat(await style(button, 'border-radius')) >= 12);
       await button.click(); await expect(page.locator('#result')).toHaveText('1');
       await page.getByRole('textbox', { name: 'Core input', exact: true }).fill('Published core');
+      await expect(page.getByRole('radio', { name: /^Design/ })).toBeVisible();
       const registered = await page.evaluate(slugs => slugs.filter(slug => customElements.get(`kima-${slug}`)), Object.values(componentTiers).flat());
       assert.deepEqual(registered.sort(), [...componentTiers.core].sort(), 'Core must register exactly its tier, without extras');
       await expect(page.locator('#kima-component-styles')).toHaveCount(1);

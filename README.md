@@ -131,6 +131,37 @@ import '@kernel4632/kima/elements';
 
 字符串和布尔值可通过 HTML 属性传入；布尔属性存在即表示启用，关闭时移除属性或通过 JavaScript 赋值。数组与对象使用 JavaScript 属性赋值，并在元素完成注册后设置。
 
+Select 的选项弹层会传送到 `body`，并根据视口上下空间自动翻转和限制高度，因此放在滚动容器底部时不会被容器裁切。原生表单用的隐藏 `select` 仍会保留，但不会显示为第二个控件。
+
+菜单触发器支持图标按钮模式，适合行尾的更多操作：
+
+```vue
+<KimaMenu icon-only label="更多操作" :items="actions" />
+<KimaMenu variant="icon" size="small" label="更多操作" :items="actions" />
+```
+
+`icon-only` 默认使用更多操作图标，也可以通过 `icon` 传入 Hugeicons 图标。图标模式仍保留 `aria-label`、键盘打开、Escape 关闭和菜单焦点管理。
+
+展示列表支持不带表面样式的行变体和间距：
+
+```vue
+<KimaList variant="plain" :gap="8" :items="items" />
+```
+
+`Listbox` 和 `RadioGroup` 的选项支持 `description`、`icon`，并可用 `#option` 插槽完全自定义内容；组件仍负责选中状态、键盘导航、ARIA 和原生表单值：
+
+```vue
+<KimaListbox :options="permissions" />
+<KimaRadioGroup :options="modes">
+  <template #option="{ item, selected }">
+    <strong>{{ item.label }}</strong>
+    <small>{{ selected ? '当前模式' : item.description }}</small>
+  </template>
+</KimaRadioGroup>
+```
+
+Drawer 的底部面板使用固定把手和头部，正文独立滚动；footer 保持在面板底部。侧向 Drawer 同样将正文作为可滚动区域。
+
 自定义组件事件的参数放在事件的参数数组中；按钮点击仍使用普通 DOM 点击事件。例如，读取文本框的值：
 
 ```html
