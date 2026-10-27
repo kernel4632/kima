@@ -4,7 +4,9 @@
 -->
 <script setup>
 import { computed, ref, useId } from "vue";
-import KimaButton from "../core/button.ce.vue";
+import KimaIconButton from "../core/icon-button.ce.vue";
+import KimaTooltip from "../core/tooltip.ce.vue";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { useContentMotion } from "../../utils/content-motion.js";
 import { useNavigationModel, useNavigationRoot } from "../../utils/navigation.js";
 defineOptions({ inheritAttrs: false });
@@ -43,7 +45,11 @@ function keydown(event) {
       </Transition>
       <p v-if="!items.length">暂无内容</p>
     </div>
-    <div class="kima-carousel__controls"><KimaButton variant="tonal" :disabled="previousDisabled" :aria-controls="id" aria-label="上一张" @click="move(-1)">上一张</KimaButton><output aria-live="polite" aria-atomic="true">{{ items.length ? current + 1 : 0 }} / {{ items.length }}</output><KimaButton variant="tonal" :disabled="nextDisabled" :aria-controls="id" aria-label="下一张" @click="move(1)">下一张</KimaButton></div><slot />
+    <div class="kima-carousel__controls">
+      <KimaTooltip text="上一张" position="right"><KimaIconButton class="kima-carousel__previous" :icon="ArrowLeft01Icon" variant="tonal" :disabled="previousDisabled" :aria-controls="id" label="上一张" @click="move(-1)" /></KimaTooltip>
+      <output aria-live="polite" aria-atomic="true">{{ items.length ? current + 1 : 0 }} / {{ items.length }}</output>
+      <KimaTooltip text="下一张" position="left"><KimaIconButton class="kima-carousel__next" :icon="ArrowRight01Icon" variant="tonal" :disabled="nextDisabled" :aria-controls="id" label="下一张" @click="move(1)" /></KimaTooltip>
+    </div><slot />
   </section>
 </template>
 <style scoped lang="scss">
@@ -52,6 +58,9 @@ function keydown(event) {
 .kima-carousel { @include navigation-surface; @include kima-focus-ring; &__viewport { padding: var(--kima-space-6); min-height: 180px; box-sizing: border-box; background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); overflow-wrap: anywhere; } &__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--kima-space-3); margin-top: var(--kima-space-4); } }
 .kima-carousel__viewport { display: grid; }
 .kima-carousel__slide { grid-area: 1 / 1; min-width: 0; }
+/* 前后方向随 RTL 排布镜像，和已有方向键逻辑一致。 */
+.kima-carousel:dir(rtl) :deep(.kima-carousel__previous svg),
+.kima-carousel:dir(rtl) :deep(.kima-carousel__next svg) { transform: scaleX(-1); }
 /* 退场那张不再参与高度计算，视口高度才能马上变成新一张的高度再由动画补齐。 */
 .kima-carousel__slide.kima-fade-leave-active { position: absolute; inset-block-start: var(--kima-space-6); inset-inline: var(--kima-space-6); }
 </style>
