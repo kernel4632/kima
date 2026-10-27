@@ -62,7 +62,7 @@
 
 ## 阶段 D：集合与动态列表
 
-- [ ] List/Timeline：删除节点固定原位退出，存活项稳定移动，根高度同步改变。
+- [x] List/Timeline：640px/280px 删除首项时退场节点固定原位、宽高保留并脱流，存活项在 50%/95% 中间帧连续移动，根高度同步改变；4 条严格 Playwright 中间帧回归通过。其他动态集合仍未处理。
 - [x] TagGroup：窄屏跨行删除使用共享 `useLayoutFlip()` 保留存活 chip 的旧坐标，退场由 `freezeLeaveLayout()` 处理；280px 中间帧/终态 Playwright 用例通过。MultiSelect/TagsInput 仍未处理。
 - [ ] Pagination：页码窗口前进/后退时按钮和页码区宽度稳定，窗口更新不叠字。
 - [ ] AvatarGroup：数量上限变化与头像移除有平滑的水平布局，不错误撑宽。
@@ -88,5 +88,5 @@
 
 - Carousel 已改为按前进/后退方向的水平滚入/滚出，并有快速反向中间帧用例；仍需继续扩展全库方向动效审查。
 - NotificationQueue 已拆分队列进出场与单条内容/计时职责，退场冻结、存活项补位、位置/RTL/窄屏/容量和计时专项均有证据；长短内容更新的高度过渡仍列为待办。
-- 上一轮窄屏 TagGroup、MultiSelect、TagsInput 仍观察到存活 chip 的首帧位移/换行，不能写成通过。
+- MultiSelect、TagsInput 仍观察到存活 chip 的首帧位移/换行；TagGroup 已用 FLIP 单独修复并通过 280px 中间帧/终态回归。
 - 上一轮的构建通过只代表打包成功，不代表全组件视觉、极端数据与动效验收完成。
