@@ -1,12 +1,14 @@
 // Mount native elements without echoing events, or a real Vue SFC via mountVue().
 import "/src/elements.js";
+// 开发模式按普通 Vue 提取样式，component.styles 为空；显式加载同源 token。
+import "../src/styles/_tokens.scss";
 import { createApp, nextTick } from "vue";
 import VueFixture from "./vue-fixture.vue";
 
 const root = document.getElementById("fixture");
 let app;
 const events = [];
-const eventNames = ["click", "change", "update:modelValue", "update:open", "update:activeSnapPoint", "close", "sort-change", "row-click", "filter-change", "cell-edit", "expand", "copy", "copy-error", "load", "error"];
+const eventNames = ["click", "change", "update:modelValue", "update:open", "update:activeSnapPoint", "close", "sort-change", "row-click", "filter-change", "cell-edit", "expand", "copy", "copy-error", "load", "error", "export", "follow-change"];
 
 window.fixture = {
   events,

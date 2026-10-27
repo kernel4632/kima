@@ -7,7 +7,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "**/shots.spec.js",
+  testMatch: ["**/shots.spec.js", "**/*.shots.spec.js"],
   outputDir: "shots/test-results",
   fullyParallel: false,
   reporter: "list",
