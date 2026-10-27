@@ -45,7 +45,7 @@
 - [x] Carousel：旧页冻结在原位退出，新页与旧页宽度一致；动态高度由共用高度工具协调。
 - [x] Carousel：快速连续点击/反向操作只保留新旧两页，反向新页从左侧进入、旧页 absolute 脱离布局、动画结束后回到单页；正式 Playwright 用例「轮播快速反向切换取消旧方向动画」通过。
 - [x] Tabs：首轮基线修复了宿主满宽/窄屏长标签换行、垂直栏比例挤压和 RTL 水平键盘方向；原位高度补间、快速反向和面板状态保留通过 5 条 Playwright 回归。截图复核发现旧/新面板同速淡入造成中间帧叠字，现将 Tabs 退场缩短为 fast 并复验深浅主题中间帧。Tabs 的完整视觉与方向语义审查仍未完成。
-- [ ] Accordion/Collapsible/LongText：原位展开收起，宽度不变，高度与内层内容按语义分阶段呈现。
+- [x] Accordion/Collapsible：共享 `collapseTransition` 的原位展开收起在 640px/280px 中间帧连续；退场区域保持 `inert`/`aria-hidden`，Collapsible 内部可聚焦元素同步 `tabindex=-1`。LongText 仍未验收。
 - [ ] Stepper：步骤内容方向遵循上一步/下一步，状态标记不造成尺寸重排。
 - [ ] 骨架屏：加载占位退场与真实内容进入期间不重叠抢高度，布局不抖动。
 
