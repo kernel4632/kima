@@ -296,7 +296,13 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
 /* 退场面板脱离排版：否则它会在淡出的这段时间里继续占着格子的高度，
  * 新面板进来后整块高度先按高的算，等淡出结束才塌下去——看起来就是"突然变矮"。
  * 绝对定位后容器立刻等于新面板的高度，高度过渡才接得上。 */
-.kima-tabs__panel.kima-content-leave-active { position: absolute; inset-block-start: 0; inset-inline: 0; }
+.kima-tabs__panel.kima-content-leave-active {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  /* 退场先结束，避免 50% 帧新旧文字叠在一起；承载区高度仍由 useContentMotion 补间。 */
+  transition-duration: var(--kima-duration-fast);
+}
 .kima-tabs__marker { position: absolute; top: 0; left: 0; pointer-events: none; background: var(--kima-color-primary); border-radius: var(--kima-radius-full); }
 .kima-tabs__marker--ready { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized), width var(--kima-duration-slow) var(--kima-curve-emphasized), height var(--kima-duration-slow) var(--kima-curve-emphasized), opacity var(--kima-duration-effects) var(--kima-curve-standard); }
 .kima-tabs__panel {
