@@ -123,8 +123,9 @@ function focusAndSelect(index) {
 function handleKeydown(index, event) {
   if (event.isComposing) return;
   const horizontal = tabOrientation.value === "horizontal";
-  const forward = horizontal ? event.key === "ArrowRight" : event.key === "ArrowDown";
-  const backward = horizontal ? event.key === "ArrowLeft" : event.key === "ArrowUp";
+  const rtl = horizontal && tabList.value && getComputedStyle(tabList.value).direction === "rtl";
+  const forward = horizontal ? event.key === (rtl ? "ArrowLeft" : "ArrowRight") : event.key === "ArrowDown";
+  const backward = horizontal ? event.key === (rtl ? "ArrowRight" : "ArrowLeft") : event.key === "ArrowUp";
 
   if (event.key === "Home") {
     event.preventDefault();
@@ -200,7 +201,9 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   --kima-tabs-indicator-height: var(--kima-tab-indicator-height);
 
   display: flex;
+  width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
 
@@ -226,8 +229,8 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
 
   .kima-tabs--vertical & {
     flex-direction: column;
-    width: 180px;
-    flex: 0 0 180px;
+    width: min(180px, 35%);
+    flex: 0 0 min(180px, 35%);
     align-self: flex-start;
   }
 }
@@ -241,7 +244,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--kima-space-3);
+  padding: var(--kima-space-2) var(--kima-space-3);
   border: 0;
   border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface-variant);
@@ -249,6 +252,8 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   font: inherit;
   font-size: var(--kima-font-size-medium);
   font-weight: var(--kima-font-weight-medium);
+  white-space: normal;
+  overflow-wrap: anywhere;
   cursor: pointer;
   transition:
     color var(--kima-duration-effects) var(--kima-ease-effects),
