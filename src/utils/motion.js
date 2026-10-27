@@ -1,5 +1,64 @@
 // Small Vue Transition hooks, safe to import during SSR. No timers or DOM at module scope.
+import { onBeforeUnmount } from 'vue';
 const active = new WeakMap();
+
+// 记录存活子项的旧坐标，在 Vue 完成列表更新后用 FLIP 保留视觉起点。
+// 只负责几何 transform，不接管进入/退出和语义状态。
+export function useLayoutFlip(target, keySelector = '[data-kima-flip-key]') {
+  let before = new Map();
+  let frame = 0;
+  let disposed = false;
+function element() {
+  const value = target?.value ?? target;
+  if (value?.nodeType === 1) return value;
+  if (value?.$el?.nodeType === 1) return value.$el;
+  return null;
+}
+  function key(node) {
+    return node.getAttribute(keySelector.slice(1, -1)) || node.dataset.kimaFlipKey || node;
+  }
+  function capture() {
+    const root = element();
+    if (!root) return;
+    before = new Map([...root.children].map(node => {
+      const rect = node.getBoundingClientRect();
+      return [key(node), { node, x: rect.x, y: rect.y }];
+    }));
+  }
+  function play() {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      if (disposed) return;
+      const root = element();
+      if (!root || prefersReducedMotion(root) || !root.animate) {
+        before.clear();
+        return;
+      }
+      const style = getComputedStyle(root);
+      const token = style.getPropertyValue('--kima-duration-slow').trim();
+      const duration = token ? parseFloat(token) * (token.endsWith('ms') ? 1 : 1000) : 300;
+      if (!Number.isFinite(duration) || duration <= 0) {
+        before.clear();
+        return;
+      }
+      for (const node of root.children) {
+        const old = before.get(key(node));
+        if (!old) continue;
+        const rect = node.getBoundingClientRect();
+        const dx = old.x - rect.x;
+        const dy = old.y - rect.y;
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+        node.animate(
+          [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }],
+          { duration, easing: style.getPropertyValue('--kima-curve-emphasized').trim() || 'ease-out' },
+        );
+      }
+      before.clear();
+    });
+  }
+  onBeforeUnmount(() => { disposed = true; cancelAnimationFrame(frame); });
+  return { capture, play };
+}
 const interrupted = new WeakMap();
 
 export function prefersReducedMotion(element) {

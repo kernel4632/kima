@@ -154,6 +154,46 @@ test('通知回归：减少动态效果不保留屏外位移', async ({ page }) 
   await expect(page.locator('.kima-notification-queue__item')).toHaveCount(0);
 });
 
+test('集合回归：TagGroup 窄屏删除跨行 chip 使用 FLIP 补位', async ({ page }) => {
+  await page.setViewportSize({ width: 280, height: 700 });
+  await mount(page, '<kima-tag-group id="tags"></kima-tag-group>', {
+    tags: {
+      removable: true,
+      items: [
+        { value: 'a', label: 'Alpha' },
+        { value: 'b', label: 'BetaBetaBeta' },
+        { value: 'c', label: 'Gamma' },
+        { value: 'd', label: 'DeltaDelta' },
+      ],
+    },
+  });
+  const chips = page.locator('#tags .kima-tag-group__items > *');
+  await expect(chips).toHaveCount(4);
+  await page.addStyleTag({ content: '.kima-tag-group__items > *{--kima-duration-slow:1000ms}' });
+  const before = await chips.evaluateAll(nodes => nodes.map(node => {
+    const r = node.getBoundingClientRect();
+    return { value: node.getAttribute('data-kima-flip-key'), x: r.x, y: r.y };
+  }));
+  await chips.nth(1).locator('button[aria-label^="移除"]').click();
+  await page.waitForTimeout(60);
+  const middle = await chips.evaluateAll(nodes => nodes.map(node => {
+    const r = node.getBoundingClientRect();
+    return { value: node.getAttribute('data-kima-flip-key'), x: r.x, y: r.y, animations: node.getAnimations().length };
+  }));
+  expect(middle).toHaveLength(4);
+  await page.screenshot({ path: 'shots/notification-motion/tag-group-middle.png', scale: 'css' });
+  const survivor = middle.find(item => item.value === 'c');
+  const original = before.find(item => item.value === 'c');
+  expect(Math.abs(survivor.y - original.y) + Math.abs(survivor.x - original.x)).toBeGreaterThan(1);
+  expect(survivor.animations).toBeGreaterThan(0);
+  await page.waitForTimeout(1100);
+  await expect(chips).toHaveCount(3);
+  const after = await chips.evaluateAll(nodes => nodes.map(node => ({ value: node.getAttribute('data-kima-flip-key'), y: node.getBoundingClientRect().y })));
+  expect(after.map(item => item.value)).toEqual(['a', 'c', 'd']);
+  expect(after.find(item => item.value === 'c').y).toBeLessThanOrEqual(original.y);
+  await page.screenshot({ path: 'shots/notification-motion/tag-group-after.png', scale: 'css' });
+});
+
 test('通知回归：悬停和焦点暂停剩余计时且只关闭一次', async ({ page }) => {
   await page.clock.install();
   await mount(page, '<kima-notification-queue id="queue"></kima-notification-queue>', { queue: { items: [{ id: 'timer', heading: '计时通知', message: '暂停后继续剩余时间', duration: 2000 }] } });

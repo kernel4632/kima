@@ -62,7 +62,7 @@
 ## 阶段 D：集合与动态列表
 
 - [ ] List/Timeline：删除节点固定原位退出，存活项稳定移动，根高度同步改变。
-- [ ] TagsInput/TagGroup/MultiSelect：跨行删除/添加不造成存活标签突然换行或输入器跳动；键盘删除后焦点可预测。
+- [x] TagGroup：窄屏跨行删除使用共享 `useLayoutFlip()` 保留存活 chip 的旧坐标，退场由 `freezeLeaveLayout()` 处理；280px 中间帧/终态 Playwright 用例通过。MultiSelect/TagsInput 仍未处理。
 - [ ] Pagination：页码窗口前进/后退时按钮和页码区宽度稳定，窗口更新不叠字。
 - [ ] AvatarGroup：数量上限变化与头像移除有平滑的水平布局，不错误撑宽。
 - [ ] DynamicInput/Transfer/UploadManager/ProgressGroup/FileUpload：多行增删与排序时保留行身份、焦点、容器高度和子项布局。
