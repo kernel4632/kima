@@ -7,6 +7,16 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { contentSelection, safeContentUrl, sanitizeContent } from '../../utils/content.js';
 import { useContentState } from '../../utils/content.js';
 import KimaButton from '../core/button.ce.vue';
+import KimaIconButton from '../core/icon-button.ce.vue';
+import KimaTooltip from '../core/tooltip.ce.vue';
+import { TextBoldIcon, TextItalicIcon, Heading02Icon, LeftToRightListBulletIcon, LeftToRightListNumberIcon, Link01Icon, UndoIcon, RedoIcon } from '@hugeicons/core-free-icons';
+const formatActions = [
+  { type: 'bold', label: '粗体', icon: TextBoldIcon },
+  { type: 'italic', label: '斜体', icon: TextItalicIcon },
+  { type: 'heading', label: '标题', icon: Heading02Icon },
+  { type: 'bulletList', label: '无序列表', icon: LeftToRightListBulletIcon },
+  { type: 'orderedList', label: '有序列表', icon: LeftToRightListNumberIcon },
+];
 const props=defineProps({modelValue:{type:String,default:''},name:String,form:String,label:{type:String,default:'富文本编辑器'},placeholder:{type:String,default:'开始书写…'},disabled:Boolean,readonly:Boolean,required:Boolean});
 const emit=defineEmits(['update:modelValue','change','selection-change']);
 const root=ref(null),mount=ref(null),proxy=ref(null),editor=shallowRef(null),revision=ref(0),linkOpen=ref(false),linkValue=ref(''),linkError=ref('');let savedSelection=null,pendingExternal=null,lastEditorFocused=false;
@@ -57,8 +67,12 @@ defineExpose({focus:()=>editor.value?.commands.focus(),getHTML:()=>sanitizeConte
 <template>
   <div ref="root" class="kima-rich-text-editor" :aria-disabled="disabled">
     <div class="kima-rich-text-editor__toolbar" role="toolbar" aria-label="文本格式">
-      <KimaButton v-for="item in [{type:'bold',label:'粗体'},{type:'italic',label:'斜体'},{type:'heading',label:'标题'},{type:'bulletList',label:'无序列表'},{type:'orderedList',label:'有序列表'}]" :key="item.type" variant="text" :aria-pressed="active(item.type)" :disabled="!editable" @mousedown.prevent @click="command(item.type)">{{ item.label }}</KimaButton>
-      <KimaButton variant="text" :disabled="!editable" :aria-expanded="linkOpen" @mousedown.prevent @click="openLink">链接</KimaButton><KimaButton variant="text" :disabled="!canUndo" @mousedown.prevent @click="command('undo')">撤销</KimaButton><KimaButton variant="text" :disabled="!canRedo" @mousedown.prevent @click="command('redo')">重做</KimaButton>
+      <KimaTooltip v-for="item in formatActions" :key="item.type" :text="item.label">
+        <KimaIconButton :icon="item.icon" :label="item.label" :variant="active(item.type) ? 'tonal' : 'standard'" :aria-pressed="active(item.type)" :disabled="!editable" @mousedown.prevent @click="command(item.type)" />
+      </KimaTooltip>
+      <KimaTooltip text="链接"><KimaIconButton :icon="Link01Icon" label="链接" :variant="active('link') ? 'tonal' : 'standard'" :disabled="!editable" :aria-expanded="linkOpen" @mousedown.prevent @click="openLink" /></KimaTooltip>
+      <KimaTooltip text="撤销"><KimaIconButton :icon="UndoIcon" label="撤销" :disabled="!canUndo" @mousedown.prevent @click="command('undo')" /></KimaTooltip>
+      <KimaTooltip text="重做" position="left"><KimaIconButton :icon="RedoIcon" label="重做" :disabled="!canRedo" @mousedown.prevent @click="command('redo')" /></KimaTooltip>
     </div>
     <Transition name="kima-popup" v-bind="presenceTransition"><div v-if="linkOpen" class="kima-rich-text-editor__link"><input v-model="linkValue" aria-label="链接地址" :disabled="!editable" placeholder="https://example.com" @keydown.enter.prevent="applyLink" @keydown.esc.prevent="linkOpen=false;editor?.commands.focus()"/><KimaButton :disabled="!editable" @click="applyLink">应用链接</KimaButton><KimaButton variant="text" @click="linkOpen=false;editor?.commands.focus()">取消</KimaButton><span v-if="linkError" role="alert">{{ linkError }}</span></div></Transition>
     <div v-if="!editor" class="kima-rich-text-editor__document" v-html="sanitizeContent(local)"></div>

@@ -12,7 +12,9 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { tags } from '@lezer/highlight';
 import { useContentState } from '../../utils/content.js';
-import KimaButton from '../core/button.ce.vue';
+import KimaIconButton from '../core/icon-button.ce.vue';
+import KimaTooltip from '../core/tooltip.ce.vue';
+import { Search01Icon, UndoIcon, RedoIcon } from '@hugeicons/core-free-icons';
 const props=defineProps({modelValue:{type:String,default:''},name:String,form:String,label:{type:String,default:'代码编辑器'},language:{type:String,default:'javascript'},placeholder:{type:String,default:''},disabled:Boolean,readonly:Boolean,required:Boolean});
 const emit=defineEmits(['update:modelValue','change','selection-change']);
 const root=ref(null),mount=ref(null),proxy=ref(null),selection=ref({from:0,to:0,line:1,column:1}),revision=ref(0);
@@ -31,8 +33,21 @@ onMounted(()=>{view=new EditorView({state:makeState(local.value),parent:mount.va
 function run(command){if(view){command(view);view.focus();}}
 defineExpose({focus:()=>view?.focus(),getSelection:()=>({...selection.value}),getValue:()=>local.value});
 </script>
-<template><div ref="root" class="kima-code-editor" :aria-disabled="disabled"><div role="toolbar" aria-label="代码操作" class="kima-code-editor__toolbar"><KimaButton variant="text" :disabled="disabled" @mousedown.prevent @click="run(openSearchPanel)">查找</KimaButton><KimaButton variant="text" :disabled="!editable" @mousedown.prevent @click="run(undo)">撤销</KimaButton><KimaButton variant="text" :disabled="!editable" @mousedown.prevent @click="run(redo)">重做</KimaButton><span>{{ language }}</span></div><pre v-if="!revision" class="kima-code-editor__fallback">{{ local || placeholder }}</pre><div ref="mount" class="kima-code-editor__mount"></div><output class="kima-code-editor__selection" aria-live="off">行 {{ selection.line }}，列 {{ selection.column }} · 选区 {{ selection.from }}–{{ selection.to }}</output><textarea ref="proxy" class="kima-code-editor__proxy" :name="name" :form="form" :value="local" :disabled="disabled" tabindex="-1" aria-hidden="true" @invalid.prevent="view?.focus()"></textarea></div></template>
+<template>
+  <div ref="root" class="kima-code-editor" :aria-disabled="disabled">
+    <div role="toolbar" aria-label="代码操作" class="kima-code-editor__toolbar">
+      <KimaTooltip text="查找"><KimaIconButton :icon="Search01Icon" label="查找" :disabled="disabled" @mousedown.prevent @click="run(openSearchPanel)" /></KimaTooltip>
+      <KimaTooltip text="撤销"><KimaIconButton :icon="UndoIcon" label="撤销" :disabled="!editable" @mousedown.prevent @click="run(undo)" /></KimaTooltip>
+      <KimaTooltip text="重做"><KimaIconButton :icon="RedoIcon" label="重做" :disabled="!editable" @mousedown.prevent @click="run(redo)" /></KimaTooltip>
+      <span class="kima-code-editor__language">{{ language }}</span>
+    </div>
+    <pre v-if="!revision" class="kima-code-editor__fallback">{{ local || placeholder }}</pre>
+    <div ref="mount" class="kima-code-editor__mount"></div>
+    <output class="kima-code-editor__selection" aria-live="off">行 {{ selection.line }}，列 {{ selection.column }} · 选区 {{ selection.from }}–{{ selection.to }}</output>
+    <textarea ref="proxy" class="kima-code-editor__proxy" :name="name" :form="form" :value="local" :disabled="disabled" tabindex="-1" aria-hidden="true" @invalid.prevent="view?.focus()"></textarea>
+  </div>
+</template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;
-.kima-code-editor{@include content-editor;@include content-reduced;position:relative;&__toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--kima-space-2);padding:var(--kima-space-2);span{margin-inline-start:auto;padding:var(--kima-space-2);color:var(--kima-color-on-surface-variant)}}&__mount{min-width:0;:deep(.cm-editor){max-height:32em}:deep(.cm-button),:deep(.cm-textfield){background:var(--kima-color-layer-2);color:var(--kima-color-on-surface);border:0;border-radius:var(--kima-radius-s);font:inherit;padding:var(--kima-space-2)}:deep(.cm-panel.cm-search){padding:var(--kima-space-3)}}&__fallback{margin:0;padding:var(--kima-space-4);font:inherit;white-space:pre-wrap;min-height:12em}&__selection{display:block;padding:var(--kima-space-2) var(--kima-space-4);font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant)}&__proxy{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip-path:inset(50%)}}
+.kima-code-editor{@include content-editor;@include content-reduced;position:relative;&__toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--kima-space-2);padding:var(--kima-space-2)}&__language{margin-inline-start:auto;padding:var(--kima-space-2);color:var(--kima-color-on-surface-variant)}&__mount{min-width:0;:deep(.cm-editor){max-height:32em}:deep(.cm-button),:deep(.cm-textfield){background:var(--kima-color-layer-2);color:var(--kima-color-on-surface);border:0;border-radius:var(--kima-radius-s);font:inherit;padding:var(--kima-space-2)}:deep(.cm-panel.cm-search){padding:var(--kima-space-3)}}&__fallback{margin:0;padding:var(--kima-space-4);font:inherit;white-space:pre-wrap;min-height:12em}&__selection{display:block;padding:var(--kima-space-2) var(--kima-space-4);font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant)}&__proxy{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip-path:inset(50%)}}
 </style>
