@@ -59,13 +59,27 @@ function remove(item, reason = "close") {
 }
 function notificationProps(item) {
   const { id, key, open, ...rest } = item || {};
-  return { ...rest, position: props.position, open: true };
+  return {
+    ...rest,
+    position: props.position,
+    open: true,
+    // 队列负责堆叠定位与进出场位移；通知保持 open 常挂载，
+    // 内层 Transition 不参与进出（slide 仅保留给独立使用的通知）。
+    stacked: true,
+  };
 }
+// 队列在屏幕边缘，整列通知的进出场方向就是这一侧。
+const slideDirection = computed(() => {
+  if (props.position.includes("right")) return "right";
+  if (props.position.includes("left")) return "left";
+  return props.position.startsWith("bottom") ? "down" : "up";
+});
 </script>
 <template>
-  <div v-bind="forwardedAttrs" class="kima-notification-queue" :class="`kima-notification-queue--${position}`" aria-live="polite">
-    <TransitionGroup name="kima-popup" tag="div" class="kima-notification-queue__stack" v-bind="presenceTransition">
-      <div v-for="(item, index) in queue" :key="itemKey(item, index)" class="kima-notification-queue__item">
+  <div v-bind="forwardedAttrs" class="kima-notification-queue" :class="[`kima-notification-queue--${position}`, `kima-notification-queue--slide-${slideDirection}`]" aria-live="polite">
+    <TransitionGroup name="kima-notification-queue" tag="div" class="kima-notification-queue__stack" v-bind="presenceTransition">
+      <!-- key 必须稳定：用 index 做 key 时删一条会让其余项整体换 key，move 补位动画失效。 -->
+      <div v-for="(item, index) in queue" :key="item.id ?? itemKey(item, index)" class="kima-notification-queue__item">
         <KimaNotification v-bind="notificationProps(item)" @close="remove(item, $event)" />
       </div>
     </TransitionGroup>
@@ -73,15 +87,57 @@ function notificationProps(item) {
 </template>
 <style scoped lang="scss">
 .kima-notification-queue { position: fixed; z-index: 1100; width: min(420px, calc(100vw - 32px)); pointer-events: none; font-family: var(--kima-font-family); }
+/* 进出场位移的方向类挂在队列根节点上，避免让单条通知和队列各自推导一遍位置。 */
 .kima-notification-queue--top, .kima-notification-queue--top-center, .kima-notification-queue--top-left, .kima-notification-queue--top-right { top: var(--kima-space-4); }
 .kima-notification-queue--bottom, .kima-notification-queue--bottom-center, .kima-notification-queue--bottom-left, .kima-notification-queue--bottom-right { bottom: var(--kima-space-4); }
 .kima-notification-queue--top, .kima-notification-queue--bottom, .kima-notification-queue--top-center, .kima-notification-queue--bottom-center { left: 50%; transform: translateX(-50%); }
 .kima-notification-queue--top-left, .kima-notification-queue--bottom-left { left: var(--kima-space-4); }
 .kima-notification-queue--top-right, .kima-notification-queue--bottom-right { right: var(--kima-space-4); }
-.kima-notification-queue__stack { display: grid; gap: var(--kima-space-3); pointer-events: none; }
-.kima-notification-queue__item { min-width: 0; }
-.kima-notification-queue__item[inert] { pointer-events: none; }
-.kima-notification-queue__item[inert] :deep(.kima-notification) { pointer-events: none; }
-.kima-notification-queue :deep(.kima-notification) { position: relative; inset: auto; width: 100%; max-width: 100%; transform: none !important; pointer-events: auto; }
-@media (prefers-reduced-motion: reduce) { .kima-notification-queue { transition: none; } }
+.kima-notification-queue--slide-right .kima-notification-queue-enter-from,
+.kima-notification-queue--slide-right .kima-notification-queue-leave-to { transform: translateX(calc(100% + 24px)); }
+.kima-notification-queue--slide-left .kima-notification-queue-enter-from,
+.kima-notification-queue--slide-left .kima-notification-queue-leave-to { transform: translateX(calc(-100% - 24px)); }
+.kima-notification-queue--slide-up .kima-notification-queue-enter-from,
+.kima-notification-queue--slide-up .kima-notification-queue-leave-to { transform: translateY(calc(-100% - 24px)); }
+.kima-notification-queue--slide-down .kima-notification-queue-enter-from,
+.kima-notification-queue--slide-down .kima-notification-queue-leave-to { transform: translateY(calc(100% + 24px)); }
+.kima-notification-queue__stack {
+  display: grid;
+  gap: var(--kima-space-3);
+  pointer-events: none;
+}
+
+.kima-notification-queue__item {
+  min-width: 0;
+}
+
+/* 通知的堆叠布局已由通知自身的 --stacked 类承担，队列不再反改子组件样式。 */
+
+/* TransitionGroup：新通知从边缘滑入，移除的通知从边缘滑出，其余卡片补位滑移。
+ * 位移方向由容器上的 --slide-* 修饰类给出（见上方映射），item 是真正动画的元素。 */
+.kima-notification-queue__item.kima-notification-queue-enter-active,
+.kima-notification-queue__item.kima-notification-queue-leave-active {
+  transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized), transform var(--kima-duration-medium) var(--kima-curve-emphasized);
+}
+
+.kima-notification-queue__item.kima-notification-queue-leave-active {
+  /* 退场脱离排版，补位滑移立即开始，高度不会等淡出结束才塌。 */
+  position: absolute;
+  inset-inline: 0;
+  pointer-events: none;
+}
+
+.kima-notification-queue__item.kima-notification-queue-enter-from,
+.kima-notification-queue__item.kima-notification-queue-leave-to {
+  opacity: 0;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .kima-notification-queue__item.kima-notification-queue-enter-active,
+  .kima-notification-queue__item.kima-notification-queue-leave-active,
+  .kima-notification-queue__item.kima-notification-queue-move {
+    transition-duration: 1ms;
+  }
+}
 </style>

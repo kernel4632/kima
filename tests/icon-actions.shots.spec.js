@@ -229,6 +229,66 @@ test('图标操作：轮播快速反向切换取消旧方向动画', async ({ pa
   await expect(carousel.locator('.kima-carousel__slide')).toContainText('First');
 });
 
+test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ page }) => {
+  await page.setViewportSize({ width: 720, height: 520 });
+  await fixture(page, '<kima-notification-queue id="queue" position="top-right"></kima-notification-queue>', {
+    queue: { items: [
+      { id: 'a', heading: '同步完成', message: '第一条', variant: 'success', duration: 0 },
+      { id: 'b', heading: '新消息', message: '第二条', variant: 'info', duration: 0 },
+      { id: 'c', heading: '警告', message: '第三条', variant: 'warning', duration: 0 },
+    ] },
+  });
+  const queue = page.locator('#queue');
+  const items = queue.locator('.kima-notification-queue__item');
+  await expect(items).toHaveCount(3);
+  const initial = await items.evaluateAll(nodes => nodes.map(node => {
+    const rect = node.getBoundingClientRect();
+    return { text: node.textContent.trim(), x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  }));
+  expect(initial[0].x).toBe(initial[1].x);
+  expect(initial[1].x).toBe(initial[2].x);
+  expect(initial[1].y - initial[0].y).toBeGreaterThan(0);
+  expect(initial[2].y - initial[1].y).toBe(initial[1].y - initial[0].y);
+  expect(initial[0].width).toBe(initial[1].width);
+  const secondClose = items.nth(1).locator('.kima-notification__close');
+  await secondClose.click();
+  await page.waitForTimeout(120);
+  const leaving = await items.evaluateAll(nodes => nodes.map(node => ({
+    text: node.textContent.trim(),
+    classes: [...node.classList],
+    transform: getComputedStyle(node).transform,
+    position: getComputedStyle(node).position,
+    transitions: node.getAnimations().map(animation => animation.transitionProperty ?? ''),
+  })));
+  const leavingItem = leaving.find(item => item.text.includes('第二条'));
+  expect(leavingItem.classes).toContain('kima-notification-queue-leave-active');
+  expect(leavingItem.position).toBe('absolute');
+  expect(leavingItem.transform).toMatch(/^matrix\(/);
+  expect(Number(leavingItem.transform.split(',')[4])).toBeGreaterThan(0);
+  expect(leavingItem.transitions).toContain('transform');
+  await expect(items).toHaveCount(3);
+  await page.waitForTimeout(700);
+  await expect(items).toHaveCount(2);
+  const settled = await items.evaluateAll(nodes => nodes.map(node => node.textContent.trim()));
+  expect(settled).toEqual(expect.arrayContaining(['同步完成第一条', '警告第三条']));
+  const enterItems = queue.locator('.kima-notification-queue__item');
+  await page.evaluate(() => { document.getElementById('queue').items = []; });
+  await page.waitForTimeout(700);
+  await page.evaluate(() => { document.getElementById('queue').items = [{ id: 'x', heading: '进场', message: '中间帧', variant: 'info', duration: 0 }]; });
+  await page.waitForTimeout(60);
+  const entering = await enterItems.first().evaluate(node => ({
+    classes: [...node.classList],
+    transform: getComputedStyle(node).transform,
+    transitions: node.getAnimations().map(animation => animation.transitionProperty ?? ''),
+  }));
+  expect(entering.classes).toContain('kima-notification-queue-enter-active');
+  expect(entering.transform).toMatch(/^matrix\(/);
+  expect(Number(entering.transform.split(',')[4])).toBeGreaterThan(0);
+  expect(entering.transitions).toContain('transform');
+  await page.waitForTimeout(700);
+  await expect(enterItems).toHaveCount(1);
+});
+
 for (const slug of ['code-editor', 'rich-text-editor', 'dynamic-input', 'file-upload', 'carousel', 'sidebar', 'app-shell', 'log-viewer']) {
   test(`图标按钮截图：${slug} 深浅主题与窄屏`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });

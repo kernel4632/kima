@@ -58,6 +58,17 @@ const props = defineProps({
     type: [Object, Array],
     default: null,
   },
+  // 堆叠模式（通知队列里用）：不再自己 fixed 定位，位置交给队列布局。
+  stacked: {
+    type: Boolean,
+    default: false,
+  },
+  // 进出场滑向，堆叠模式下由队列按自己的位置给出；
+  // 独立使用时不传，按 position 类自行推导。
+  slide: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["update:open", "close"]);
@@ -95,6 +106,13 @@ const variantIcons = {
   danger: AlertCircleIcon,
 };
 const notificationIcon = computed(() => props.icon ?? variantIcons[notificationVariant.value] ?? null);
+// 滑向优先取显式 slide，独立使用时由 position 推导：右边来的从右滑，左边从左，居中按上下。
+const slideDirection = computed(() => {
+  if (["right", "left", "up", "down"].includes(props.slide)) return props.slide;
+  if (notificationPosition.value.includes("right")) return "right";
+  if (notificationPosition.value.includes("left")) return "left";
+  return notificationPosition.value.startsWith("bottom") ? "down" : "up";
+});
 
 // --- 关闭计时器：重开、修改时长和卸载都取消旧计时 ---
 function clearCloseTimer() {
@@ -173,7 +191,11 @@ onBeforeUnmount(() => {
       v-if="localOpen"
       v-bind="{ ...attrs, id: host ? undefined : attrs.id, title: undefined }"
       class="kima-notification"
-      :class="[`kima-notification--${notificationVariant}`, `kima-notification--${notificationPosition}`]"
+      :class="[
+        `kima-notification--${notificationVariant}`,
+        { 'kima-notification--stacked': stacked },
+        stacked ? `kima-notification--slide-${slideDirection}` : `kima-notification--${notificationPosition}`,
+      ]"
       :role="notificationRole"
       :aria-live="notificationLive"
       aria-atomic="true"
@@ -251,6 +273,28 @@ onBeforeUnmount(() => {
   transform: translateX(calc(-100% - 24px));
 }
 
+/* 堆叠模式的滑向由队列显式给出，不再依赖 position 类推导。 */
+.kima-notification--slide-right.kima-notification-enter-from,
+.kima-notification--slide-right.kima-notification-leave-to {
+  transform: translateX(calc(100% + 24px));
+}
+
+.kima-notification--slide-left.kima-notification-enter-from,
+.kima-notification--slide-left.kima-notification-leave-to {
+  transform: translateX(calc(-100% - 24px));
+}
+
+.kima-notification--slide-up.kima-notification-enter-from,
+.kima-notification--slide-up.kima-notification-leave-to {
+  transform: translateY(calc(-100% - 24px));
+}
+
+.kima-notification--slide-down.kima-notification-enter-from,
+.kima-notification--slide-down.kima-notification-leave-to {
+  transform: translateY(calc(100% + 24px));
+}
+
+/* 独立使用的居中通知自带水平居中的基础 transform，进出场要叠在它上面。 */
 .kima-notification--top.kima-notification-enter-from,
 .kima-notification--top-center.kima-notification-enter-from,
 .kima-notification--top.kima-notification-leave-to,
@@ -267,7 +311,6 @@ onBeforeUnmount(() => {
 
 .kima-notification {
   box-sizing: border-box;
-  position: fixed;
   z-index: 1100;
   /* 三栏横排：图标 / 正文 / 关闭。正文吃掉剩余宽度，另两栏固定不缩。 */
   display: flex;
@@ -284,6 +327,14 @@ onBeforeUnmount(() => {
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-4);
   font-family: var(--kima-font-family);
+}
+
+/* 堆叠模式：定位交给队列，宽度跟队列容器走。 */
+.kima-notification--stacked {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  pointer-events: auto;
 }
 
 /* 语义图标：跟首行文字对齐（不是跟整块对齐），文字行高 1.3 时视觉最正。 */
