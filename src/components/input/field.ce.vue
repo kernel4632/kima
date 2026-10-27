@@ -4,6 +4,7 @@
 -->
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { useNativeSlots } from "../../utils/native-slots.js";
 import { collapseTransition, presenceTransition } from "../../utils/motion.js";
 const props = defineProps({ hint: { type: String, default: "" }, error: { type: String, default: "" } });
@@ -11,6 +12,8 @@ const root = ref(null);
 useNativeSlots(root);
 const id = `kima-field-${useId()}`;
 const message = computed(() => props.error || props.hint);
+const messageWrap = ref(null);
+useContentMotion(messageWrap, () => [message.value, Boolean(props.error)]);
 // Keep the last visible message intact while its wrapper collapses.
 const displayedMessage = ref(message.value);
 const displayedError = ref(Boolean(props.error));
@@ -58,8 +61,8 @@ onBeforeUnmount(() => {
   <div ref="root" class="kima-field">
     <slot />
     <Transition :css="false" v-bind="collapseTransition">
-      <div v-show="message" :id="id" class="kima-field__messages" :inert="!message" :aria-hidden="!message || undefined">
-        <Transition name="kima-content" v-bind="presenceTransition"><p :key="`${displayedError}:${displayedMessage}`" class="kima-field__message" :role="displayedError ? 'alert' : undefined">{{ displayedMessage }}</p></Transition>
+      <div ref="messageWrap" v-show="message" :id="id" class="kima-field__messages" :inert="!message" :aria-hidden="!message || undefined">
+        <p :key="`${displayedError}:${displayedMessage}`" class="kima-field__message" :role="displayedError ? 'alert' : undefined">{{ displayedMessage }}</p>
       </div>
     </Transition>
   </div>

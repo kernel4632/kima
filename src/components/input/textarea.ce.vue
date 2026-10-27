@@ -3,6 +3,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from "vue";
 import KimaIcon from "../core/icon.ce.vue";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { collapseTransition, presenceTransition } from "../../utils/motion.js";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
@@ -75,6 +76,8 @@ function clearValue() {
   update("");
   nextTick(() => { resizeInput(); input.value?.focus(); });
 }
+const messageWrap = ref(null);
+useContentMotion(messageWrap, () => [props.error || props.hint, Boolean(props.error)]);
 defineExpose({ focus: () => input.value?.focus() });
 </script>
 <template>
@@ -86,10 +89,8 @@ defineExpose({ focus: () => input.value?.focus() });
       </Transition>
     </div>
     <Transition :css="false" v-bind="{ ...collapseTransition, ...presenceTransition }">
-      <div v-show="error || hint" class="kima-textarea__message-wrap" :inert="!(error || hint)" :aria-hidden="!(error || hint) || undefined">
-        <Transition name="kima-fade" v-bind="presenceTransition">
-          <p v-if="error || hint" :id="`${id}-${error ? 'error' : 'hint'}`" :key="`${error ? 'error' : 'hint'}:${error || hint}`" class="kima-textarea__message" :class="{ 'kima-textarea__message--error': !!error }" :role="error ? 'alert' : undefined">{{ error || hint }}</p>
-        </Transition>
+      <div ref="messageWrap" v-show="error || hint" class="kima-textarea__message-wrap" :inert="!(error || hint)" :aria-hidden="!(error || hint) || undefined">
+        <p v-if="error || hint" :id="`${id}-${error ? 'error' : 'hint'}`" :key="`${error ? 'error' : 'hint'}:${error || hint}`" class="kima-textarea__message" :class="{ 'kima-textarea__message--error': !!error }" :role="error ? 'alert' : undefined">{{ error || hint }}</p>
       </div>
     </Transition>
     <p v-if="showCount" class="kima-textarea__count">{{ local.length }}<template v-if="maxlength != null"> / {{ maxlength }}</template></p>

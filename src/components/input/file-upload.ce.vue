@@ -4,7 +4,8 @@
 -->
 <script setup>
 import { nextTick, ref, toRaw, watch } from "vue";
-import { collapseTransition, presenceTransition } from "../../utils/motion.js";
+import { useContentMotion } from "../../utils/content-motion.js";
+import { collapseTransition, freezeLeaveLayout, presenceTransition } from "../../utils/motion.js";
 import KimaIconButton from "../core/icon-button.ce.vue";
 import KimaTooltip from "../core/tooltip.ce.vue";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -28,6 +29,8 @@ const input = ref(null);
 const dragging = ref(false);
 const { attrs, controlAttrs } = useInputAttrs();
 const { local, update } = useInputState(props, emit, root, (v) => Array.isArray(v) ? v : [], () => nextTick(syncFiles));
+const fileList = ref(null);
+useContentMotion(root, () => local.value);
 useRipple(root);
 function syncFiles() {
   if (!input.value) return;
@@ -70,14 +73,14 @@ function fileKey(file, index) {
 }
 </script>
 <template>
-  <div :class="['kima-file-upload', attrs.class]" :style="attrs.style" :aria-disabled="disabled || undefined">
-    <div ref="root" class="kima-file-upload__drop" :class="{ 'kima-file-upload__drop--active': dragging && !disabled }" :aria-disabled="disabled || undefined" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="drop">
+  <div ref="root" :class="['kima-file-upload', attrs.class]" :style="attrs.style" :aria-disabled="disabled || undefined">
+    <div class="kima-file-upload__drop" :class="{ 'kima-file-upload__drop--active': dragging && !disabled }" :aria-disabled="disabled || undefined" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="drop">
       <input ref="input" v-bind="controlAttrs" type="file" :aria-label="controlAttrs['aria-label'] || label" :name="name" :accept="accept" :multiple="multiple" :disabled="disabled" :required="required" @input.stop @change.stop="choose([...$event.target.files])" />
       <p>{{ label }}</p>
     </div>
     <Transition :css="false" v-bind="collapseTransition">
       <div v-show="local.length" :inert="!local.length" :aria-hidden="!local.length || undefined">
-        <TransitionGroup tag="ul" name="kima-list" v-bind="presenceTransition" class="kima-file-upload__files">
+        <TransitionGroup ref="fileList" tag="ul" name="kima-list" v-bind="{ ...presenceTransition, onBeforeLeave: freezeLeaveLayout }" class="kima-file-upload__files">
           <li v-for="(file, index) in local" :key="fileKey(file, index)">
             <span class="kima-file-upload__filename">{{ file.name }} · {{ file.size }} B</span>
             <KimaTooltip text="移除文件" position="left"><KimaIconButton :icon="Cancel01Icon" :disabled="disabled" :label="`移除 ${file.name}`" @click="remove(index)" /></KimaTooltip>

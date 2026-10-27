@@ -4,6 +4,7 @@
 -->
 <script setup>
 import { computed, ref, watchEffect } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { presenceTransition } from "../../utils/motion.js";
 import KimaButton from "../core/button.ce.vue";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
@@ -28,12 +29,18 @@ let composing = false;
 const { attrs, controlAttrs } = useInputAttrs();
 const { local, update } = useInputState(props, emit, root, (v) => Array.isArray(v) ? [...new Set(v.map(String))] : [], () => { draft.value = ""; composing = false; });
 useRipple(root);
+useContentMotion(root, () => local.value);
 const full = computed(() => local.value.length >= props.max);
 const tagTransition = {
   ...presenceTransition,
   onBeforeLeave(element) {
+    const parent = element.parentElement;
     presenceTransition.onBeforeLeave(element);
-    Object.assign(element.style, { left: `${element.offsetLeft}px`, top: `${element.offsetTop}px`, width: `${element.offsetWidth}px`, height: `${element.offsetHeight}px`, boxSizing: "border-box" });
+    const rect = element.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+    if (getComputedStyle(parent).position === "static") parent.style.position = "relative";
+    Object.assign(element.style, { position: "absolute", left: `${rect.left - parentRect.left + parent.scrollLeft}px`, top: `${rect.top - parentRect.top + parent.scrollTop}px`, width: `${rect.width}px`, height: `${rect.height}px`, margin: "0", boxSizing: "border-box" });
+    presenceTransition.onBeforeLeave(element);
   },
   onBeforeEnter(element) {
     presenceTransition.onBeforeEnter(element);

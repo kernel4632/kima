@@ -3,6 +3,7 @@ Blur keeps the draft open. saveHandler(value) may return a Promise; failure keep
 Save/cancel return focus to display. External value updates do not overwrite an active draft. -->
 <script setup>
 import { nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import KimaButton from "../core/button.ce.vue";
 import { useInputState } from "../../utils/input-state.js";
 import { presenceTransition } from "../../utils/motion.js";
@@ -14,6 +15,7 @@ const editing = ref(false), draft = ref(props.modelValue), pending = ref(false),
 let generation = 0;
 const { local, update } = useInputState(props, emit, root, value => String(value || ""), value => { generation+=1;pending.value=false;editing.value=false;draft.value=value;error.value=""; });
 useRipple(root);
+useContentMotion(root, () => editing.value);
 watch(() => props.modelValue, value => { if (!editing.value) draft.value = value || ""; });
 async function begin() {
   if (props.disabled || props.readonly || pending.value) return;
@@ -58,6 +60,7 @@ defineExpose({ edit:begin, save, cancel, focus:()=>display.value?.focus() });
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 .kima-editable { @include advanced-root; display:grid;gap:var(--kima-space-2);position:relative;
+  :deep(.kima-fade-leave-active) { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: max-content; max-width: 100%; }
   &__display { @include advanced-action; justify-self:start;text-align:start;border-radius:var(--kima-radius-s); }
   &__editor {display:grid;gap:var(--kima-space-2);}
   &__input { @include advanced-field;resize:vertical; }

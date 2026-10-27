@@ -21,6 +21,7 @@ Vue 支持 cell-字段名插槽；原生自定义元素用 slot="empty" / slot="
 -->
 <script setup>
 import { computed, getCurrentInstance, onBeforeUnmount, ref, useAttrs, useHost, watch } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { presenceTransition } from "../../utils/motion.js";
 import KimaIcon from "../core/icon.ce.vue";
 import {
@@ -64,6 +65,7 @@ const emit = defineEmits([
 const attrs = useAttrs();
 const host = getCurrentInstance().ce ? useHost() : null;
 const forwardedAttrs = computed(() => host ? { ...attrs, id: undefined } : attrs);
+const scroll = ref(null);
 const localSelection = ref(props.modelValue);
 const localFilters = ref({ ...props.filterValues });
 const localExpanded = ref([...props.expandedRows]);
@@ -115,6 +117,7 @@ const visibleKeys = computed(() => sortedRows.value.map(getRowKey));
 const expandedKeys = computed(() => new Set(localExpanded.value));
 const allSelected = computed(() => visibleKeys.value.length > 0 && visibleKeys.value.every((key) => selectedKeys.value.has(key)));
 const someSelected = computed(() => visibleKeys.value.some((key) => selectedKeys.value.has(key)));
+useContentMotion(scroll, () => [props.loading, sortedRows.value, [...expandedKeys.value]], { opacity: false });
 const selectionState = computed(() => allSelected.value ? "true" : someSelected.value ? "mixed" : "false");
 const selectionLabel = computed(() => allSelected.value ? "取消选择全部行" : "选择全部行");
 const hasFilters = computed(() => props.columns.some((column) => column.filterable));
@@ -263,7 +266,7 @@ onBeforeUnmount(stopResize);
 
 <template>
   <div class="kima-table" :class="{ 'kima-table--striped': striped, 'kima-table--hoverable': hoverable }">
-    <div class="kima-table__scroll" tabindex="0" role="region" :aria-label="caption || attrs['aria-label'] || '表格区域'">
+    <div ref="scroll" class="kima-table__scroll" tabindex="0" role="region" :aria-label="caption || attrs['aria-label'] || '表格区域'">
       <table v-bind="forwardedAttrs" :aria-busy="loading">
         <caption v-if="caption">{{ caption }}</caption>
         <thead>
@@ -315,11 +318,10 @@ onBeforeUnmount(stopResize);
             </th>
           </tr>
         </thead>
-        <Transition name="kima-fade" v-bind="presenceTransition">
         <tbody v-if="loading" key="loading">
           <tr><td class="kima-table__message" :colspan="columnCount"><div role="status"><slot name="loading">加载中</slot></div></td></tr>
         </tbody>
-        <TransitionGroup v-else-if="sortedRows.length" key="rows" tag="tbody" name="kima-list" v-bind="presenceTransition">
+        <tbody v-else-if="sortedRows.length" key="rows">
           <template v-for="(row, index) in sortedRows" :key="getRowKey(row, index)">
             <tr
               :class="{ 'kima-table__row--selected': selectable && selectedKeys.has(getRowKey(row, index)) }"
@@ -356,11 +358,10 @@ onBeforeUnmount(stopResize);
               <td :colspan="columnCount"><slot name="expanded" :row="row" :index="index">{{ row }}</slot></td>
             </tr>
           </template>
-        </TransitionGroup>
+        </tbody>
         <tbody v-else key="empty">
           <tr><td class="kima-table__message" :colspan="columnCount"><div role="status"><slot name="empty">暂无数据</slot></div></td></tr>
         </tbody>
-        </Transition>
         <tfoot v-if="hasSummary" class="kima-table__summary">
           <tr>
             <th v-if="expandable" class="kima-table__expand-column" aria-hidden="true" />
@@ -571,12 +572,11 @@ tbody tr {
   }
 }
 
-.kima-table tbody.kima-fade-leave-active { position: absolute; width: 100%; }
-.kima-table table { position: relative; }
 .kima-table tbody tr.kima-list-move { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized), background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); }
 .kima-table tbody tr.kima-list-enter-active,
-.kima-table tbody tr.kima-list-leave-active { transition: opacity var(--kima-duration-medium) var(--kima-curve-standard), transform var(--kima-duration-medium) var(--kima-curve-standard); }
-.kima-table tbody tr.kima-list-leave-active { position: absolute; width: 100%; }
+.kima-table tbody tr.kima-list-leave-active { transition: opacity var(--kima-duration-medium) var(--kima-curve-standard); }
+.kima-table tbody tr.kima-list-enter-from,
+.kima-table tbody tr.kima-list-leave-to { opacity: 0; }
 .kima-table__summary th { color: var(--kima-color-on-surface); background: var(--kima-color-layer-2); font-weight: var(--kima-font-weight-bold); }
 .kima-table__message {
   height: 96px;

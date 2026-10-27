@@ -1,7 +1,8 @@
 <!-- 内容列表：items 的 title/description，item 与 action 作用域插槽；默认插槽可自定义 li。调用示例：<kima-list :items="[{ title: '项目', description: '最近更新' }]" /> -->
 <script setup>
 import { ref, toRaw, useAttrs } from "vue";
-import { presenceTransition } from "../../utils/motion.js";
+import { useContentMotion } from "../../utils/content-motion.js";
+import { freezeLeaveLayout, presenceTransition } from "../../utils/motion.js";
 import { useNativeSlots } from "../../utils/native-slots.js";
 
 defineOptions({ inheritAttrs: false });
@@ -16,6 +17,7 @@ const props = defineProps({
 const attrs = useAttrs();
 const root = ref(null);
 const { isCustomElement, hasNativeSlot } = useNativeSlots(root);
+useContentMotion(root, () => props.items);
 const objectKeys = new WeakMap();
 let nextKey = 0;
 function itemKey(item, index) {
@@ -31,7 +33,7 @@ function itemKey(item, index) {
 </script>
 <template>
   <component :is="ordered ? 'ol' : 'ul'" ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-list" :class="{ 'kima-list--plain': variant === 'plain' }" :style="{ '--kima-list-gap': typeof gap === 'number' ? `${gap}px` : gap || undefined }" :aria-label="label">
-    <slot><TransitionGroup name="kima-list" v-bind="presenceTransition"><li v-for="(item, index) in items" :key="itemKey(item, index)" class="kima-list__item"><slot name="item" :item="item" :index="index"><div class="kima-list__body"><strong>{{ item !== null && typeof item === 'object' ? item.title : item }}</strong><p v-if="item?.description">{{ item.description }}</p></div><div v-if="$slots.action" class="kima-list__action"><slot name="action" :item="item" :index="index" /></div></slot></li><li v-if="!items.length && !hasNativeSlot('default')" key="empty" class="kima-list__empty">{{ emptyText }}</li></TransitionGroup></slot>
+    <slot><TransitionGroup name="kima-list" v-bind="{ ...presenceTransition, onBeforeLeave: freezeLeaveLayout }"><li v-for="(item, index) in items" :key="itemKey(item, index)" class="kima-list__item"><slot name="item" :item="item" :index="index"><div class="kima-list__body"><strong>{{ item !== null && typeof item === 'object' ? item.title : item }}</strong><p v-if="item?.description">{{ item.description }}</p></div><div v-if="$slots.action" class="kima-list__action"><slot name="action" :item="item" :index="index" /></div></slot></li><li v-if="!items.length && !hasNativeSlot('default')" key="empty" class="kima-list__empty">{{ emptyText }}</li></TransitionGroup></slot>
   </component>
 </template>
 <style scoped lang="scss">

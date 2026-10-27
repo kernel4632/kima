@@ -11,6 +11,7 @@
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useId, watch } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import { collapseTransition, presenceTransition } from "../../utils/motion.js";
 import { useRipple } from "../../utils/ripple.js";
 import KimaIcon from "./icon.ce.vue";
@@ -147,6 +148,9 @@ function handleReset(event) {
   });
 }
 
+const messageWrap = ref(null);
+useContentMotion(messageWrap, () => [props.error || props.hint, Boolean(props.error)]);
+
 onMounted(() => {
   resetValue = localValue.value;
   input.value.defaultValue = resetValue;
@@ -232,10 +236,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     </div>
 
     <Transition :css="false" v-bind="{ ...collapseTransition, ...presenceTransition }">
-      <div v-show="error || hint" class="kima-text-field__message-wrap" :inert="!(error || hint)" :aria-hidden="!(error || hint) || undefined">
-        <Transition name="kima-fade" v-bind="presenceTransition">
-          <p v-if="error || hint" :key="`${error ? 'error' : 'hint'}:${error || hint}`" class="kima-text-field__message" :class="{ 'kima-text-field__message--error': !!error }" :id="error ? errorId : hintId" :role="error ? 'alert' : undefined">{{ error || hint }}</p>
-        </Transition>
+      <div ref="messageWrap" v-show="error || hint" class="kima-text-field__message-wrap" :inert="!(error || hint)" :aria-hidden="!(error || hint) || undefined">
+        <p v-if="error || hint" :key="`${error ? 'error' : 'hint'}:${error || hint}`" class="kima-text-field__message" :class="{ 'kima-text-field__message--error': !!error }" :id="error ? errorId : hintId" :role="error ? 'alert' : undefined">{{ error || hint }}</p>
       </div>
     </Transition>
   </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
-import { presenceTransition } from "../../utils/motion.js";
+import { useContentMotion } from "../../utils/content-motion.js";
+import { freezeLeaveLayout, presenceTransition } from "../../utils/motion.js";
 import KimaButton from "../core/button.ce.vue";
 import KimaIconButton from "../core/icon-button.ce.vue";
 import KimaTooltip from "../core/tooltip.ce.vue";
@@ -12,6 +13,8 @@ const ids = new WeakMap();
 function rowId(row) { if (!row || typeof row !== "object") return `row-${++nextId}`; if (!ids.has(row)) ids.set(row, row.id || `row-${++nextId}`); return ids.get(row); }
 const rows = ref(props.modelValue.map(row => ({ ...row })));
 const disabledAdd = computed(() => props.disabled || rows.value.length >= props.max);
+const root = ref(null);
+useContentMotion(root, () => rows.value);
 function sync(next, event, payload) { rows.value = next; emit("update:modelValue", next.map(row => ({ ...row }))); emit("change", next.map(row => ({ ...row }))); if (event) emit(event, payload); }
 function add() { if (disabledAdd.value) return; const row = { ...props.create(), id: `row-${++nextId}` }; sync([...rows.value, row], "add", { row, index: rows.value.length }); }
 function remove(index) { if (props.disabled || rows.value.length <= props.min) return; const row = rows.value[index]; sync(rows.value.filter((_, i) => i !== index), "remove", { row, index }); }
@@ -22,8 +25,8 @@ function validate() { return rows.value.every(row => row && row.valid !== false)
 defineExpose({ add, remove, move, validate, rows });
 </script>
 <template>
-  <div class="kima-dynamic-input" role="group" :aria-label="label">
-    <TransitionGroup tag="div" name="kima-list" v-bind="presenceTransition" class="kima-dynamic-input__rows">
+  <div ref="root" class="kima-dynamic-input" role="group" :aria-label="label">
+    <TransitionGroup tag="div" name="kima-list" v-bind="{ ...presenceTransition, onBeforeLeave: freezeLeaveLayout }" class="kima-dynamic-input__rows">
       <div v-for="(row,index) in rows" :key="rowId(row)" class="kima-dynamic-input__row">
         <slot :row="row" :index="index" :id="rowId(row)" :update="value=>patch(index,value)"><output>{{ JSON.stringify(row) }}</output></slot>
         <div class="kima-dynamic-input__actions">
@@ -39,7 +42,7 @@ defineExpose({ add, remove, move, validate, rows });
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 @use "../../styles/input" as *;
-.kima-dynamic-input{ @include advanced-root;display:grid;gap:var(--kima-space-3);&__rows{position:relative;display:grid;gap:var(--kima-space-3)}&__row{ @include input-surface;display:grid;gap:var(--kima-space-2);padding:var(--kima-space-3);min-width:0}&__actions{display:flex;flex-wrap:wrap;gap:var(--kima-space-1)} }
+.kima-dynamic-input{ @include advanced-root;display:grid;gap:var(--kima-space-3);&__rows{position:relative;display:grid;grid-column:1 / -1;gap:var(--kima-space-3)}&__row{ @include input-surface;display:grid;gap:var(--kima-space-2);padding:var(--kima-space-3);min-width:0}&__actions{display:flex;flex-wrap:wrap;gap:var(--kima-space-1)} }
 .kima-dynamic-input__row.kima-list-enter-active,
 .kima-dynamic-input__row.kima-list-leave-active { transition: opacity var(--kima-duration-medium) var(--kima-curve-standard), transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
 .kima-dynamic-input__row.kima-list-move { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized); }

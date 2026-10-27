@@ -23,6 +23,27 @@ export function activateMotionElement(element) {
 }
 export const presenceTransition = { onBeforeEnter: activateMotionElement, onBeforeLeave: retireMotionElement };
 
+/* 退出节点先冻结在原坐标并脱离排版，让承载容器可立即测得新自然尺寸。
+ * 用于网格、弹性布局等列表；表格行不应使用此 helper。 */
+export function freezeLeaveLayout(element) {
+  const parent = element.parentElement;
+  if (!parent) return;
+  const rect = element.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
+  const style = element.ownerDocument.defaultView.getComputedStyle(parent);
+  if (style.position === 'static') parent.style.position = 'relative';
+  Object.assign(element.style, {
+    position: 'absolute',
+    insetBlockStart: `${rect.top - parentRect.top + parent.scrollTop}px`,
+    insetInlineStart: `${rect.left - parentRect.left + parent.scrollLeft}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+    boxSizing: 'border-box',
+    margin: '0',
+  });
+  retireMotionElement(element);
+}
+
 /* 收起时内容可能和开关一起从 DOM 消失（字段组提示就是这种）。
  * 那时现场量高度只能量到 0，动画就成了 0→0。
  * 组件在更新前调用一次 rememberCollapseHeight(元素)，把旧高度存下来当起点。 */

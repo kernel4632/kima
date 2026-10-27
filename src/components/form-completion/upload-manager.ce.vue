@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from "vue";
-import { presenceTransition } from "../../utils/motion.js";
+import { useContentMotion } from "../../utils/content-motion.js";
+import { freezeLeaveLayout, presenceTransition } from "../../utils/motion.js";
 import KimaFileUpload from "../input/file-upload.ce.vue";
 import KimaButton from "../core/button.ce.vue";
 const props=defineProps({modelValue:{type:Array,default:()=>[]},upload:{type:Function,default:null},concurrency:{type:Number,default:2},accept:String,multiple:Boolean,disabled:Boolean,label:{type:String,default:"添加上传文件"}});const emit=defineEmits(["update:modelValue","change","progress","success","error","cancel"]);
-let id=0;const tasks=ref([]),active=new Map();const queue=computed(()=>tasks.value.filter(t=>t.status==='queued'));
+let id=0;const tasks=ref([]),active=new Map(),list=ref(null),root=ref(null);const queue=computed(()=>tasks.value.filter(t=>t.status==='queued'));
+useContentMotion(root,()=>tasks.value);
 function add(files){const added=[...files].map(file=>({id:++id,file,status:'queued',progress:0,error:'',result:null}));tasks.value=[...tasks.value,...added];publish();pump();}
 function publish(){const snapshot=tasks.value.map(({id,file,status,progress,error,result})=>({id,file,status,progress,error,result}));emit('update:modelValue',snapshot);emit('change',snapshot);}
 function patch(task,values){Object.assign(task,values);publish();}
@@ -15,7 +17,7 @@ function retry(task){if(task.status!=='error'&&task.status!=='cancelled')return;
 function remove(task){cancel(task);tasks.value=tasks.value.filter(item=>item.id!==task.id);publish();}
 watch(()=>props.modelValue,value=>{if(Array.isArray(value)&&value.length&&!tasks.value.length)tasks.value=value.map(item=>({...item,id:item.id||++id}));});onBeforeUnmount(()=>{for(const controller of active.values())controller.abort();active.clear();});defineExpose({add,cancel,retry,remove,tasks,pump});
 </script>
-<template><section class="kima-upload-manager" :aria-disabled="disabled||undefined"><KimaFileUpload :model-value="tasks.map(t=>t.file)" :label="label" :accept="accept" :multiple="multiple" :disabled="disabled" @update:model-value="files=>add(files.slice(tasks.filter(t=>t.status!=='cancelled').length))" /><TransitionGroup tag="ul" name="kima-list" v-bind="presenceTransition" class="kima-upload-manager__list"><li v-for="task in tasks" :key="task.id"><div class="kima-upload-manager__info"><strong>{{task.file.name}}</strong><progress max="100" :value="task.progress" :aria-label="`${task.file.name}上传进度`"></progress><span role="status">{{task.status==='queued'?'等待中':task.status==='uploading'?`${task.progress}%`:task.status==='success'?'已完成':task.status==='cancelled'?'已取消':task.error}}</span></div><div class="kima-upload-manager__actions"><KimaButton v-if="task.status==='uploading'||task.status==='queued'" variant="text" :disabled="disabled" @click="cancel(task)">取消</KimaButton><KimaButton v-if="task.status==='error'||task.status==='cancelled'" variant="text" :disabled="disabled" @click="retry(task)">重试</KimaButton><KimaButton variant="text" :disabled="disabled" :aria-label="`移除 ${task.file.name}`" @click="remove(task)">移除</KimaButton></div></li></TransitionGroup></section></template>
+<template><section ref="root" class="kima-upload-manager" :aria-disabled="disabled||undefined"><KimaFileUpload :model-value="tasks.map(t=>t.file)" :label="label" :accept="accept" :multiple="multiple" :disabled="disabled" @update:model-value="files=>add(files.slice(tasks.filter(t=>t.status!=='cancelled').length))" /><TransitionGroup tag="ul" name="kima-list" v-bind="{ ...presenceTransition, onBeforeLeave: freezeLeaveLayout }" class="kima-upload-manager__list"><li v-for="task in tasks" :key="task.id"><div class="kima-upload-manager__info"><strong>{{task.file.name}}</strong><progress max="100" :value="task.progress" :aria-label="`${task.file.name}上传进度`"></progress><span role="status">{{task.status==='queued'?'等待中':task.status==='uploading'?`${task.progress}%`:task.status==='success'?'已完成':task.status==='cancelled'?'已取消':task.error}}</span></div><div class="kima-upload-manager__actions"><KimaButton v-if="task.status==='uploading'||task.status==='queued'" variant="text" :disabled="disabled" @click="cancel(task)">取消</KimaButton><KimaButton v-if="task.status==='error'||task.status==='cancelled'" variant="text" :disabled="disabled" @click="retry(task)">重试</KimaButton><KimaButton variant="text" :disabled="disabled" :aria-label="`移除 ${task.file.name}`" @click="remove(task)">移除</KimaButton></div></li></TransitionGroup></section></template>
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 @use "../../styles/input" as *;
