@@ -2,6 +2,9 @@
 import { computed, ref } from "vue";
 import { presenceTransition } from "../../utils/motion.js";
 import KimaButton from "../core/button.ce.vue";
+import KimaIconButton from "../core/icon-button.ce.vue";
+import KimaTooltip from "../core/tooltip.ce.vue";
+import { ArrowUp01Icon, ArrowDown01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 const props = defineProps({ modelValue: { type: Array, default: () => [] }, create: { type: Function, default: () => ({}) }, disabled: Boolean, min: { type: Number, default: 0 }, max: { type: Number, default: Infinity }, label: { type: String, default: "字段列表" } });
 const emit = defineEmits(["update:modelValue", "change", "add", "remove", "move"]);
 let nextId = 0;
@@ -18,7 +21,21 @@ function reset(value) { rows.value = value.map(row => ({ ...row })); }
 function validate() { return rows.value.every(row => row && row.valid !== false); }
 defineExpose({ add, remove, move, validate, rows });
 </script>
-<template><div class="kima-dynamic-input" role="group" :aria-label="label"><TransitionGroup tag="div" name="kima-list" v-bind="presenceTransition" class="kima-dynamic-input__rows"><div v-for="(row,index) in rows" :key="rowId(row)" class="kima-dynamic-input__row"><slot :row="row" :index="index" :id="rowId(row)" :update="value=>patch(index,value)"><output>{{ JSON.stringify(row) }}</output></slot><div class="kima-dynamic-input__actions"><KimaButton variant="text" :disabled="disabled || index===0" :aria-label="`${label}上移第${index+1}项`" @click="move(index,-1)">上移</KimaButton><KimaButton variant="text" :disabled="disabled || index===rows.length-1" :aria-label="`${label}下移第${index+1}项`" @click="move(index,1)">下移</KimaButton><KimaButton variant="text" :disabled="disabled || rows.length<=min" :aria-label="`移除第${index+1}项`" @click="remove(index)">移除</KimaButton></div></div></TransitionGroup><KimaButton variant="tonal" :disabled="disabledAdd" @click="add">添加字段</KimaButton></div></template>
+<template>
+  <div class="kima-dynamic-input" role="group" :aria-label="label">
+    <TransitionGroup tag="div" name="kima-list" v-bind="presenceTransition" class="kima-dynamic-input__rows">
+      <div v-for="(row,index) in rows" :key="rowId(row)" class="kima-dynamic-input__row">
+        <slot :row="row" :index="index" :id="rowId(row)" :update="value=>patch(index,value)"><output>{{ JSON.stringify(row) }}</output></slot>
+        <div class="kima-dynamic-input__actions">
+          <KimaTooltip text="上移"><KimaIconButton :icon="ArrowUp01Icon" :label="`${label}上移第${index+1}项`" :disabled="disabled || index===0" @click="move(index,-1)" /></KimaTooltip>
+          <KimaTooltip text="下移"><KimaIconButton :icon="ArrowDown01Icon" :label="`${label}下移第${index+1}项`" :disabled="disabled || index===rows.length-1" @click="move(index,1)" /></KimaTooltip>
+          <KimaTooltip text="移除"><KimaIconButton :icon="Cancel01Icon" :label="`移除第${index+1}项`" :disabled="disabled || rows.length<=min" @click="remove(index)" /></KimaTooltip>
+        </div>
+      </div>
+    </TransitionGroup>
+    <KimaButton variant="tonal" :disabled="disabledAdd" @click="add">添加字段</KimaButton>
+  </div>
+</template>
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 @use "../../styles/input" as *;

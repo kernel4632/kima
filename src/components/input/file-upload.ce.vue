@@ -5,7 +5,9 @@
 <script setup>
 import { nextTick, ref, toRaw, watch } from "vue";
 import { collapseTransition, presenceTransition } from "../../utils/motion.js";
-import KimaButton from "../core/button.ce.vue";
+import KimaIconButton from "../core/icon-button.ce.vue";
+import KimaTooltip from "../core/tooltip.ce.vue";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
 defineOptions({ inheritAttrs: false });
@@ -76,7 +78,10 @@ function fileKey(file, index) {
     <Transition :css="false" v-bind="collapseTransition">
       <div v-show="local.length" :inert="!local.length" :aria-hidden="!local.length || undefined">
         <TransitionGroup tag="ul" name="kima-list" v-bind="presenceTransition" class="kima-file-upload__files">
-          <li v-for="(file, index) in local" :key="fileKey(file, index)"><span>{{ file.name }} · {{ file.size }} B</span><KimaButton variant="text" :disabled="disabled" :aria-label="`移除 ${file.name}`" @click="remove(index)">移除</KimaButton></li>
+          <li v-for="(file, index) in local" :key="fileKey(file, index)">
+            <span class="kima-file-upload__filename">{{ file.name }} · {{ file.size }} B</span>
+            <KimaTooltip text="移除文件" position="left"><KimaIconButton :icon="Cancel01Icon" :disabled="disabled" :label="`移除 ${file.name}`" @click="remove(index)" /></KimaTooltip>
+          </li>
         </TransitionGroup>
       </div>
     </Transition>
@@ -106,6 +111,7 @@ function fileKey(file, index) {
   p { @include input-message; margin: 0; padding: var(--kima-space-5); text-align: center; }
   &__files { list-style: none; margin: 0; padding: var(--kima-space-3) 0 0; display: grid; gap: var(--kima-space-2); }
   li { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-3); }
-  li span { min-width: 0; overflow-wrap: anywhere; }
+  &__filename { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+  li > .kima-tooltip { flex: 0 0 auto; }
 }
 </style>
