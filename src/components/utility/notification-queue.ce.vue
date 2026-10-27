@@ -1,7 +1,7 @@
 <!-- 通知队列：复用单条 notification 的语义与暂停计时，队列负责容量、去重和并列堆叠。 -->
 <script setup>
-import { computed, getCurrentInstance, onBeforeUnmount, ref, useAttrs, useHost, watch } from "vue";
-import { presenceTransition } from "../../utils/motion.js";
+import { computed, getCurrentInstance, onBeforeUnmount, ref, toRaw, useAttrs, useHost, watch } from "vue";
+import { freezeLeaveLayout, presenceTransition, restoreLeaveLayout } from "../../utils/motion.js";
 import { createNotifications } from "../../utils/notifications.js";
 import KimaNotification from "../core/notification.ce.vue";
 
@@ -26,16 +26,29 @@ function publicService() {
 }
 defineExpose({ push: item => publicService().push(item), update: (id, patch) => publicService().update(id, patch), dismiss: id => publicService().dismiss(id), clear: () => publicService().clear() });
 const forwardedAttrs = computed(() => host ? { ...attrs, id: undefined } : attrs);
-function itemKey(item, index) { return item?.[props.dedupeKey] ?? item?.id ?? item?.key ?? index; }
+// 无 id 的对象仍按对象身份保留节点；原始值用类型和值组成稳定 key。
+const anonymousKeys = new WeakMap();
+let anonymousSequence = 0;
+function itemKey(item) {
+  const key = item && typeof item === 'object'
+    ? item[props.dedupeKey] ?? item.id ?? item.key
+    : item;
+  if (key != null) return key;
+  if (item === null || typeof item !== 'object') return `${typeof item}:${String(item)}`;
+  const raw = toRaw(item);
+  if (!anonymousKeys.has(raw)) anonymousKeys.set(raw, Symbol(`notice-${++anonymousSequence}`));
+  return anonymousKeys.get(raw);
+}
 function normalize(items) {
   const capacity = Math.max(0, Math.floor(Number(props.capacity) || 0));
   if (!capacity) return [];
   const seen = new Set();
-  return items.filter((item, index) => {
-    const key = itemKey(item, index);
+  return items.filter((item) => {
+    if (item == null || (typeof item === 'object' && item.open === false)) return false;
+    const key = itemKey(item);
     if (seen.has(key)) return false;
     seen.add(key);
-    return item && item.open !== false;
+    return true;
   }).slice(-capacity);
 }
 let unsubscribe;
@@ -49,25 +62,36 @@ watch(() => [props.items, props.capacity], () => { ownedService.setCapacity(prop
 onBeforeUnmount(() => unsubscribe?.());
 const queue = computed(() => localItems.value);
 function remove(item, reason = "close") {
-  const key = itemKey(item, 0);
+  const key = itemKey(item);
   (props.service || (serviceMode.value ? ownedService : null))?.dismiss?.(item.id);
-  const next = localItems.value.filter((candidate, index) => itemKey(candidate, index) !== key);
+  const next = localItems.value.filter(candidate => itemKey(candidate) !== key);
   localItems.value = next;
   emit("update:items", next);
   emit("dismiss", item, reason);
   emit("close", item, reason);
 }
 function notificationProps(item) {
-  const { id, key, open, ...rest } = item || {};
+  const isObject = item && typeof item === 'object';
+  const { id, key, open, ...rest } = isObject ? item : { message: String(item ?? '') };
   return {
     ...rest,
     position: props.position,
     open: true,
-    // 队列负责堆叠定位与进出场位移；通知保持 open 常挂载，
-    // 内层 Transition 不参与进出（slide 仅保留给独立使用的通知）。
+    // 队列独占进出场；内层关闭时保留内容，由外层在原位退场后卸载。
     stacked: true,
   };
 }
+function beforeLeave(element) {
+  const rect = element.getBoundingClientRect();
+  const parentRect = element.parentElement.getBoundingClientRect();
+  freezeLeaveLayout(element);
+  // 底部队列收缩时顶边会移动；从底边冻结才能让旧通知仍在原屏幕位置退场。
+  if (props.position.startsWith('bottom')) {
+    element.style.top = 'auto';
+    element.style.bottom = `${parentRect.bottom - rect.bottom}px`;
+  }
+}
+
 // 队列在屏幕边缘，整列通知的进出场方向就是这一侧。
 const slideDirection = computed(() => {
   if (props.position.includes("right")) return "right";
@@ -76,10 +100,9 @@ const slideDirection = computed(() => {
 });
 </script>
 <template>
-  <div v-bind="forwardedAttrs" class="kima-notification-queue" :class="[`kima-notification-queue--${position}`, `kima-notification-queue--slide-${slideDirection}`]" aria-live="polite">
-    <TransitionGroup name="kima-notification-queue" tag="div" class="kima-notification-queue__stack" v-bind="presenceTransition">
-      <!-- key 必须稳定：用 index 做 key 时删一条会让其余项整体换 key，move 补位动画失效。 -->
-      <div v-for="(item, index) in queue" :key="item.id ?? itemKey(item, index)" class="kima-notification-queue__item">
+  <div v-bind="forwardedAttrs" class="kima-notification-queue" :class="[`kima-notification-queue--${position}`, `kima-notification-queue--slide-${slideDirection}`]">
+    <TransitionGroup name="kima-notification-queue" tag="div" class="kima-notification-queue__stack" v-bind="{ ...presenceTransition, onBeforeLeave: beforeLeave, onBeforeEnter: restoreLeaveLayout, onLeaveCancelled: restoreLeaveLayout }">
+      <div v-for="item in queue" :key="itemKey(item)" class="kima-notification-queue__item">
         <KimaNotification v-bind="notificationProps(item)" @close="remove(item, $event)" />
       </div>
     </TransitionGroup>
@@ -102,6 +125,7 @@ const slideDirection = computed(() => {
 .kima-notification-queue--slide-down .kima-notification-queue-enter-from,
 .kima-notification-queue--slide-down .kima-notification-queue-leave-to { transform: translateY(calc(100% + 24px)); }
 .kima-notification-queue__stack {
+  position: relative;
   display: grid;
   gap: var(--kima-space-3);
   pointer-events: none;
@@ -120,10 +144,11 @@ const slideDirection = computed(() => {
   transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized), transform var(--kima-duration-medium) var(--kima-curve-emphasized);
 }
 
-.kima-notification-queue__item.kima-notification-queue-leave-active {
-  /* 退场脱离排版，补位滑移立即开始，高度不会等淡出结束才塌。 */
-  position: absolute;
-  inset-inline: 0;
+.kima-notification-queue-move {
+  transition: transform var(--kima-duration-slower) var(--kima-curve-emphasized);
+}
+
+.kima-notification-queue-leave-active {
   pointer-events: none;
 }
 
@@ -138,6 +163,10 @@ const slideDirection = computed(() => {
   .kima-notification-queue__item.kima-notification-queue-leave-active,
   .kima-notification-queue__item.kima-notification-queue-move {
     transition-duration: 1ms;
+  }
+  .kima-notification-queue .kima-notification-queue-enter-from,
+  .kima-notification-queue .kima-notification-queue-leave-to {
+    transform: none;
   }
 }
 </style>

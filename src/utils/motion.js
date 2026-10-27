@@ -23,6 +23,18 @@ export function activateMotionElement(element) {
 }
 export const presenceTransition = { onBeforeEnter: activateMotionElement, onBeforeLeave: retireMotionElement };
 
+const frozenLayouts = new WeakMap();
+
+// 同一个 key 在退场完成前回来时，必须恢复正常排版，不能留下 absolute 和固定尺寸。
+export function restoreLeaveLayout(element) {
+  const styles = frozenLayouts.get(element);
+  if (styles) {
+    Object.assign(element.style, styles);
+    frozenLayouts.delete(element);
+  }
+  activateMotionElement(element);
+}
+
 /* 退出节点先冻结在原坐标并脱离排版，让承载容器可立即测得新自然尺寸。
  * 用于网格、弹性布局等列表；表格行不应使用此 helper。 */
 export function freezeLeaveLayout(element) {
@@ -32,10 +44,19 @@ export function freezeLeaveLayout(element) {
   const parentRect = parent.getBoundingClientRect();
   const style = element.ownerDocument.defaultView.getComputedStyle(parent);
   if (style.position === 'static') parent.style.position = 'relative';
+  if (!frozenLayouts.has(element)) {
+    frozenLayouts.set(element, Object.fromEntries(
+      ['position', 'top', 'left', 'right', 'bottom', 'width', 'height', 'boxSizing', 'margin']
+        .map(key => [key, element.style[key]]),
+    ));
+  }
   Object.assign(element.style, {
     position: 'absolute',
-    insetBlockStart: `${rect.top - parentRect.top + parent.scrollTop}px`,
-    insetInlineStart: `${rect.left - parentRect.left + parent.scrollLeft}px`,
+    // DOMRect 是物理坐标，不能写入 RTL 下从右侧起算的 inset-inline-start。
+    top: `${rect.top - parentRect.top - parent.clientTop + parent.scrollTop}px`,
+    left: `${rect.left - parentRect.left - parent.clientLeft + parent.scrollLeft}px`,
+    right: 'auto',
+    bottom: 'auto',
     width: `${rect.width}px`,
     height: `${rect.height}px`,
     boxSizing: 'border-box',

@@ -381,6 +381,35 @@ test('图标操作：通知队列位置、窄屏安全边距、RTL 与容量挤�
   await expect(items.nth(1)).toContainText('第三条');
 });
 
+test('图标操作：通知服务去重更新保留队列节点', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/#/components/notification-queue', { waitUntil: 'networkidle' });
+  const demo = page.locator('.kima-examples .kima-gallery__demo:visible');
+  await expect(demo).toHaveCount(1);
+  const push = demo.getByRole('button', { name: '推送 / 去重', exact: true });
+  await push.click();
+  const notice = page.locator('.kima-notification-queue__item');
+  await expect(notice).toHaveCount(1);
+  await expect(notice).toContainText('项目已保存');
+  await page.waitForTimeout(700);
+  await notice.evaluate(node => { window.__kimaDedupeNode = node; });
+  await push.click();
+  await expect(notice).toHaveCount(1);
+  const updateState = await notice.evaluate(node => ({
+    sameNode: node === window.__kimaDedupeNode,
+    classes: [...node.classList],
+    transitions: node.getAnimations().map(animation => animation.transitionProperty ?? ''),
+    text: node.textContent,
+  }));
+  expect(updateState.sameNode).toBe(true);
+  expect(updateState.classes).not.toContain('kima-notification-queue-enter-active');
+  expect(updateState.classes).not.toContain('kima-notification-queue-leave-active');
+  expect(updateState.transitions).toEqual([]);
+  expect(updateState.text).toContain('项目已保存');
+  await demo.getByRole('button', { name: '清空通知', exact: true }).click();
+  await expect(notice).toHaveCount(0);
+});
+
 for (const slug of ['code-editor', 'rich-text-editor', 'dynamic-input', 'file-upload', 'carousel', 'sidebar', 'app-shell', 'log-viewer']) {
   test(`图标按钮截图：${slug} 深浅主题与窄屏`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });

@@ -186,9 +186,9 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- 通知自带一套滑入过渡（见下方 style 说明）：从它所在的那一侧滑进来。 -->
-  <Transition name="kima-notification" v-bind="presenceTransition">
+  <Transition name="kima-notification" :css="!stacked" v-bind="presenceTransition">
     <div
-      v-if="localOpen"
+      v-if="stacked || localOpen"
       v-bind="{ ...attrs, id: host ? undefined : attrs.id, title: undefined }"
       class="kima-notification"
       :class="[
@@ -311,6 +311,7 @@ onBeforeUnmount(() => {
 
 .kima-notification {
   box-sizing: border-box;
+  position: fixed;
   z-index: 1100;
   /* 三栏横排：图标 / 正文 / 关闭。正文吃掉剩余宽度，另两栏固定不缩。 */
   display: flex;

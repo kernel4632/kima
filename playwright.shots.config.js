@@ -17,6 +17,6 @@ export default defineConfig({
   webServer: {
     command: `pnpm exec vite --host 127.0.0.1 --port ${port} --strictPort`,
     url: `${baseURL}/tests/fixture.html`,
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
   },
 });
