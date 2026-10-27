@@ -18,16 +18,74 @@ test('文档站桌面深浅主题与组件页', async ({ page }) => {
 });
 
 test('代码块深浅主题与窄屏', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: {
+      writeText: async (text) => {
+        if (window.rejectCopy) throw new Error('Clipboard denied');
+        window.copiedCode = text;
+      },
+    } });
+  });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/#/components/code-block', { waitUntil: 'networkidle' });
-  await expect(page.locator('.kima-docs__canvas .kima-code-block').first()).toBeVisible();
+  const block = page.locator('.kima-docs__canvas .kima-code-block').first();
+  await expect(block).toBeVisible();
+  const wrap = block.getByRole('button', { name: '自动换行', exact: true });
+  const copy = block.getByRole('button', { name: '复制代码', exact: true });
+  await expect(wrap.locator('svg')).toHaveCount(1);
+  await expect(copy.locator('svg')).toHaveCount(1);
+  expect(await copy.textContent()).toBe('');
   await page.screenshot({ path: 'shots/code-block-dark.png', scale: 'css' });
+  await block.screenshot({ path: 'shots/code-block-icons-dark.png', scale: 'css' });
+  await wrap.focus();
+  await expect(block.getByRole('tooltip')).toHaveText('开启自动换行');
+  await wrap.press('Space');
+  await expect(wrap).toHaveAttribute('aria-pressed', 'true');
+  await expect(block).toHaveClass(/kima-code-block--wrap/);
+  await wrap.press('Escape');
+  await expect(block.getByRole('tooltip')).toBeHidden();
+  const before = await copy.boundingBox();
+  const copyIcon = await copy.locator('svg').innerHTML();
+  await copy.focus();
+  await copy.press('Enter');
+  await expect(block.getByRole('status')).toHaveText('已复制');
+  await expect(copy).toHaveAttribute('title', '已复制');
+  await expect.poll(() => copy.locator('svg').innerHTML()).not.toBe(copyIcon);
+  expect(await page.evaluate(() => window.copiedCode)).toContain('applyPalette');
+  const after = await copy.boundingBox();
+  expect(after.width).toBe(before.width);
+  expect(after.height).toBe(before.height);
+  await block.screenshot({ path: 'shots/code-block-icons-copied.png', scale: 'css' });
+  await copy.press('Escape');
   await page.getByRole('button', { name: '切换浅色', exact: true }).click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: 'shots/code-block-light.png', scale: 'css' });
-  await page.setViewportSize({ width: 390, height: 844 });
+  await block.screenshot({ path: 'shots/code-block-icons-light.png', scale: 'css' });
+  await page.setViewportSize({ width: 320, height: 700 });
   await page.locator('#preview').scrollIntoViewIfNeeded();
+  await expect(wrap).toBeInViewport();
+  await expect(copy).toBeInViewport();
   await page.screenshot({ path: 'shots/code-block-mobile.png', scale: 'css' });
+  await block.screenshot({ path: 'shots/code-block-icons-mobile.png', scale: 'css' });
+  await page.evaluate(() => { window.rejectCopy = true; });
+  await copy.focus();
+  await copy.press('Enter');
+  await expect(block.getByRole('status')).toHaveText('复制失败，请选择代码手动复制');
+  await expect(copy).toBeEnabled();
+  await copy.press('Escape');
+  await block.screenshot({ path: 'shots/code-block-icons-copy-error.png', scale: 'css' });
+
+  // 同样的内置图标按钮必须在原生自定义元素接入下保留行为及事件。
+  await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
+  await page.evaluate(() => window.fixture.mount('<kima-code-block id="code"></kima-code-block>', { code: { code: 'const native = true;', language: 'javascript' } }));
+  await page.getByRole('button', { name: '复制代码', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('已复制');
+  expect(await page.evaluate(() => window.fixture.events.filter(event => event.type === 'copy'))).toEqual([
+    expect.objectContaining({ id: 'code', detail: ['const native = true;'] }),
+  ]);
+  await page.evaluate(() => { document.getElementById('code').copyable = false; document.getElementById('code').wrap = true; });
+  await expect(page.getByRole('button', { name: '复制代码', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '自动换行', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('新增分组在正式文档站的深浅与窄屏效果', async ({ page }) => {

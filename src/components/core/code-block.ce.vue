@@ -9,7 +9,10 @@
 <script setup>
 import { computed, getCurrentInstance, ref, useAttrs, watch } from 'vue';
 import { highlightCodeLines } from '../../utils/code-highlight.js';
-import KimaButton from './button.ce.vue';
+import { Copy01Icon, TextWrapIcon, Tick01Icon } from '@hugeicons/core-free-icons';
+import KimaIcon from './icon.ce.vue';
+import KimaIconButton from './icon-button.ce.vue';
+import KimaTooltip from './tooltip.ce.vue';
 
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
@@ -59,8 +62,14 @@ async function copyCode() {
         <span class="kima-code-block__language">{{ language }}</span>
       </div>
       <div class="kima-code-block__actions">
-        <KimaButton variant="text" :aria-pressed="wrapping" @click="wrapping = !wrapping">换行</KimaButton>
-        <KimaButton v-if="copyable" variant="text" :loading="copying" aria-label="复制代码" @click="copyCode"><Transition name="kima-fade" mode="out-in"><span :key="status === '已复制'">{{ status === '已复制' ? '已复制' : '复制' }}</span></Transition></KimaButton>
+        <KimaTooltip :text="wrapping ? '关闭自动换行' : '开启自动换行'" position="left">
+          <KimaIconButton :icon="TextWrapIcon" label="自动换行" :title="wrapping ? '关闭自动换行' : '开启自动换行'" :variant="wrapping ? 'tonal' : 'standard'" :aria-pressed="wrapping" @click="wrapping = !wrapping" />
+        </KimaTooltip>
+        <KimaTooltip v-if="copyable" :text="status === '已复制' ? '已复制' : '复制代码'" position="left">
+          <KimaIconButton :loading="copying" label="复制代码" :title="status === '已复制' ? '已复制' : '复制代码'" @click="copyCode">
+            <Transition name="kima-fade" mode="out-in"><KimaIcon :key="status === '已复制'" :icon="status === '已复制' ? Tick01Icon : Copy01Icon" /></Transition>
+          </KimaIconButton>
+        </KimaTooltip>
       </div>
     </figcaption>
     <pre class="kima-code-block__viewport" tabindex="0" role="region" :aria-label="filename || label"><code class="kima-code-block__code"><span v-for="(line, index) in lines" :key="index" class="kima-code-block__line"><span v-if="lineNumbers" class="kima-code-block__number" aria-hidden="true" :style="{ width: `${String(lines.length).length}ch` }">{{ index + 1 }}</span><span class="kima-code-block__text" v-html="line || '&#8203;'" /></span></code></pre>
@@ -100,8 +109,7 @@ async function copyCode() {
   &__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--kima-space-3); min-width: 0; }
   &__filename { overflow-wrap: anywhere; font-size: var(--kima-font-size-label-medium); }
   &__language { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
-  &__actions { display: flex; margin-left: auto; gap: var(--kima-space-1); }
-  &__actions :deep(.kima-button) { padding-inline: var(--kima-space-3); }
+  &__actions { display: flex; flex: 0 0 auto; align-items: center; margin-left: auto; gap: var(--kima-space-1); }
   &__viewport {
     box-sizing: border-box;
     max-height: 32rem;
