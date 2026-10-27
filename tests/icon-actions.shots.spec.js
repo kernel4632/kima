@@ -304,6 +304,83 @@ test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ pa
   await expect(enterItems).toHaveCount(1);
 });
 
+test('图标操作：通知队列位置、窄屏安全边距、RTL 与容量挤出', async ({ page }) => {
+  const noticeItems = [
+    { id: 'a', heading: 'A', message: '第一条', variant: 'info', duration: 0 },
+    { id: 'b', heading: 'B', message: '第二条', variant: 'success', duration: 0 },
+    { id: 'c', heading: 'C', message: '第三条', variant: 'warning', duration: 0 },
+  ];
+  async function mountQueue(position, items = noticeItems, capacity = 3) {
+    await fixture(page, '<kima-notification-queue id="queue"></kima-notification-queue>', {
+      queue: { position, items, capacity },
+    });
+    return page.locator('#queue');
+  }
+  async function queueBox(queue) {
+    return queue.locator('.kima-notification-queue').evaluate(node => {
+      const rect = node.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    });
+  }
+
+  await page.setViewportSize({ width: 720, height: 520 });
+  let queue;
+  let box;
+  for (const position of ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right']) {
+    queue = await mountQueue(position, noticeItems.slice(0, 1));
+    await page.waitForTimeout(250);
+    const box = await queueBox(queue);
+    if (position.endsWith('left')) expect(Math.abs(box.x - 16)).toBeLessThanOrEqual(1);
+    else if (position.endsWith('right')) expect(Math.abs(box.x + box.width - 704)).toBeLessThanOrEqual(1);
+    else expect(box.x + box.width / 2).toBeCloseTo(360, 0);
+    if (position.startsWith('top')) expect(Math.abs(box.y - 16)).toBeLessThanOrEqual(1);
+    else expect(Math.abs(box.y + box.height - 504)).toBeLessThanOrEqual(1);
+  }
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  queue = await mountQueue('top-right', noticeItems.slice(0, 1));
+  box = await queueBox(queue);
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(320);
+  await page.evaluate(() => { document.documentElement.dir = 'rtl'; });
+  await page.evaluate(() => { document.getElementById('queue').items = []; });
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { document.getElementById('queue').items = [{ id: 'rtl', heading: 'RTL', message: '从物理右侧进入', variant: 'info', duration: 0 }]; });
+  await page.waitForTimeout(60);
+  const rtlEntering = await queue.locator('.kima-notification-queue__item').evaluate(node => ({
+    transform: getComputedStyle(node).transform,
+    classes: [...node.classList],
+  }));
+  expect(rtlEntering.classes).toContain('kima-notification-queue-enter-active');
+  expect(Number(rtlEntering.transform.split(',')[4])).toBeGreaterThan(0);
+  await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
+
+  await page.setViewportSize({ width: 720, height: 520 });
+  queue = await mountQueue('top-right', noticeItems.slice(0, 2), 2);
+  const items = queue.locator('.kima-notification-queue__item');
+  await expect(items).toHaveCount(2);
+  await page.evaluate(() => {
+    document.getElementById('queue').items = [
+      { id: 'a', heading: 'A', message: '第一条', variant: 'info', duration: 0 },
+      { id: 'b', heading: 'B', message: '第二条', variant: 'success', duration: 0 },
+      { id: 'c', heading: 'C', message: '第三条', variant: 'warning', duration: 0 },
+    ];
+  });
+  await page.waitForTimeout(60);
+  const capacityFrame = await items.evaluateAll(nodes => nodes.map(node => ({
+    text: node.textContent.trim(),
+    classes: [...node.classList],
+    position: getComputedStyle(node).position,
+  })));
+  expect(capacityFrame).toHaveLength(3);
+  expect(capacityFrame.find(item => item.text.includes('第一条')).classes).toContain('kima-notification-queue-leave-active');
+  expect(capacityFrame.find(item => item.text.includes('第一条')).position).toBe('absolute');
+  await page.waitForTimeout(700);
+  await expect(items).toHaveCount(2);
+  await expect(items.nth(0)).toContainText('第二条');
+  await expect(items.nth(1)).toContainText('第三条');
+});
+
 for (const slug of ['code-editor', 'rich-text-editor', 'dynamic-input', 'file-upload', 'carousel', 'sidebar', 'app-shell', 'log-viewer']) {
   test(`图标按钮截图：${slug} 深浅主题与窄屏`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
