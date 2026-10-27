@@ -135,7 +135,7 @@ test('图标操作：轮播方向、侧栏折叠、抽屉焦点与日志状态�
   const forward = await carousel.locator('.kima-carousel__slide').evaluateAll(nodes => nodes.map(node => ({ text: node.textContent.trim(), transform: getComputedStyle(node).transform, position: getComputedStyle(node).position, width: node.getBoundingClientRect().width })));
   const enteringForward = forward.find(node => node.text.includes('Second'));
   const leavingForward = forward.find(node => node.text.includes('First'));
-  expect(enteringForward.transform).toMatch(/^matrix\\(/);
+  expect(enteringForward.transform).toMatch(/^matrix\(/);
   expect(Number(enteringForward.transform.split(',')[4])).toBeGreaterThan(0);
   expect(leavingForward.position).toBe('absolute');
   expect(enteringForward.width).toBe(leavingForward.width);
