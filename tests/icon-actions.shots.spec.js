@@ -190,6 +190,45 @@ test('图标操作：轮播方向、侧栏折叠、抽屉焦点与日志状态�
   expect(await page.evaluate(() => window.fixture.events.find(event => event.type === 'export')?.detail[0])).toContain('INFO line 39');
 });
 
+test('图标操作：轮播快速反向切换取消旧方向动画', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await fixture(page, '<kima-carousel id="carousel"></kima-carousel>', {
+    carousel: {
+      items: [
+        { title: 'One', content: 'First' },
+        { title: 'Two', content: 'Second' },
+        { title: 'Three', content: 'Third' },
+      ],
+    },
+  });
+  await page.addStyleTag({ content: '.kima-carousel-forward-enter-active,.kima-carousel-forward-leave-active,.kima-carousel-backward-enter-active,.kima-carousel-backward-leave-active{transition-duration:1000ms!important}' });
+  const carousel = page.locator('#carousel');
+  const next = carousel.getByRole('button', { name: '下一张', exact: true });
+  const prev = carousel.getByRole('button', { name: '上一张', exact: true });
+  await next.click();
+  await page.waitForTimeout(120);
+  await prev.click();
+  await expect(carousel.locator('output')).toHaveText('1 / 3');
+  const interrupted = await carousel.locator('.kima-carousel__slide').evaluateAll(nodes => nodes.map(node => ({
+    text: node.textContent.trim(),
+    classes: [...node.classList],
+    transform: getComputedStyle(node).transform,
+    position: getComputedStyle(node).position,
+    animations: node.getAnimations().map(animation => animation.animationName ?? animation.transitionProperty ?? ''),
+  })));
+  expect(interrupted).toHaveLength(2);
+  const entering = interrupted.find(node => node.text.includes('First'));
+  const leaving = interrupted.find(node => node.text.includes('Second'));
+  expect(entering.classes).toContain('kima-carousel-backward-enter-active');
+  expect(entering.transform).toMatch(/^matrix\(/);
+  expect(Number(entering.transform.split(',')[4])).toBeLessThan(0);
+  expect(leaving.position).toBe('absolute');
+  expect(leaving.animations.every(name => name === '' || name.includes('transform') || name.includes('opacity'))).toBe(true);
+  await page.waitForTimeout(1100);
+  await expect(carousel.locator('.kima-carousel__slide')).toHaveCount(1);
+  await expect(carousel.locator('.kima-carousel__slide')).toContainText('First');
+});
+
 for (const slug of ['code-editor', 'rich-text-editor', 'dynamic-input', 'file-upload', 'carousel', 'sidebar', 'app-shell', 'log-viewer']) {
   test(`图标按钮截图：${slug} 深浅主题与窄屏`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
