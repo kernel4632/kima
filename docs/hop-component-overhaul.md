@@ -52,7 +52,7 @@
 ## 阶段 C：通知、提示与弹层
 
 - [x] Notification 单条：进场按屏幕边缘方向滑入，退场方向/时长明确；堆叠模式下滑向由队列显式给出（slide-right/left/up/down），独立使用按 position 推导。
-- [ ] Notification 单条：图标、正文、关闭按钮的首行对齐仍需逐中间帧截图确认。
+- [x] Notification 单条：图标、正文、关闭按钮首行基线对齐；正式 Playwright 用例以 2px 容差验证图标/标题/关闭按钮中心线。
 - [x] NotificationQueue：多条通知按容量堆叠，不互相覆盖；过渡期间旧条 absolute 脱离布局、存活项用 move 过渡补位；正式 Playwright 用例「图标操作：通知队列堆叠、补位与边缘进出场」通过（堆叠 x/y 对齐、等间距、退场中间帧 absolute + transform、进场中间帧滑入、终态计数）。
 - [ ] NotificationQueue：top/bottom、left/center/right、窄屏与安全边距、RTL 反方向运动、去重更新与满容量挤出的可见过渡尚未逐项验收。
 - [ ] NotificationQueue：单条计时暂停、关闭事件、进入/退出动画和高度折叠互不竞争。

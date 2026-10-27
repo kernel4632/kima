@@ -250,6 +250,21 @@ test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ pa
   expect(initial[1].y - initial[0].y).toBeGreaterThan(0);
   expect(initial[2].y - initial[1].y).toBe(initial[1].y - initial[0].y);
   expect(initial[0].width).toBe(initial[1].width);
+  const alignment = await items.first().evaluate(node => {
+    const icon = node.querySelector('.kima-notification__icon')?.getBoundingClientRect();
+    const title = node.querySelector('.kima-notification__title')?.getBoundingClientRect();
+    const close = node.querySelector('.kima-notification__close')?.getBoundingClientRect();
+    return {
+      iconCenter: icon ? icon.top + icon.height / 2 : null,
+      titleCenter: title ? title.top + title.height / 2 : null,
+      closeCenter: close ? close.top + close.height / 2 : null,
+    };
+  });
+  expect(alignment.iconCenter).not.toBeNull();
+  expect(alignment.titleCenter).not.toBeNull();
+  expect(alignment.closeCenter).not.toBeNull();
+  expect(Math.abs(alignment.iconCenter - alignment.titleCenter)).toBeLessThanOrEqual(2);
+  expect(Math.abs(alignment.closeCenter - alignment.titleCenter)).toBeLessThanOrEqual(2);
   const secondClose = items.nth(1).locator('.kima-notification__close');
   await secondClose.click();
   await page.waitForTimeout(120);
