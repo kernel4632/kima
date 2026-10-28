@@ -265,9 +265,19 @@ test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ pa
   expect(alignment.closeCenter).not.toBeNull();
   expect(Math.abs(alignment.iconCenter - alignment.titleCenter)).toBeLessThanOrEqual(2);
   expect(Math.abs(alignment.closeCenter - alignment.titleCenter)).toBeLessThanOrEqual(2);
+  await page.addStyleTag({ content: '#queue{--kima-duration-medium:1000ms;--kima-duration-slower:1000ms}' });
   const secondClose = items.nth(1).locator('.kima-notification__close');
   await secondClose.click();
-  await page.waitForTimeout(120);
+  const leavingLocator = items.filter({ hasText: '第二条' });
+  await expect(leavingLocator).toHaveClass(/kima-notification-queue-leave-active/);
+  await leavingLocator.evaluate(node => {
+    for (const animation of node.getAnimations()) {
+      if (animation instanceof CSSTransition) {
+        animation.pause();
+        animation.currentTime = 120;
+      }
+    }
+  });
   const leaving = await items.evaluateAll(nodes => nodes.map(node => ({
     text: node.textContent.trim(),
     classes: [...node.classList],
@@ -282,16 +292,27 @@ test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ pa
   expect(Number(leavingItem.transform.split(',')[4])).toBeGreaterThan(0);
   expect(leavingItem.transitions).toContain('transform');
   await expect(items).toHaveCount(3);
-  await page.waitForTimeout(700);
+  await leavingLocator.evaluate(node => {
+    for (const animation of node.getAnimations()) if (animation instanceof CSSTransition) animation.finish();
+  });
   await expect(items).toHaveCount(2);
   const settled = await items.evaluateAll(nodes => nodes.map(node => node.textContent.trim()));
   expect(settled).toEqual(expect.arrayContaining(['同步完成第一条', '警告第三条']));
   const enterItems = queue.locator('.kima-notification-queue__item');
   await page.evaluate(() => { document.getElementById('queue').items = []; });
-  await page.waitForTimeout(700);
+  await expect(enterItems).toHaveCount(0);
   await page.evaluate(() => { document.getElementById('queue').items = [{ id: 'x', heading: '进场', message: '中间帧', variant: 'info', duration: 0 }]; });
-  await page.waitForTimeout(60);
-  const entering = await enterItems.first().evaluate(node => ({
+  const enteringLocator = enterItems.first();
+  await expect(enteringLocator).toHaveClass(/kima-notification-queue-enter-active/);
+  await enteringLocator.evaluate(node => {
+    for (const animation of node.getAnimations()) {
+      if (animation instanceof CSSTransition) {
+        animation.pause();
+        animation.currentTime = 60;
+      }
+    }
+  });
+  const entering = await enteringLocator.evaluate(node => ({
     classes: [...node.classList],
     transform: getComputedStyle(node).transform,
     transitions: node.getAnimations().map(animation => animation.transitionProperty ?? ''),
@@ -300,7 +321,9 @@ test('图标操作：通知队列堆叠、补位与边缘进出场', async ({ pa
   expect(entering.transform).toMatch(/^matrix\(/);
   expect(Number(entering.transform.split(',')[4])).toBeGreaterThan(0);
   expect(entering.transitions).toContain('transform');
-  await page.waitForTimeout(700);
+  await enteringLocator.evaluate(node => {
+    for (const animation of node.getAnimations()) if (animation instanceof CSSTransition) animation.finish();
+  });
   await expect(enterItems).toHaveCount(1);
 });
 

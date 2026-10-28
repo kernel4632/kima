@@ -92,7 +92,8 @@ test('标签页回归：RTL 方向键按视觉移动并跳过禁用项', async (
 for (const theme of ['dark', 'light']) {
   test(`标签页回归：${theme} 原位切换高度连续且面板状态保留`, async ({ page }) => {
     await mountTabs(page, { theme });
-    await page.addStyleTag({ content: '#tabs{--kima-duration-medium:1000ms;--kima-duration-effects:1000ms;--kima-duration-slow:1000ms}' });
+    // 拉长真实 CSS transition，防止高并发下到达两帧冻结前已自然退场。
+    await page.addStyleTag({ content: '#tabs{--kima-duration-medium:60000ms;--kima-duration-effects:60000ms;--kima-duration-slow:60000ms}' });
     await page.getByRole('textbox', { name: '面板输入0' }).fill('保留草稿');
     const before = await panelsBox(page);
     await page.getByRole('tab', { name: '记录', exact: true }).evaluate(node => node.click());
@@ -124,7 +125,7 @@ for (const theme of ['dark', 'light']) {
 
 test('标签页回归：缩短途中反向从当前高度继续', async ({ page }) => {
   await mountTabs(page);
-  await page.addStyleTag({ content: '#tabs{--kima-duration-medium:1000ms;--kima-duration-effects:1000ms}' });
+  await page.addStyleTag({ content: '#tabs{--kima-duration-medium:60000ms;--kima-duration-effects:60000ms}' });
   const initial = await panelsBox(page);
   await page.getByRole('tab', { name: '记录', exact: true }).evaluate(node => node.click());
   await freeze(page);
