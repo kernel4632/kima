@@ -6,6 +6,7 @@ import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBa
 import { Menu01Icon, Sun01Icon, Moon02Icon, SparklesIcon } from '@hugeicons/core-free-icons';
 import { applyPalette } from './utils/theme.js';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
+const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
 import { catalog } from './site/catalog.js';
 import { tierMeta } from './component-tiers.js';
 import manifest from '../package.json';
@@ -52,11 +53,11 @@ function selectSearchResult(value, item) {
   navigate(value);
 }
 const nav = computed(() => [
-  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
+  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '组件总览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
   ...[...new Set(catalog.map((item) => item.group))].map((heading) => ({ heading, items: filtered.value.filter((item) => item.group === heading).map((item) => ({ slug: `components/${item.slug}`, name: `${item.name} ${item.label}` })) })),
 ]);
-const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
-const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
+const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '组件总览', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
+const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : route.value === 'gallery' ? [] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
 function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
 const showSource = ref(false);
 const fullSource = ref('');
@@ -113,9 +114,9 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
       </aside>
       <main class="kima-docs__content">
         <header id="introduction" class="kima-docs__heading">
-          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : 'KINETIC · INTERACTION · MOTION · ALIVE' }}<span v-if="component" class="kima-docs__tier" :data-tier="component.tier" :title="tierMeta[component.tier].hint">{{ tierMeta[component.tier].label }}</span></p>
+          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : route === 'gallery' ? 'GALLERY' : 'KINETIC · INTERACTION · MOTION · ALIVE' }}<span v-if="component" class="kima-docs__tier" :data-tier="component.tier" :title="tierMeta[component.tier].hint">{{ tierMeta[component.tier].label }}</span></p>
           <h1>{{ title }}</h1>
-          <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
+          <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'gallery' ? '全部组件按分组平铺，每块都是可交互的实组件——一览全部，直接上手。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
         </header>
 
         <template v-if="component">
@@ -140,9 +141,12 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
             <KimaCodeBlock v-if="showSource" :code="fullSource || '正在加载源码…'" :filename="`${component.slug}.ce.vue`" language="vue" line-numbers />
           </section>
         </template>
+        <template v-else-if="route === 'gallery'">
+          <Gallery :navigate="navigate" />
+        </template>
         <template v-else-if="route === 'overview'">
           <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
-            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停或切换主题。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('components/button')">探索组件</KimaButton><KimaButton variant="text" @click="navigate('theme')">了解设计语言</KimaButton></div></KimaCard>
+            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停或切换主题。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('gallery')">组件总览</KimaButton><KimaButton variant="text" @click="navigate('theme')">了解设计语言</KimaButton></div></KimaCard>
           </section>
           <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><KimaCodeBlock :code="install" language="shell" /><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
           <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><KimaCard><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></KimaCard><KimaCard><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></KimaCard><KimaCard><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></KimaCard></div></section>
@@ -184,6 +188,8 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__sidebar :deep(.kima-button) { justify-content: flex-start; min-height: 44px; border-radius: var(--kima-radius-s); padding-inline: var(--kima-space-3); text-align: start; }
 .kima-docs__sidebar :deep(.kima-button__label) { white-space: normal; font-size: var(--kima-font-size-label-medium); }
 .kima-docs__content { min-width: 0; width: 100%; max-width: 840px; margin: 0 auto; padding: var(--kima-space-10) var(--kima-space-4); }
+/* 总览墙要横向铺开，不受文档页 840px 的阅读限宽约束。 */
+.kima-docs__content:has(.kima-overview) { max-width: none; }
 .kima-docs__heading { margin-bottom: var(--kima-space-10); }
 .kima-docs__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
 /* 维护水位：核心/扩展/实验。颜色只用来区分优先级，不承担状态语义。 */
