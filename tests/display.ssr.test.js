@@ -16,6 +16,13 @@ test("all display components SSR safely; countdown schedules no timer or finish"
       const html = await renderToString(createSSRApp({ render: () => h(modules[slug], { id: `ssr-${slug}` }) }));
       assert.ok(html.includes(`kima-${slug}`), slug);
     }
+    const timeline = await renderToString(createSSRApp({ render: () => h(modules.timeline, {
+      label: '发布进程', items: [{ title: '设计完成', time: '09:00', datetime: '2026-05-18T09:00:00+08:00' }, { title: '待发布' }],
+    }, { item: ({ item, index }) => h('span', { 'data-event-index': index }, item.title) }) }));
+    assert.match(timeline, /<ol[^>]*aria-label="发布进程"/);
+    assert.equal((timeline.match(/<li\b/g) || []).length, 2);
+    assert.ok(!timeline.includes('kima-timeline__items'), '时间线不能在 ol 与 li 之间插入 div');
+    assert.match(timeline, /data-event-index="1">待发布/);
     let timerCount = 0;
     let finishes = 0;
     const timeout = globalThis.setTimeout;

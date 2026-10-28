@@ -1,6 +1,7 @@
 <!-- 内容列表：items 的 title/description，item 与 action 作用域插槽；默认插槽可自定义 li。调用示例：<kima-list :items="[{ title: '项目', description: '最近更新' }]" /> -->
 <script setup>
-import { ref, toRaw, useAttrs } from "vue";
+import { ref, useAttrs } from "vue";
+import { createCollectionKey } from "../../utils/collection.js";
 import { useCollectionMotion } from "../../utils/content-motion.js";
 import { useNativeSlots } from "../../utils/native-slots.js";
 
@@ -17,18 +18,7 @@ const attrs = useAttrs();
 const root = ref(null);
 const { isCustomElement, hasNativeSlot } = useNativeSlots(root);
 const collection = useCollectionMotion(root, () => props.items);
-const objectKeys = new WeakMap();
-let nextKey = 0;
-function itemKey(item, index) {
-  let identity;
-  if (item !== null && typeof item === "object") {
-    const raw = toRaw(item);
-    if (raw.id != null) identity = `id:${typeof raw.id}:${raw.id}`;
-    else { if (!objectKeys.has(raw)) objectKeys.set(raw, ++nextKey); identity = `object:${objectKeys.get(raw)}`; }
-  } else identity = `value:${typeof item}:${item}`;
-  const occurrence = props.items.slice(0, index).filter((other) => Object.is(toRaw(other), toRaw(item))).length;
-  return `${identity}:${occurrence}`;
-}
+const itemKey = createCollectionKey(() => props.items);
 </script>
 <template>
   <component :is="ordered ? 'ol' : 'ul'" ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-list" :class="{ 'kima-list--plain': variant === 'plain' }" :style="{ '--kima-list-gap': typeof gap === 'number' ? `${gap}px` : gap || undefined }" :aria-label="label">

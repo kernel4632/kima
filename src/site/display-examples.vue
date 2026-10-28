@@ -28,6 +28,7 @@ const variants = ["info", "success", "warning", "danger", "neutral"];
 const details = [{ label: "项目名称", value: "KIMA" }, { label: "当前状态", value: "准备就绪" }, { label: "负责人", value: "林青" }, { label: "版本", value: "0.6.0" }];
 const entries = [{ id: "design", title: "交互设计", description: "用动效引导注意力，而不只是装饰。" }, { id: "access", title: "无障碍检查", description: "键盘可达，状态不只依靠颜色。" }];
 const events = [{ title: "设计完成", description: "基础交互与视觉方向已确认。", time: "09:00", datetime: "2026-05-18T09:00:00+08:00", variant: "success" }, { title: "进行可访问性检查", time: "10:30", variant: "info" }, { title: "等待发布", time: "下一步", variant: "neutral" }];
+const visibleEvents = ref([...events]);
 function restart() { finished.value = false; deadline.value = Date.now() + 5000; }
 </script>
 
@@ -43,7 +44,7 @@ function restart() { finished.value = false; deadline.value = Date.now() + 5000;
     <KimaResult v-else-if="component === 'result'" variant="success" heading="项目已发布" description="所有内容已同步，你可以继续浏览或分享给协作者。"><template #action><KimaButton @click="actions++">查看项目</KimaButton><KimaButton variant="text" @click="actions++">返回列表</KimaButton></template></KimaResult>
     <KimaDescriptions v-else-if="component === 'descriptions'" :items="details" label="项目信息" />
     <KimaList v-else-if="component === 'list'" :items="entries" label="发布前检查"><template #action="{ item }"><KimaButton variant="text" :aria-label="`查看${item.title}`" @click="actions++">查看</KimaButton></template></KimaList>
-    <KimaTimeline v-else-if="component === 'timeline'" :items="events" label="发布进程" />
+    <div v-else-if="component === 'timeline'" class="kima-display-demo__stack"><KimaTimeline :items="visibleEvents" label="发布进程" /><div class="kima-display-demo__row"><KimaButton variant="tonal" :disabled="!visibleEvents.length" @click="visibleEvents = visibleEvents.slice(1)">移除最早事件</KimaButton><KimaButton variant="text" @click="visibleEvents = [...events]">恢复事件</KimaButton></div></div>
     <div v-else-if="component === 'statistic'" class="kima-display-demo__grid"><KimaStatistic label="总访问量" :value="123456.78" :precision="1" suffix="次" /><KimaStatistic label="本月收入" :value="8192.5" :options="{ style: 'currency', currency: 'CNY' }" /><KimaStatistic label="完成比例" :value="0.875" :options="{ style: 'percent', maximumFractionDigits: 1 }" /></div>
     <div v-else-if="component === 'countdown'" class="kima-display-demo__stack"><KimaCountdown :value="deadline" label="距离下一次同步" @finish="finished = true" /><output>{{ finished ? '计时结束' : '计时中' }}</output><KimaButton variant="tonal" @click="restart">重新计时 5 秒</KimaButton></div>
     <KimaBlockquote v-else-if="component === 'blockquote'" author="KIMA" source="设计原则" cite="https://m3.material.io">交互体验第一，好看第二。用动效引导注意力，让下一步清晰可见。</KimaBlockquote>

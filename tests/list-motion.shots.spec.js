@@ -15,7 +15,7 @@ async function mount(page, component, width) {
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     await window.fixture.mount(`<kima-${component} id="subject"></kima-${component}>`, { subject: { items } });
   }, { component, items });
-  // 本场景各轨道时长一致：下面按真实毫秒推进，不混用各动画的百分比。
+  // 各阶段 token 放慢到 1000ms：退出 0–1000，移动/占位 1000–2000，进入 2000–3000。
   await page.addStyleTag({ content: '#subject{--kima-duration-fast:1000ms;--kima-duration-medium:1000ms;--kima-duration-slow:1000ms;--kima-duration-effects:1000ms}' });
 }
 
@@ -30,10 +30,12 @@ async function pauseAnimations(page) {
   });
 }
 async function setTime(page, time) {
-  await page.evaluate(time => {
+  await page.evaluate(async time => {
     for (const animation of window.listAnimations) {
       if (animation.playState !== 'idle') animation.currentTime = time;
     }
+    // 时钟保持暂停，只让 transitionend/finished 完成节点清理后再采样。
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }, time);
 }
 async function geometry(rows, root) {
@@ -89,7 +91,7 @@ for (const component of ['list', 'timeline']) {
         expect(Math.abs(row.height - originalRow.height), '占位高度不能拉伸存活项').toBeLessThanOrEqual(1);
       }
       expect(Math.abs(start.container.height - beforeGeometry.container.height)).toBeLessThanOrEqual(1);
-      await setTime(page, component === 'list' ? 1750 : 500);
+      await setTime(page, 1750);
       const middle = await geometry(rows, root);
       expect(middle.items.filter(row => row.position !== 'absolute')).toHaveLength(2);
       const startSurvivor = start.items.find(row => row.text.includes('Beta'));
@@ -97,7 +99,7 @@ for (const component of ['list', 'timeline']) {
       expect(Math.abs(middleSurvivor.y - startSurvivor.y)).toBeGreaterThan(1);
       expect(Math.abs(middle.container.height - beforeGeometry.container.height)).toBeGreaterThan(1);
       await page.screenshot({ path: `shots/list-motion/${component}-${width}-middle.png`, scale: 'css' });
-      if (component === 'list') {
+      {
         for (let time = 0; time <= 2400; time += 100) {
           await setTime(page, time);
           const state = await geometry(rows, root);
@@ -112,7 +114,7 @@ for (const component of ['list', 'timeline']) {
           }
         }
       }
-      await setTime(page, component === 'list' ? 1950 : 950);
+      await setTime(page, 1950);
       const nearEnd = await geometry(rows, root);
       const nearEndSurvivor = nearEnd.items.find(row => row.text.includes('Beta'));
       await finishAnimations(page);
