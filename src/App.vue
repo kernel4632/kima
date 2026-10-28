@@ -21,7 +21,7 @@ function openCommand() { commandOpen.value = true; }
 function handleGlobalKeydown(event) {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
-    openCommand();
+    if (!['gallery', 'playground'].includes(route.value)) openCommand();
   }
 }
 onMounted(() => window.addEventListener('keydown', handleGlobalKeydown));
@@ -53,10 +53,10 @@ function selectSearchResult(value, item) {
   navigate(value);
 }
 const nav = computed(() => [
-  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '组件总览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
+  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '全屏交互预览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
   ...[...new Set(catalog.map((item) => item.group))].map((heading) => ({ heading, items: filtered.value.filter((item) => item.group === heading).map((item) => ({ slug: `components/${item.slug}`, name: `${item.name} ${item.label}` })) })),
 ]);
-const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '组件总览', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
+const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '全屏交互预览', playground: '全屏交互预览', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
 const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : route.value === 'gallery' ? [] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
 function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
 const showSource = ref(false);
@@ -88,7 +88,9 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 </script>
 
 <template>
-  <div class="kima-docs">
+  <!-- 组件速览是独立全屏页：不套文档站的顶栏/侧栏/页脚，一屏平铺全部基础组件。 -->
+  <Gallery v-if="['gallery', 'playground'].includes(route)" v-model:theme="theme" v-model:seed="seed" :navigate="navigate" />
+  <div v-else class="kima-docs">
     <header class="kima-docs__top">
       <div class="kima-docs__brand">
         <KimaIconButton class="kima-docs__mobile-toggle" :icon="Menu01Icon" label="打开文档导航" variant="text" @click="mobileMenu = true" />
@@ -114,9 +116,9 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
       </aside>
       <main class="kima-docs__content">
         <header id="introduction" class="kima-docs__heading">
-          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : route === 'gallery' ? 'GALLERY' : 'KINETIC · INTERACTION · MOTION · ALIVE' }}<span v-if="component" class="kima-docs__tier" :data-tier="component.tier" :title="tierMeta[component.tier].hint">{{ tierMeta[component.tier].label }}</span></p>
+          <p class="kima-docs__eyebrow">{{ component ? `COMPONENTS / ${component.label}` : 'KINETIC · INTERACTION · MOTION · ALIVE' }}<span v-if="component" class="kima-docs__tier" :data-tier="component.tier" :title="tierMeta[component.tier].hint">{{ tierMeta[component.tier].label }}</span></p>
           <h1>{{ title }}</h1>
-          <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'gallery' ? '全部组件按分组平铺，每块都是可交互的实组件——一览全部，直接上手。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
+          <p class="kima-docs__lead">{{ component ? component.description : route === 'overview' ? '大控件、轻层次、专注的动效。一个让体验先行的设计系统，用自己的组件搭建自己的展示界面。' : route === 'installation' ? 'Vue 组件与原生自定义元素，两种入口，同一套交互与设计语言。' : '从单一种子色生成深浅主题，颜色、形状和动效始终由 KIMA token 统一控制。' }}</p>
         </header>
 
         <template v-if="component">
@@ -140,9 +142,6 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
             <KimaButton variant="text" :aria-expanded="showSource" @click="toggleSource">{{ showSource ? '收起源码' : '查看完整组件源码' }}</KimaButton>
             <KimaCodeBlock v-if="showSource" :code="fullSource || '正在加载源码…'" :filename="`${component.slug}.ce.vue`" language="vue" line-numbers />
           </section>
-        </template>
-        <template v-else-if="route === 'gallery'">
-          <Gallery :navigate="navigate" />
         </template>
         <template v-else-if="route === 'overview'">
           <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
@@ -188,8 +187,6 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__sidebar :deep(.kima-button) { justify-content: flex-start; min-height: 44px; border-radius: var(--kima-radius-s); padding-inline: var(--kima-space-3); text-align: start; }
 .kima-docs__sidebar :deep(.kima-button__label) { white-space: normal; font-size: var(--kima-font-size-label-medium); }
 .kima-docs__content { min-width: 0; width: 100%; max-width: 840px; margin: 0 auto; padding: var(--kima-space-10) var(--kima-space-4); }
-/* 总览墙要横向铺开，不受文档页 840px 的阅读限宽约束。 */
-.kima-docs__content:has(.kima-overview) { max-width: none; }
 .kima-docs__heading { margin-bottom: var(--kima-space-10); }
 .kima-docs__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
 /* 维护水位：核心/扩展/实验。颜色只用来区分优先级，不承担状态语义。 */
