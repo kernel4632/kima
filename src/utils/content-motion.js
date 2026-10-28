@@ -55,16 +55,17 @@ export function useContentMotion(target, source, { opacity = true, collection = 
     fromHeight = rect.height > 0 ? rect.height : 0;
     fromOpacity = opacity ? Number(view.getComputedStyle(element).opacity) : 1;
 
-    if (animation) {
-      // 先把动画当前帧固化到 inline style，再取消动画，防止取消时跳回旧布局。
+    animation?.cancel();
+    animation = undefined;
+    if ((collection || fromHeight > 0) && !prefersReducedMotion(element) && element.animate) {
+      // DOM 更新前锁当前占位，避免父级 FLIP 先把新自然高度当成另一次位移。
+      // 被中断时也保存当前视觉高度，直到更新后读取自然目标再接续。
       originalStyles ??= {
         height: element.style.height,
         overflow: element.style.overflow,
         boxSizing: element.style.boxSizing,
         opacity: element.style.opacity,
       };
-      animation.cancel();
-      animation = undefined;
       element.style.height = `${fromHeight}px`;
       element.style.boxSizing = 'border-box';
       element.style.overflow = overflow;

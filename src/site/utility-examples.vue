@@ -23,6 +23,13 @@ const options = [{ value: 'a', label: '设计' }, { value: 'b', label: '开发' 
 const virtualOptions = Array.from({ length: 10000 }, (_, index) => ({ value: index, label: `项目 ${index}`, disabled: index === 5 }));
 const tags = ref(options.slice(0, 2));
 const service = createNotifications({ capacity: 3 });
+const expandedNotice = ref(false);
+function toggleNoticeContent() {
+  expandedNotice.value = !expandedNotice.value;
+  service.push({ dedupeKey: 'save', message: expandedNotice.value
+    ? '项目已保存。详细变更已同步到当前工作区，其他协作者可以继续查看和编辑；此消息用于观察长短内容更新时卡片高度与队列位置的连续变化。'
+    : '项目已保存', variant: 'success', duration: 0 });
+}
 const steps = [{ target: '#kima-utility-tour-first', title: '选择项目', description: '先确定当前工作项目。' }, { target: '#kima-utility-tour-second', title: '完成操作', description: '这里可以保存当前结果。' }];
 </script>
 <template>
@@ -40,7 +47,7 @@ const steps = [{ target: '#kima-utility-tour-first', title: '选择项目', desc
     <template v-else-if="component === 'alert-dialog'"><Button @click="open = true">删除项目</Button><AlertDialog v-model:open="open" heading="删除项目？" description="此操作无法撤销，请确认。" confirm-label="删除"/></template>
     <VirtualSelect v-else-if="component === 'virtual-select'" v-model="chosen" :options="virtualOptions" label="一万条项目"/>
     <TagGroup v-else-if="component === 'tag-group'" v-model:items="tags" v-model="many" selectable removable label="项目标签"/>
-    <template v-else-if="component === 'notification-queue'"><div class="kima-utility-demo__tools"><Button @click="service.push({ dedupeKey: 'save', message: '项目已保存', variant: 'success', duration: 0 })">推送 / 去重</Button><Button variant="tonal" @click="service.clear()">清空通知</Button></div><NotificationQueue :service="service"/></template>
+    <template v-else-if="component === 'notification-queue'"><div class="kima-utility-demo__tools"><Button @click="service.push({ dedupeKey: 'save', message: '项目已保存', variant: 'success', duration: 0 })">推送 / 去重</Button><Button variant="tonal" @click="toggleNoticeContent">切换长短消息</Button><Button variant="tonal" @click="service.clear()">清空通知</Button></div><NotificationQueue :service="service"/></template>
     <p v-if="action" role="status">{{ action }}</p>
   </article>
 </template>

@@ -12,6 +12,7 @@ position 支持 top/bottom 和 top-left/top-center/top-right/bottom-left/bottom-
 -->
 <script setup>
 import { computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, watch, useAttrs, useHost, useId } from "vue";
+import { useContentMotion } from "../../utils/content-motion.js";
 import KimaIcon from "./icon.ce.vue";
 import { presenceTransition } from "../../utils/motion.js";
 import {
@@ -79,6 +80,8 @@ const baseId = useId();
 const titleId = `kima-notification-${baseId}-title`;
 const messageId = `kima-notification-${baseId}-message`;
 let closeTimer = null;
+const notificationRoot = ref(null);
+useContentMotion(notificationRoot, () => [props.heading, props.message, props.variant], { opacity: false });
 let mounted = false;
 let remaining = 0;
 let startedAt = 0;
@@ -189,6 +192,7 @@ onBeforeUnmount(() => {
   <Transition name="kima-notification" :css="!stacked" v-bind="presenceTransition">
     <div
       v-if="stacked || localOpen"
+      ref="notificationRoot"
       v-bind="{ ...attrs, id: host ? undefined : attrs.id, title: undefined }"
       class="kima-notification"
       :class="[
