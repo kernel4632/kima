@@ -1,6 +1,6 @@
 {
   "name": "@kernel4632/kima",
-  "version": "0.9.12",
+  "version": "0.10.0",
   "description": "KIMA (Kinetic, Interaction, Motion, Alive) - a Material 3 style Web UI design system and component library.",
   "type": "module",
   "license": "MIT",
