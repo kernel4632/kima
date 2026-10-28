@@ -167,7 +167,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
     /* dim + 模糊：聚焦到面板，背后内容退为背景。
      * 遮罩暗度走 token，和抽屉同一个来源，全库弹层不会各暗各的。 */
     background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), transparent);
-    backdrop-filter: blur(var(--kima-backdrop-blur));
+    backdrop-filter: var(--kima-backdrop-filter);
     /* 遮罩只改透明度（底色从头到尾不变），所以只需过渡 opacity，跟面板同一时长。 */
     transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized);
     opacity: 1;

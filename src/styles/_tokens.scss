@@ -128,7 +128,11 @@
   --kima-elevation-4: 0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3);
   --kima-elevation-5: 0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px rgba(0, 0, 0, 0.3);
   --kima-scrim-opacity: 0.5;
-  --kima-backdrop-blur: 8px;
+  /* 遮罩模糊写成完整的一层 filter 而不只是一个长度：blur 会把背后的颜色洗成灰，
+   * saturate 把饱和度补回来，玻璃透出的才是「后面的颜色」而不是一层灰塑料。
+   * 写成 filter 还有另一个原因：'不开模糊'得是 none 才行——blur(0px) 仍会
+   * 把元素提升成独立合成层，白白多一层。 */
+  --kima-backdrop-filter: blur(8px) saturate(1.6);
 
   /* ---- 动效 ----
    * 时长按 M3 分三档，曲线用 M3 的标准与 emphasized。
@@ -374,6 +378,34 @@ kima-transfer {
   opacity: 0;
   scale: 0.96;
 }
+
+/* ---- 主题切换的统一颜色过渡（全库共用）----
+ * 换主题时，有的组件自己声明了颜色过渡、有的没有，直接换色会变成
+ * "一半界面先到、一半后到"。把根元素标记成 .kima-theme-switching，
+ * 这条规则在换色的那一瞬间接管所有元素的颜色过渡，240ms 后由 JS 摘掉。
+ * !important 是刻意的：它就是要压过每个元素自己的过渡，只活一瞬间。
+ * 摘掉之后各元素回到自己的规则，平时不受影响。 */
+.kima-theme-switching,
+.kima-theme-switching *,
+.kima-theme-switching *::before,
+.kima-theme-switching *::after {
+  transition:
+    background-color var(--kima-duration-medium) var(--kima-curve-standard),
+    border-color var(--kima-duration-medium) var(--kima-curve-standard),
+    color var(--kima-duration-medium) var(--kima-curve-standard),
+    fill var(--kima-duration-medium) var(--kima-curve-standard),
+    stroke var(--kima-duration-medium) var(--kima-curve-standard) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kima-theme-switching,
+  .kima-theme-switching *,
+  .kima-theme-switching *::before,
+  .kima-theme-switching *::after {
+    transition: none !important;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .kima-popup-enter-active,

@@ -534,7 +534,7 @@ onBeforeUnmount(() => {
      * 比纯半透明遮罩多一层"场景切换"的感觉。
      * 透明度也走 token，跟全库其它遮罩一个浓度，不在这里另写一个数。 */
     background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), transparent);
-    backdrop-filter: blur(var(--kima-backdrop-blur));
+    backdrop-filter: var(--kima-backdrop-filter);
     transition: opacity var(--kima-duration-slow) var(--kima-curve-emphasized);
     opacity: 1;
   }

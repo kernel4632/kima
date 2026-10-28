@@ -409,8 +409,11 @@ table {
   width: 100%;
   min-width: 32rem;
   table-layout: fixed;
+  /* separate 而不是 collapsed：行与行之间留一道缝，每行是一块自己的造型，
+   * 斑马纹和悬停的底色跟着行的圆角走，而不是一条通到边的色带。
+   * collapsed 会忽略单元格圆角，行带就画不出来。 */
   border-collapse: separate;
-  border-spacing: 0;
+  border-spacing: 0 var(--kima-space-1);
 }
 
 caption {
@@ -443,6 +446,18 @@ tbody tr {
     outline: 2px solid var(--kima-color-primary);
     outline-offset: -2px;
   }
+}
+
+/* 行带是块造型，所以它要收角：首尾单元格把角圆掉，中间的保持直角。
+ * 每一行都写（不只斑马纹行），悬停未填充行时形状才一致。 */
+tbody td:first-child,
+tbody th:first-child {
+  border-radius: var(--kima-radius-s) 0 0 var(--kima-radius-s);
+}
+
+tbody td:last-child,
+tbody th:last-child {
+  border-radius: 0 var(--kima-radius-s) var(--kima-radius-s) 0;
 }
 
 .kima-table--striped tbody tr:nth-child(even) {

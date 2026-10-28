@@ -102,16 +102,32 @@ export function applyPalette(seed, { isDark = true, variant = defaultVariant, ta
   const palette = generatePalette(seed, { isDark, variant });
   const element = target || document.documentElement;
 
+  // 运行时换色是"页面已经画好了再换"，整块界面要一起过渡过去；
+  // 构建期生成 _palette.scss 不走这里，首屏不该有过渡。
+  markThemeSwitching(element);
+
   for (const [name, value] of Object.entries(palette)) {
     element.style.setProperty(`--kima-color-${name}`, value);
   }
   return palette;
 }
-
 /** 清掉运行时写上的颜色，恢复成 _palette.scss 里的默认值。 */
 export function resetPalette(target) {
   const element = target || document.documentElement;
   for (const [role] of paletteRoles) {
     element.style.removeProperty(`--kima-color-${cssName(role)}`);
   }
+}
+
+/* 主题切换的统一颜色过渡：换色前把根元素标记成 .kima-theme-switching，
+ * _tokens.scss 里那条规则会在这 240ms 内接管所有元素的颜色过渡，
+ * 整个界面一起换色，不会出现"一半先到、一半后到"。清掉再重设而不是
+ * 叠加计时器：快速连点两次主题，最后只有一个计时器在跑。 */
+let switchingTimer = 0;
+
+export function markThemeSwitching(target) {
+  const element = target || document.documentElement;
+  element.classList.add("kima-theme-switching");
+  window.clearTimeout(switchingTimer);
+  switchingTimer = window.setTimeout(() => element.classList.remove("kima-theme-switching"), 240);
 }

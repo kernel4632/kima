@@ -66,7 +66,7 @@ onBeforeUnmount(() => { const element = dialog.value; if (element?.open) element
   position: fixed; inset: 0; box-sizing: border-box; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: var(--kima-space-4); border: 0; color: var(--kima-color-on-surface); background: var(--kima-color-transparent);
   &[open] { display: grid; place-items: center; }
   transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized), display var(--kima-duration-medium) allow-discrete, overlay var(--kima-duration-medium) allow-discrete;
-  &::backdrop { background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), var(--kima-color-transparent)); backdrop-filter: blur(var(--kima-backdrop-blur)); transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized); }
+  &::backdrop { background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), var(--kima-color-transparent)); backdrop-filter: var(--kima-backdrop-filter); transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized); }
   &:not([open]), &:not([open])::backdrop { opacity: 0; }
   @starting-style { &[open], &[open]::backdrop { opacity: 0; } }
 }
