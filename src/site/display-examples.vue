@@ -24,24 +24,29 @@ const alertOpen = ref(true);
 const deadline = ref(Date.now() + 65000);
 const finished = ref(false);
 const actions = ref(0);
-const variants = ["info", "success", "warning", "danger", "neutral"];
+const alerts = [
+  { variant: 'info', heading: '有新的项目更新' },
+  { variant: 'success', heading: '更改已保存' },
+  { variant: 'warning', heading: '存储空间即将用尽' },
+  { variant: 'danger', heading: '同步失败', description: '检查网络连接后重试。' },
+  { variant: 'neutral', heading: '暂无新消息' },
+];
 const details = [{ label: "项目名称", value: "KIMA" }, { label: "当前状态", value: "准备就绪" }, { label: "负责人", value: "林青" }, { label: "版本", value: "0.6.0" }];
-const entries = [{ id: "design", title: "交互设计", description: "用动效引导注意力，而不只是装饰。" }, { id: "access", title: "无障碍检查", description: "键盘可达，状态不只依靠颜色。" }];
-const events = [{ title: "设计完成", description: "基础交互与视觉方向已确认。", time: "09:00", datetime: "2026-05-18T09:00:00+08:00", variant: "success" }, { title: "进行可访问性检查", time: "10:30", variant: "info" }, { title: "等待发布", time: "下一步", variant: "neutral" }];
+const entries = [{ id: "design", title: "交互设计", description: "林青 · 今天 09:00" }, { id: "access", title: "无障碍检查", description: "陈禾 · 今天 10:30" }];
+const events = [{ title: "设计完成", time: "09:00", datetime: "2026-05-18T09:00:00+08:00", variant: "success" }, { title: "进行可访问性检查", time: "10:30", variant: "info" }, { title: "等待发布", variant: "neutral" }];
 const visibleEvents = ref([...events]);
 function restart() { finished.value = false; deadline.value = Date.now() + 5000; }
 </script>
 
 <template>
   <article v-if="displayCatalog[component]" class="kima-gallery__demo kima-display-demo">
-    <header><h2>{{ displayCatalog[component].label }}</h2><p>大尺寸、低密度、透明层次；兼容 Vue 与原生自定义元素。</p></header>
     <div v-if="component === 'avatar'" class="kima-display-demo__row"><KimaAvatar src="/th.jpg" name="林青" size="large" /><KimaAvatar name="陈禾" /><KimaAvatar name="Alex Kim" shape="circle" /><KimaAvatar src="/missing-avatar.png" name="失败回退" size="small" /><KimaAvatar alt="匿名用户" /></div>
     <KimaAvatarGroup v-else-if="component === 'avatar-group'" :items="people" :max="3" label="项目协作者" />
-    <div v-else-if="component === 'image'" class="kima-display-demo__grid"><KimaImage src="/th.jpg" alt="旅途中的风景" caption="原生图片保留 alt" /><KimaImage src="/missing-image.png" alt="不可用的风景" caption="加载失败时显示清晰提示" /></div>
+    <div v-else-if="component === 'image'" class="kima-display-demo__grid"><KimaImage src="/th.jpg" alt="旅途中的风景" /><KimaImage src="/missing-image.png" alt="不可用的风景" /></div>
     <div v-else-if="component === 'skeleton'" class="kima-display-demo__stack"><KimaSkeleton :loading="busy" avatar :rows="3"><KimaList :items="entries" /></KimaSkeleton><KimaButton variant="tonal" @click="busy = !busy">{{ busy ? '显示内容' : '重新加载' }}</KimaButton></div>
     <div v-else-if="component === 'spinner'" class="kima-display-demo__row"><KimaSpinner size="small" label="小尺寸加载" /><KimaSpinner label="正在同步" /><KimaSpinner size="large" label="加载项目中" /><span>正在同步项目…</span></div>
-    <div v-else-if="component === 'alert'" class="kima-display-demo__stack"><KimaAlert v-for="variant in variants" :key="variant" :variant="variant" :heading="`${variant} 状态`" description="文字和图标共同传达状态，不只依靠颜色。" /><KimaAlert v-model:open="alertOpen" heading="可关闭的消息" closable><span>可以通过键盘访问操作与关闭按钮。</span><template #action><KimaButton variant="tonal" @click="actions++">查看详情</KimaButton></template></KimaAlert><output>操作次数：{{ actions }}</output><KimaButton v-if="!alertOpen" variant="text" @click="alertOpen = true">重新打开提示</KimaButton></div>
-    <KimaResult v-else-if="component === 'result'" variant="success" heading="项目已发布" description="所有内容已同步，你可以继续浏览或分享给协作者。"><template #action><KimaButton @click="actions++">查看项目</KimaButton><KimaButton variant="text" @click="actions++">返回列表</KimaButton></template></KimaResult>
+    <div v-else-if="component === 'alert'" class="kima-display-demo__stack"><KimaAlert v-for="alert in alerts" :key="alert.variant" v-bind="alert" /><KimaAlert v-model:open="alertOpen" heading="收到项目邀请" closable><template #action><KimaButton variant="tonal" @click="actions++">查看邀请</KimaButton></template></KimaAlert><output v-if="actions" role="status">已查看邀请</output><KimaButton v-if="!alertOpen" variant="text" @click="alertOpen = true">重新打开提示</KimaButton></div>
+    <KimaResult v-else-if="component === 'result'" variant="success" heading="项目已发布"><template #action><KimaButton @click="actions++">查看项目</KimaButton><KimaButton variant="text" @click="actions++">返回列表</KimaButton></template></KimaResult>
     <KimaDescriptions v-else-if="component === 'descriptions'" :items="details" label="项目信息" />
     <KimaList v-else-if="component === 'list'" :items="entries" label="发布前检查"><template #action="{ item }"><KimaButton variant="text" :aria-label="`查看${item.title}`" @click="actions++">查看</KimaButton></template></KimaList>
     <div v-else-if="component === 'timeline'" class="kima-display-demo__stack"><KimaTimeline :items="visibleEvents" label="发布进程" /><div class="kima-display-demo__row"><KimaButton variant="tonal" :disabled="!visibleEvents.length" @click="visibleEvents = visibleEvents.slice(1)">移除最早事件</KimaButton><KimaButton variant="text" @click="visibleEvents = [...events]">恢复事件</KimaButton></div></div>
@@ -56,7 +61,7 @@ function restart() { finished.value = false; deadline.value = Date.now() + 5000;
 .kima-display-demo {
   min-width: 0; width: 100%; box-sizing: border-box; color: var(--kima-color-on-surface); font-family: var(--kima-font-family);
   &__row { display: flex; flex-wrap: wrap; gap: var(--kima-space-4); align-items: center; justify-content: center; }
-  &__stack { display: grid; gap: var(--kima-space-4); width: 100%; justify-items: center; > * { max-width: 100%; } > .kima-alert, > .kima-skeleton { width: 100%; } }
+  &__stack { display: grid; gap: var(--kima-space-4); width: 100%; justify-items: stretch; > * { max-width: 100%; } > .kima-button, > output { justify-self: center; } }
   &__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--kima-space-4); width: 100%; }
 }
 </style>
