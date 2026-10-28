@@ -43,7 +43,7 @@ function onKey(event) {
     <div ref="root" v-bind="controlAttrs" class="kima-rating" role="radiogroup" :aria-label="controlAttrs['aria-label'] || label" :aria-required="required || undefined" :aria-disabled="disabled || undefined" :aria-readonly="readonly || undefined" @keydown="onKey">
       <label v-for="value in count" :key="value" class="kima-rating__star" :class="{ 'kima-rating__star--filled': value <= local }">
         <input type="radio" :name="name" :value="value" :checked="value === local" :aria-label="`${value} / ${count}`" :disabled="disabled" :required="required" :tabindex="value === (local || 1) ? 0 : -1" :aria-readonly="readonly || undefined" @click="readonly && $event.preventDefault()" @input.stop @change.stop="update(value)" />
-        <KimaIcon :icon="StarIcon" :size="28" aria-hidden="true" />
+        <KimaIcon :icon="StarIcon" :size="28" class="kima-rating__icon" aria-hidden="true" />
       </label>
     </div>
     <KimaButton v-if="clearable && !readonly" variant="text" :disabled="disabled || !local" aria-label="清除评分" @click="update(0)">清除</KimaButton>
@@ -64,11 +64,13 @@ function onKey(event) {
     display: grid;
     place-items: center;
     min-width: 44px;
-    min-height: var(--kima-field-height);
+    min-height: var(--kima-touch-target);
     border-radius: var(--kima-radius-m);
     color: var(--kima-color-on-surface-variant);
     cursor: pointer;
-    &--filled { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+    /* 值由星形本身表达；保留48px热区，不把评分画成连片的分段按钮。 */
+    &--filled { color: var(--kima-color-primary); }
+    &--filled :deep(.kima-rating__icon) { fill: var(--kima-color-primary); }
     &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
     input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; z-index: 3; cursor: inherit; }
   }

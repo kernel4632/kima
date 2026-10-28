@@ -78,8 +78,8 @@ const filteredTasks = computed(() => tab.value === 'done' ? tasks.value.filter(t
 const visibleTasks = computed(() => filteredTasks.value.slice((page.value - 1) * 2, page.value * 2));
 const chartSeries = computed(() => [{ name: '投入', data: period.value === 'week' ? [24, 38, 31, 52, 46, budget.value] : [38, 52, 45, 68, 60, budget.value] }]);
 const fileItems = [{ value: 'project', label: '项目文件', children: [{ value: 'design', label: '交互稿' }, { value: 'readme', label: '接入说明' }] }];
-const revisions = Array.from({ length: 50 }, (_, index) => ({ value: `r${index + 1}`, label: `版本 ${String(index + 1).padStart(2, '0')} · 已同步` }));
-const source = computed(() => `// ${selectedFile.value === 'design' ? '交互稿' : '接入说明'}\nconst budget = ${budget.value};\nconst seats = ${seats.value};`);
+const revisions = Array.from({ length: 50 }, (_, index) => ({ value: `r${index + 1}`, version: `v${String(index + 1).padStart(2, '0')}`, label: `版本 ${index + 1}，已同步` }));
+const source = computed(() => `const budget = ${budget.value};\nconst seats = ${seats.value};`);
 const people = [{ name: '林青' }, { name: '陈禾' }, { name: 'Alex' }, { name: 'Sam' }];
 const accordionItems = [{ value: 'preview', label: '预览如何使用？', content: '这些都是真实组件。更改预算会同步图表、进度与代码；保存会更新任务并显示通知。' }];
 const menuItems = [{ value: 'invite', label: '邀请成员' }, { value: 'settings', label: '项目设置' }, { value: 'notify', label: '查看通知' }];
@@ -133,6 +133,7 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
 
     <KimaLayout as="main" :max-width="'none'" :padding="0" :gap="12" class="kima-playground__layout">
       <div class="kima-playground__scenes">
+        <div class="kima-playground__column">
         <KimaCard class="kima-playground__scene" data-scene="create">
           <template #header><div class="kima-playground__heading"><h1>开始一个新想法</h1><p>小一点的计划，大一点的体验。</p></div></template>
           <form class="kima-playground__flow" @submit.prevent="saveProject">
@@ -149,6 +150,19 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
           </form>
         </KimaCard>
 
+        <KimaCard class="kima-playground__scene" data-scene="schedule">
+          <template #header><div class="kima-playground__heading"><h2>下一次见面</h2><p>从选择负责人，到安排评审。</p></div></template>
+          <KimaDatePicker v-model="date" label="评审日期" locale="zh-CN" />
+          <div class="kima-playground__pair kima-playground__pair--time">
+            <KimaTimePicker v-model="time" label="评审时间" locale="zh-CN" />
+            <KimaCombobox v-model="owner" :items="owners" label="评审负责人" />
+          </div>
+          <KimaCascader v-model="category" :options="categories" label="项目分类" />
+          <KimaStepper v-model="step" :items="steps" label="发布步骤" />
+          <KimaButton variant="tonal" @click="notify(`已安排 ${date} ${time} 的评审。`)">确认排期</KimaButton>
+        </KimaCard>
+        </div>
+        <div class="kima-playground__column">
         <KimaCard class="kima-playground__scene" data-scene="budget">
           <template #header><div class="kima-playground__heading"><h2>把时间花在重要的事上</h2><p>投入趋势与预算，共用一份数据。</p></div></template>
           <div class="kima-playground__row kima-playground__row--between"><KimaButtonGroup v-model="period" :items="periods" size="small" aria-label="投入周期" /><strong>{{ budget }}%</strong></div>
@@ -156,52 +170,20 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
           <KimaSlider v-model="budget" label="本期预算" />
         </KimaCard>
 
-        <KimaCard class="kima-playground__scene" data-scene="schedule">
-          <template #header><div class="kima-playground__heading"><h2>下一次见面</h2><p>从选择负责人，到安排评审。</p></div></template>
-          <div class="kima-playground__pair">
-            <KimaDatePicker v-model="date" label="评审日期" locale="zh-CN" />
-            <KimaTimePicker v-model="time" label="评审时间" locale="zh-CN" />
-          </div>
-          <div class="kima-playground__pair">
-            <KimaCombobox v-model="owner" :items="owners" label="评审负责人" />
-            <KimaCascader v-model="category" :options="categories" label="项目分类" />
-          </div>
-          <KimaStepper v-model="step" :items="steps" label="发布步骤" />
-          <KimaButton variant="tonal" @click="notify(`已安排 ${date} ${time} 的评审。`)">确认排期</KimaButton>
+        <KimaCard class="kima-playground__scene" data-scene="files">
+          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>想法与实现，同步发生</h2><p>文件树、版本列表与代码片段。</p></div><KimaTooltip text="新增文件"><KimaIconButton :icon="PlusSignIcon" label="新增文件" @click="dialogOpen = true" /></KimaTooltip></div></template>
+          <div class="kima-playground__file-browser"><KimaTree v-model="selectedFile" v-model:expanded="expandedFiles" :items="fileItems" selectable aria-label="项目文件" /><KimaVirtualScroll v-model="selectedRevision" :items="revisions" :height="96" :item-height="48" aria-label="历史版本"><template #default="{ item }"><span class="kima-playground__revision"><span>{{ item.version }}</span><small>已同步</small></span></template></KimaVirtualScroll></div>
+          <KimaCodeBlock :code="source" language="javascript" label="项目配置代码" />
         </KimaCard>
-
-        <KimaCard class="kima-playground__scene" data-scene="tasks">
-          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>让进展看得见</h2><p>真实切换、翻页与新增任务。</p></div><KimaMenu :items="menuItems" label="任务操作" icon-only @select="runAction" /></div></template>
-          <KimaTabs v-model="tab" :items="tabs" @update:model-value="page = 1">
-            <template #panel><KimaTable :columns="columns" :rows="visibleTasks" row-key="id" hoverable aria-label="项目任务" /></template>
-          </KimaTabs>
-          <div class="kima-playground__row kima-playground__row--between"><KimaBadge :value="`${filteredTasks.length} 个任务`" /><KimaPagination v-model="page" :total="filteredTasks.length" :page-size="2" aria-label="任务分页" /></div>
-          <KimaBreadcrumb :items="[{ label: '工作台', href: '#/gallery' }, { label: '当前项目' }]" />
-        </KimaCard>
-
+        </div>
+        <div class="kima-playground__column">
         <KimaCard class="kima-playground__scene" data-scene="team">
           <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>一起做点好东西</h2><p>共享团队，保留自己的偏好。</p></div><KimaToggle v-model="favorite" label="收藏团队"><KimaIcon :icon="FavouriteIcon" /></KimaToggle></div></template>
           <div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__row"><KimaAvatar name="林青" size="small" /><strong>设计组</strong></div><KimaAvatarGroup :items="people" :max="2" label="协作者" /></div>
-          <div class="kima-playground__row"><KimaChip v-model="chipSelected" selectable label="设计优先">设计优先</KimaChip><KimaTagsInput v-model="tags" label="团队标签" :max="3" /></div>
+          <div class="kima-playground__row kima-playground__row--between"><span class="kima-playground__muted">团队标签</span><KimaChip v-model="chipSelected" selectable label="设计优先">设计优先</KimaChip></div>
+          <KimaTagsInput v-model="tags" label="团队标签" placeholder="添加标签" :max="3" />
           <KimaRating v-model="rating" label="协作满意度" name="team-rating" />
           <div class="kima-playground__row kima-playground__row--end"><KimaButton variant="outlined" disabled>访客只读</KimaButton><KimaButton @click="drawerOpen = true">邀请成员</KimaButton></div>
-        </KimaCard>
-
-        <KimaCard class="kima-playground__scene" data-scene="preferences">
-          <template #header><div class="kima-playground__heading"><h2>保持刚好的节奏</h2><p>配额、消息与席位，在一处调整。</p></div></template>
-          <div class="kima-playground__row kima-playground__row--between"><KimaSwitch v-model="notifications" label="接收通知" /><KimaRadioGroup v-model="frequency" :options="frequencies" label="通知频率" orientation="horizontal" /></div>
-          <div class="kima-playground__quota"><div><span class="kima-playground__muted">团队席位</span><KimaNumberField v-model="seats" label="团队席位" :min="1" :max="20" /></div><KimaRingProgress :value="budget" show-value label="预算占用" /></div>
-          <KimaProgress :value="budget" label="预算进度" />
-          <KimaDivider />
-          <div class="kima-playground__row kima-playground__row--between"><KimaTooltip text="重现同步中的加载状态"><KimaButton variant="text" :loading="loading" @click="refreshFiles">同步文件</KimaButton></KimaTooltip><KimaSpinner v-if="loading" size="small" label="正在同步" /><KimaBadge v-else value="已同步" variant="success" /></div>
-          <KimaSkeleton v-if="loading" :rows="1" label="同步占位" />
-          <KimaSkeleton v-else :rows="1" label="下次同步预览" />
-        </KimaCard>
-
-        <KimaCard class="kima-playground__scene" data-scene="files">
-          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>想法与实现，同步发生</h2><p>文件树、版本列表与代码片段。</p></div><KimaTooltip text="新增文件"><KimaIconButton :icon="PlusSignIcon" label="新增文件" @click="dialogOpen = true" /></KimaTooltip></div></template>
-          <div class="kima-playground__pair"><KimaTree v-model="selectedFile" v-model:expanded="expandedFiles" :items="fileItems" selectable aria-label="项目文件" /><KimaVirtualScroll v-model="selectedRevision" :items="revisions" :height="144" :item-height="48" aria-label="历史版本"><template #default="{ item }">{{ item.label }}</template></KimaVirtualScroll></div>
-          <KimaCodeBlock :code="source" language="javascript" label="项目配置代码" />
         </KimaCard>
 
         <KimaCard class="kima-playground__scene" data-scene="inbox">
@@ -210,6 +192,27 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
           <KimaEmptyState compact heading="收件箱已清空" description="新的消息会出现在这里。"><template #icon><KimaIcon :icon="Folder01Icon" /></template></KimaEmptyState>
           <KimaButton variant="text" @click="dialogOpen = true">从一个新项目开始</KimaButton>
         </KimaCard>
+        </div>
+        <div class="kima-playground__column">
+        <KimaCard class="kima-playground__scene" data-scene="tasks">
+          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>让进展看得见</h2><KimaBreadcrumb :items="[{ label: '工作台', href: '#/gallery' }, { label: '当前项目' }]" /></div><KimaMenu :items="menuItems" label="任务操作" icon-only @select="runAction" /></div></template>
+          <KimaTabs v-model="tab" :items="tabs" @update:model-value="page = 1">
+            <template #panel><KimaTable :columns="columns" :rows="visibleTasks" row-key="id" hoverable aria-label="项目任务" /></template>
+          </KimaTabs>
+          <div class="kima-playground__row kima-playground__row--between"><KimaBadge :value="`${filteredTasks.length} 个任务`" /><KimaPagination v-model="page" :total="filteredTasks.length" :page-size="2" aria-label="任务分页" /></div>
+        </KimaCard>
+
+        <KimaCard class="kima-playground__scene" data-scene="preferences">
+          <template #header><div class="kima-playground__heading"><h2>保持刚好的节奏</h2><p>配额、消息与席位，在一处调整。</p></div></template>
+          <div class="kima-playground__notification-options"><KimaSwitch v-model="notifications" label="接收通知">通知</KimaSwitch><KimaRadioGroup v-model="frequency" :options="frequencies" label="通知频率" orientation="horizontal" /></div>
+          <div class="kima-playground__quota"><label class="kima-playground__field"><span>团队席位</span><KimaNumberField v-model="seats" label="团队席位" :min="1" :max="20" /></label><KimaRingProgress :value="budget" :size="80" show-value label="预算占用" /></div>
+          <KimaProgress :value="budget" label="预算进度" />
+          <KimaDivider />
+          <div class="kima-playground__row kima-playground__row--between"><KimaTooltip text="重现同步中的加载状态"><KimaButton variant="text" :loading="loading" @click="refreshFiles">同步文件</KimaButton></KimaTooltip><KimaSpinner v-if="loading" size="small" label="正在同步" /><KimaBadge v-else value="已同步" variant="success" /></div>
+          <KimaSkeleton v-if="loading" :rows="1" label="同步占位" />
+          <KimaSkeleton v-else :rows="1" label="下次同步预览" />
+        </KimaCard>
+        </div>
       </div>
     </KimaLayout>
 
@@ -234,29 +237,45 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
   font-family: var(--kima-font-family);
 }
 .kima-playground__bar, .kima-playground__brand, .kima-playground__tools, .kima-playground__row { display: flex; align-items: center; gap: var(--kima-space-2); min-width: 0; }
-.kima-playground__bar { flex-wrap: wrap; min-height: 64px; }
+.kima-playground__bar { flex-wrap: wrap; min-height: var(--kima-touch-target); }
 .kima-playground__brand { color: var(--kima-color-primary); white-space: nowrap; }
 .kima-playground__brand strong { font-size: var(--kima-font-size-title-medium); }
 .kima-playground__brand > span { color: var(--kima-color-on-surface-variant); }
-.kima-playground__tools { margin-inline-start: auto; }
+.kima-playground__tools { margin-inline-start: auto; --kima-field-height: var(--kima-touch-target); }
 .kima-playground__tools > .kima-select { width: 132px; }
 .kima-playground__layout { flex: 1; min-height: 0; }
-.kima-playground__scenes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--kima-space-3); }
-.kima-playground__scene { min-width: 0; padding: var(--kima-space-3); gap: var(--kima-space-2); }
+.kima-playground__scenes { display: grid; grid-template-columns: 1.06fr 1fr 1.08fr 1.02fr; gap: var(--kima-space-3); align-items: start; }
+/* 列内独立排布，不让最高卡片迫使其余七张填入大块空白。 */
+.kima-playground__column { display: flex; flex-direction: column; gap: var(--kima-space-3); min-width: 0; }
+.kima-playground__scene { min-width: 0; padding: var(--kima-space-4); gap: var(--kima-space-3); }
 .kima-playground__scene :deep(.kima-card__body) { display: flex; flex-direction: column; gap: var(--kima-space-2); }
 .kima-playground__heading { min-width: 0; }
-.kima-playground__heading h1, .kima-playground__heading h2 { font-size: var(--kima-font-size-title-small); line-height: 1.4; margin: 0; color: var(--kima-color-on-surface); }
-.kima-playground__heading p, .kima-playground__muted { margin: var(--kima-space-1) 0 0; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); line-height: 1.5; }
+.kima-playground__heading h1, .kima-playground__heading h2 { font-size: var(--kima-font-size-body-large); line-height: 1.4; margin: 0; color: var(--kima-color-on-surface); }
+.kima-playground__heading p, .kima-playground__muted { margin: var(--kima-space-1) 0 0; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); line-height: 1.5; }
+.kima-playground__scene :deep(.kima-card__header) > .kima-playground__row { flex-wrap: nowrap; width: 100%; align-items: flex-start; }
+.kima-playground__scene :deep(.kima-card__header) .kima-menu,
+.kima-playground__scene :deep(.kima-card__header) .kima-tooltip,
+.kima-playground__scene :deep(.kima-card__header) .kima-toggle { flex-shrink: 0; }
 .kima-playground__row { flex-wrap: wrap; }
 .kima-playground__row--between { justify-content: space-between; }
 .kima-playground__row--end { justify-content: flex-end; }
 .kima-playground__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--kima-space-2); align-items: center; }
 .kima-playground__flow { display: flex; flex-direction: column; gap: var(--kima-space-3); min-width: 0; }
+.kima-playground__pair--time { grid-template-columns: minmax(116px, .9fr) minmax(0, 1.1fr); }
+.kima-playground__field { display: flex; flex-direction: column; gap: var(--kima-space-2); min-width: 0; font-size: var(--kima-font-size-label-medium); color: var(--kima-color-on-surface-variant); }
+.kima-playground__field > .kima-number-field { color: var(--kima-color-on-surface); }
+.kima-playground__file-browser { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: var(--kima-space-2); }
+.kima-playground__scene[data-scene="create"] .kima-playground__pair { grid-template-columns: minmax(0, 1fr) 156px; }
+.kima-playground__file-browser :deep(.kima-tree__row) { padding-inline: var(--kima-space-2); }
+.kima-playground__revision { display: flex; flex: 1; gap: var(--kima-space-2); align-items: center; justify-content: space-between; white-space: nowrap; }
+.kima-playground__revision small { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
 .kima-playground__chart { min-height: 0; }
 /* 图表的帮助保留给读屏；数据表入口照常可操作，不让固定图高与内容重叠。 */
 .kima-playground__chart :deep(.kima-chart__hint) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.kima-playground__chart :deep(.kima-chart__plot) { height: 112px; }
-.kima-playground__quota { display: grid; grid-template-columns: minmax(0, 1fr) 92px; gap: var(--kima-space-2); align-items: center; }
+.kima-playground__chart :deep(.kima-chart__plot) { height: 128px; }
+.kima-playground__notification-options { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-2); --kima-field-height: var(--kima-touch-target); }
+.kima-playground__notification-options :deep(.kima-radio-group__item) { gap: var(--kima-space-2); padding-inline: var(--kima-space-2); }
+.kima-playground__quota { display: grid; grid-template-columns: minmax(0, 1fr) 80px; gap: var(--kima-space-3); align-items: end; }
 .kima-playground__quota :deep(.kima-number-field .kima-button) { min-width: 48px; padding-inline: var(--kima-space-2); }
 .kima-playground__scene :deep(.kima-stepper .kima-button__label) { gap: var(--kima-space-1); font-size: var(--kima-font-size-label-medium); }
 .kima-playground__scene :deep(.kima-stepper__number) { width: 24px; height: 24px; }
@@ -268,7 +287,10 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
 .kima-playground__scene :deep(.kima-table table) { min-width: 0; }
 .kima-playground__scene :deep(.kima-table th), .kima-playground__scene :deep(.kima-table td) { padding: var(--kima-space-2); }
 .kima-playground__scene :deep(.kima-code-block__viewport) { max-height: 100px; }
-.kima-playground__scene :deep(.kima-tags-input) { flex: 1; min-width: 120px; }
+.kima-playground__scene :deep(.kima-tags-input) { width: 100%; }
+.kima-playground__scene :deep(.kima-divider) { margin-block: var(--kima-space-2); }
+.kima-playground__scene[data-scene="tasks"] :deep(.kima-breadcrumb) { font-size: var(--kima-font-size-label-medium); }
+.kima-playground__scene[data-scene="tasks"] :deep(.kima-breadcrumb a) { font-size: inherit; }
 .kima-playground__scene :deep(.kima-rating) { flex-wrap: wrap; }
 @media (max-width: 1199px) { .kima-playground__scenes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 639px) {

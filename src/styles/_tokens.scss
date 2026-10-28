@@ -179,10 +179,12 @@
   --kima-switch-track-height: 36px;
   --kima-switch-thumb-size: 28px;
   --kima-switch-thumb-selected: 32px;
-  --kima-slider-track-height: 20px;
+  /* 轨道只作进度导向，热区由36px手柄与input高度保证，不用厚色块充当热区。 */
+  --kima-slider-track-height: 8px;
   --kima-slider-handle-width: 6px;
   --kima-slider-handle-height: 36px;
   --kima-progress-height: 8px;
+  --kima-divider-thickness: 2px;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
    * 轨道透明，不割版面。悬停时加深，鼠标停在滚动条上时能看清位置。 */

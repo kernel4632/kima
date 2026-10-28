@@ -58,7 +58,7 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
 .kima-divider {
   display: flex;
   width: 100%;
-  min-height: 1px;
+  min-height: var(--kima-divider-thickness);
   align-items: center;
   gap: var(--kima-space-3);
   color: var(--kima-color-on-surface-variant);
@@ -74,8 +74,8 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
   display: block;
   min-width: 0;
   flex: 1 1 auto;
-  height: 1px;
-  background: var(--kima-color-outline);
+  height: var(--kima-divider-thickness);
+  background: var(--kima-color-outline-variant);
 }
 
 .kima-divider__label {
@@ -86,7 +86,7 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
 }
 
 .kima-divider--vertical {
-  width: 1px;
+  width: var(--kima-divider-thickness);
   min-height: 48px;
   height: 100%;
   flex-direction: column;
@@ -99,7 +99,7 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
 }
 
 .kima-divider--vertical .kima-divider__line {
-  width: 1px;
+  width: var(--kima-divider-thickness);
   min-height: 0;
   height: auto;
   flex: 1 1 auto;

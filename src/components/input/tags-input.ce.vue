@@ -108,7 +108,8 @@ defineExpose({ focus: () => input.value?.focus() });
   align-items: center;
   gap: var(--kima-space-2);
   padding: var(--kima-space-2);
-  > input:not([type="hidden"]) { @include input-control; flex: 1; width: 8em; }
+  /* 剩余一小段宽度不能当作编辑区：不足8em就换到下一行，不只露出一个占位字。 */
+  > input:not([type="hidden"]) { @include input-control; flex: 1 1 8em; width: 8em; min-width: min(8em, 100%); max-width: 100%; padding-inline: var(--kima-space-2); }
   &__tag { display: inline-flex; align-items: center; gap: var(--kima-space-1); padding-inline-start: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
 }
 .kima-tags-input__tag.kima-list-leave-active { position: absolute; }
