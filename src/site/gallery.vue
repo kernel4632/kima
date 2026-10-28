@@ -14,7 +14,7 @@ import {
   KimaRadioGroup, KimaDatePicker, KimaTimePicker, KimaDialog, KimaDrawer, KimaTooltip,
   KimaAccordion, KimaStepper, KimaBreadcrumb, KimaTabs, KimaProgress, KimaRingProgress,
   KimaAvatar, KimaAvatarGroup, KimaIcon, KimaLink, KimaDivider, KimaEmptyState,
-  KimaSpinner, KimaSkeleton, KimaNotification, KimaCommand, KimaPagination,
+  KimaSpinner, KimaSkeleton, KimaNotification, KimaCommand, KimaPagination, KimaField,
 } from '../index.js';
 import {
   Home01Icon, Folder01Icon, Settings01Icon, Notification01Icon, Search01Icon,
@@ -41,10 +41,15 @@ const actions = [
 /* ---- 仪表盘 ---- */
 const chartMode = ref('line');
 const chartSeries = [
-  { name: '本月', values: [42, 58, 51, 74, 66, 89] },
-  { name: '上月', values: [30, 44, 38, 52, 47, 61] },
+  { name: '本月', data: [42, 58, 51, 74, 66, 89] },
+  { name: '上月', data: [30, 44, 38, 52, 47, 61] },
 ];
-const heatValues = Array.from({ length: 24 }, (_, i) => Math.round(Math.abs(Math.sin(i * 1.7)) * 90));
+const heatValues = [
+  [0, 1, 3, 5, 8, 13],
+  [2, 4, 8, 4, 3, 7],
+  [3, 5, 9, 12, 2, 4],
+  [1, 2, 3, 8, 12, 16],
+];
 
 /* ---- 数据 ---- */
 const columns = [
@@ -287,10 +292,10 @@ const pageNum = ref(2);
     </KimaAppShell>
 
     <!-- 弹层：真实触发 -->
-    <KimaDialog v-model:open="dialogOpen" heading="新建项目" description="填写基本信息，稍后可以在设置里修改。">
+    <KimaDialog v-model:open="dialogOpen" title="新建项目">
       <KimaTextField label="项目名称" name="dialog-name" placeholder="例如：官网改版" />
       <KimaSelect v-model="country" :items="countries" label="模板" />
-      <template #actions>
+      <template #footer>
         <KimaButton variant="text" @click="dialogOpen = false">取消</KimaButton>
         <KimaButton @click="dialogOpen = false; notifySent()">创建</KimaButton>
       </template>
