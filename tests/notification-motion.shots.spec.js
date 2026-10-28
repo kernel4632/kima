@@ -169,24 +169,35 @@ test('集合回归：TagGroup 窄屏删除跨行 chip 使用 FLIP 补位', async
   });
   const chips = page.locator('#tags .kima-tag-group__items > *');
   await expect(chips).toHaveCount(4);
-  await page.addStyleTag({ content: '.kima-tag-group__items > *{--kima-duration-slow:1000ms}' });
+  await page.addStyleTag({ content: '.kima-tag-group{--kima-duration-slow:1000ms}' });
   const before = await chips.evaluateAll(nodes => nodes.map(node => {
     const r = node.getBoundingClientRect();
     return { value: node.getAttribute('data-kima-flip-key'), x: r.x, y: r.y };
   }));
-  await chips.nth(1).locator('button[aria-label^="移除"]').click();
-  await page.waitForTimeout(60);
+  await chips.nth(1).locator('button[aria-label^="移除"]').evaluate(node => node.click());
+  await page.evaluate(async () => {
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    for (const animation of document.getAnimations()) { animation.pause(); animation.currentTime = 0; }
+  });
+  const start = await chips.evaluateAll(nodes => nodes.filter(node => !node.inert).map(node => ({
+    value: node.getAttribute('data-kima-flip-key'), x: node.getBoundingClientRect().x, y: node.getBoundingClientRect().y,
+  })));
+  for (const row of start) {
+    const old = before.find(item => item.value === row.value);
+    expect(Math.hypot(row.x - old.x, row.y - old.y)).toBeLessThan(1);
+  }
+  await page.evaluate(() => { for (const animation of document.getAnimations()) animation.currentTime = 850; });
   const middle = await chips.evaluateAll(nodes => nodes.map(node => {
     const r = node.getBoundingClientRect();
     return { value: node.getAttribute('data-kima-flip-key'), x: r.x, y: r.y, animations: node.getAnimations().length };
   }));
-  expect(middle).toHaveLength(4);
+  expect(middle.filter(item => item.value !== 'b')).toHaveLength(3);
   await page.screenshot({ path: 'shots/notification-motion/tag-group-middle.png', scale: 'css' });
   const survivor = middle.find(item => item.value === 'c');
   const original = before.find(item => item.value === 'c');
   expect(Math.abs(survivor.y - original.y) + Math.abs(survivor.x - original.x)).toBeGreaterThan(1);
   expect(survivor.animations).toBeGreaterThan(0);
-  await page.waitForTimeout(1100);
+  await page.evaluate(() => { for (const animation of document.getAnimations()) animation.finish(); });
   await expect(chips).toHaveCount(3);
   const after = await chips.evaluateAll(nodes => nodes.map(node => ({ value: node.getAttribute('data-kima-flip-key'), y: node.getBoundingClientRect().y })));
   expect(after.map(item => item.value)).toEqual(['a', 'c', 'd']);

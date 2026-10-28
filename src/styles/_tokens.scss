@@ -402,6 +402,18 @@ kima-transfer {
 .kima-fade-leave-active, .kima-content-leave-active,
 .kima-list-leave-active, .kima-popup-leave-active { pointer-events: none; }
 
+/* 可换行集合：存活项 transform 只由 useLayoutFlip 执行，Vue move 显式禁用。
+ * 这里只负责退出/进入的透明度，语义与表单状态不等待动画。 */
+.kima-collection-enter-active {
+  transition: opacity var(--kima-duration-medium) var(--kima-curve-standard);
+  transition-delay: calc(var(--kima-duration-fast) + var(--kima-duration-slow));
+}
+.kima-collection-leave-active {
+  pointer-events: none;
+  transition: opacity var(--kima-duration-fast) linear;
+}
+.kima-collection-enter-from, .kima-collection-leave-to { opacity: 0; }
+
 /* Applies only to library-owned elements/pseudo elements, not host page content.
  * Includes hardcoded press durations and all continuous loops. No transition:all.
  * Drawer uses real finished promises; zero-duration transition is supported there. */

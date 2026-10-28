@@ -1,63 +1,70 @@
 // Small Vue Transition hooks, safe to import during SSR. No timers or DOM at module scope.
-import { onBeforeUnmount } from 'vue';
+import { nextTick, onBeforeUnmount, watch } from 'vue';
 const active = new WeakMap();
 
-// 记录存活子项的旧坐标，在 Vue 完成列表更新后用 FLIP 保留视觉起点。
-// 只负责几何 transform，不接管进入/退出和语义状态。
-export function useLayoutFlip(target, keySelector = '[data-kima-flip-key]') {
+/* 可换行集合的唯一位移执行器。配合 kima-collection 和禁用 Vue move 的 move-class。
+ * 更新前读取当前视觉帧（含被中断的位移），更新后先批量读自然目标，再统一写动画。
+ * 集合共用两段节奏：向后排版先纵向腾位，向前补位先横向让位。
+ * 同排项也必须遵守相同阶段，不能先冲入跨行项尚未离开的区域。 */
+export function useLayoutFlip(target, source) {
   let before = new Map();
-  let frame = 0;
-  let disposed = false;
-function element() {
-  const value = target?.value ?? target;
-  if (value?.nodeType === 1) return value;
-  if (value?.$el?.nodeType === 1) return value.$el;
-  return null;
-}
-  function key(node) {
-    return node.getAttribute(keySelector.slice(1, -1)) || node.dataset.kimaFlipKey || node;
+  const running = new Map();
+  let revision = 0;
+  function element() {
+    const value = target.value;
+    return value?.nodeType === 1 ? value : value?.$el?.nodeType === 1 ? value.$el : null;
   }
-  function capture() {
+  function cancel() {
+    for (const animation of running.values()) animation.cancel();
+    running.clear();
+  }
+  watch(source, () => {
+    revision++;
     const root = element();
     if (!root) return;
-    before = new Map([...root.children].map(node => {
+    const origin = root.getBoundingClientRect();
+    before = new Map([...root.children].filter(node => !node.inert).map(node => {
       const rect = node.getBoundingClientRect();
-      return [key(node), { node, x: rect.x, y: rect.y }];
+      return [node, { rect, x: rect.x - origin.x, y: rect.y - origin.y }];
     }));
-  }
-  function play() {
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => {
-      if (disposed) return;
-      const root = element();
-      if (!root || prefersReducedMotion(root) || !root.animate) {
-        before.clear();
-        return;
-      }
-      const style = getComputedStyle(root);
-      const token = style.getPropertyValue('--kima-duration-slow').trim();
-      const duration = token ? parseFloat(token) * (token.endsWith('ms') ? 1 : 1000) : 300;
-      if (!Number.isFinite(duration) || duration <= 0) {
-        before.clear();
-        return;
-      }
-      for (const node of root.children) {
-        const old = before.get(key(node));
-        if (!old) continue;
-        const rect = node.getBoundingClientRect();
-        const dx = old.x - rect.x;
-        const dy = old.y - rect.y;
-        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
-        node.animate(
-          [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }],
-          { duration, easing: style.getPropertyValue('--kima-curve-emphasized').trim() || 'ease-out' },
-        );
-      }
-      before.clear();
+    cancel();
+  }, { flush: 'pre', deep: true });
+  watch(source, async () => {
+    const current = revision;
+    await nextTick();
+    if (current !== revision) return;
+    const root = element();
+    if (!root || prefersReducedMotion(root) || !root.animate) { before.clear(); return; }
+    const style = getComputedStyle(root);
+    const duration = milliseconds(style.getPropertyValue('--kima-duration-slow'));
+    const delay = milliseconds(style.getPropertyValue('--kima-duration-fast'));
+    const easing = style.getPropertyValue('--kima-curve-emphasized').trim() || 'ease-out';
+    const origin = root.getBoundingClientRect();
+    const plans = [...root.children].filter(node => !node.inert && before.has(node)).map(node => {
+      const rect = node.getBoundingClientRect();
+      const old = before.get(node);
+      return { node, dx: old.x - (rect.x - origin.x), dy: old.y - (rect.y - origin.y) };
     });
-  }
-  onBeforeUnmount(() => { disposed = true; cancelAnimationFrame(frame); });
-  return { capture, play };
+    const verticalFirst = plans.some(({ dy }) => dy < -0.5);
+    for (const { node, dx, dy } of plans) {
+      if (!duration || Math.abs(dx) + Math.abs(dy) < 0.5) continue;
+      const frames = [
+        { transform: `translate(${dx}px, ${dy}px)`, offset: 0, easing },
+        { transform: verticalFirst ? `translate(${dx}px, 0)` : `translate(0, ${dy}px)`, offset: 0.5, easing },
+        { transform: 'translate(0, 0)', offset: 1 },
+      ];
+      const animation = node.animate(frames, { duration, delay, fill: 'backwards' });
+      running.set(node, animation);
+      animation.finished.then(() => { if (running.get(node) === animation) running.delete(node); }).catch(() => {});
+    }
+    before.clear();
+  }, { flush: 'post', deep: true });
+  onBeforeUnmount(() => { revision++; cancel(); });
+  return {
+    beforeLeave(node) { freezeLeaveLayout(node, before.get(node)?.rect); },
+    beforeEnter: restoreLeaveLayout,
+    leaveCancelled: restoreLeaveLayout,
+  };
 }
 const interrupted = new WeakMap();
 
@@ -96,10 +103,10 @@ export function restoreLeaveLayout(element) {
 
 /* 退出节点先冻结在原坐标并脱离排版，让承载容器可立即测得新自然尺寸。
  * 用于网格、弹性布局等列表；表格行不应使用此 helper。 */
-export function freezeLeaveLayout(element) {
+export function freezeLeaveLayout(element, visualRect) {
   const parent = element.parentElement;
   if (!parent) return;
-  const rect = element.getBoundingClientRect();
+  const rect = visualRect ?? element.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
   const style = element.ownerDocument.defaultView.getComputedStyle(parent);
   if (style.position === 'static') parent.style.position = 'relative';

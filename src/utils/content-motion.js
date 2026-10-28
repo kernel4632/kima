@@ -1,5 +1,19 @@
 import { nextTick, onBeforeUnmount, watch } from 'vue';
-import { prefersReducedMotion } from './motion.js';
+import { prefersReducedMotion, useLayoutFlip } from './motion.js';
+
+// 集合统一契约：先退出，再分段让位/调整占位，最后显现新增项。
+// 高度盒和子项容器可以分开，控制区始终跟随高度盒的正常排版。
+export function useCollectionMotion(target, source, items = target) {
+  useContentMotion(target, source, { collection: true });
+  const layout = useLayoutFlip(items, source);
+  return {
+    name: 'kima-collection',
+    moveClass: 'kima-collection-no-move',
+    onBeforeLeave: layout.beforeLeave,
+    onBeforeEnter: layout.beforeEnter,
+    onLeaveCancelled: layout.leaveCancelled,
+  };
+}
 
 /* 内容原位变化时，让承载盒从当前视觉高度过渡到更新后的自然高度。
  * 连续变化必须以被中断动画的当前帧为起点，而不是沿用上一次动画的终点。 */
@@ -8,7 +22,9 @@ function resolveElement(target) {
   return value?.nodeType === 1 ? value : value?.$el?.nodeType === 1 ? value.$el : null;
 }
 
-export function useContentMotion(target, source, { opacity = true } = {}) {
+export function useContentMotion(target, source, { opacity = true, collection = false } = {}) {
+  if (collection) opacity = false;
+  const overflow = collection ? 'visible' : 'clip';
   let animation;
   let disposed = false;
   let revision = 0;
@@ -51,11 +67,11 @@ export function useContentMotion(target, source, { opacity = true } = {}) {
       animation = undefined;
       element.style.height = `${fromHeight}px`;
       element.style.boxSizing = 'border-box';
-      element.style.overflow = 'clip';
+      element.style.overflow = overflow;
       if (opacity) element.style.opacity = `${fromOpacity}`;
       lockedHeight = true;
     }
-  }, { flush: 'pre' });
+  }, { flush: 'pre', deep: true });
 
   watch(source, async () => {
     const currentRevision = ++revision;
@@ -70,7 +86,7 @@ export function useContentMotion(target, source, { opacity = true } = {}) {
     }
 
     const style = view.getComputedStyle(element);
-    const token = style.getPropertyValue('--kima-duration-effects').trim();
+    const token = style.getPropertyValue(collection ? '--kima-duration-slow' : '--kima-duration-effects').trim();
     const duration = token ? parseFloat(token) * (token.endsWith('ms') ? 1 : 1000) : 180;
     if (!Number.isFinite(duration) || duration <= 0) {
       restoreStyles(element);
@@ -83,7 +99,7 @@ export function useContentMotion(target, source, { opacity = true } = {}) {
       element.style.boxSizing = originalStyles.boxSizing;
     }
     const toHeight = element.getBoundingClientRect().height;
-    const heightChanged = fromHeight > 0 && Math.abs(toHeight - fromHeight) > 1;
+    const heightChanged = (collection || fromHeight > 0) && Math.abs(toHeight - fromHeight) > 1;
     if (!heightChanged && !opacity) {
       restoreStyles(element);
       return;
@@ -99,22 +115,32 @@ export function useContentMotion(target, source, { opacity = true } = {}) {
     if (heightChanged) {
       element.style.height = `${fromHeight}px`;
       element.style.boxSizing = 'border-box';
-      element.style.overflow = 'clip';
+      element.style.overflow = overflow;
     }
     const from = opacity ? fromOpacity : 1;
     if (opacity) element.style.opacity = `${from}`;
-    const keyframes = heightChanged
+    const easing = style.getPropertyValue('--kima-curve-emphasized').trim() || 'ease-out';
+    const keyframes = heightChanged && collection ? [
+      { height: `${fromHeight}px`, offset: 0, easing },
+      { height: `${toHeight > fromHeight ? toHeight : fromHeight}px`, offset: 0.5, easing },
+      { height: `${toHeight}px`, offset: 1 },
+    ] : heightChanged
       ? [{ height: `${fromHeight}px`, opacity: from }, { height: `${toHeight}px`, opacity: 1 }]
       : [{ opacity: from }, { opacity: 1 }];
+    const delayValue = collection ? style.getPropertyValue('--kima-duration-fast').trim() : '';
+    const delay = delayValue ? parseFloat(delayValue) * (delayValue.endsWith('ms') ? 1 : 1000) : 0;
     const running = element.animate(keyframes, {
       duration,
-      easing: style.getPropertyValue('--kima-curve-emphasized').trim() || 'ease-out',
+      delay: Number.isFinite(delay) ? Math.max(0, delay) : 0,
+      easing: collection ? 'linear' : easing,
+      fill: 'both',
     });
     animation = running;
     running.finished.then(() => {
       if (animation !== running) return;
       animation = undefined;
       restoreStyles(element);
+      running.cancel();
     }).catch(() => {});
   }, { deep: true });
 
