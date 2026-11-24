@@ -68,10 +68,20 @@ function toggle(si){ hidden.value=hidden.value.includes(si)?hidden.value.filter(
   </section>
 </template>
 <style scoped lang="scss">
-@use '../../styles/content' as *;
+@use "../../styles/mixins" as *;
+
 .kima-chart  {
-  @include content-root;
-  @include content-reduced;
+  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
+  --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
+  --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
+  --kima-heatmap-low: var(--kima-color-layer-2);
+  --kima-heatmap-high: var(--kima-color-primary-container);
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
   position:relative;
   display:grid;
   gap:var(--kima-space-2);
@@ -142,7 +152,9 @@ function toggle(si){ hidden.value=hidden.value.includes(si)?hidden.value.filter(
   &__table {
     overflow:auto;
     table {
-      @include content-table
+      width: 100%; border-collapse: collapse; font: inherit;
+      th, td { padding: var(--kima-space-2); text-align: start; }
+      tr:nth-child(even) { background: var(--kima-color-layer-1); }
     }
   }
 

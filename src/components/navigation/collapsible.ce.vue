@@ -43,6 +43,15 @@ watch(localOpen, () => nextTick(syncContentFocus), { immediate: true });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
-.kima-collapsible { @include navigation-surface; &__content { padding: var(--kima-space-4); line-height: 1.7; } }
+@use "../../styles/mixins" as *;
+.kima-collapsible { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4); &__content { padding: var(--kima-space-4); line-height: 1.7; } }
 </style>

@@ -11,10 +11,14 @@ const { root, forwardedAttrs } = useNavigationRoot();
 </script>
 <template><nav ref="root" v-bind="forwardedAttrs" class="kima-breadcrumb" :aria-label="label"><ol><li v-for="(item, index) in items" :key="index"><span v-if="index" aria-hidden="true" class="kima-breadcrumb__separator">{{ separator }}</span><KimaLink v-if="item.href && index !== items.length - 1" :href="item.href" :disabled="item.disabled">{{ item.label }}</KimaLink><span v-else :aria-current="index === items.length - 1 ? 'page' : undefined">{{ item.label }}</span></li></ol><slot /></nav></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
 .kima-breadcrumb  {
-  @include navigation-root;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
   @include kima-block-host;
   ol  {
     display: flex;

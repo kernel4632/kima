@@ -32,6 +32,13 @@ const segments = computed(() => {
   <span ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-highlight"><template v-for="(segment, index) in segments" :key="index"><mark v-if="segment.marked">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template></template></span>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
-.kima-highlight { @include display-base; white-space: pre-wrap; mark { border-radius: var(--kima-radius-xs); color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); } }
+@use "../../styles/mixins" as *;
+.kima-highlight { box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere; white-space: pre-wrap; mark { border-radius: var(--kima-radius-xs); color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); } }
 </style>

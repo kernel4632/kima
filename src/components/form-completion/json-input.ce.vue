@@ -9,14 +9,38 @@ useContentMotion(message, () => Boolean(parsed.value.error));
 </script>
 <template><div ref="root" :class="['kima-json-input',attrs.class]" :style="attrs.style"><textarea ref="area" v-bind="controlAttrs" class="kima-json-input__control" :value="local" :name="name" :aria-label="controlAttrs['aria-label']||label" :rows="rows" :required="required" :disabled="disabled" :readonly="readonly" spellcheck="false" @input.stop="update($event.target.value,false)" @change.stop="emit('change',local)"></textarea><div ref="message" class="kima-json-input__message"><p v-if="parsed.error" role="alert">{{parsed.error.message}}<template v-if="parsed.error.position!==null"> · 位置 {{parsed.error.position}}</template></p><p v-else role="status">JSON 有效</p></div><KimaButton variant="tonal" :disabled="disabled||readonly||!!parsed.error" @click="format">格式化</KimaButton></div></template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
+@use "../../styles/mixins" as *;
 .kima-json-input {
-  @include input-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
   display:grid;
   gap:var(--kima-space-2);
   &__control {
-    @include input-surface;
-    @include input-control;
+    @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
+    box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }
     min-height:10em;
     resize:vertical;
     font-family:var(--kima-font-family);

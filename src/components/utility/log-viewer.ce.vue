@@ -35,4 +35,14 @@ defineExpose({ append, exportText, resume: () => follow(true) });
     <div ref="viewport" class="kima-log-viewer__viewport" role="log" :aria-label="label" :aria-live="following ? 'polite' : 'off'" tabindex="0" @scroll="scroll"><div v-for="row in filtered" :key="row.id" class="kima-log-viewer__line"><KimaHighlight :text="row.text" :keywords="query"/></div><p v-if="!filtered.length">没有匹配日志</p></div>
   </section>
 </template>
-<style scoped lang="scss">@use '../../styles/mixins' as *; @use '../../styles/interaction' as *; .kima-log-viewer { @include kima-layer(1); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); padding: var(--kima-space-4); border-radius: var(--kima-radius-m); &__tools { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); input { @include interaction-search; width: min(100%, 240px); } } &__follow-status { font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-focus-ring; height: 260px; overflow: auto; overflow-anchor: none; } &__line { min-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere; } }</style>
+<style scoped lang="scss">@use '../../styles/mixins' as *;  .kima-log-viewer { @include kima-layer(1); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); padding: var(--kima-space-4); border-radius: var(--kima-radius-m); &__tools { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); input { box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: var(--kima-space-2);
+  padding: var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  background: var(--kima-color-layer-2);
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } width: min(100%, 240px); } } &__follow-status { font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-focus-ring; height: 260px; overflow: auto; overflow-anchor: none; } &__line { min-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere; } }</style>

@@ -38,11 +38,25 @@ function close() { if (!visible.value) return; visible.value = false; emit("upda
   </Transition>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
 @use "../../styles/mixins" as *;
 .kima-alert {
-  @include display-panel;
-  @include display-tones;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
+  --kima-display-tone: var(--kima-color-on-surface-variant);
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
+  &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
+  &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
   @include kima-motion-colors;
   display: flex; align-items: flex-start; gap: var(--kima-space-4);
   &__icon { @include kima-motion-colors; display: inline-flex; flex: 0 0 auto; color: var(--kima-display-tone); padding-block: var(--kima-space-1); }

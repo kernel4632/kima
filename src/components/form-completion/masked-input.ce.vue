@@ -8,5 +8,30 @@ function onInput(e){apply(e.target.value,e.target.selectionStart||0);}function v
 </script>
 <template><div ref="root" :class="['kima-masked-input',attrs.class]" :style="attrs.style"><input ref="input" v-bind="controlAttrs" class="kima-masked-input__control" :value="local" :name="name" :aria-label="controlAttrs['aria-label']||label" :placeholder="placeholder||mask" :required="required" :disabled="disabled" :readonly="readonly" @input.stop="onInput;validity()" @paste="()=>{}" @compositionend="onInput" @change.stop="validity();emit('change',local)"></div></template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;.kima-masked-input{@include input-root;@include input-surface;&__control{@include input-control;width:100%;font-variant-numeric:tabular-nums}}
+@use "../../styles/mixins" as *;
+.kima-masked-input{box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }@include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }&__control{box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }width:100%;font-variant-numeric:tabular-nums}}
 </style>

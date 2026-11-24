@@ -23,9 +23,11 @@ const alignment = computed(() => choice(props.align, ['start', 'center'], 'start
   </header>
 </template>
 <style scoped lang="scss">
-@use '../../styles/foundation' as *;
+@use "../../styles/mixins" as *;
+
 .kima-page-header {
-  @include foundation-base;
+  @include kima-block-host;
+  > :deep(*) { min-width: 0; }
   display: grid;
   gap: var(--kima-space-4);
   padding-block: var(--kima-space-4);

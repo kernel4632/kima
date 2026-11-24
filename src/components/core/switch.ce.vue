@@ -108,6 +108,14 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 @use "../../styles/mixins" as *;
 
 .kima-switch {
+  /* 开关造型参数：轨道 60×36，拇指 28（选中 32，按下撑满轨道留 2px 描边）。 */
+  --kima-switch-track-width: 60px;
+  --kima-switch-track-height: 36px;
+  --kima-switch-thumb-size: 28px;
+  --kima-switch-thumb-selected: 32px;
+  --kima-switch-outline-width: 2px;
+  --kima-switch-thumb-pressed: 32px;
+
   position: relative;
   display: inline-flex;
   align-items: center;

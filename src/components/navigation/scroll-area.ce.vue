@@ -13,7 +13,15 @@ const dimensions = computed(() => ({ maxHeight: cssSize(props.maxHeight), maxWid
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-scroll-area" role="region" :aria-label="label" tabindex="0" :style="dimensions" @scroll="emit('scroll', $event)"><slot /></div></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
-.kima-scroll-area { @include navigation-surface; @include kima-focus-ring; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.kima-scroll-area { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4); @include kima-focus-ring; overscroll-behavior: contain; scrollbar-gutter: stable; }
 </style>

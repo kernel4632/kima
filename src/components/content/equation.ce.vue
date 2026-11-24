@@ -13,10 +13,20 @@ const rendered=computed(()=>{
 </script>
 <template><figure ref="root" class="kima-equation" :class="{'kima-equation--inline':!display}" :aria-label="label"><div v-if="!rendered.error" class="kima-equation__math" v-html="rendered.html"></div><div v-else class="kima-equation__error" role="alert"><span>{{ rendered.error }}</span><code>{{ formula }}</code></div><figcaption v-if="label">{{ label }}</figcaption></figure></template>
 <style scoped lang="scss">
-@use '../../styles/content' as *;
+@use "../../styles/mixins" as *;
+
 .kima-equation {
-  @include content-root;
-  @include content-reduced;
+  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
+  --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
+  --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
+  --kima-heatmap-low: var(--kima-color-layer-2);
+  --kima-heatmap-high: var(--kima-color-primary-container);
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
   margin:0;
   padding:var(--kima-space-4);
   overflow-x:auto;

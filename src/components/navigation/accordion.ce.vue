@@ -35,10 +35,14 @@ function expanded(value) { return props.multiple ? selected.value.includes(value
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
 .kima-accordion  {
-  @include navigation-root;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
   @include kima-block-host;
   &__item  {
     margin-block: var(--kima-space-2);

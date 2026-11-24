@@ -72,10 +72,18 @@ function keydown(event) {
   </section>
 </template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
 .kima-carousel  {
-  @include navigation-surface;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4);
   @include kima-focus-ring;
   &__viewport  {
     position: relative;

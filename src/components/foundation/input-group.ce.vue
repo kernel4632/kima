@@ -13,9 +13,11 @@ const { root, forwardedAttrs, hasNativeSlot, isCustomElement } = useNavigationRo
   </div>
 </template>
 <style scoped lang="scss">
-@use '../../styles/foundation' as *;
+@use "../../styles/mixins" as *;
+
 .kima-input-group {
-  @include foundation-base;
+  @include kima-block-host;
+  > :deep(*) { min-width: 0; }
   display: flex;
   align-items: center;
   gap: var(--kima-space-2);

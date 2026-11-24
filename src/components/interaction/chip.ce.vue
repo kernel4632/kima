@@ -27,10 +27,13 @@ useInteractionReset(root, selected, update);
   </span>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
 @use "../../styles/mixins" as *;
 .kima-chip  {
-  @include interaction-root;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
   @include kima-layer(2);
   display: inline-flex;
   vertical-align: middle;

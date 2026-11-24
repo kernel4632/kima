@@ -29,10 +29,14 @@ useRipple(root);
   </span>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
 .kima-toggle {
-  @include input-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
   @include kima-layer(2);
   @include kima-state-layer;
   @include kima-motion-colors;

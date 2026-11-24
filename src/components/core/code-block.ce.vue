@@ -92,6 +92,8 @@ async function copyCode() {
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
   font-weight: var(--kima-font-weight-semi-bold);
+  /* 代码行高 1.6：比正文松一档，逐行扫读不串行。 */
+  --kima-line-height-code: 1.6;
   @include kima-layer(1);
 
   /* 顶栏是一层独立的小场地：给它自己一层浅底，和代码正文分开，

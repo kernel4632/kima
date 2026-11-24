@@ -22,10 +22,16 @@ const style = computed(() => ({ ...layoutVariables('grid', 'columns', props.colu
   </div>
 </template>
 <style scoped lang="scss">
-@use '../../styles/foundation' as *;
+@use "../../styles/mixins" as *;
+
 .kima-grid {
-  @include foundation-base;
-  @include foundation-responsive('grid');
+  @include kima-block-host;
+  > :deep(*) { min-width: 0; }
+  --kima-grid-gap: var(--kima-grid-gap-base);
+  gap: var(--kima-grid-gap);
+  @media (min-width: 640px) { --kima-grid-gap: var(--kima-grid-gap-sm); }
+  @media (min-width: 960px) { --kima-grid-gap: var(--kima-grid-gap-md); }
+  @media (min-width: 1280px) { --kima-grid-gap: var(--kima-grid-gap-lg); }
   display: grid;
   --kima-grid-columns: var(--kima-grid-columns-base);
   grid-template-columns: var(--kima-grid-columns);

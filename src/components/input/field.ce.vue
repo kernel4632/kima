@@ -68,7 +68,14 @@ onBeforeUnmount(() => {
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
-.kima-field { @include input-root; display: block; min-width: 0; &__messages { display: grid; } &__message { @include input-message; grid-area: 1 / 1; margin: 0; padding-top: var(--kima-space-2); } }
+.kima-field { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); } display: block; min-width: 0; &__messages { display: grid; } &__message { margin: var(--kima-space-2) 0 0;
+  color: var(--kima-color-on-surface-variant);
+  font-size: var(--kima-font-size-label-small);
+  &[role="alert"] { color: var(--kima-color-error); } grid-area: 1 / 1; margin: 0; padding-top: var(--kima-space-2); } }
 </style>

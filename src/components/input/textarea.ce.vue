@@ -97,12 +97,35 @@ defineExpose({ focus: () => input.value?.focus() });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
 .kima-textarea {
-  @include input-root;
-  &__surface { @include input-surface; display: flex; align-items: flex-start; }
-  textarea { @include input-control; @include kima-motion-colors; display: block; flex: 1 1 auto; width: 100%; line-height: 1.6; }
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  &__surface { @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  } display: flex; align-items: flex-start; }
+  textarea { box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; } @include kima-motion-colors; display: block; flex: 1 1 auto; width: 100%; line-height: 1.6; }
  &__clear  {
   @include kima-state-layer;
   @include kima-focus-ring;
@@ -123,8 +146,14 @@ defineExpose({ focus: () => input.value?.focus() });
 
 }
   &__message-wrap { display: grid; }
-  &__message { @include input-message; grid-area: 1 / 1; &--error { color: var(--kima-color-error); } }
-  &__count { @include input-message; text-align: end; }
+  &__message { margin: var(--kima-space-2) 0 0;
+  color: var(--kima-color-on-surface-variant);
+  font-size: var(--kima-font-size-label-small);
+  &[role="alert"] { color: var(--kima-color-error); } grid-area: 1 / 1; &--error { color: var(--kima-color-error); } }
+  &__count { margin: var(--kima-space-2) 0 0;
+  color: var(--kima-color-on-surface-variant);
+  font-size: var(--kima-font-size-label-small);
+  &[role="alert"] { color: var(--kima-color-error); } text-align: end; }
   &--error &__surface { background: var(--kima-color-error-container); color: var(--kima-color-on-error-container); &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-error); } }
   &--error textarea::placeholder { color: var(--kima-color-on-error-container); }
 }

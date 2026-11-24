@@ -31,9 +31,16 @@ useContentMotion(root, () => props.loading);
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
+@use "../../styles/mixins" as *;
 .kima-skeleton {
-  @include display-base;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
   width: 100%;
   display: grid;
   &__placeholder, &__content { grid-area: 1 / 1; align-self: start; min-width: 0; }

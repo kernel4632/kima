@@ -24,9 +24,13 @@ function act(action) { if (props.disabled || !localOpen.value) return; updateOpe
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
+@use "../../styles/mixins" as *;
 .kima-popconfirm  {
-  @include interaction-root;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
   display: inline-block;
   h3  {
     margin: 0 0 var(--kima-space-3);

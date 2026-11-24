@@ -44,12 +44,36 @@ function selectAll(side) { const source=side==='left'?filteredLeft.value:filtere
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
 @use "../../styles/mixins" as *;
-.kima-transfer { @include advanced-root; display:grid; grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--kima-space-4);
+.kima-transfer { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--kima-space-4);
   &__panel { @include kima-layer(1); display:grid;gap:var(--kima-space-2);min-width:0;padding:var(--kima-space-3);border-radius:var(--kima-radius-m); }
   header {display:flex;justify-content:space-between;gap:var(--kima-space-2);span{color:var(--kima-color-on-surface-variant);}}
-  &__search { @include advanced-field;min-height:var(--kima-touch-target); }
+  &__search { @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  color: inherit;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; }min-height:var(--kima-touch-target); }
  &__list  {
   @include kima-focus-ring;
   box-sizing:border-box;

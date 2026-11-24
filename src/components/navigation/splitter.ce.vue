@@ -52,9 +52,14 @@ onBeforeUnmount(() => end());
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-splitter" :class="{ 'kima-splitter--vertical': vertical }"><section :id="`${id}-first`" class="kima-splitter__panel kima-splitter__panel--first" :style="panelStyle"><slot name="first" /></section><div ref="handle" class="kima-splitter__handle" role="separator" :tabindex="disabled ? -1 : 0" :aria-label="label" :aria-controls="`${id}-first ${id}-second`" :aria-orientation="vertical ? 'horizontal' : 'vertical'" :aria-valuenow="size" :aria-valuemin="lower" :aria-valuemax="upper" :aria-valuetext="`${size}%`" :aria-disabled="disabled || undefined" @pointerdown="down" @pointermove="move" @pointerup="end" @pointercancel="end" @lostpointercapture="end" @keydown="keydown"><span aria-hidden="true"></span></div><section :id="`${id}-second`" class="kima-splitter__panel"><slot name="second" /></section></div></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
+@use "../../styles/mixins" as *;
 .kima-splitter  {
-  @include navigation-root;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
   display: flex;
   min-height: 260px;
   width: 100%;
@@ -80,7 +85,23 @@ onBeforeUnmount(() => end());
 
   }
   &__handle  {
-    @include navigation-action;
+    @include kima-state-layer;
+  @include kima-focus-ring;
+  @include kima-ripple-host;
+  @include kima-disabled;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kima-space-2);
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: var(--kima-space-2) var(--kima-space-4);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  color: var(--kima-color-primary);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
     flex: 0 0 48px;
     width: 48px;
     padding: 0;

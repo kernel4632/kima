@@ -25,11 +25,25 @@ const status = computed(() => displayStatus(props.variant));
   </section>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
 @use "../../styles/mixins" as *;
 .kima-result__icon { @include kima-motion-colors; }
 .kima-result {
-  @include display-panel; @include display-tones;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m); --kima-display-tone: var(--kima-color-on-surface-variant);
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
+  &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
+  &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--kima-space-4); padding-block: var(--kima-space-10);
   &__icon { color: var(--kima-display-tone); display: inline-flex; }
   h2, p { margin: 0; max-width: 48ch; }

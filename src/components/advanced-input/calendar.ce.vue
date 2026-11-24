@@ -86,12 +86,23 @@ defineExpose({ focus: () => focus(tabDate.value || month.value), navigate });
   </section>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
 @use "../../styles/mixins" as *;
 .kima-calendar {
-  @include advanced-root; display:grid; gap:var(--kima-space-2); width:100%; max-width:380px;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; display:grid; gap:var(--kima-space-2); width:100%; max-width:380px;
   &__head { display:flex; align-items:center; justify-content:space-between; gap:var(--kima-space-2); h2 { flex:1; text-align:center; margin:0; font-size:var(--kima-font-size-title-small); } }
-  &__nav { @include advanced-action; width:var(--kima-touch-target); padding:0; font-size:var(--kima-font-size-title-large); }
+  &__nav { @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-focus-ring;
+  @include kima-press;
+  box-sizing: border-box; min-height: var(--kima-touch-target); padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
+  &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } width:var(--kima-touch-target); padding:0; font-size:var(--kima-font-size-title-large); }
   &__grid { display:grid; gap:var(--kima-space-1); }
   &__row { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:2px; text-align:center; > span { font-size:var(--kima-font-size-label-small); padding-block:var(--kima-space-2); color:var(--kima-color-on-surface-variant); } }
   &__day { @include kima-motion-colors; @include kima-focus-ring; width:100%; aspect-ratio:1; min-height:40px; padding:0; border:0; border-radius:var(--kima-radius-full); background:transparent; color:inherit; font:inherit; cursor:pointer;
@@ -102,6 +113,6 @@ defineExpose({ focus: () => focus(tabDate.value || month.value), navigate });
     &.is-selected { background:var(--kima-color-primary); color:var(--kima-color-on-primary); }
     &:disabled { opacity:var(--kima-opacity-disabled); cursor:not-allowed; }
   }
-  &__native { @include advanced-native; }
+  &__native { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; clip-path: inset(50%); overflow: hidden; }
 }
 </style>

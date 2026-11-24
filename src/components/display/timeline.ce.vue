@@ -24,16 +24,26 @@ const itemKey = createCollectionKey(() => props.items);
   </ol>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
 @use "../../styles/mixins" as *;
 .kima-timeline__marker { @include kima-motion-colors; }
 .kima-timeline {
-  @include display-base;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
   position: relative; display: grid; align-content: start;
   @include kima-block-host;
   margin: 0; padding: 0; list-style: none;
  &__item  {
-  @include display-tones;
+  --kima-display-tone: var(--kima-color-on-surface-variant);
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
+  &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
+  &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
   display: flex;
   position: relative;
   gap: var(--kima-space-4);

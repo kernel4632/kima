@@ -82,10 +82,25 @@ defineExpose({focus:()=>editor.value?.commands.focus(),getHTML:()=>sanitizeConte
   </div>
 </template>
 <style scoped lang="scss">
-@use '../../styles/content' as *;
+@use "../../styles/mixins" as *;
+
 .kima-rich-text-editor {
-  @include content-editor;
-  @include content-reduced;
+  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
+  --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
+  --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
+  --kima-heatmap-low: var(--kima-color-layer-2);
+  --kima-heatmap-high: var(--kima-color-primary-container);
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  overflow: clip;
+  &:focus-within { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: 2px; }
+  &[aria-disabled='true'] { opacity: var(--kima-opacity-disabled); }
+  @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
   position:relative;
   &__toolbar {
     display:flex;

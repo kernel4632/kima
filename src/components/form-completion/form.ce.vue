@@ -126,6 +126,12 @@ defineExpose({ form: root, requestSubmit: () => root.value?.requestSubmit(), res
   </form>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
-.kima-form { @include advanced-root; display:grid; gap:var(--kima-space-3); &__fields { display:grid; gap:var(--kima-space-4); min-width:0; margin:0; padding:0; border:0; } &__error { margin:0; padding-block:var(--kima-space-2); color:var(--kima-color-error); } }
+@use "../../styles/mixins" as *;
+.kima-form { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; display:grid; gap:var(--kima-space-3); &__fields { display:grid; gap:var(--kima-space-4); min-width:0; margin:0; padding:0; border:0; } &__error { margin:0; padding-block:var(--kima-space-2); color:var(--kima-color-error); } }
 </style>

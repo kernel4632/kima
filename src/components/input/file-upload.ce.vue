@@ -91,14 +91,26 @@ function fileKey(file, index) {
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
 .kima-file-upload {
-  @include input-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
   @include kima-motion-colors;
   /* 原生 file 控件的外观不可控，整块拖放区就是点击目标；输入框只保留语义与键盘焦点。 */
   &__drop {
-    @include input-surface;
+    @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
     @include kima-motion-colors;
     position: relative;
     display: grid;
@@ -111,7 +123,10 @@ function fileKey(file, index) {
   }
   &__drop--active { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
   input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-  p { @include input-message; margin: 0; padding: var(--kima-space-5); text-align: center; }
+  p { margin: var(--kima-space-2) 0 0;
+  color: var(--kima-color-on-surface-variant);
+  font-size: var(--kima-font-size-label-small);
+  &[role="alert"] { color: var(--kima-color-error); } margin: 0; padding: var(--kima-space-5); text-align: center; }
   &__files { list-style: none; margin: 0; padding: var(--kima-space-3) 0 0; display: grid; gap: var(--kima-space-2); }
   li { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-3); }
   &__filename { min-width: 0; flex: 1; overflow-wrap: anywhere; }

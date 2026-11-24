@@ -13,4 +13,29 @@ const { values, filtered, active, id, selected, choose, move } = useUtilityChoic
 useRipple(root);
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-listbox"><div role="listbox" :aria-label="label" :aria-multiselectable="multiple || undefined" :aria-disabled="disabled" :tabindex="!filtered.some(item => !item.disabled) ? 0 : undefined" @keydown="move($event, true)"><div v-for="(item, index) in filtered" :id="`${id}-${index}`" :key="item.index" class="kima-listbox__option kima-ripple-host" role="option" :tabindex="!disabled && index === active ? 0 : -1" :aria-selected="selected(item)" :aria-disabled="disabled || item.disabled" :data-disabled="disabled || item.disabled || undefined" @focus="active = index" @click="choose(item)"><slot name="option" :item="item" :selected="selected(item)" :disabled="disabled || item.disabled"><KimaIcon v-if="item.icon" :icon="item.icon" :size="20" aria-hidden="true" /><span class="kima-listbox__option-copy"><span>{{ item.label ?? item.value }}</span><small v-if="item.description">{{ item.description }}</small></span><KimaIcon v-if="selected(item)" :icon="Tick01Icon" class="kima-listbox__check" :size="18" aria-hidden="true" /></slot></div><p v-if="!filtered.length">暂无选项</p></div><input v-for="(value, index) in values" :key="index" type="hidden" :name="name" :value="value" :disabled="disabled"></div></template>
-<style scoped lang="scss">@use '../../styles/interaction' as *; @use '../../styles/mixins' as *; .kima-listbox { @include interaction-root; @include kima-layer(1); width: 100%; padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__option { @include interaction-row; } &__option-copy { display: grid; min-width: 0; gap: var(--kima-space-1); } &__option-copy small { color: var(--kima-color-on-surface-variant); } &__check { margin-inline-start: auto; } }</style>
+<style scoped lang="scss"> @use '../../styles/mixins' as *; .kima-listbox { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; @include kima-layer(1); width: 100%; padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__option { @include kima-focus-ring;
+  @include kima-disabled;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kima-space-3);
+  min-height: 48px;
+  padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-s);
+  background: transparent;
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
+  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } } &__option-copy { display: grid; min-width: 0; gap: var(--kima-space-1); } &__option-copy small { color: var(--kima-color-on-surface-variant); } &__check { margin-inline-start: auto; } }</style>

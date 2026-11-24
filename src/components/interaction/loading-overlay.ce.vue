@@ -40,10 +40,13 @@ onBeforeUnmount(() => { previousFocus = null; });
   </section>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
 @use "../../styles/mixins" as *;
 .kima-loading-overlay  {
-  @include interaction-root;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
   position: relative;
   border-radius: var(--kima-radius-m);
   min-height: 140px;

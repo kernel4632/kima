@@ -18,10 +18,20 @@ async function key(event,index){let target=index;switch(event.key){case'ArrowRig
 </script>
 <template><section ref="root" class="kima-heatmap" :aria-label="label"><div role="grid" :aria-label="label" :aria-rowcount="values.length" :aria-colcount="width" class="kima-heatmap__grid"><div v-for="(row,y) in values" :key="y" role="row" class="kima-heatmap__row" :style="{gridTemplateColumns:`repeat(${width},minmax(44px,1fr))`}"><button v-for="(c,x) in cells.filter(c=>c.y===y)" :key="x" role="gridcell" type="button" :data-cell="y*width+x" :tabindex="active===y*width+x?0:-1" :aria-label="description(c)" :aria-selected="active===y*width+x" :style="{'--kima-heatmap-cell':`color-mix(in srgb, var(--kima-heatmap-high) ${Math.round(intensity(c)*100)}%, var(--kima-heatmap-low))`}" @focus="select(y*width+x)" @click="select(y*width+x)" @keydown="key($event,y*width+x)">{{ c.value??'—' }}</button></div></div><div class="kima-heatmap__legend" aria-label="强度图例"><span>{{ domain[0] }}</span><span class="kima-heatmap__scale"></span><span>{{ domain[1] }}</span><span>— 缺失</span></div><output role="status">{{ cells[active]?description(cells[active]):'暂无数据' }}</output><KimaButton variant="text" :aria-expanded="table" @click="table=!table">查看数据表</KimaButton><Transition :css="false" v-bind="collapseTransition"><div v-show="table" :inert="!table" :aria-hidden="!table || undefined" class="kima-heatmap__table"><table><caption>{{ label }}</caption><thead><tr><th>行 / 列</th><th v-for="(_,x) in Array.from({length:width})" :key="x">{{ columns[x]??x+1 }}</th></tr></thead><tbody><tr v-for="(row,y) in values" :key="y"><th scope="row">{{ rows[y]??y+1 }}</th><td v-for="c in cells.filter(c=>c.y===y)" :key="c.x">{{ c.value??'缺失' }}</td></tr></tbody></table></div></Transition></section></template>
 <style scoped lang="scss">
-@use '../../styles/content' as *;@use '../../styles/mixins' as *;
+@use "../../styles/mixins" as *;
+@use '../../styles/mixins' as *;
 .kima-heatmap {
-  @include content-root;
-  @include content-reduced;
+  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
+  --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
+  --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
+  --kima-heatmap-low: var(--kima-color-layer-2);
+  --kima-heatmap-high: var(--kima-color-primary-container);
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
   @include kima-ripple-host;
   display:grid;
   gap:var(--kima-space-3);
@@ -66,7 +76,9 @@ async function key(event,index){let target=index;switch(event.key){case'ArrowRig
   &__table {
     overflow:auto;
     table {
-      @include content-table
+      width: 100%; border-collapse: collapse; font: inherit;
+      th, td { padding: var(--kima-space-2); text-align: start; }
+      tr:nth-child(even) { background: var(--kima-color-layer-1); }
     }
   }
 }

@@ -43,10 +43,16 @@ function failed(event) { if (isCurrent(event)) { state.value = "error"; emit("er
   </figure>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
 @use "../../styles/mixins" as *;
 .kima-image {
-  @include display-base;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
   margin: 0;
   &__frame { @include kima-layer; position: relative; display: grid; min-height: 160px; overflow: hidden; border-radius: var(--kima-radius-m); }
   &__frame > * { grid-area: 1 / 1; }

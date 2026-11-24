@@ -49,10 +49,40 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   </div>
 </template>
 <style scoped lang="scss">
-@use '../../styles/mixins' as *;
-@use '../../styles/interaction' as *;
-@use '../../styles/shell-menu';
-.kima-menu { @include interaction-root; position: relative; display: inline-flex; min-width: 180px; &--open { z-index: 60; } &--icon { min-width: 0; } }
+@use "../../styles/mixins" as *;
+/* 子菜单内容会被 Reka 传送到 body：那里没有本组件的 data-v 祖先，
+ * :deep 的世代选择器命中不了，弹层就会连底色都没有。按类名全局命中。
+ * menu / context-menu / menubar 三个组件共用 menu-items.vue 渲染这套类名，
+ * 全局规则在这里注入一份即可（重复注入只会写出重复样式）。 */
+:global(.kima-shell-menu__popup) {
+  min-width: 0; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); font-size: var(--kima-font-size-body-medium); line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box; z-index: 60; width: min(260px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh)); overflow: auto;
+  padding: var(--kima-space-2); border-radius: var(--kima-radius-l); outline: none;
+}
+:deep(.kima-shell-menu__item) {
+  @include kima-focus-ring; @include kima-disabled;
+  display: flex; box-sizing: border-box; width: 100%; align-items: center; justify-content: space-between;
+  gap: var(--kima-space-3); min-height: 48px; padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0; border-radius: var(--kima-radius-s); background: transparent; color: var(--kima-color-on-surface);
+  font: inherit; text-align: start; cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
+  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &[aria-checked='true'] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); &:hover, &[data-highlighted] { background: var(--kima-color-primary-container-hover); } }
+  &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
+}
+:deep(.kima-shell-menu__copy) { display: grid; gap: var(--kima-space-1); }
+:deep(.kima-shell-menu__item) small { font-size: var(--kima-font-size-label-medium); opacity: .8; }
+:deep(.kima-shell-menu__separator) { height: 1px; margin-block: var(--kima-space-2); background: var(--kima-color-outline-variant); }
+@media (prefers-reduced-motion: reduce) { .kima-shell-menu__item { transition: none; } }
+.kima-menu { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; position: relative; display: inline-flex; min-width: 180px; &--open { z-index: 60; } &--icon { min-width: 0; } }
 .kima-menu__trigger  {
   @include kima-state-layer;
   @include kima-ripple-host;
@@ -83,7 +113,30 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 /* 菜单内容由 Reka 渲染并传送到 body，元素上没有本组件的 data-v 标记，
  * 普通 scoped 规则匹配不到它——弹层就会完全没有底色。
  * 这里用 :global 按类名命中（类名带 kima-menu 前缀，不会污染宿主页面）。 */
-:global(.kima-menu__popup) { @include interaction-popup; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
+:global(.kima-menu__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
 .kima-menu__search-wrap { display: flex; align-items: center; gap: var(--kima-space-2); }
-.kima-menu__search { @include interaction-search; }
+.kima-menu__search { box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: var(--kima-space-2);
+  padding: var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  background: var(--kima-color-layer-2);
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
 </style>

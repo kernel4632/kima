@@ -58,12 +58,43 @@ defineExpose({ edit:begin, save, cancel, focus:()=>display.value?.focus() });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
-.kima-editable { @include advanced-root; display:grid;gap:var(--kima-space-2);position:relative;
+@use "../../styles/mixins" as *;
+.kima-editable { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; display:grid;gap:var(--kima-space-2);position:relative;
   :deep(.kima-fade-leave-active) { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: max-content; max-width: 100%; }
-  &__display { @include advanced-action; justify-self:start;text-align:start;border-radius:var(--kima-radius-s); }
+  &__display { @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-focus-ring;
+  @include kima-press;
+  box-sizing: border-box; min-height: var(--kima-touch-target); padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
+  &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } justify-self:start;text-align:start;border-radius:var(--kima-radius-s); }
   &__editor {display:grid;gap:var(--kima-space-2);}
-  &__input { @include advanced-field;resize:vertical; }
+  &__input { @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  color: inherit;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; }resize:vertical; }
   textarea {min-height:120px;}
   &__actions {display:flex;gap:var(--kima-space-2);}
   p {margin:0;color:var(--kima-color-error);}

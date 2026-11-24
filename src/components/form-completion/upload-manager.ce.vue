@@ -19,10 +19,15 @@ watch(()=>props.modelValue,value=>{if(Array.isArray(value)&&value.length&&!tasks
 </script>
 <template><section ref="root" class="kima-upload-manager" :aria-disabled="disabled||undefined"><KimaFileUpload :model-value="tasks.map(t=>t.file)" :label="label" :accept="accept" :multiple="multiple" :disabled="disabled" @update:model-value="files=>add(files.slice(tasks.filter(t=>t.status!=='cancelled').length))" /><TransitionGroup tag="ul" name="kima-list" v-bind="{ ...presenceTransition, onBeforeLeave: freezeLeaveLayout }" class="kima-upload-manager__list"><li v-for="task in tasks" :key="task.id"><div class="kima-upload-manager__info"><strong>{{task.file.name}}</strong><progress max="100" :value="task.progress" :aria-label="`${task.file.name}上传进度`"></progress><span role="status">{{task.status==='queued'?'等待中':task.status==='uploading'?`${task.progress}%`:task.status==='success'?'已完成':task.status==='cancelled'?'已取消':task.error}}</span></div><div class="kima-upload-manager__actions"><KimaButton v-if="task.status==='uploading'||task.status==='queued'" variant="text" :disabled="disabled" @click="cancel(task)">取消</KimaButton><KimaButton v-if="task.status==='error'||task.status==='cancelled'" variant="text" :disabled="disabled" @click="retry(task)">重试</KimaButton><KimaButton variant="text" :disabled="disabled" :aria-label="`移除 ${task.file.name}`" @click="remove(task)">移除</KimaButton></div></li></TransitionGroup></section></template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
-@use "../../styles/input" as *;
+@use "../../styles/mixins" as *;
 .kima-upload-manager {
-  @include advanced-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0;
   display:grid;
   gap:var(--kima-space-3);
   &__list {
@@ -34,7 +39,15 @@ watch(()=>props.modelValue,value=>{if(Array.isArray(value)&&value.length&&!tasks
     gap:var(--kima-space-2)
   }
   li {
-    @include input-surface;
+    @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
     display:flex;
     align-items:center;
     justify-content:space-between;

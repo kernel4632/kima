@@ -196,9 +196,10 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
 
 <style scoped lang="scss">
 .kima-tabs {
-  --kima-tabs-height: var(--kima-tab-height);
+  /* 组件专属尺寸：标签高 56，指示条 4。 */
+  --kima-tabs-height: 56px;
   --kima-tabs-gap: var(--kima-space-4);
-  --kima-tabs-indicator-height: var(--kima-tab-indicator-height);
+  --kima-tabs-indicator-height: 4px;
 
   display: flex;
   width: 100%;

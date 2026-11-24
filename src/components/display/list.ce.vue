@@ -26,11 +26,19 @@ const itemKey = createCollectionKey(() => props.items);
   </component>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
 @use "../../styles/mixins" as *;
 .kima-list {
-  @include display-base;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
   @include kima-block-host;
+  // 列表行高 64：与字段控件同一档，扫读节奏一致。
+  --kima-list-item-height: 64px;
   // 高度过渡保留的空间不应拉伸剩余行，否则会改变 FLIP 已测得的目标位置。
   display: grid; align-content: start; gap: var(--kima-list-gap, var(--kima-space-3)); margin: 0; padding: 0; list-style-position: inside;
   &:is(ul) { list-style: none; }

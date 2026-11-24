@@ -50,9 +50,13 @@ function onKey(event) {
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
-.kima-rating-wrap { @include input-root; display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-2); }
+.kima-rating-wrap { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); } display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-2); }
 .kima-rating {
   @include kima-ripple-host;
   display: inline-flex;

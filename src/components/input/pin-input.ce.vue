@@ -62,11 +62,23 @@ defineExpose({ focus: () => input.value?.focus() });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;
 @use "../../styles/mixins" as *;
 .kima-pin-input {
-  @include input-root;
-  @include input-surface;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
   @include kima-motion-colors;
   display: inline-grid;
   font-size: var(--kima-font-size-title-large);
@@ -75,6 +87,17 @@ defineExpose({ focus: () => input.value?.focus() });
   background: transparent;
   &__cells { display: grid; grid-template-columns: repeat(var(--kima-pin-length), 1fr); gap: var(--kima-space-1); grid-area: 1 / 1; pointer-events: none; }
   &__cell { @include kima-motion-colors; background: var(--kima-color-layer-2); border-radius: var(--kima-radius-s); }
-  input { @include input-control; grid-area: 1 / 1; width: 100%; font-size: inherit; letter-spacing: 1.5ch; padding-inline: 0.75ch 0; }
+  input { box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; } grid-area: 1 / 1; width: 100%; font-size: inherit; letter-spacing: 1.5ch; padding-inline: 0.75ch 0; }
 }
 </style>

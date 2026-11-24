@@ -35,7 +35,8 @@ defineExpose({ dismiss, restore });
   </Transition>
 </template>
 <style scoped lang="scss">
-@use '../../styles/display' as *;
+@use "../../styles/mixins" as *;
+
 @use '../../styles/mixins' as *;
 /* 收起动画作用在这个外壳上：它必须占满宽度，
  * 否则关闭横幅时外壳按新的内容宽度收缩，整块会瞬间变窄。 */
@@ -44,8 +45,23 @@ defineExpose({ dismiss, restore });
 }
 
 .kima-banner {
-  @include display-panel;
-  @include display-tones;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
+  --kima-display-tone: var(--kima-color-on-surface-variant);
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
+  &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
+  &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
   display: flex;
   align-items: flex-start;
   gap: var(--kima-space-3);

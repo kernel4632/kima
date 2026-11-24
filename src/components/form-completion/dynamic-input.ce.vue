@@ -40,10 +40,15 @@ defineExpose({ add, remove, move, validate, rows });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
-@use "../../styles/input" as *;
+@use "../../styles/mixins" as *;
 .kima-dynamic-input {
-  @include advanced-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0;
   display:grid;
   gap:var(--kima-space-3);
   &__rows {
@@ -53,7 +58,15 @@ defineExpose({ add, remove, move, validate, rows });
     gap:var(--kima-space-3)
   }
   &__row {
-    @include input-surface;
+    @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
     display:grid;
     gap:var(--kima-space-2);
     padding:var(--kima-space-3);

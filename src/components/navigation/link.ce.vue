@@ -16,6 +16,29 @@ function navigate(event) { if (props.disabled) { event.preventDefault(); event.s
 </script>
 <template><a ref="root" v-bind="forwardedAttrs" class="kima-link" :class="{ 'kima-link--underline': underline }" :href="disabled ? undefined : href || undefined" :target="target || undefined" :rel="safeRel" :aria-disabled="disabled || undefined" :aria-current="current ? (typeof current === 'string' ? current : 'page') : undefined" :tabindex="disabled ? -1 : undefined" @click="navigate"><slot /></a></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
-.kima-link { @include navigation-root; @include navigation-action; padding-inline: var(--kima-space-2); text-decoration: none; overflow-wrap: anywhere; &--underline { text-decoration: underline; text-underline-offset: .2em; } &[aria-current] { @include navigation-current; } }
+@use "../../styles/mixins" as *;
+.kima-link { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large); @include kima-state-layer;
+  @include kima-focus-ring;
+  @include kima-ripple-host;
+  @include kima-disabled;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kima-space-2);
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: var(--kima-space-2) var(--kima-space-4);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  color: var(--kima-color-primary);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); padding-inline: var(--kima-space-2); text-decoration: none; overflow-wrap: anywhere; &--underline { text-decoration: underline; text-underline-offset: .2em; } &[aria-current] { color: var(--kima-color-on-primary-container);
+  background: var(--kima-color-primary-container);
+  &:hover { background: var(--kima-color-primary-container-hover); } } }
 </style>

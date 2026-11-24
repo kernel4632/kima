@@ -27,8 +27,25 @@ watch(() => props.disabled, (value) => { if (value) updateOpen(false); });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
-.kima-hover-card { @include interaction-root; display: inline-block; }
+@use "../../styles/mixins" as *;
+.kima-hover-card { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; display: inline-block; }
 /* 传送到 body 的内容拿不到 data-v，表面规则按类名全局命中。 */
-:global(.kima-hover-card__popup) { @include interaction-popup; h3 { margin: 0 0 var(--kima-space-3); } }
+:global(.kima-hover-card__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; h3 { margin: 0 0 var(--kima-space-3); } }
 </style>

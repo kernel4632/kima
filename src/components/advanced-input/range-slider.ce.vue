@@ -30,8 +30,14 @@ const fill = computed(() => { const span = maximum.value - minimum.value || 1; r
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
-.kima-range-slider { @include advanced-root; display:grid; gap:var(--kima-space-2); width:100%;
+@use "../../styles/mixins" as *;
+.kima-range-slider { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; display:grid; gap:var(--kima-space-2); width:100%;
   &__values { text-align:end; color:var(--kima-color-on-surface-variant); font-variant-numeric:tabular-nums; }
  &__tracks  {
   position:relative;

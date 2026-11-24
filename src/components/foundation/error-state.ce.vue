@@ -48,10 +48,12 @@ defineExpose({ retry, reset });
   </section>
 </template>
 <style scoped lang="scss">
-@use '../../styles/foundation' as *;
+@use "../../styles/mixins" as *;
+
 @use '../../styles/mixins' as *;
 .kima-error-state {
-  @include foundation-base;
+  @include kima-block-host;
+  > :deep(*) { min-width: 0; }
   display: grid;
   justify-items: center;
   gap: var(--kima-space-3);

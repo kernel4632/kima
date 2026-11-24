@@ -56,6 +56,9 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
 
 <style scoped lang="scss">
 .kima-divider {
+  /* 分隔线粗细 2px。 */
+  --kima-divider-thickness: 2px;
+
   display: flex;
   width: 100%;
   min-height: var(--kima-divider-thickness);

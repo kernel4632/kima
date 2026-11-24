@@ -50,10 +50,46 @@ function navigate(event, index) {
   </MenubarRoot>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
-@use '../../styles/shell-menu';
 @use "../../styles/mixins" as *;
-.kima-menubar { @include interaction-root; @include kima-layer(1); display: flex; flex-wrap: wrap; gap: var(--kima-space-2); padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__item { @include interaction-row; } small { color: var(--kima-color-on-surface-variant); } }
+.kima-menubar { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; @include kima-layer(1); display: flex; flex-wrap: wrap; gap: var(--kima-space-2); padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__item { @include kima-focus-ring;
+  @include kima-disabled;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kima-space-3);
+  min-height: 48px;
+  padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-s);
+  background: transparent;
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
+  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } } small { color: var(--kima-color-on-surface-variant); } }
 /* 传送到 body 的内容拿不到 data-v，表面规则按类名全局命中。 */
-:global(.kima-menubar__popup) { @include interaction-popup; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); }
+:global(.kima-menubar__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; padding: var(--kima-space-2); width: min(280px, calc(100vw - 24px)); }
 </style>

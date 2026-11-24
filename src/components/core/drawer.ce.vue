@@ -506,6 +506,9 @@ onBeforeUnmount(() => {
  * 原生 dialog 撑满视口，自己透明；
  * ::backdrop 负责背景变暗和模糊，面板是 dialog 的子元素。 */
 .kima-drawer {
+  /* 侧抽屉面板最大宽 420。 */
+  --kima-drawer-max-width: 420px;
+
   box-sizing: border-box;
   position: fixed;
   inset: 0;

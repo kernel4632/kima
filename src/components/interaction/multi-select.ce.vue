@@ -61,9 +61,13 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
+@use "../../styles/mixins" as *;
 .kima-multi-select {
-  @include interaction-root;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -73,12 +77,64 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   &__chips { position: relative; box-sizing: border-box; }
   &__chips--populated { padding-bottom: var(--kima-space-3); }
   &__chip, &__clear { display: inline-flex; }
-  &__search { @include interaction-search; }
+  &__search { box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: var(--kima-space-2);
+  padding: var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  background: var(--kima-color-layer-2);
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
   &__list { outline: none; }
-  &__item { @include interaction-row; }
-  &__native { @include interaction-native; }
+  &__item { @include kima-focus-ring;
+  @include kima-disabled;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kima-space-3);
+  min-height: 48px;
+  padding: var(--kima-space-2) var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-s);
+  background: transparent;
+  color: var(--kima-color-on-surface);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
+  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } }
+  &__native { position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0; }
   small { display: block; color: var(--kima-color-on-surface-variant); }
 }
 /* 弹层内容由 Reka 渲染，可能被传送到 body：表面规则不能依赖 data-v 祖先。 */
-:global(.kima-multi-select__popup) { @include interaction-popup; padding: var(--kima-space-2); }
+:global(.kima-multi-select__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; padding: var(--kima-space-2); }
 </style>

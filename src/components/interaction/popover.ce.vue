@@ -28,7 +28,24 @@ function escape(event) { dismissInteraction(event, () => setOpen(false)); }
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
-.kima-popover { @include interaction-root; display: inline-block; max-width: 100%; }
-:global(.kima-popover__popup) { @include interaction-popup; }
+@use "../../styles/mixins" as *;
+.kima-popover { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; display: inline-block; max-width: 100%; }
+:global(.kima-popover__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; }
 </style>

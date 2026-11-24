@@ -45,6 +45,15 @@ onBeforeUnmount(() => { observer?.disconnect(); for (const [el, value] of origin
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-toolbar" :class="{ 'kima-toolbar--vertical': orientation === 'vertical' }" role="toolbar" :aria-label="label" :aria-orientation="orientation === 'vertical' ? 'vertical' : 'horizontal'" :aria-disabled="disabled || undefined" :inert="disabled || undefined" @focusin="focusin" @keydown="keydown"><slot /></div></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
-.kima-toolbar { @include navigation-surface; display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3); &--vertical { flex-direction: column; align-items: stretch; } }
+@use "../../styles/mixins" as *;
+.kima-toolbar { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3); &--vertical { flex-direction: column; align-items: stretch; } }
 </style>

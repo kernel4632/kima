@@ -18,14 +18,39 @@ onBeforeUnmount(() => doc?.removeEventListener("reset", reset, true));
 </script>
 <template><div class="kima-time-field" role="group" :aria-label="label" :aria-disabled="disabled || undefined"><input v-for="(part,index) in parts" :key="index" :ref="el => inputs[index] = el" class="kima-time-field__segment" type="text" :value="part" :placeholder="index===0 ? 'HH' : index===1 ? 'MM' : 'SS'" :aria-label="`${label} ${index===0 ? '时' : index===1 ? '分' : '秒'}`" inputmode="numeric" maxlength="2" :disabled="disabled" :readonly="readonly" @input="commit(index,$event)" @keydown="keydown(index,$event)" @compositionend="commit(index,$event)"><input ref="hidden" class="kima-time-field__native" type="text" :name="name" :required="required" :disabled="disabled" :value="valid ? parts.join(':') : ''" :aria-label="label" tabindex="-1" aria-hidden="true"></div></template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
+@use "../../styles/mixins" as *;
 .kima-time-field  {
-  @include advanced-root;
+  box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0;
   display:flex;
   align-items:center;
   gap:var(--kima-space-2);
   &__segment  {
-    @include advanced-field;
+    @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  color: inherit;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; }
     width:5.5ch;
     min-width:4ch;
     padding-inline:var(--kima-space-2);

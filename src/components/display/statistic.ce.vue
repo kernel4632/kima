@@ -32,9 +32,20 @@ const formatted = computed(() => {
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
+@use "../../styles/mixins" as *;
 .kima-statistic {
-  @include display-panel;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
   &__label { color: var(--kima-color-on-surface-variant); margin-bottom: var(--kima-space-3); }
   &__value { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--kima-space-2); font-size: var(--kima-font-size-headline-large); line-height: var(--kima-line-height-tight); font-variant-numeric: tabular-nums; }
   &__affix { font-size: var(--kima-font-size-body-large); &:empty { display: none; } }

@@ -61,6 +61,15 @@ onBeforeUnmount(disconnect);
 </script>
 <template><nav ref="root" v-bind="forwardedAttrs" class="kima-anchor" :aria-label="label"><ol><li v-for="(item, index) in items" :key="item.href ?? index"><KimaLink :href="item.href" :disabled="disabled || item.disabled" :underline="false" :current="local === item.href ? 'location' : false" @navigate="navigate(item, $event)">{{ item.label }}</KimaLink></li></ol><slot /></nav></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
-.kima-anchor { @include navigation-surface; ol { display: grid; gap: var(--kima-space-2); margin: 0; padding: 0; list-style: none; } :deep(.kima-link) { width: 100%; } }
+@use "../../styles/mixins" as *;
+.kima-anchor { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4); ol { display: grid; gap: var(--kima-space-2); margin: 0; padding: 0; list-style: none; } :deep(.kima-link) { width: 100%; } }
 </style>

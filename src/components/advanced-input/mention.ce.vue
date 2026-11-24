@@ -71,10 +71,34 @@ defineExpose({ focus: () => input.value?.focus() });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/advanced-input" as *;
 @use "../../styles/mixins" as *;
-.kima-mention { @include advanced-root; position:relative; max-width:640px;
-  &__input { @include advanced-field; display:block; min-height:120px; resize:vertical; }
+.kima-mention { box-sizing: border-box;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-large);
+  font-weight: var(--kima-font-weight-semi-bold);
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
+  min-width: 0; position:relative; max-width:640px;
+  &__input { @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  border-radius: var(--kima-radius-m);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+  &:focus-within {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+  }
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  color: inherit;
+  font: inherit;
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+  &:disabled { cursor: not-allowed; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } display:block; min-height:120px; resize:vertical; }
   &__popup { @include kima-popup; position:absolute; z-index:20; inset-inline:0; top:calc(100% + var(--kima-space-1)); padding:var(--kima-space-2); border-radius:var(--kima-radius-m); }
   &__list { list-style:none; padding:0; margin:0; max-height:280px; overflow:auto; }
  &__option  {

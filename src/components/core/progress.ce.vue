@@ -42,6 +42,9 @@ const safeValue = computed(() => Number.isFinite(props.value) ? Math.max(0, Math
 
 <style scoped lang="scss">
 .kima-progress {
+  /* 进度条粗细：一根 8px 的圆棒。 */
+  --kima-progress-height: 8px;
+
   display: block;
   width: 100%;
   color: var(--kima-color-on-surface);

@@ -19,9 +19,20 @@ const { isCustomElement, hasNativeSlot } = useNativeSlots(root);
   <figure ref="root" v-bind="{ ...attrs, id: isCustomElement ? undefined : attrs.id }" class="kima-blockquote"><KimaIcon :icon="QuoteUpIcon" :size="32" class="kima-blockquote__icon" aria-hidden="true" /><blockquote :cite="cite"><slot /></blockquote><figcaption v-if="author || source || $slots.caption || hasNativeSlot('caption') || isCustomElement"><slot name="caption"><span v-if="author">— {{ author }}</span><cite v-if="source">{{ source }}</cite></slot></figcaption></figure>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
+@use "../../styles/mixins" as *;
 .kima-blockquote {
-  @include display-panel;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
   margin: 0;
   &__icon { color: var(--kima-color-primary); margin-bottom: var(--kima-space-3); }
   blockquote { margin: 0; font-size: var(--kima-font-size-title-medium); line-height: var(--kima-line-height-loose); }

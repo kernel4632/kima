@@ -47,9 +47,20 @@ const formatted = computed(() => remaining.value === null ? "--:--:--" : `${prop
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/display" as *;
+@use "../../styles/mixins" as *;
 .kima-countdown {
-  @include display-panel;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
+  line-height: var(--kima-line-height-normal);
+  color: var(--kima-color-on-surface);
+  overflow-wrap: anywhere;
+  @include kima-block-host;
+  @include kima-layer;
+  padding: var(--kima-space-6);
+  border-radius: var(--kima-radius-m);
   &__label { margin-bottom: var(--kima-space-3); color: var(--kima-color-on-surface-variant); }
   &__value { font-size: var(--kima-font-size-headline-medium); line-height: var(--kima-line-height-tight); font-variant-numeric: tabular-nums; }
 }

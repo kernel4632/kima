@@ -29,7 +29,6 @@ function blocked(item, index) { return props.disabled || item.disabled || (props
   </nav>
 </template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
 .kima-stepper__number { @include kima-motion-colors; }
 .kima-stepper__number > span { grid-area: 1 / 1; }
@@ -40,7 +39,12 @@ function blocked(item, index) { return props.disabled || item.disabled || (props
 .kima-stepper__status { @include kima-motion-colors; color: var(--kima-color-on-surface-variant); }
 .kima-stepper [data-state="current"] .kima-stepper__status { color: var(--kima-color-on-primary-container); }
 .kima-stepper  {
-  @include navigation-root;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
   @include kima-block-host;
   ol  {
     display: flex;

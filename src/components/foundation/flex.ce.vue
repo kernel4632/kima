@@ -12,6 +12,14 @@ const style = computed(() => ({ ...layoutVariables('flex', 'gap', props.gap, spa
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-flex" :style="style"><slot /></div></template>
 <style scoped lang="scss">
-@use '../../styles/foundation' as *;
-.kima-flex { @include foundation-base; @include foundation-responsive('flex'); display: flex; }
+@use "../../styles/mixins" as *;
+
+.kima-flex { @include kima-block-host;
+  > :deep(*) { min-width: 0; }
+  --kima-flex-gap: var(--kima-flex-gap-base);
+  gap: var(--kima-flex-gap);
+  @media (min-width: 640px) { --kima-flex-gap: var(--kima-flex-gap-sm); }
+  @media (min-width: 960px) { --kima-flex-gap: var(--kima-flex-gap-md); }
+  @media (min-width: 1280px) { --kima-flex-gap: var(--kima-flex-gap-lg); }
+  display: flex; }
 </style>

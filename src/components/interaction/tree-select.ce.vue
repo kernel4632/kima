@@ -41,8 +41,33 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   </div>
 </template>
 <style scoped lang="scss">
-@use "../../styles/interaction" as *;
-.kima-tree-select { @include interaction-root; position: relative; &__control { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } &__native { @include interaction-native; } :deep(.kima-button__label) { white-space: normal; overflow-wrap: anywhere; } }
+@use "../../styles/mixins" as *;
+.kima-tree-select { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5; position: relative; &__control { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); } &__native { position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0; } :deep(.kima-button__label) { white-space: normal; overflow-wrap: anywhere; } }
 /* 弹层内容由 Reka 渲染，可能被传送到 body：表面规则不能依赖 data-v 祖先。 */
-:global(.kima-tree-select__popup) { @include interaction-popup; padding: var(--kima-space-2); }
+:global(.kima-tree-select__popup) { min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-size: var(--kima-font-size-body-medium);
+  line-height: 1.5;
+  @include kima-popup;
+  box-sizing: border-box;
+  z-index: 60;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, var(--reka-popper-available-height, 70vh));
+  overflow: auto;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-l);
+  outline: none; padding: var(--kima-space-2); }
 </style>

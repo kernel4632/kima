@@ -19,9 +19,18 @@ function text(item) { return typeof item === "object" && item !== null ? item.la
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-overflow-list"><ul :id="id" :aria-label="label"><template v-for="(item, index) in items" :key="item?.value ?? index"><Transition :css="false" v-bind="collapseTransition"><li v-show="local || index < limit" :inert="!local && index >= limit" :aria-hidden="!local && index >= limit || undefined"><div><slot :name="`item-${index}`" :item="item" :index="index">{{ text(item) }}</slot></div></li></Transition></template></ul><KimaButton v-if="remaining" variant="text" :disabled="disabled" :aria-controls="id" :aria-expanded="local" @click="update(!local)">{{ local ? '收起列表' : `展开其余 ${remaining} 项` }}</KimaButton><slot /></div></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
+@use "../../styles/mixins" as *;
 .kima-overflow-list  {
-  @include navigation-surface;
+  box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large);
+  @include kima-block-host;
+  @include kima-layer(1);
+  border-radius: var(--kima-radius-m);
+  padding: var(--kima-space-4);
   ul  {
     display: flex;
     flex-wrap: wrap;

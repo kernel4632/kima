@@ -22,6 +22,11 @@ onBeforeUnmount(() => container?.removeEventListener("scroll", track));
 </script>
 <template><Transition name="kima-content"><div v-show="visible" ref="root" v-bind="forwardedAttrs" class="kima-back-top" :class="{ 'kima-back-top--fixed': fixed }" :inert="!visible" :aria-hidden="!visible"><KimaButton :disabled="disabled" @click="back"><slot>{{ label }}</slot></KimaButton></div></Transition></template>
 <style scoped lang="scss">
-@use "../../styles/navigation" as *;
-.kima-back-top { @include navigation-root; &--fixed { position: fixed; inset-inline-end: var(--kima-space-6); bottom: var(--kima-space-6); z-index: var(--kima-z-popover, 50); } }
+@use "../../styles/mixins" as *;
+.kima-back-top { box-sizing: border-box;
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  font-weight: var(--kima-font-weight-semi-bold);
+  font-size: var(--kima-font-size-body-large); &--fixed { position: fixed; inset-inline-end: var(--kima-space-6); bottom: var(--kima-space-6); z-index: var(--kima-z-popover, 50); } }
 </style>

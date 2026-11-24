@@ -28,7 +28,8 @@ defineExpose({ start, finish, error, count });
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-loading-bar" :aria-busy="count > 0"><span class="kima-loading-bar__status" role="status">{{ failed ? '加载失败' : count ? `${label}：${count} 项` : '' }}</span><Transition name="kima-fade" v-bind="presenceTransition"><div v-if="visible" class="kima-loading-bar__track" role="progressbar" :aria-label="label" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="count ? undefined : 100"><div class="kima-loading-bar__fill" :class="{ 'kima-loading-bar__fill--error': failed }" :style="{ width: `${progress}%` }"/></div></Transition></div></template>
 <style scoped lang="scss">
-@use '../../styles/interaction' as *;
+@use "../../styles/mixins" as *;
+
 .kima-loading-bar  {
   width: 100%;
   &__track  {
@@ -49,7 +50,15 @@ defineExpose({ start, finish, error, count });
 
   }
   &__status  {
-    @include interaction-native;
+    position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 
   }
 
