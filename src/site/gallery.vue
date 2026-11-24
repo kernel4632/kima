@@ -3,6 +3,8 @@
      #/gallery 兼容原入口；#/playground 为语义更清楚的入口。 -->
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+// runAction 里 document.querySelector 是事件回调（非渲染期），浏览器专属 API 放在事件处理里执行。
+
 import {
   KimaAccordion, KimaAvatar, KimaAvatarGroup, KimaBadge, KimaBreadcrumb,
   KimaButton, KimaButtonGroup, KimaCard, KimaCascader, KimaChart, KimaCheckbox,

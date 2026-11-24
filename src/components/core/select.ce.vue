@@ -17,6 +17,10 @@ import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeic
 import { useRipple } from "../../utils/ripple.js";
 import { presenceTransition } from "../../utils/motion.js";
 
+/* 模块加载即求值一次：Teleport 的 disabled 绑定在渲染期读这个常量，
+ * 不会像 typeof document 那样在渲染函数里触碰全局对象（SSR 渲染会警告）。 */
+const isBrowser = typeof document !== "undefined";
+
 defineOptions({ inheritAttrs: false });
 const attrs = useAttrs();
 const host = getCurrentInstance().ce ? useHost() : null;
@@ -339,8 +343,9 @@ onBeforeUnmount(() => {
       </option>
     </select>
 
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
-    <Teleport to="body" :disabled="typeof document === 'undefined'">
+    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。
+         isBrowser 放在 computed 外的模块常量里：渲染期读它不会触碰 window/document。 -->
+    <Teleport to="body" :disabled="!isBrowser">
       <Transition name="kima-popup" v-bind="presenceTransition">
       <div
         v-if="localOpen"

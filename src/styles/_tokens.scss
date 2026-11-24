@@ -16,9 +16,8 @@
 
   /* ---- 基础色（全部来自系统，库不带品牌色）----
    * Canvas / CanvasText：页面背景和主文字，操作系统深浅模式切了它就跟着切。
-   * ButtonFace / ButtonText：控件表面和控件文字。
-   * Field / FieldText：输入框的底和字。
-   * GrayText：禁用文字。
+   * 其他层次一律从这一对前景/背景派生，不再引用 ButtonFace 等其他系统色——
+   * Windows 深色模式的 ButtonFace 是中灰，跟文字拉不开对比度。
    *
    * 主色（primary）也是黑白灰：就取前景色本身。
    * 主按钮 = 黑底白字（浅色模式）/ 白底黑字（深色模式），焦点环、选中态、开关、
@@ -46,13 +45,13 @@
   --kima-color-inverse-on-surface: Canvas;
   --kima-color-scrim: #000000;
 
-  /* 容器层次：系统没有"容器色阶梯"，从 ButtonFace 与 Canvas 的混合派生三档。
-   * 浏览器自带 Scrollbar / 滚动条颜色也走这条路，视觉天然一致。 */
+  /* 容器层次：从前景色与页面底的混合派生五档，深浅两套都只差一档明度。
+   * 不用 ButtonFace（深色模式下是中灰，和页面拉不开差距）。 */
   --kima-color-surface-container-lowest: Canvas;
-  --kima-color-surface-container-low: color-mix(in srgb, ButtonFace 30%, Canvas);
-  --kima-color-surface-container: color-mix(in srgb, ButtonFace 65%, Canvas);
-  --kima-color-surface-container-high: ButtonFace;
-  --kima-color-surface-container-highest: color-mix(in srgb, CanvasText 12%, ButtonFace);
+  --kima-color-surface-container-low: color-mix(in srgb, CanvasText 4%, Canvas);
+  --kima-color-surface-container: color-mix(in srgb, CanvasText 8%, Canvas);
+  --kima-color-surface-container-high: color-mix(in srgb, CanvasText 12%, Canvas);
+  --kima-color-surface-container-highest: color-mix(in srgb, CanvasText 16%, Canvas);
 
   /* ---- 字体 ----
    * 不引入任何自定义字体，完全跟随操作系统的 UI 字体。
@@ -142,9 +141,12 @@
   /* ---- 浮层表面（弹层专用，实色）----
    * 弹层（菜单、下拉、对话框、抽屉）浮在内容之上，必须挡住背后的东西，
    * 所以用实色，不能像页面内的组件那样用透明度——那会让下面的文字透上来，看不清。
-   * ButtonFace 就是操作系统画原生菜单、下拉的底色，弹层用它和原生 UI 一个质感。 */
-  --kima-color-popup: ButtonFace;
-  --kima-color-popup-large: color-mix(in srgb, CanvasText 8%, ButtonFace);
+   * 不用 ButtonFace：Windows 深色模式的 ButtonFace 是中灰，白字压上去对比度只有 5.3:1，
+   * 视觉上"灰底白字糊成一片"。改从 Canvas（页面底）派生：
+   * 深色下比页面亮一档（28% 混白），浅色下比页面暗一档（4% 混黑），
+   * 弹层和页面永远差一档明度，文字对比度两套都在 10:1 以上。 */
+  --kima-color-popup: light-dark(color-mix(in srgb, CanvasText 4%, Canvas), color-mix(in srgb, CanvasText 28%, Canvas));
+  --kima-color-popup-large: light-dark(color-mix(in srgb, CanvasText 8%, Canvas), color-mix(in srgb, CanvasText 36%, Canvas));
   /* 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 */
   --kima-color-picker-white: #ffffff;
   --kima-color-picker-black: #000000;
