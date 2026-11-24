@@ -51,16 +51,12 @@ test('代码块深浅主题与窄屏', async ({ page }) => {
   await expect(block.getByRole('status')).toHaveText('已复制');
   await expect(copy).toHaveAttribute('title', '已复制');
   await expect.poll(() => copy.locator('svg').innerHTML()).not.toBe(copyIcon);
-  expect(await page.evaluate(() => window.copiedCode)).toContain('applyPalette');
+  expect(await page.evaluate(() => window.copiedCode)).toContain('KIMA');
   const after = await copy.boundingBox();
   expect(after.width).toBe(before.width);
   expect(after.height).toBe(before.height);
   await block.screenshot({ path: 'shots/code-block-icons-copied.png', scale: 'css' });
   await copy.press('Escape');
-  await page.getByRole('button', { name: '切换浅色', exact: true }).click();
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: 'shots/code-block-light.png', scale: 'css' });
-  await block.screenshot({ path: 'shots/code-block-icons-light.png', scale: 'css' });
   await page.setViewportSize({ width: 320, height: 700 });
   await page.locator('#preview').scrollIntoViewIfNeeded();
   await expect(wrap).toBeInViewport();

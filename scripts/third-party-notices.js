@@ -29,7 +29,7 @@ export function thirdPartyNotices() {
       }
     },
     async write(file) {
-      const sections = ['KIMA standalone bundles — third-party notices\n\nThe following packages are included in one or more of kima-elements.js,\nkima-elements-core.js and kima-theme.js. Their licenses apply to their respective code.\nKIMA itself is licensed under the MIT license supplied as LICENSE.'];
+      const sections = ['KIMA standalone bundles — third-party notices\n\nThe following packages are included in one or more of kima-elements.js\nand kima-elements-core.js. Their licenses apply to their respective code.\nKIMA itself is licensed under the MIT license supplied as LICENSE.'];
       const inventory = [];
       for (const [name, { directory, manifest }] of [...packages].sort(([a], [b]) => a.localeCompare(b))) {
         const texts = [];

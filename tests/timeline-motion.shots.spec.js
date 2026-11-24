@@ -4,10 +4,7 @@ async function mount(page, { dir = 'ltr', theme = 'dark', width = 280 } = {}) {
   page.on('pageerror', error => { throw error; });
   await page.setViewportSize({ width: width + 48, height: 820 });
   await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
-  await page.evaluate(async ({ dir, theme }) => {
-    const { applyPalette } = await import('/src/utils/theme.js');
-    applyPalette('#61afef', { isDark: theme === 'dark' });
-    document.documentElement.dir = dir;
+  await page.evaluate(async ({ dir, theme }) => {    document.documentElement.dir = dir;
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     await window.fixture.mount('<kima-timeline id="subject"></kima-timeline><button id="after">后续操作</button>', {
       subject: { label: '发布进程', items: [

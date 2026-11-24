@@ -18,12 +18,7 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1920, height: 1080 }]
       expect(box).not.toBeNull();
       expect(box.y + box.height).toBeLessThanOrEqual(size.height);
     }
-    await page.screenshot({ path: `shots/playground-${size.width}-dark.png` });
-    await page.getByRole('button', { name: '切换明暗主题', exact: true }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-kima-theme', 'light');
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: `shots/playground-${size.width}-light.png` });
+    await page.screenshot({ path: `shots/playground-${size.width}.png` });
     expect(errors).toEqual([]);
   });
 }

@@ -11,10 +11,7 @@ const options = [
 async function mount(page, { selected, dir = 'ltr', theme = 'dark', width = 280, items = options } = {}) {
   await page.setViewportSize({ width: width + 48, height: 900 });
   await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
-  await page.evaluate(async ({ selected, dir, theme, options }) => {
-    const { applyPalette } = await import('/src/utils/theme.js');
-    applyPalette('#61afef', { isDark: theme === 'dark' });
-    document.documentElement.dir = dir;
+  await page.evaluate(async ({ selected, dir, theme, options }) => {    document.documentElement.dir = dir;
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     await window.fixture.mount('<form id="form"><kima-multi-select id="subject"></kima-multi-select><button type="reset">重置</button></form>', {
       subject: { modelValue: selected, items: options, name: 'topics', label: '选择主题', searchable: true, clearable: true },

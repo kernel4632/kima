@@ -16,19 +16,13 @@ import {
 } from '../index.js';
 import {
   FavouriteIcon, Folder01Icon, Notification01Icon,
-  PlusSignIcon, Search01Icon, SparklesIcon, Sun01Icon, Moon02Icon,
+  PlusSignIcon, Search01Icon, SparklesIcon,
 } from '@hugeicons/core-free-icons';
 
 const props = defineProps({
   navigate: { type: Function, required: true },
-  theme: { type: String, default: 'dark' },
-  seed: { type: String, default: '#61afef' },
 });
-const emit = defineEmits(['update:theme', 'update:seed']);
-const seeds = [
-  { value: '#61afef', label: '青蓝' }, { value: '#6750a4', label: '紫色' },
-  { value: '#2e7d32', label: '绿色' }, { value: '#ffffff', label: '灰度' },
-];
+const commands = [{ value: 'new', label: '创建项目', group: '项目' }, { value: 'invite', label: '邀请成员', group: '项目' }, { value: 'sync', label: '同步文件', group: '项目' }];
 const name = ref('官网改版');
 const notes = ref('让每一次交互都自然发生。');
 const visibility = ref('team');
@@ -83,7 +77,6 @@ const source = computed(() => `const budget = ${budget.value};\nconst seats = ${
 const people = [{ name: '林青' }, { name: '陈禾' }, { name: 'Alex' }, { name: 'Sam' }];
 const accordionItems = [{ value: 'preview', label: '预览如何使用？', content: '这些都是真实组件。更改预算会同步图表、进度与代码；保存会更新任务并显示通知。' }];
 const menuItems = [{ value: 'invite', label: '邀请成员' }, { value: 'settings', label: '项目设置' }, { value: 'notify', label: '查看通知' }];
-const commands = [{ value: 'new', label: '创建项目', group: '项目' }, { value: 'invite', label: '邀请成员', group: '项目' }, { value: 'theme', label: '切换明暗', group: '外观' }];
 
 function notify(message) { noticeMessage.value = message; noticeOpen.value = true; }
 function saveProject() {
@@ -97,7 +90,6 @@ function runAction(value) {
   if (value === 'new') dialogOpen.value = true;
   else if (value === 'invite') drawerOpen.value = true;
   else if (value === 'settings') document.querySelector('[aria-label="项目名称"]')?.focus();
-  else if (value === 'theme') emit('update:theme', props.theme === 'dark' ? 'light' : 'dark');
   else notify('所有项目已同步。');
 }
 function refreshFiles() {
@@ -121,8 +113,6 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
       <div class="kima-playground__brand"><KimaIcon :icon="SparklesIcon" /><strong>KIMA</strong><span>交互实验室</span></div>
       <KimaBadge value="LIVE" variant="primary" />
       <div class="kima-playground__tools">
-        <KimaSelect :model-value="seed" :items="seeds" label="主题种子" @update:model-value="emit('update:seed', $event)" />
-        <KimaTooltip text="切换明暗主题"><KimaIconButton :icon="theme === 'dark' ? Sun01Icon : Moon02Icon" label="切换明暗主题" @click="emit('update:theme', theme === 'dark' ? 'light' : 'dark')" /></KimaTooltip>
         <KimaCommand v-model:open="commandOpen" label="工作台命令" :items="commands" @select="runAction">
           <template #trigger><KimaIcon :icon="Search01Icon" />搜索 / Ctrl K</template>
         </KimaCommand>

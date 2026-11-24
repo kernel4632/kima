@@ -3,8 +3,7 @@
 <script setup>
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaCodeBlock, KimaTable, KimaIcon, KimaCommand } from './index.js';
-import { Menu01Icon, Sun01Icon, Moon02Icon, SparklesIcon } from '@hugeicons/core-free-icons';
-import { applyPalette } from './utils/theme.js';
+import { Menu01Icon, SparklesIcon } from '@hugeicons/core-free-icons';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
 import { catalog } from './site/catalog.js';
@@ -31,13 +30,6 @@ onBeforeUnmount(() => {
 });
 const search = ref('');
 const mobileMenu = ref(false);
-const theme = ref('dark');
-const seed = ref('#61afef');
-const seeds = [{ value: '#61afef', label: '青蓝' }, { value: '#6750a4', label: '紫色' }, { value: '#2e7d32', label: '绿色' }, { value: '#ffffff', label: '灰度' }];
-watch([theme, seed], () => {
-  document.documentElement.dataset.kimaTheme = theme.value;
-  applyPalette(seed.value, { isDark: theme.value === 'dark', variant: seed.value === '#ffffff' ? 'monochrome' : 'tonal-spot' });
-}, { immediate: true });
 const component = computed(() => catalog.find((item) => route.value === `components/${item.slug}`));
 const filtered = computed(() => catalog.filter((item) => `${item.slug} ${item.label}`.toLowerCase().includes(search.value.toLowerCase().trim())));
 const commandItems = computed(() => catalog.map((item) => ({
@@ -53,10 +45,10 @@ function selectSearchResult(value, item) {
   navigate(value);
 }
 const nav = computed(() => [
-  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '全屏交互预览' }, { slug: 'installation', name: '安装与接入' }, { slug: 'theme', name: '主题与设计' }] },
+  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '全屏交互预览' }, { slug: 'installation', name: '安装与接入' }] },
   ...[...new Set(catalog.map((item) => item.group))].map((heading) => ({ heading, items: filtered.value.filter((item) => item.group === heading).map((item) => ({ slug: `components/${item.slug}`, name: `${item.name} ${item.label}` })) })),
 ]);
-const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '全屏交互预览', playground: '全屏交互预览', installation: '安装与接入', theme: '一颗种子，整个界面。' }[route.value] || '页面不存在'));
+const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '全屏交互预览', playground: '全屏交互预览', installation: '安装与接入', theme: '颜色与字体跟随系统' }[route.value] || '页面不存在'));
 const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : route.value === 'gallery' ? [] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
 function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
 const showSource = ref(false);
@@ -80,7 +72,6 @@ watch(route, async () => {
   }
 }, { immediate: true });
 const importCode = computed(() => component.value ? `import { Kima${component.value.name} } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';` : '');
-const themeUsage = `import { applyPalette } from '@kernel4632/kima/theme';\napplyPalette('#61afef', { isDark: true });`;
 const install = 'pnpm add @kernel4632/kima vue';
 const vueUsage = `<script setup>\nimport { KimaButton } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';\n<` + `/script>\n\n<template>\n  <KimaButton>保存更改</KimaButton>\n</template>`;
 const elementUsage = `import '@kernel4632/kima/elements';\n\n// 注册入口自带样式与 Vue 运行时\n// <kima-button>保存更改</kima-button>`;
@@ -89,7 +80,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 
 <template>
   <!-- 组件速览是独立全屏页：不套文档站的顶栏/侧栏/页脚，一屏平铺全部基础组件。 -->
-  <Gallery v-if="['gallery', 'playground'].includes(route)" v-model:theme="theme" v-model:seed="seed" :navigate="navigate" />
+  <Gallery v-if="['gallery', 'playground'].includes(route)" :navigate="navigate" />
   <div v-else class="kima-docs">
     <header class="kima-docs__top">
       <div class="kima-docs__brand">
@@ -100,8 +91,6 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
       <KimaTextField v-model="search" class="kima-docs__search" label="搜索组件" type="search" placeholder="搜索组件 / Search components" clearable />
       <KimaCommand v-model:open="commandOpen" class="kima-docs__command" label="内容搜索" trigger-label="全文搜索" placeholder="搜索组件、属性、事件或关键词…" :items="commandItems" @select="selectSearchResult" />
       <div class="kima-docs__tools">
-        <KimaSelect v-model="seed" :items="seeds" label="主题种子" />
-        <KimaIconButton :icon="theme === 'dark' ? Sun01Icon : Moon02Icon" :label="theme === 'dark' ? '切换浅色' : '切换深色'" variant="text" @click="theme = theme === 'dark' ? 'light' : 'dark'" />
         <KimaButton variant="tonal" @click="navigate('installation')">开始使用</KimaButton>
       </div>
     </header>
@@ -145,7 +134,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
         </template>
         <template v-else-if="route === 'overview'">
           <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
-            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停或切换主题。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('gallery')">组件总览</KimaButton><KimaButton variant="text" @click="navigate('theme')">了解设计语言</KimaButton></div></KimaCard>
+            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('gallery')">组件总览</KimaButton><KimaButton variant="text" @click="navigate('installation')">了解接入方式</KimaButton></div></KimaCard>
           </section>
           <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><KimaCodeBlock :code="install" language="shell" /><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
           <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><KimaCard><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></KimaCard><KimaCard><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></KimaCard><KimaCard><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></KimaCard></div></section>
@@ -155,7 +144,8 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
           <section id="principles" class="kima-docs__section"><h2>接入约定</h2><p>Vue 入口需显式导入样式；自定义元素入口自带样式和运行时。自定义事件参数位于 event.detail 数组中。样式不重置宿主页面。</p></section>
         </template>
         <template v-else-if="route === 'theme'">
-          <section id="usage" class="kima-docs__section"><h2>在整个站点体验主题</h2><p>使用顶部的种子色选择器和深浅主题按钮，实际组件与文档界面同步变化。</p><KimaCodeBlock :code="themeUsage" language="javascript" /></section><section id="principles" class="kima-docs__section"><h2>设计约束</h2><p>页面表面使用透明层次，弹层使用实色。成功、警告、危险色不随品牌种子改变；所有组件使用 --kima-* 变量。字体采用 Maple Mono 系列与系统等宽回退。</p></section>
+          <section id="usage" class="kima-docs__section"><h2>颜色与字体跟随系统</h2><p>KIMA 不自带主题色，也不内置任何字体。颜色来自操作系统的系统色（强调色就是你系统设置里选的那个），深浅模式跟随系统自动切换；字体直接使用系统 UI 字体。</p></section>
+          <section id="principles" class="kima-docs__section"><h2>设计约束</h2><p>页面表面使用透明层次，弹层使用实色。成功、警告、危险语义色含义固定；所有组件使用 --kima-* 变量。</p></section>
         </template>
         <footer class="kima-docs__footer">KIMA · 让组件、界面与体验说同一种语言。</footer>
       </main>

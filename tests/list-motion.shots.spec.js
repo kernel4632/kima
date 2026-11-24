@@ -10,8 +10,6 @@ async function mount(page, component, width) {
   await page.setViewportSize({ width: width + 48, height: 820 });
   await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
   await page.evaluate(async ({ component, items }) => {
-    const { applyPalette } = await import('/src/utils/theme.js');
-    applyPalette('#61afef', { isDark: true });
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     await window.fixture.mount(`<kima-${component} id="subject"></kima-${component}>`, { subject: { items } });
   }, { component, items });

@@ -35,7 +35,7 @@ try {
   report.checks.push('All declared export targets exist');
   const notices = await readFile(new URL('dist/THIRD_PARTY_NOTICES.txt', root), 'utf8');
   check('Standalone third-party license texts are shipped', () => {
-    for (const name of ['vue@', 'reka-ui@', 'highlight.js@', '@material/material-color-utilities@', '@hugeicons/vue@']) assert.ok(notices.includes(name), `Missing notice: ${name}`);
+    for (const name of ['vue@', 'reka-ui@', 'highlight.js@', '@hugeicons/vue@']) assert.ok(notices.includes(name), `Missing notice: ${name}`);
     assert.match(notices, /Redistribution and use in source and binary forms/);
     assert.match(notices, /Apache License/);
     assert.match(notices, /Permission is hereby granted/);
@@ -44,7 +44,6 @@ try {
   const library = await import('../dist/kima.js');
   const { elements } = await import('../dist/kima-elements.js');
   const { elements: coreElements } = await import('../dist/kima-elements-core.js');
-  const { generatePalette } = await import('../dist/kima-theme.js');
   check('Core elements entry only registers core tier', () => {
     assert.deepEqual(Object.keys(coreElements).sort(), componentTiers.core.map((slug) => `kima-${slug}`).sort());
     for (const [tag, component] of Object.entries(coreElements)) {
@@ -52,11 +51,10 @@ try {
       assert.ok(component.styles?.length, `missing inline element CSS for ${tag}`);
     }
   });
-  check('SSR theme entry', () => assert.ok(Object.keys(generatePalette('#61afef')).length > 20));
   const codeHtml = await renderToString(createSSRApp({ render: () => h(library.KimaCodeBlock, { code: 'const value = 42;', language: 'javascript' }) }));
   check('SSR syntax highlighting', () => assert.match(codeHtml, /hljs-keyword/));
   const css = await readFile(new URL('dist/style.css', root), 'utf8');
-  for (const file of ['kima.js', 'kima-elements.js', 'kima-elements-core.js', 'kima-theme.js', 'style.css']) {
+  for (const file of ['kima.js', 'kima-elements.js', 'kima-elements-core.js', 'style.css']) {
     const content = await readFile(new URL(`dist/${file}`, root));
     report.sizes[file] = { bytes: content.length, gzipBytes: gzipSync(content).length };
   }
@@ -70,7 +68,7 @@ try {
   }
   await measureVue(new URL('dist/vue/', root));
   report.vueModules = { files: vueModules.length + 1, bytes: vueModules.reduce((sum, content) => sum + content.length, report.sizes['kima.js'].bytes), excludesExternalDependencies: true };
-  for (const file of ['kima-elements.js', 'kima-elements-core.js', 'kima-theme.js']) {
+  for (const file of ['kima-elements.js', 'kima-elements-core.js']) {
     const code = await readFile(new URL(`dist/${file}`, root), 'utf8');
     check(`${file}: AST standalone static/re-export/dynamic imports`, () => {
       const ast = babelParse(code, { sourceType: 'module' });

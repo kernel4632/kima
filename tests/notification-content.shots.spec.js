@@ -6,8 +6,6 @@ async function mount(page, { position = 'top-right', service = false, reduced = 
   if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
   await page.evaluate(async ({ position, service, standalone }) => {
-    const { applyPalette } = await import('/src/utils/theme.js');
-    applyPalette('#61afef', { isDark: !position.startsWith('bottom') });
     document.documentElement.dir = position.startsWith('bottom') ? 'rtl' : 'ltr';
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     const notices = [

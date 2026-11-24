@@ -176,12 +176,7 @@ const viewItems = [
   { value: "board", label: "看板" },
 ];
 
-const codeExample = `import { applyPalette } from '@kernel4632/kima/theme';
 
-// 一颗种子，整个界面。
-const theme = { seed: '#61afef', isDark: true };
-applyPalette(theme.seed, theme);
-`;
 </script>
 <template>
     <div class="kima-gallery__body">
@@ -190,7 +185,7 @@ applyPalette(theme.seed, theme);
           <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
         </article>
         <article v-if="component === 'code-block'" class="kima-gallery__demo">
-          <KimaCodeBlock :code="codeExample" language="javascript" filename="theme.js" line-numbers />
+          <KimaCodeBlock :code="`// KIMA 颜色与字体跟随操作系统：\n// 强调色 = 系统设置里的强调色，深浅模式自动切换，字体即系统 UI 字体。\nconst button = document.querySelector('kima-button');`" language="javascript" line-numbers />
           <KimaCodeBlock code="pnpm add @kernel4632/kima vue" language="shell" />
         </article>
         <!-- 按钮与动作 -->

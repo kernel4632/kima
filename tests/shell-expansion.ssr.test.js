@@ -17,13 +17,13 @@ test('shell entries and menu/navigation enhancements SSR without browser globals
     }
   } finally { await server.close(); }
 });
-test('provider SSR tokens locale direction and nested Vue defaults are scoped',async () => {
+test('provider SSR locale direction and reduced motion are scoped',async () => {
   const server=await createServer({server:{middlewareMode:true,hmr:false,ws:false},appType:'custom'});
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
   try {
     const Provider=(await server.ssrLoadModule(componentPaths['config-provider'])).default;
     const Sidebar=(await server.ssrLoadModule(componentPaths['sidebar'])).default;
-    const html=await renderToString(createSSRApp({render:() => h(Provider,{theme:'light',seed:'#61afef',variant:'tonal-spot',locale:'en-US',direction:'rtl',reducedMotion:'reduce'}, {default:() => h(Sidebar)})}));
-    assert.match(html,/--kima-color-primary:/); assert.match(html,/dir="rtl"/); assert.match(html,/aria-label="Sidebar"/); assert.match(html,/data-kima-reduced-motion="reduce"/);
+    const html=await renderToString(createSSRApp({render:() => h(Provider,{locale:'en-US',direction:'rtl',reducedMotion:'reduce'}, {default:() => h(Sidebar)})}));
+    assert.match(html,/dir="rtl"/); assert.match(html,/aria-label="Sidebar"/); assert.match(html,/data-kima-reduced-motion="reduce"/);
   } finally { await server.close(); }
 });

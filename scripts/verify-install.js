@@ -58,7 +58,7 @@ try {
   const tarball = resolve(artifacts, packed.filename);
   report.tarball = { filename: packed.filename, bytes: packed.size, unpackedBytes: packed.unpackedSize, integrity: packed.integrity };
   const files = packed.files.map(file => file.path);
-  for (const file of ['dist/kima.js', 'dist/kima-elements.js', 'dist/kima-elements-core.js', 'dist/kima-theme.js', 'dist/style.css', 'dist/THIRD_PARTY_NOTICES.txt', 'README.md', 'LICENSE']) assert.ok(files.includes(file), `缺少发布文件 ${file}`);
+  for (const file of ['dist/kima.js', 'dist/kima-elements.js', 'dist/kima-elements-core.js', 'dist/style.css', 'dist/THIRD_PARTY_NOTICES.txt', 'README.md', 'LICENSE']) assert.ok(files.includes(file), `缺少发布文件 ${file}`);
   assert.ok(files.every(file => file.startsWith('dist/') || ['package.json', 'README.md', 'LICENSE'].includes(file)), '不应打包源码、测试或站点资产');
   consumer = await mkdtemp(join(tmpdir(), 'kima-consumer-'));
   report.isolatedDirectory = consumer;
@@ -72,8 +72,6 @@ try {
 import {File01Icon} from '@hugeicons/core-free-icons';
 import {KimaButton,KimaTextField,KimaSelect,KimaTextarea,KimaRadioGroup,KimaListbox,KimaList,KimaDrawer,KimaPopover,KimaCodeEditor,KimaRichTextEditor,KimaQrCode,KimaMenu} from '@kernel4632/kima';
 ${['button', 'text-field', 'select', 'textarea', 'radio-group', 'listbox', 'list', 'drawer', 'popover', 'code-editor', 'rich-text-editor', 'qr-code', 'menu'].map(slug => "import '@kernel4632/kima/styles/" + slug + ".css';").join('\n')}
-import {applyPalette} from '@kernel4632/kima/theme';
-applyPalette('#61afef');
 createApp({setup(){const count=ref(0),notes=ref('Initial'),code=ref('const initial = 1;'),rich=ref('<p>Initial document</p>'),qr=ref('https://kima.example/initial'),selected=ref(''),drawerOpen=ref(false);return()=>h('main',[
  h(KimaButton,{onClick:()=>count.value++},()=> 'Vue '+count.value),
  h('div',{id:'field-width',style:{width:'760px',maxWidth:'100%',display:'flex',flexDirection:'column',gap:'16px'}},[

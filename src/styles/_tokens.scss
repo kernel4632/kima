@@ -1,17 +1,62 @@
 /* KIMA 设计 token：全局外观的唯一来源，所有组件只用这里的变量，不写死颜色和尺寸。
  *
  * 方向：Material 3（Material You），但尺寸比官方默认放大一号，密度更松，像桌面版的手机界面。
- * 颜色不在这里定义，由 scripts/palette.js 从种子色生成到 _palette.scss，再从这里 @use 进来。
+ *
+ * 颜色：库自己不带品牌色。全部颜色来自浏览器系统色（CSS system colors），
+ * 跟着用户的操作系统走——系统换深浅、换强调色，整个组件库自动跟着变。
+ * 深浅两套靠 color-scheme: light dark 声明，不需要任何 JS 或类名切换。
+ * 字体同理：不引入任何自定义字体，直接用系统 UI 字体。
  *
  * 变量一共六组：字体、间距、形状、层级与状态、动效、尺寸。前缀统一 --kima-。
  */
-@use "palette";
 
 :root {
+  /* 声明深浅两套都支持：浏览器据此决定系统色取哪一套，滚动条、原生控件也跟着走。 */
+  color-scheme: light dark;
+
+  /* ---- 基础色（全部来自系统，库不带品牌色）----
+   * Canvas / CanvasText：页面背景和主文字，操作系统深浅模式切了它就跟着切。
+   * ButtonFace / ButtonText：控件表面和控件文字。
+   * AccentColor / AccentColorText：用户在系统设置里选的强调色——
+   *   Windows 的"主题色"、macOS 的"强调色"，用户挑了什么主操作就是什么。
+   * Field / FieldText：输入框的底和字。
+   * Highlight / HighlightText：选中高亮（文字选区、选中行）。
+   * GrayText：禁用文字。LinkText / VisitedText：链接色。
+   * 这些值浏览器会自动算出与背景的对比度，不用库自己操心可读性。 */
+  --kima-color-surface: Canvas;
+  --kima-color-on-surface: CanvasText;
+  --kima-color-on-surface-variant: color-mix(in srgb, CanvasText 72%, Canvas);
+  --kima-color-outline: color-mix(in srgb, CanvasText 38%, Canvas);
+  --kima-color-outline-variant: color-mix(in srgb, CanvasText 20%, Canvas);
+  --kima-color-primary: AccentColor;
+  --kima-color-on-primary: AccentColorText;
+  --kima-color-primary-container: color-mix(in srgb, AccentColor 24%, Canvas);
+  --kima-color-on-primary-container: AccentColorText;
+  --kima-color-secondary-container: color-mix(in srgb, ButtonFace 60%, CanvasText);
+  --kima-color-on-secondary-container: CanvasText;
+  --kima-color-tertiary-container: color-mix(in srgb, AccentColor 45%, Canvas);
+  --kima-color-on-tertiary-container: CanvasText;
+  --kima-color-error: color-mix(in srgb, #d13438 80%, CanvasText);
+  --kima-color-on-error: #ffffff;
+  --kima-color-error-container: color-mix(in srgb, #d13438 22%, Canvas);
+  --kima-color-on-error-container: color-mix(in srgb, #d13438 75%, CanvasText);
+  --kima-color-inverse-surface: CanvasText;
+  --kima-color-inverse-on-surface: Canvas;
+  --kima-color-scrim: #000000;
+
+  /* 容器层次：系统没有"容器色阶梯"，从 ButtonFace 与 Canvas 的混合派生三档。
+   * 浏览器自带 Scrollbar / 滚动条颜色也走这条路，视觉天然一致。 */
+  --kima-color-surface-container-lowest: Canvas;
+  --kima-color-surface-container-low: color-mix(in srgb, ButtonFace 30%, Canvas);
+  --kima-color-surface-container: color-mix(in srgb, ButtonFace 65%, Canvas);
+  --kima-color-surface-container-high: ButtonFace;
+  --kima-color-surface-container-highest: color-mix(in srgb, CanvasText 12%, ButtonFace);
+
   /* ---- 字体 ----
-   * 全站等宽 Maple Mono NF CN，字重 semi-bold。
-   * 中文字形不内联，交给系统字体回退；装了字体就用，没装也不会变形。 */
-  --kima-font-family: "Maple Mono NF CN", "Maple Mono", "Maple Mono NF", ui-monospace, "Cascadia Mono", Consolas, monospace;
+   * 不引入任何自定义字体，完全跟随操作系统的 UI 字体。
+   * system-ui 在 Windows 是 Segoe UI、macOS 是 SF Pro、Linux 是各发行版默认，
+   * 中文由系统字体栈自动回退，用户改系统字体设置这里跟着变。 */
+  --kima-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
   --kima-font-weight-regular: 400;
   --kima-font-weight-medium: 500;
   --kima-font-weight-semi-bold: 600;
@@ -95,9 +140,9 @@
   /* ---- 浮层表面（弹层专用，实色）----
    * 弹层（菜单、下拉、对话框、抽屉）浮在内容之上，必须挡住背后的东西，
    * 所以用实色，不能像页面内的组件那样用透明度——那会让下面的文字透上来，看不清。
-   * 直接取色板里已有的容器色，不另写颜色值。 */
-  --kima-color-popup: var(--kima-color-surface-container-high);
-  --kima-color-popup-large: var(--kima-color-surface-container-highest);
+   * ButtonFace 就是操作系统画原生菜单、下拉的底色，弹层用它和原生 UI 一个质感。 */
+  --kima-color-popup: ButtonFace;
+  --kima-color-popup-large: color-mix(in srgb, CanvasText 8%, ButtonFace);
   /* 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 */
   --kima-color-picker-white: #ffffff;
   --kima-color-picker-black: #000000;
@@ -110,16 +155,16 @@
 
   /* 主色系的浅底：柔和按钮用它，一眼看出"属于主色系但不用那么强"。
    * 同样用透明度写成，铺在模糊背景上也不会糊。 */
-  --kima-color-primary-soft: color-mix(in srgb, var(--kima-color-primary) 20%, transparent);
+  --kima-color-primary-soft: color-mix(in srgb, AccentColor 20%, transparent);
   --kima-error-soft: color-mix(in srgb, var(--kima-color-error) 20%, transparent);
   /* 未选中的控件底（开关轨道、复选框方框）：比 layer-3 淡一档，
    * 因为它要长期留在界面上，太实会跟选中态抢注意力。 */
   --kima-color-track: color-mix(in srgb, var(--kima-color-on-surface) 22%, transparent);
   /* 选中项的悬停底：选中项的文字和底是"容器色 + 容器文字"的一整对，
-   * 悬停时不能换成通用悬停色（配对一拆开，深色主题下就成了黑字压深底）。
-   * 所以给它一个从容器色派生的档位：把容器文字色按 M3 悬停档 8% 叠回容器色，
-   * 深浅两套主题下都只挪一档明度，对比度不动。 */
-  --kima-color-primary-container-hover: color-mix(in srgb, var(--kima-color-on-primary-container) 8%, var(--kima-color-primary-container));
+   * 悬停时不能换成通用悬停色（配对一拆开，深浅两套下就成了字底不匹配）。
+   * 所以给它一个从容器色派生的档位：把容器文字色按悬停档 8% 叠回容器色，
+   * 深浅两套下都只挪一档明度，对比度不动。 */
+  --kima-color-primary-container-hover: color-mix(in srgb, AccentColorText 8%, var(--kima-color-primary-container));
 
   /* ---- 层级 ----
    * M3 elevation：数字越大越浮起来。抽屉和弹层用 3 以上。 */
@@ -204,40 +249,25 @@
   --kima-tooltip-max-width: 480px;
 
   /* ---- 语义色（成功 / 警告）----
-   * 和品牌色不是一回事：品牌色跟着种子和配色风格走，语义色不跟。
-   * 它们像交通灯，含义固定，换主题不该换掉"绿灯是绿的"这件事——
-   * 否则纯灰度主题下"成功"会和"中性"长得一样，用户分不出状态来。
-   * 危险色用的是色板里的 error 系列（M3 的 error 本来就不随种子变），在 _palette.scss 里。 */
-  --kima-color-success: #6dd58c;
-  --kima-color-on-success: #00391c;
-  --kima-color-warning: #ffb95c;
-  --kima-color-on-warning: #3d2600;
+   * 像交通灯，含义固定：成功绿、警告橙，不随系统强调色变。
+   * 深浅两套各给一对能互相读清的值，用 light-dark() 让浏览器按 color-scheme 自动挑。
+   * 危险色走上面的 error 系列。 */
+  --kima-color-success: light-dark(#1b6b3a, #6dd58c);
+  --kima-color-on-success: light-dark(#ffffff, #00391c);
+  --kima-color-warning: light-dark(#8a5200, #ffb95c);
+  --kima-color-on-warning: light-dark(#ffffff, #3d2600);
 
   /* 代码语法色：只服务可读性，不表达状态语义。
-   * 关键字跟主色走（换种子整套变），字符串/数字借用固定的语义色相，
-   * 函数名和属性名各给一个专属色相，这样一段代码里能分出五层，不是只有"蓝和灰"。
-   * 浅色主题下这两档会压深（见下面 :root[data-kima-theme="light"]）。 */
-  --kima-color-code-keyword: var(--kima-color-primary);
+   * 关键字跟系统强调色走，字符串/数字借用固定的语义色相，
+   * 函数名和属性名各给一个专属色相，这样一段代码里能分出五层，不是只有"蓝和灰"。 */
+  --kima-color-code-keyword: AccentColor;
   --kima-color-code-string: var(--kima-color-success);
   --kima-color-code-number: var(--kima-color-warning);
-  --kima-color-code-function: #c9a6ff;
-  --kima-color-code-property: #f0a8c4;
+  --kima-color-code-function: light-dark(#6a4bb0, #c9a6ff);
+  --kima-color-code-property: light-dark(#9b3a62, #f0a8c4);
   --kima-color-code-comment: var(--kima-color-on-surface-variant);
   --kima-color-code-punctuation: var(--kima-color-on-surface-variant);
   --kima-line-height-code: 1.6;
-
-}
-
-/* 浅色主题下语义色要压深：上面那两档是给深底的亮色，压在浅底上会看不清。
- * 色相不变（绿还是绿、橙还是橙），只改明度，含义照样一眼认得出。 */
-:root[data-kima-theme="light"] {
-  --kima-color-success: #1b6b3a;
-  --kima-color-on-success: #ffffff;
-  --kima-color-warning: #8a5200;
-  --kima-color-on-warning: #ffffff;
-  /* 代码语法色同理：色相不动，明度压到浅底上读得清。 */
-  --kima-color-code-function: #6a4bb0;
-  --kima-color-code-property: #9b3a62;
 }
 
 /* ---- 块级组件的宿主默认 ----
@@ -349,34 +379,6 @@ kima-transfer {
   opacity: 0;
   scale: 0.96;
 }
-
-/* ---- 主题切换的统一颜色过渡（全库共用）----
- * 换主题时，有的组件自己声明了颜色过渡、有的没有，直接换色会变成
- * "一半界面先到、一半后到"。把根元素标记成 .kima-theme-switching，
- * 这条规则在换色的那一瞬间接管所有元素的颜色过渡，240ms 后由 JS 摘掉。
- * !important 是刻意的：它就是要压过每个元素自己的过渡，只活一瞬间。
- * 摘掉之后各元素回到自己的规则，平时不受影响。 */
-.kima-theme-switching,
-.kima-theme-switching *,
-.kima-theme-switching *::before,
-.kima-theme-switching *::after {
-  transition:
-    background-color var(--kima-duration-medium) var(--kima-curve-standard),
-    border-color var(--kima-duration-medium) var(--kima-curve-standard),
-    color var(--kima-duration-medium) var(--kima-curve-standard),
-    fill var(--kima-duration-medium) var(--kima-curve-standard),
-    stroke var(--kima-duration-medium) var(--kima-curve-standard) !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kima-theme-switching,
-  .kima-theme-switching *,
-  .kima-theme-switching *::before,
-  .kima-theme-switching *::after {
-    transition: none !important;
-  }
-}
-
 
 @media (prefers-reduced-motion: reduce) {
   .kima-popup-enter-active,

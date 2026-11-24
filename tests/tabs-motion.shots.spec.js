@@ -5,10 +5,7 @@ async function mountTabs(page, { width = 640, dir = 'ltr', orientation = 'horizo
   await page.goto('/tests/fixture.html', { waitUntil: 'networkidle' });
   await page.evaluate(async ({ width, dir, orientation, longLabels, theme }) => {
     const { createApp, h, ref, nextTick } = await import('/node_modules/.vite/deps/vue.js');
-    const { default: Tabs } = await import('/src/components/core/tabs.ce.vue');
-    const { applyPalette } = await import('/src/utils/theme.js');
-    applyPalette('#61afef', { isDark: theme === 'dark' });
-    document.documentElement.dir = dir;
+    const { default: Tabs } = await import('/src/components/core/tabs.ce.vue');    document.documentElement.dir = dir;
     document.body.style.cssText = 'margin:24px;background:var(--kima-color-surface);color:var(--kima-color-on-surface)';
     const mount = document.getElementById('fixture');
     mount.style.cssText = `display:flex;align-items:center;flex-direction:column;width:${width}px;gap:16px`;

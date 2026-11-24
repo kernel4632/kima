@@ -98,11 +98,8 @@ try {
   await dialog.getByRole('button', { name: '取消', exact: true }).click();
   await expect(dialog).not.toBeVisible();
 
-  await page.getByRole('button', { name: '切换明暗主题', exact: true }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-kima-theme', 'light');
-  await page.waitForTimeout(300);
   await desktopLayout();
-  await page.screenshot({ path: 'shots/playground-light-1440.png' });
+  await page.screenshot({ path: 'shots/playground-1440.png' });
 
   // 1080p 仍保持同一页；手机允许自然纵向排版，但不能横向溢出。
   await page.setViewportSize({ width: 1920, height: 1080 });
