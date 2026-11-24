@@ -42,7 +42,30 @@ defineExpose({ add, remove, move, validate, rows });
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 @use "../../styles/input" as *;
-.kima-dynamic-input{ @include advanced-root;display:grid;gap:var(--kima-space-3);&__rows{position:relative;display:grid;grid-column:1 / -1;gap:var(--kima-space-3)}&__row{ @include input-surface;display:grid;gap:var(--kima-space-2);padding:var(--kima-space-3);min-width:0}&__actions{display:flex;flex-wrap:wrap;gap:var(--kima-space-1)} }
+.kima-dynamic-input {
+  @include advanced-root;
+  display:grid;
+  gap:var(--kima-space-3);
+  &__rows {
+    position:relative;
+    display:grid;
+    grid-column:1 / -1;
+    gap:var(--kima-space-3)
+  }
+  &__row {
+    @include input-surface;
+    display:grid;
+    gap:var(--kima-space-2);
+    padding:var(--kima-space-3);
+    min-width:0
+  }
+  &__actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--kima-space-1)
+  }
+
+}
 .kima-dynamic-input__row.kima-list-enter-active,
 .kima-dynamic-input__row.kima-list-leave-active { transition: opacity var(--kima-duration-medium) var(--kima-curve-standard), transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
 .kima-dynamic-input__row.kima-list-move { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized); }

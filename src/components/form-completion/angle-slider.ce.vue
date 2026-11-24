@@ -5,6 +5,58 @@ const props=defineProps({modelValue:{type:Number,default:0},name:String,label:{t
 </script>
 <template><div ref="root" class="kima-angle-slider" :class="{'kima-angle-slider--disabled':disabled}" :style="{'--kima-angle-size':`${size}px`}"><div class="kima-angle-slider__dial" role="slider" tabindex="0" :aria-label="label" :aria-valuemin="0" :aria-valuemax="359" :aria-valuenow="local" :aria-valuetext="`${local}°`" :aria-disabled="disabled||undefined" @pointerdown="e=>{e.currentTarget.setPointerCapture(e.pointerId);pointer(e)}" @pointermove="e=>e.buttons&&pointer(e)" @keydown="key"><span class="kima-angle-slider__marker" :style="point"></span><output>{{local}}°</output></div><input class="kima-angle-slider__native" type="number" :value="local" :name="name" min="0" max="359.999" :step="step" :required="required" :disabled="disabled" :aria-label="label" @input.stop="update(Number($event.target.value))" @change.stop="emit('change',local)"></div></template>
 <style scoped lang="scss">
-@use "../../styles/mixins" as *;.kima-angle-slider{display:inline-grid;color:var(--kima-color-on-surface);font:var(--kima-font-weight-semi-bold) var(--kima-font-size-body-medium) var(--kima-font-family);&__dial{position:relative;width:var(--kima-angle-size);height:var(--kima-angle-size);border-radius:50%;background:conic-gradient(from 0deg,var(--kima-color-primary),var(--kima-color-primary-container),var(--kima-color-primary));cursor:crosshair;touch-action:none;&::before{content:"";position:absolute;inset:12%;border-radius:50%;background:var(--kima-color-surface)}&:focus-visible{outline:var(--kima-focus-ring-width) solid var(--kima-color-primary);outline-offset:var(--kima-focus-ring-offset)}output{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}}&__marker{position:absolute;z-index:1;width:20px;height:20px;border-radius:50%;background:var(--kima-color-on-primary);box-shadow:0 0 0 3px var(--kima-color-primary);transform:translate(-50%,-50%)}&__native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}&--disabled{opacity:var(--kima-opacity-disabled)}}
+@use "../../styles/mixins" as *;
+.kima-angle-slider {
+  display:inline-grid;
+  color:var(--kima-color-on-surface);
+  font:var(--kima-font-weight-semi-bold) var(--kima-font-size-body-medium) var(--kima-font-family);
+  &__dial {
+    position:relative;
+    width:var(--kima-angle-size);
+    height:var(--kima-angle-size);
+    border-radius:50%;
+    background:conic-gradient(from 0deg,var(--kima-color-primary),var(--kima-color-primary-container),var(--kima-color-primary));
+    cursor:crosshair;
+    touch-action:none;
+    &::before {
+      content:"";
+      position:absolute;
+      inset:12%;
+      border-radius:50%;
+      background:var(--kima-color-surface)
+    }
+    &:focus-visible {
+      outline:var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline-offset:var(--kima-focus-ring-offset)
+    }
+    output {
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      pointer-events:none
+    }
+  }
+  &__marker {
+    position:absolute;
+    z-index:1;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--kima-color-on-primary);
+    box-shadow:0 0 0 3px var(--kima-color-primary);
+    transform:translate(-50%,-50%)
+  }
+  &__native {
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none
+  }
+  &--disabled {
+    opacity:var(--kima-opacity-disabled)
+  }
+}
 @media(prefers-reduced-motion:reduce){.kima-angle-slider *{transition:none!important}}
 </style>

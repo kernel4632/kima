@@ -5,7 +5,6 @@ modelValue 是 HH:mm 或 null；min、max 是同样格式，step 是分钟间隔
   <kima-time-picker v-model="time" name="start" label="开始时间" min="08:00" max="18:00" step="15" clearable />
   <kima-time-picker v-model="time" v-model:open="open" locale="en-US" hour12 />
 打开后先选小时，再选分钟；Arrow、Home、End、Enter、Escape 和 Tab 都有对应的键盘行为。
-上游记录：本地参考仓库有 DankTimePicker.qml，采用小时、分钟分步选择和 AM/PM；没有浏览器原生时间选择器实现。
 -->
 <script setup>
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useHost, useId, watch } from "vue";
@@ -562,13 +561,13 @@ onBeforeUnmount(() => {
   gap: var(--kima-space-1);
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
 }
 
 /* 弹层里每一列的标题（时/分）：它标注的是下面那列数字，属于控件造型，留着。 */
 .kima-time-picker__column-label {
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
   font-weight: var(--kima-font-weight-medium);
 }
 
@@ -627,7 +626,7 @@ onBeforeUnmount(() => {
   padding: 0 0 0 var(--kima-field-padding);
   border: 0;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   font-size: var(--kima-font-size-body-large);
   text-align: left;
@@ -656,7 +655,7 @@ onBeforeUnmount(() => {
   /* 单独放着时离右边缘 16px，跟旁边的清除按钮留出一个字的空。 */
   margin-right: var(--kima-space-2);
   color: var(--kima-color-on-surface-variant);
-  transition: transform var(--kima-duration-fast) var(--kima-ease-standard);
+  transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
 }
 
 .kima-time-picker--open .kima-time-picker__arrow {
@@ -676,7 +675,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   cursor: pointer;
 
@@ -717,7 +716,7 @@ onBeforeUnmount(() => {
   width: max(100%, 248px);
   padding: var(--kima-space-3);
   border: 0;
-  border-radius: var(--kima-radius-md);
+  border-radius: var(--kima-radius-m);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -726,7 +725,7 @@ onBeforeUnmount(() => {
 .kima-time-picker__summary {
   padding-bottom: var(--kima-space-2);
   color: var(--kima-color-primary);
-  font-size: var(--kima-font-size-lg);
+  font-size: var(--kima-font-size-title-small);
   font-weight: var(--kima-font-weight-bold);
   text-align: center;
 }
@@ -771,9 +770,9 @@ onBeforeUnmount(() => {
   justify-content: center;
   padding: 0 var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   cursor: pointer;
   @include kima-motion-colors;

@@ -565,7 +565,7 @@ onBeforeUnmount(() => {
   padding: 0 0 0 var(--kima-field-padding);
   border: 0;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   font-size: var(--kima-font-size-body-large);
   text-align: left;
@@ -606,7 +606,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   @include kima-motion-colors;
 
@@ -647,7 +647,7 @@ onBeforeUnmount(() => {
   width: max(100%, 268px);
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-md);
+  border-radius: var(--kima-radius-m);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -662,7 +662,7 @@ onBeforeUnmount(() => {
 }
 
 .kima-date-picker__month {
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   font-weight: var(--kima-font-weight-medium);
   text-align: center;
 }
@@ -677,7 +677,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   @include kima-motion-colors;
 
@@ -714,7 +714,7 @@ onBeforeUnmount(() => {
 .kima-date-picker__weekday {
   padding: var(--kima-space-1) 0;
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-xs);
+  font-size: var(--kima-font-size-label-small);
   font-weight: var(--kima-font-weight-medium);
   text-align: center;
 }
@@ -736,9 +736,9 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   cursor: pointer;
   @include kima-motion-colors;
 

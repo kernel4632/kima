@@ -21,7 +21,48 @@ watch(()=>props.modelValue,value=>{if(Array.isArray(value)&&value.length&&!tasks
 <style scoped lang="scss">
 @use "../../styles/advanced-input" as *;
 @use "../../styles/input" as *;
-.kima-upload-manager{@include advanced-root;display:grid;gap:var(--kima-space-3);&__list{position:relative;list-style:none;padding:0;margin:0;display:grid;gap:var(--kima-space-2)}li{@include input-surface;display:flex;align-items:center;justify-content:space-between;gap:var(--kima-space-3);padding:var(--kima-space-3)}&__info{display:grid;min-width:0;flex:1;gap:var(--kima-space-1);strong{overflow-wrap:anywhere}span{font-size:var(--kima-font-size-label-small);color:var(--kima-color-on-surface-variant)}progress{width:100%;accent-color:var(--kima-color-primary)}}&__actions{display:flex;flex-wrap:wrap}}
+.kima-upload-manager {
+  @include advanced-root;
+  display:grid;
+  gap:var(--kima-space-3);
+  &__list {
+    position:relative;
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:grid;
+    gap:var(--kima-space-2)
+  }
+  li {
+    @include input-surface;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--kima-space-3);
+    padding:var(--kima-space-3)
+  }
+  &__info {
+    display:grid;
+    min-width:0;
+    flex:1;
+    gap:var(--kima-space-1);
+    strong {
+      overflow-wrap:anywhere
+    }
+    span {
+      font-size:var(--kima-font-size-label-small);
+      color:var(--kima-color-on-surface-variant)
+    }
+    progress {
+      width:100%;
+      accent-color:var(--kima-color-primary)
+    }
+  }
+  &__actions {
+    display:flex;
+    flex-wrap:wrap
+  }
+}
 .kima-upload-manager__list > li.kima-list-enter-active,
 .kima-upload-manager__list > li.kima-list-leave-active { transition: opacity var(--kima-duration-medium) var(--kima-curve-standard), transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
 .kima-upload-manager__list > li.kima-list-move { transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized); }

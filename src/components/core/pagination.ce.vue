@@ -189,7 +189,7 @@ watch(pageCount, (count) => {
   justify-content: center;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
 }
 
 .kima-pagination__list {
@@ -211,10 +211,10 @@ watch(pageCount, (count) => {
   justify-content: center;
   padding: 0 var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   box-sizing: border-box;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   cursor: pointer;
   @include kima-state-layer;

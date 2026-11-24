@@ -150,7 +150,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   margin: 0;
   padding: var(--kima-space-4);
   border: 0;
-  background: var(--kima-color-transparent);
+  background: transparent;
   place-items: center;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
@@ -265,7 +265,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
 .kima-dialog__title {
   margin: 0;
   color: var(--kima-color-on-surface);
-  font-size: var(--kima-font-size-xl);
+  font-size: var(--kima-font-size-title-medium);
   font-weight: var(--kima-font-weight-bold);
   line-height: 1.25;
 }
@@ -287,7 +287,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   /* 保留基础按钮回弹，同时过渡关闭入口的颜色。 */
   transition:

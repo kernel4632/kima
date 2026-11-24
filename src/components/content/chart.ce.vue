@@ -69,6 +69,83 @@ function toggle(si){ hidden.value=hidden.value.includes(si)?hidden.value.filter(
 </template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;
-.kima-chart { @include content-root; @include content-reduced; position:relative;display:grid;gap:var(--kima-space-2); &__legend{display:flex;flex-wrap:wrap;gap:var(--kima-space-2)} &__swatch{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-inline-end:.5em} &__plot{width:100%;height:var(--kima-chart-height, 240px);overflow:visible} &__axis{fill:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-small);line{stroke:var(--kima-color-outline-variant);stroke-width:1.5}} &__series{animation:kima-chart-appear var(--kima-duration-slow) var(--kima-curve-standard)} &__point{cursor:pointer;outline:none;opacity:.8;transition:opacity var(--kima-duration-effects) var(--kima-curve-standard);&:hover,&:focus,&[aria-pressed=true]{opacity:1;filter:drop-shadow(0 0 3px currentColor)} &:focus-visible{outline:2px solid var(--kima-color-primary);outline-offset:3px}} &__area{fill:currentColor;opacity:.15} &__tooltip{position:absolute;z-index:5;inset-inline-end:0;top:var(--kima-touch-target);max-width:100%;pointer-events:none;background:var(--kima-color-popup);color:var(--kima-color-on-surface);padding:var(--kima-space-3);border-radius:var(--kima-radius-m);box-shadow:var(--kima-elevation-3)} &__hint{font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant);margin:0} &__table{overflow:auto;table{@include content-table}} }
+.kima-chart  {
+  @include content-root;
+  @include content-reduced;
+  position:relative;
+  display:grid;
+  gap:var(--kima-space-2);
+  &__legend {
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--kima-space-2)
+  }
+  &__swatch {
+    display:inline-block;
+    width:.8em;
+    height:.8em;
+    border-radius:50%;
+    margin-inline-end:.5em
+  }
+  &__plot {
+    width:100%;
+    height:var(--kima-chart-height, 240px);
+    overflow:visible
+  }
+  &__axis {
+    fill:var(--kima-color-on-surface-variant);
+    font-size:var(--kima-font-size-label-small);
+    line {
+      stroke:var(--kima-color-outline-variant);
+      stroke-width:1.5
+    }
+  }
+  &__series {
+    animation:kima-chart-appear var(--kima-duration-slow) var(--kima-curve-standard)
+  }
+  &__point {
+    cursor:pointer;
+    outline:none;
+    opacity:.8;
+    transition:opacity var(--kima-duration-effects) var(--kima-curve-standard);
+    &:hover,&:focus,&[aria-pressed=true] {
+      opacity:1;
+      filter:drop-shadow(0 0 3px currentColor)
+    }
+    &:focus-visible {
+      outline:2px solid var(--kima-color-primary);
+      outline-offset:3px
+    }
+  }
+  &__area {
+    fill:currentColor;
+    opacity:.15
+  }
+  &__tooltip {
+    position:absolute;
+    z-index:5;
+    inset-inline-end:0;
+    top:var(--kima-touch-target);
+    max-width:100%;
+    pointer-events:none;
+    background:var(--kima-color-popup);
+    color:var(--kima-color-on-surface);
+    padding:var(--kima-space-3);
+    border-radius:var(--kima-radius-m);
+    box-shadow:var(--kima-elevation-3)
+  }
+  &__hint {
+    font-size:var(--kima-font-size-label-medium);
+    color:var(--kima-color-on-surface-variant);
+    margin:0
+  }
+  &__table {
+    overflow:auto;
+    table {
+      @include content-table
+    }
+  }
+
+}
 @keyframes kima-chart-appear {from{opacity:0}to{opacity:1}}
 </style>

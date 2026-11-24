@@ -19,7 +19,49 @@ function keydown(event) { if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(
 <template><nav ref="root" v-bind="forwardedAttrs" class="kima-navigation-menu" :class="{'kima-navigation-menu--vertical': orientation === 'vertical'}" :aria-label="label" @keydown="keydown"><NavigationItems :items="items" :model-value="local" :expanded="expanded" :disabled="disabled" @navigate="navigate" @expand="expand" /><slot /></nav></template>
 <style scoped lang="scss">
 @use '../../styles/navigation' as *;
-.kima-navigation-menu { @include navigation-surface; :deep(.kima-shell-nav__list) { display: flex; flex-wrap: wrap; gap: var(--kima-space-2); list-style: none; padding: 0; margin: 0; } :deep(.kima-shell-nav__list .kima-shell-nav__list) { flex-direction: column; padding-inline-start: var(--kima-space-4); } :deep(.kima-shell-nav__row) { display: flex; min-height: 56px; align-items: center; gap: var(--kima-space-2); } :deep(.kima-link) { flex: 1; min-height: 56px; } :deep(li[data-active] > .kima-shell-nav__row) { border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); } :deep(.kima-icon) { transition: transform var(--kima-duration-medium) var(--kima-curve-standard); } &--vertical :deep(.kima-shell-nav__list) { flex-direction: column; } }
+.kima-navigation-menu  {
+  @include navigation-surface;
+  :deep(.kima-shell-nav__list)  {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kima-space-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+  }
+  :deep(.kima-shell-nav__list .kima-shell-nav__list)  {
+    flex-direction: column;
+    padding-inline-start: var(--kima-space-4);
+
+  }
+  :deep(.kima-shell-nav__row)  {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    gap: var(--kima-space-2);
+
+  }
+  :deep(.kima-link)  {
+    flex: 1;
+    min-height: 56px;
+
+  }
+  :deep(li[data-active] > .kima-shell-nav__row)  {
+    border-radius: var(--kima-radius-m);
+    background: var(--kima-color-layer-2);
+
+  }
+  :deep(.kima-icon)  {
+    transition: transform var(--kima-duration-medium) var(--kima-curve-standard);
+
+  }
+  &--vertical :deep(.kima-shell-nav__list)  {
+    flex-direction: column;
+
+  }
+
+}
 @media (max-width: 560px) { .kima-navigation-menu :deep(.kima-shell-nav__list) { flex-direction: column; } }
 @media (prefers-reduced-motion: reduce) { .kima-navigation-menu :deep(.kima-icon) { transition: none; } }
 </style>

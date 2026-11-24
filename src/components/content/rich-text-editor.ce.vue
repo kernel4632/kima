@@ -83,5 +83,82 @@ defineExpose({focus:()=>editor.value?.commands.focus(),getHTML:()=>sanitizeConte
 </template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;
-.kima-rich-text-editor{@include content-editor;@include content-reduced;position:relative;&__toolbar{display:flex;flex-wrap:wrap;gap:var(--kima-space-1);padding:var(--kima-space-2)}&__document{padding:var(--kima-space-4);:deep(.tiptap){outline:none;min-height:12em;overflow-wrap:anywhere;line-height:1.8;> :first-child{margin-top:0}a{color:var(--kima-color-primary);text-decoration:underline}blockquote{margin-inline:0;padding-inline:var(--kima-space-4);background:var(--kima-color-layer-2)}code{background:var(--kima-color-layer-2);font:inherit}p.is-editor-empty:first-child::before{content:attr(data-placeholder);float:left;height:0;pointer-events:none;color:var(--kima-color-on-surface-variant)}}}&__selection{display:block;padding:var(--kima-space-2) var(--kima-space-4);color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium);overflow-wrap:anywhere}&__link{display:flex;flex-wrap:wrap;gap:var(--kima-space-2);padding:var(--kima-space-3);background:var(--kima-color-popup);input{min-width:0;flex:1;background:var(--kima-color-layer-2);border:0;border-radius:var(--kima-radius-s);padding:var(--kima-space-3);color:inherit;font:inherit}span{color:var(--kima-color-error)}}&__proxy{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip-path:inset(50%)}}
+.kima-rich-text-editor {
+  @include content-editor;
+  @include content-reduced;
+  position:relative;
+  &__toolbar {
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--kima-space-1);
+    padding:var(--kima-space-2)
+  }
+  &__document {
+    padding:var(--kima-space-4);
+    :deep(.tiptap) {
+      outline:none;
+      min-height:12em;
+      overflow-wrap:anywhere;
+      line-height:1.8;
+      > :first-child {
+        margin-top:0
+      }
+      a {
+        color:var(--kima-color-primary);
+        text-decoration:underline
+      }
+      blockquote {
+        margin-inline:0;
+        padding-inline:var(--kima-space-4);
+        background:var(--kima-color-layer-2)
+      }
+      code {
+        background:var(--kima-color-layer-2);
+        font:inherit
+      }
+      p.is-editor-empty:first-child::before {
+        content:attr(data-placeholder);
+        float:left;
+        height:0;
+        pointer-events:none;
+        color:var(--kima-color-on-surface-variant)
+      }
+    }
+  }
+  &__selection {
+    display:block;
+    padding:var(--kima-space-2) var(--kima-space-4);
+    color:var(--kima-color-on-surface-variant);
+    font-size:var(--kima-font-size-label-medium);
+    overflow-wrap:anywhere
+  }
+  &__link {
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--kima-space-2);
+    padding:var(--kima-space-3);
+    background:var(--kima-color-popup);
+    input {
+      min-width:0;
+      flex:1;
+      background:var(--kima-color-layer-2);
+      border:0;
+      border-radius:var(--kima-radius-s);
+      padding:var(--kima-space-3);
+      color:inherit;
+      font:inherit
+    }
+    span {
+      color:var(--kima-color-error)
+    }
+  }
+  &__proxy {
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none;
+    clip-path:inset(50%)
+  }
+}
 </style>

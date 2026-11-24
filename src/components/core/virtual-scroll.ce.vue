@@ -7,7 +7,6 @@ items 可以是任意值，也可以是带 value、key 或 id 的对象；对象
   </kima-virtual-scroll>
 键盘焦点在列表容器上，ArrowUp、ArrowDown、Home、End 移动高亮，Enter 或空格选择当前项。
 自定义元素宿主的 id 会保留在宿主上，light DOM 内部不会复制同一个 id。
-上游记录：本地参考仓库没有独立的 VirtualScroll；列表行为参考 DankListView、DankFlickable 和 FileListView 的固定行高与可见范围计算。
 -->
 <script setup>
 import { computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, watch } from "vue";
@@ -253,9 +252,9 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   overflow: auto;
   overscroll-behavior: contain;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   line-height: 1.4;
   outline: none;
 
@@ -280,7 +279,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   align-items: center;
   box-sizing: border-box;
   padding: 0 var(--kima-space-3);
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
   cursor: pointer;
   contain: layout paint;

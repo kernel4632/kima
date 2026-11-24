@@ -301,7 +301,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     border: 0;
     outline: 0;
     color: var(--kima-color-on-surface);
-    background: var(--kima-color-transparent);
+    background: transparent;
     font: inherit;
     font-size: var(--kima-font-size-body-large);
   }
@@ -341,12 +341,12 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     border: 0;
     border-radius: var(--kima-radius-full);
     color: var(--kima-color-on-surface-variant);
-    background: var(--kima-color-transparent);
+    background: transparent;
     cursor: pointer;
 
     &:hover:not(:disabled) {
       color: var(--kima-color-primary);
-      background: color-mix(in srgb, var(--kima-color-primary) 12%, var(--kima-color-transparent));
+      background: color-mix(in srgb, var(--kima-color-primary) 12%, transparent);
     }
 
     &:focus-visible {
@@ -362,7 +362,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   /* 错误底上的按钮也跟着换危险色，不然红底配蓝色图标很跳。 */
   &--error &__action:hover:not(:disabled) {
     color: var(--kima-color-error);
-    background: color-mix(in srgb, var(--kima-color-error) 12%, var(--kima-color-transparent));
+    background: color-mix(in srgb, var(--kima-color-error) 12%, transparent);
   }
 
   /* 单独一个清除按钮（非密码型）也是并排的一项，跟按钮组同一档右边距。 */
@@ -377,7 +377,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     /* 上边挨着输入框一段小间距，左右缩进跟输入文字对齐。 */
     margin: var(--kima-space-1) var(--kima-field-padding) 0;
     color: var(--kima-color-on-surface-variant);
-    font-size: var(--kima-font-size-small);
+    font-size: var(--kima-font-size-label-small);
     line-height: 1.2;
   }
 

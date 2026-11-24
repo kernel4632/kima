@@ -56,6 +56,75 @@ onBeforeUnmount(() => { mounted = false; observer?.disconnect(); cancelAnimation
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-tour"><dialog ref="dialog" class="kima-tour__dialog" :aria-label="label" @keydown="keyboard" @cancel.prevent.stop="close('escape')"><div v-for="(mask, n) in masks" :key="n" class="kima-tour__mask" :style="Object.fromEntries(Object.entries(mask).map(([key, value]) => [key, `${value}px`]))" aria-hidden="true"/><div v-if="box" class="kima-tour__spotlight" :style="{ left: `${box.left}px`, top: `${box.top}px`, width: `${Math.max(0, box.right - box.left)}px`, height: `${Math.max(0, box.bottom - box.top)}px` }" aria-hidden="true"/><section class="kima-tour__panel" :style="panelStyle"><p>{{ index + 1 }} / {{ steps.length }}</p><h2>{{ step.title || label }}</h2><p>{{ step.description }}</p><p v-if="missing" role="status">未找到目标，可继续下一步或退出。</p><div class="kima-tour__actions"><KimaButton variant="text" @click="close('button')">退出</KimaButton><KimaButton v-if="index > 0" variant="tonal" @click="prev">上一步</KimaButton><KimaButton data-tour-primary @click="next">{{ index >= steps.length - 1 ? '完成' : '下一步' }}</KimaButton></div></section></dialog></div></template>
 <style scoped lang="scss">
 @use '../../styles/mixins' as *;
-.kima-tour { font-family: var(--kima-font-family); color: var(--kima-color-on-surface); &__dialog { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; color: inherit; background: var(--kima-color-transparent); transition: opacity var(--kima-duration-medium), display var(--kima-duration-medium) allow-discrete, overlay var(--kima-duration-medium) allow-discrete; &::backdrop { background: var(--kima-color-transparent); } &:not([open]) { opacity: 0; } @starting-style { &[open] { opacity: 0; } } } &__mask { position: fixed; background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), transparent); backdrop-filter: blur(var(--kima-backdrop-blur)); pointer-events: auto; } &__spotlight { position: fixed; outline: 3px solid var(--kima-color-primary); border-radius: var(--kima-radius-s); pointer-events: none; transition: top var(--kima-duration-medium) var(--kima-curve-emphasized), left var(--kima-duration-medium) var(--kima-curve-emphasized), width var(--kima-duration-medium), height var(--kima-duration-medium); } &__panel { @include kima-popup; position: fixed; box-sizing: border-box; max-height: calc(100vh - 32px); overflow: auto; padding: var(--kima-space-5); border-radius: var(--kima-radius-xl); h2 { margin: var(--kima-space-2) 0; } } &__actions { display: flex; flex-wrap: wrap; gap: var(--kima-space-2); } }
+.kima-tour  {
+  font-family: var(--kima-font-family);
+  color: var(--kima-color-on-surface);
+  &__dialog  {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    transition: opacity var(--kima-duration-medium), display var(--kima-duration-medium) allow-discrete, overlay var(--kima-duration-medium) allow-discrete;
+    &::backdrop  {
+      background: transparent;
+
+    }
+    &:not([open])  {
+      opacity: 0;
+
+    }
+    @starting-style  {
+      &[open]  {
+        opacity: 0;
+
+      }
+
+    }
+
+  }
+  &__mask  {
+    position: fixed;
+    background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), transparent);
+    backdrop-filter: blur(var(--kima-backdrop-blur));
+    pointer-events: auto;
+
+  }
+  &__spotlight  {
+    position: fixed;
+    outline: 3px solid var(--kima-color-primary);
+    border-radius: var(--kima-radius-s);
+    pointer-events: none;
+    transition: top var(--kima-duration-medium) var(--kima-curve-emphasized), left var(--kima-duration-medium) var(--kima-curve-emphasized), width var(--kima-duration-medium), height var(--kima-duration-medium);
+
+  }
+  &__panel  {
+    @include kima-popup;
+    position: fixed;
+    box-sizing: border-box;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: var(--kima-space-5);
+    border-radius: var(--kima-radius-xl);
+    h2  {
+      margin: var(--kima-space-2) 0;
+
+    }
+
+  }
+  &__actions  {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kima-space-2);
+
+  }
+
+}
 @media (prefers-reduced-motion: reduce) { .kima-tour__dialog, .kima-tour__spotlight { transition: none; } }
 </style>

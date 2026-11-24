@@ -55,7 +55,7 @@ defineProps({
   padding: var(--kima-space-6);
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   line-height: 1.5;
   letter-spacing: 0;
   text-align: center;
@@ -81,7 +81,7 @@ defineProps({
 }
 
 .kima-empty-state__title {
-  font-size: var(--kima-font-size-lg);
+  font-size: var(--kima-font-size-title-small);
   font-weight: var(--kima-font-weight-medium);
 }
 

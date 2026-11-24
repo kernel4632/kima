@@ -74,7 +74,31 @@ function keydown(event) {
 <style scoped lang="scss">
 @use "../../styles/navigation" as *;
 @use "../../styles/mixins" as *;
-.kima-carousel { @include navigation-surface; @include kima-focus-ring; &__viewport { position: relative; padding: var(--kima-space-6); min-height: 180px; box-sizing: border-box; background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); overflow: hidden; overflow-wrap: anywhere; } &__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--kima-space-3); margin-top: var(--kima-space-4); } }
+.kima-carousel  {
+  @include navigation-surface;
+  @include kima-focus-ring;
+  &__viewport  {
+    position: relative;
+    padding: var(--kima-space-6);
+    min-height: 180px;
+    box-sizing: border-box;
+    background: var(--kima-color-layer-1);
+    border-radius: var(--kima-radius-m);
+    overflow: hidden;
+    overflow-wrap: anywhere;
+
+  }
+  &__controls  {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--kima-space-3);
+    margin-top: var(--kima-space-4);
+
+  }
+
+}
 .kima-carousel__viewport { display: grid; }
 .kima-carousel__slide { grid-area: 1 / 1; min-width: 0; }
 .kima-carousel-forward-enter-active,

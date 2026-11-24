@@ -53,5 +53,61 @@ onBeforeUnmount(() => end());
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-splitter" :class="{ 'kima-splitter--vertical': vertical }"><section :id="`${id}-first`" class="kima-splitter__panel kima-splitter__panel--first" :style="panelStyle"><slot name="first" /></section><div ref="handle" class="kima-splitter__handle" role="separator" :tabindex="disabled ? -1 : 0" :aria-label="label" :aria-controls="`${id}-first ${id}-second`" :aria-orientation="vertical ? 'horizontal' : 'vertical'" :aria-valuenow="size" :aria-valuemin="lower" :aria-valuemax="upper" :aria-valuetext="`${size}%`" :aria-disabled="disabled || undefined" @pointerdown="down" @pointermove="move" @pointerup="end" @pointercancel="end" @lostpointercapture="end" @keydown="keydown"><span aria-hidden="true"></span></div><section :id="`${id}-second`" class="kima-splitter__panel"><slot name="second" /></section></div></template>
 <style scoped lang="scss">
 @use "../../styles/navigation" as *;
-.kima-splitter { @include navigation-root; display: flex; min-height: 260px; width: 100%; &--vertical { flex-direction: column; height: 420px; } &__panel { min-width: 0; min-height: 0; flex: 1 1 0; overflow: auto; padding: var(--kima-space-4); box-sizing: border-box; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-1); } &__panel--first { flex-grow: 0; flex-shrink: 0; } &__handle { @include navigation-action; flex: 0 0 48px; width: 48px; padding: 0; justify-content: center; cursor: col-resize; touch-action: none; user-select: none; span { width: 4px; height: 40px; border-radius: var(--kima-radius-full); background: var(--kima-color-outline); } } &--vertical &__handle { width: 100%; height: 48px; cursor: row-resize; span { width: 40px; height: 4px; } } }
+.kima-splitter  {
+  @include navigation-root;
+  display: flex;
+  min-height: 260px;
+  width: 100%;
+  &--vertical  {
+    flex-direction: column;
+    height: 420px;
+
+  }
+  &__panel  {
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 0;
+    overflow: auto;
+    padding: var(--kima-space-4);
+    box-sizing: border-box;
+    border-radius: var(--kima-radius-m);
+    background: var(--kima-color-layer-1);
+
+  }
+  &__panel--first  {
+    flex-grow: 0;
+    flex-shrink: 0;
+
+  }
+  &__handle  {
+    @include navigation-action;
+    flex: 0 0 48px;
+    width: 48px;
+    padding: 0;
+    justify-content: center;
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+    span  {
+      width: 4px;
+      height: 40px;
+      border-radius: var(--kima-radius-full);
+      background: var(--kima-color-outline);
+
+    }
+
+  }
+  &--vertical &__handle  {
+    width: 100%;
+    height: 48px;
+    cursor: row-resize;
+    span  {
+      width: 40px;
+      height: 4px;
+
+    }
+
+  }
+
+}
 </style>

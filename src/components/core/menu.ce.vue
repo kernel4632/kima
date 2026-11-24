@@ -53,7 +53,31 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 @use '../../styles/interaction' as *;
 @use '../../styles/shell-menu';
 .kima-menu { @include interaction-root; position: relative; display: inline-flex; min-width: 180px; &--open { z-index: 60; } &--icon { min-width: 0; } }
-.kima-menu__trigger { @include kima-state-layer; @include kima-ripple-host; @include kima-focus-ring; @include kima-motion-colors; display: flex; width: 100%; min-height: 56px; align-items: center; justify-content: space-between; gap: var(--kima-space-3); padding: 0 var(--kima-space-4); border: 0; border-radius: var(--kima-radius-m); color: var(--kima-color-on-surface); background: var(--kima-color-layer-2); font: inherit; cursor: pointer; &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } }
+.kima-menu__trigger  {
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  @include kima-focus-ring;
+  @include kima-motion-colors;
+  display: flex;
+  width: 100%;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kima-space-3);
+  padding: 0 var(--kima-space-4);
+  border: 0;
+  border-radius: var(--kima-radius-m);
+  color: var(--kima-color-on-surface);
+  background: var(--kima-color-layer-2);
+  font: inherit;
+  cursor: pointer;
+  &:disabled  {
+    opacity: var(--kima-opacity-disabled);
+    cursor: not-allowed;
+
+  }
+
+}
 .kima-menu--small .kima-menu__trigger { min-height: 40px; padding-inline: var(--kima-space-3); }
 .kima-menu--icon .kima-menu__trigger { width: var(--kima-touch-target); min-width: var(--kima-touch-target); padding: 0; justify-content: center; aspect-ratio: 1; }
 /* 菜单内容由 Reka 渲染并传送到 body，元素上没有本组件的 data-v 标记，

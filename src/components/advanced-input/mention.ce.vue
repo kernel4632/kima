@@ -77,7 +77,27 @@ defineExpose({ focus: () => input.value?.focus() });
   &__input { @include advanced-field; display:block; min-height:120px; resize:vertical; }
   &__popup { @include kima-popup; position:absolute; z-index:20; inset-inline:0; top:calc(100% + var(--kima-space-1)); padding:var(--kima-space-2); border-radius:var(--kima-radius-m); }
   &__list { list-style:none; padding:0; margin:0; max-height:280px; overflow:auto; }
-  &__option { @include kima-motion-colors; padding:var(--kima-space-3); border-radius:var(--kima-radius-s); cursor:pointer; &:hover {background:var(--kima-color-layer-3);} &[aria-selected="true"]{background:var(--kima-color-primary-container);color:var(--kima-color-on-primary-container); &:hover{background:var(--kima-color-primary-container-hover);}} &[aria-disabled="true"]{opacity:var(--kima-opacity-disabled);cursor:not-allowed;} }
+ &__option  {
+  @include kima-motion-colors;
+  padding:var(--kima-space-3);
+  border-radius:var(--kima-radius-s);
+  cursor:pointer;
+  &:hover  {
+    background:var(--kima-color-layer-3);
+  }
+  &[aria-selected="true"] {
+    background:var(--kima-color-primary-container);
+    color:var(--kima-color-on-primary-container);
+    &:hover {
+      background:var(--kima-color-primary-container-hover);
+    }
+  }
+  &[aria-disabled="true"] {
+    opacity:var(--kima-opacity-disabled);
+    cursor:not-allowed;
+  }
+
+}
   p {margin:var(--kima-space-2);color:var(--kima-color-on-surface-variant);}
 }
 </style>

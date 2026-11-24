@@ -49,5 +49,59 @@ defineExpose({focus:()=>view?.focus(),getSelection:()=>({...selection.value}),ge
 </template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;
-.kima-code-editor{@include content-editor;@include content-reduced;position:relative;&__toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--kima-space-2);padding:var(--kima-space-2)}&__language{margin-inline-start:auto;padding:var(--kima-space-2);color:var(--kima-color-on-surface-variant)}&__mount{min-width:0;:deep(.cm-editor){max-height:32em}:deep(.cm-button),:deep(.cm-textfield){background:var(--kima-color-layer-2);color:var(--kima-color-on-surface);border:0;border-radius:var(--kima-radius-s);font:inherit;padding:var(--kima-space-2)}:deep(.cm-panel.cm-search){padding:var(--kima-space-3)}}&__fallback{margin:0;padding:var(--kima-space-4);font:inherit;white-space:pre-wrap;min-height:12em}&__selection{display:block;padding:var(--kima-space-2) var(--kima-space-4);font-size:var(--kima-font-size-label-medium);color:var(--kima-color-on-surface-variant)}&__proxy{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip-path:inset(50%)}}
+.kima-code-editor {
+  @include content-editor;
+  @include content-reduced;
+  position:relative;
+  &__toolbar {
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:var(--kima-space-2);
+    padding:var(--kima-space-2)
+  }
+  &__language {
+    margin-inline-start:auto;
+    padding:var(--kima-space-2);
+    color:var(--kima-color-on-surface-variant)
+  }
+  &__mount {
+    min-width:0;
+    :deep(.cm-editor) {
+      max-height:32em
+    }
+    :deep(.cm-button),:deep(.cm-textfield) {
+      background:var(--kima-color-layer-2);
+      color:var(--kima-color-on-surface);
+      border:0;
+      border-radius:var(--kima-radius-s);
+      font:inherit;
+      padding:var(--kima-space-2)
+    }
+    :deep(.cm-panel.cm-search) {
+      padding:var(--kima-space-3)
+    }
+  }
+  &__fallback {
+    margin:0;
+    padding:var(--kima-space-4);
+    font:inherit;
+    white-space:pre-wrap;
+    min-height:12em
+  }
+  &__selection {
+    display:block;
+    padding:var(--kima-space-2) var(--kima-space-4);
+    font-size:var(--kima-font-size-label-medium);
+    color:var(--kima-color-on-surface-variant)
+  }
+  &__proxy {
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none;
+    clip-path:inset(50%)
+  }
+}
 </style>

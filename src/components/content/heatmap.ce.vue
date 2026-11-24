@@ -19,5 +19,55 @@ async function key(event,index){let target=index;switch(event.key){case'ArrowRig
 <template><section ref="root" class="kima-heatmap" :aria-label="label"><div role="grid" :aria-label="label" :aria-rowcount="values.length" :aria-colcount="width" class="kima-heatmap__grid"><div v-for="(row,y) in values" :key="y" role="row" class="kima-heatmap__row" :style="{gridTemplateColumns:`repeat(${width},minmax(44px,1fr))`}"><button v-for="(c,x) in cells.filter(c=>c.y===y)" :key="x" role="gridcell" type="button" :data-cell="y*width+x" :tabindex="active===y*width+x?0:-1" :aria-label="description(c)" :aria-selected="active===y*width+x" :style="{'--kima-heatmap-cell':`color-mix(in srgb, var(--kima-heatmap-high) ${Math.round(intensity(c)*100)}%, var(--kima-heatmap-low))`}" @focus="select(y*width+x)" @click="select(y*width+x)" @keydown="key($event,y*width+x)">{{ c.value??'—' }}</button></div></div><div class="kima-heatmap__legend" aria-label="强度图例"><span>{{ domain[0] }}</span><span class="kima-heatmap__scale"></span><span>{{ domain[1] }}</span><span>— 缺失</span></div><output role="status">{{ cells[active]?description(cells[active]):'暂无数据' }}</output><KimaButton variant="text" :aria-expanded="table" @click="table=!table">查看数据表</KimaButton><Transition :css="false" v-bind="collapseTransition"><div v-show="table" :inert="!table" :aria-hidden="!table || undefined" class="kima-heatmap__table"><table><caption>{{ label }}</caption><thead><tr><th>行 / 列</th><th v-for="(_,x) in Array.from({length:width})" :key="x">{{ columns[x]??x+1 }}</th></tr></thead><tbody><tr v-for="(row,y) in values" :key="y"><th scope="row">{{ rows[y]??y+1 }}</th><td v-for="c in cells.filter(c=>c.y===y)" :key="c.x">{{ c.value??'缺失' }}</td></tr></tbody></table></div></Transition></section></template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;@use '../../styles/mixins' as *;
-.kima-heatmap{@include content-root;@include content-reduced;@include kima-ripple-host;display:grid;gap:var(--kima-space-3);&__grid{overflow:auto;display:grid;gap:var(--kima-space-1)}&__row{display:grid;gap:var(--kima-space-1);button{@include kima-focus-ring;border:0;min-height:48px;border-radius:var(--kima-radius-s);background:var(--kima-heatmap-cell);color:var(--kima-color-on-surface);font:inherit;text-shadow:0 1px var(--kima-color-surface);cursor:pointer;transition:background-color var(--kima-duration-effects) var(--kima-curve-standard),box-shadow var(--kima-duration-effects) var(--kima-curve-standard);&:hover,&[aria-selected=true]{box-shadow:inset 0 0 0 3px var(--kima-color-primary);}&:focus-visible{outline-offset:-3px}}}&__legend{display:flex;align-items:center;gap:var(--kima-space-2)}&__scale{width:120px;height:12px;border-radius:var(--kima-radius-full);background:linear-gradient(to right,var(--kima-heatmap-low),var(--kima-heatmap-high))}&__table{overflow:auto;table{@include content-table}}}
+.kima-heatmap {
+  @include content-root;
+  @include content-reduced;
+  @include kima-ripple-host;
+  display:grid;
+  gap:var(--kima-space-3);
+  &__grid {
+    overflow:auto;
+    display:grid;
+    gap:var(--kima-space-1)
+  }
+  &__row {
+    display:grid;
+    gap:var(--kima-space-1);
+    button {
+      @include kima-focus-ring;
+      border:0;
+      min-height:48px;
+      border-radius:var(--kima-radius-s);
+      background:var(--kima-heatmap-cell);
+      color:var(--kima-color-on-surface);
+      font:inherit;
+      text-shadow:0 1px var(--kima-color-surface);
+      cursor:pointer;
+      transition:background-color var(--kima-duration-effects) var(--kima-curve-standard),box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+      &:hover,&[aria-selected=true] {
+        box-shadow:inset 0 0 0 3px var(--kima-color-primary);
+      }
+      &:focus-visible {
+        outline-offset:-3px
+      }
+    }
+  }
+  &__legend {
+    display:flex;
+    align-items:center;
+    gap:var(--kima-space-2)
+  }
+  &__scale {
+    width:120px;
+    height:12px;
+    border-radius:var(--kima-radius-full);
+    background:linear-gradient(to right,var(--kima-heatmap-low),var(--kima-heatmap-high))
+  }
+  &__table {
+    overflow:auto;
+    table {
+      @include content-table
+    }
+  }
+}
 </style>

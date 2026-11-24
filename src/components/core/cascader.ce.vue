@@ -1,7 +1,6 @@
 <!--
 级联选择器：按层级展示 options，并用 modelValue 保存从根到当前项的 value 路径。
 options 格式为 { value, label, children, disabled }；children 缺失时按叶子项处理，适合异步补充数据。
-本地上游参考只有 DankDropdown、DankListView 和 DankListItem，没有 Cascader 或 Combobox 控件。
 原生表单只提交路径最后一个 value；对象会按 String(value) 提交，复杂路径请在 Vue 事件中读取完整数组。
 Vue 用 v-model 和 v-model:open 同步状态；调用示例：
   <kima-cascader v-model="path" name="category" label="分类" :options="categories" clearable />
@@ -465,7 +464,7 @@ onBeforeUnmount(() => {
   padding: 0 0 0 var(--kima-field-padding);
   border: 0;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   font-size: var(--kima-font-size-body-large);
   text-align: left;
@@ -494,7 +493,7 @@ onBeforeUnmount(() => {
   margin-right: var(--kima-space-2);
   color: var(--kima-color-on-surface-variant);
   pointer-events: none;
-  transition: transform var(--kima-duration-fast) var(--kima-ease-standard);
+  transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
 }
 
 .kima-cascader--open .kima-cascader__arrow {
@@ -513,7 +512,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   @include kima-motion-colors;
 
@@ -557,7 +556,7 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-md);
+  border-radius: var(--kima-radius-m);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -586,7 +585,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: var(--kima-space-3);
   padding: var(--kima-space-2) var(--kima-space-3);
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
   cursor: pointer;
   /* 悬停/高亮是"亮起来"，得看得见过程：底色和文字色都过渡，不瞬切。 */
@@ -636,7 +635,7 @@ onBeforeUnmount(() => {
 .kima-cascader__empty {
   padding: var(--kima-space-3);
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
   text-align: center;
 }
 

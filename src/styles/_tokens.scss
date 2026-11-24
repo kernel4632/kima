@@ -13,6 +13,7 @@
    * 中文字形不内联，交给系统字体回退；装了字体就用，没装也不会变形。 */
   --kima-font-family: "Maple Mono NF CN", "Maple Mono", "Maple Mono NF", ui-monospace, "Cascadia Mono", Consolas, monospace;
   --kima-font-weight-regular: 400;
+  --kima-font-weight-medium: 500;
   --kima-font-weight-semi-bold: 600;
   --kima-font-weight-bold: 700;
 
@@ -110,7 +111,7 @@
   /* 主色系的浅底：柔和按钮用它，一眼看出"属于主色系但不用那么强"。
    * 同样用透明度写成，铺在模糊背景上也不会糊。 */
   --kima-color-primary-soft: color-mix(in srgb, var(--kima-color-primary) 20%, transparent);
-  --kima-color-danger-soft: color-mix(in srgb, var(--kima-color-error) 20%, transparent);
+  --kima-error-soft: color-mix(in srgb, var(--kima-color-error) 20%, transparent);
   /* 未选中的控件底（开关轨道、复选框方框）：比 layer-3 淡一档，
    * 因为它要长期留在界面上，太实会跟选中态抢注意力。 */
   --kima-color-track: color-mix(in srgb, var(--kima-color-on-surface) 22%, transparent);
@@ -159,9 +160,11 @@
    * 比 M3 官方默认大一号：按钮最小档 48，图标按钮 48，输入框 64。
    * 触摸和鼠标都好点。 */
   --kima-touch-target: 48px;
+  --kima-button-height-xs: 40px;
   --kima-button-height-s: 48px;
   --kima-button-height-m: 56px;
   --kima-button-height-l: 64px;
+  --kima-button-min-width: 64px;
   --kima-button-padding: 24px;
   --kima-icon-size-small: 20px;
   --kima-icon-size: 24px;
@@ -179,12 +182,18 @@
   --kima-switch-track-height: 36px;
   --kima-switch-thumb-size: 28px;
   --kima-switch-thumb-selected: 32px;
+  /* 开关按下时拇指压扁成一圈描边：轨道色透出来，像抓住整个开关。
+   * 描边宽度和"按下时拇指的尺寸"是这组造型的两个参数。 */
+  --kima-switch-outline-width: 2px;
+  --kima-switch-thumb-pressed: 32px;
   /* 轨道只作进度导向，热区由36px手柄与input高度保证，不用厚色块充当热区。 */
   --kima-slider-track-height: 8px;
   --kima-slider-handle-width: 6px;
   --kima-slider-handle-height: 36px;
   --kima-progress-height: 8px;
   --kima-divider-thickness: 2px;
+  /* spinner 转一圈的时长：也用于骨架屏脉冲，取 M3 的标准圈速。 */
+  --kima-spinner-duration: 1568ms;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
    * 轨道透明，不割版面。悬停时加深，鼠标停在滚动条上时能看清位置。 */
@@ -217,46 +226,6 @@
   --kima-color-code-punctuation: var(--kima-color-on-surface-variant);
   --kima-line-height-code: 1.6;
 
-  /* ---- 兼容别名：旧的占位组件还在用这些名字 ----
-   * 值都指向上面某一档，逐个组件重做后这些名字会消失，新组件不要再引。 */
-  --kima-color-transparent: transparent;
-  --kima-color-danger: var(--kima-color-error);
-  --kima-color-on-danger: var(--kima-color-on-error);
-  /* M3 用这个透明度做禁用态的文字，所以按主文字色派生，跟随主题变化。 */
-  --kima-color-on-surface-12: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
-  --kima-color-on-surface-38: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
-  --kima-font-weight-medium: 500;
-  --kima-font-size-xs: var(--kima-font-size-label-small);
-  --kima-font-size-sm: var(--kima-font-size-label-medium);
-  --kima-font-size-md: var(--kima-font-size-body-medium);
-  --kima-font-size-lg: var(--kima-font-size-title-small);
-  --kima-font-size-xl: var(--kima-font-size-title-medium);
-  --kima-font-size-small: var(--kima-font-size-label-small);
-  --kima-font-size-medium: var(--kima-font-size-body-medium);
-  --kima-space-xxs: 2px;
-  --kima-space-xs: var(--kima-space-1);
-  --kima-space-s: var(--kima-space-2);
-  --kima-space-m: var(--kima-space-3);
-  --kima-space-l: var(--kima-space-4);
-  --kima-space-xl: var(--kima-space-6);
-  --kima-radius-sm: var(--kima-radius-s);
-  --kima-radius-md: var(--kima-radius-m);
-  --kima-radius-lg: var(--kima-radius-l);
-  --kima-shadow-2: var(--kima-elevation-2);
-  --kima-duration-normal: var(--kima-duration-medium);
-  --kima-duration-long: var(--kima-duration-slower);
-  --kima-duration-expressive-effects: var(--kima-duration-effects);
-  --kima-duration-expressive-fast-spatial: var(--kima-duration-medium);
-  --kima-curve-expressive-effects: var(--kima-curve-standard);
-  --kima-curve-expressive-fast-spatial: var(--kima-spring-snappy);
-  --kima-ease-standard: var(--kima-curve-standard);
-  --kima-ease-emphasized: var(--kima-curve-emphasized);
-  --kima-ease-effects: var(--kima-curve-standard);
-  --kima-button-height-xs: 40px;
-  --kima-button-min-width: 64px;
-  --kima-spinner-duration: 1568ms;
-  --kima-switch-outline-width: 2px;
-  --kima-switch-thumb-pressed: 32px;
 }
 
 /* 浅色主题下语义色要压深：上面那两档是给深底的亮色，压在浅底上会看不清。

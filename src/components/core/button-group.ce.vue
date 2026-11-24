@@ -200,11 +200,11 @@ function moveFocus(index, event) {
 }
 .kima-button-group__item {
   box-sizing: border-box;
-  /* DMS 中等档：高 40、最小宽 64、内边距 16、圆角 S 8。 */
+  /* 中等档：高 48、最小宽 64、内边距 16、圆角 S 8。 */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--kima-space-s);
+  gap: var(--kima-space-2);
   min-width: 88px;
   min-height: var(--kima-button-height-s);
   padding: 0 var(--kima-space-6);
@@ -232,8 +232,8 @@ function moveFocus(index, event) {
   }
 
   &:disabled {
-    color: var(--kima-color-on-surface-38);
-    background: var(--kima-color-on-surface-12);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+    background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
     cursor: not-allowed;
   }
 }

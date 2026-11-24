@@ -1,5 +1,5 @@
 <!--
-图标按钮：为单个图标提供可访问的原生按钮行为和 KIMA 的外观，几何照 DMS 的 DankIconButton 对齐。
+图标按钮：为单个图标提供可访问的原生按钮行为和 KIMA 的外观。
 默认外观 standard（透明底、图标用 onSurfaceVariant）；尺寸 s 40、m 56。
 调用示例：
   <kima-icon-button aria-label="搜索" title="搜索" />
@@ -48,7 +48,7 @@ const forwardedAttrs = computed(() => isCustomElement ? { ...attrs, id: undefine
 // 点击时整块亮一下。
 useRipple(root);
 
-// standard 是 DMS 的默认外观，text 作为等价别名保留。
+// standard 是默认外观，text 作为等价别名保留。
 const buttonVariant = computed(() => {
   const variants = ["standard", "filled", "tonal", "outlined", "text"];
   return variants.includes(props.variant) ? props.variant : "standard";
@@ -64,7 +64,7 @@ function accessibleLabel() {
   return props.label || attrs["aria-label"] || attrs.ariaLabel || attrs.title || "图标按钮";
 }
 const buttonIcon = computed(() => props.icon || Settings01Icon);
-// DMS DankIconButton iconSize 固定为 iconSize 24；small 是 KIMA 附带档位，取 20。
+// 图标尺寸固定为 24；small 是附带的缩小档，取 20。
 const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSize.value]);
 
 </script>
@@ -94,7 +94,7 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
 @use "../../styles/mixins" as *;
 
 .kima-icon-button {
-  /* DMS DankIconButton：s 档 40×40、图标 24、横向留白 8、整圆。 */
+  /* s 档 48×48、图标 24、整圆。 */
   width: var(--kima-button-height-s);
   height: var(--kima-button-height-s);
   display: inline-flex;
@@ -108,7 +108,7 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   font-family: var(--kima-font-family);
   /* standard 外观：透明底，图标用 onSurfaceVariant。 */
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   user-select: none;
 
@@ -117,9 +117,9 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   @include kima-ripple-host;
   @include kima-press;
 
-  /* DMS 禁用：图标降到 onSurface_38。 */
+  /* 禁用：图标降到 onSurface 38%。 */
   &:disabled {
-    color: var(--kima-color-on-surface-38);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
     cursor: not-allowed;
   }
 
@@ -128,7 +128,7 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
     height: var(--kima-button-height-xs);
   }
 
-  /* DMS m 档 56×56，图标仍为 24。 */
+  /* m 档 56×56，图标仍为 24。 */
   &--large {
     width: var(--kima-button-height-m);
     height: var(--kima-button-height-m);
@@ -140,8 +140,8 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   }
 
   &--filled:disabled {
-    color: var(--kima-color-on-surface-38);
-    background: var(--kima-color-on-surface-12);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+    background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
   }
 
   /* 柔和档：主色染过的浅底，跟描边档的灰底区分开。 */
@@ -151,15 +151,15 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   }
 
   &--tonal:disabled {
-    color: var(--kima-color-on-surface-38);
-    background: var(--kima-color-on-surface-12);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+    background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
   }
 
   /* 描边档：透明底 + 一圈可见的描边。
    * 线是这个变体的造型，不是用来分层次的，不要当成"多余的边框"删掉。 */
   &--outlined {
     color: var(--kima-color-on-surface);
-    background: var(--kima-color-transparent);
+    background: transparent;
     border: var(--kima-outline-width) solid var(--kima-color-outline);
   }
 
@@ -173,12 +173,12 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
     justify-content: center;
   }
 
-  /* DMS DankSpinner：直径取图标，描边 2，转一圈 1568ms。 */
+  /* spinner：直径取图标，描边 2，转一圈 1568ms。 */
   &__spinner {
     width: 24px;
     height: 24px;
     border: 2px solid currentColor;
-    border-right-color: var(--kima-color-transparent);
+    border-right-color: transparent;
     border-radius: var(--kima-radius-full);
     animation: kima-icon-button-spin var(--kima-spinner-duration) linear infinite;
   }

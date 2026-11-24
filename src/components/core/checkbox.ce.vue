@@ -175,7 +175,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     border: 2px solid var(--kima-color-outline);
     border-radius: var(--kima-radius-xs);
     /* 用长写属性：状态切换只改 background-color，过渡才真的跑起来。 */
-    background-color: var(--kima-color-transparent);
+    background-color: transparent;
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);

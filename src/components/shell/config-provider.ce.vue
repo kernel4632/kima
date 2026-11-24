@@ -21,7 +21,17 @@ onMounted(apply); watch(config, (value) => { apply(); emit('change', value); }, 
 </script>
 <template><div ref="root" v-bind="forwardedAttrs" class="kima-config-provider" data-kima-config :data-kima-seed="config.seed" :data-kima-variant="config.variant" :data-kima-theme="config.theme" :data-kima-locale="config.locale" :data-kima-direction="config.direction" :data-kima-reduced-motion="config.reducedMotion" :lang="config.locale" :dir="config.direction" :style="[styles, {colorScheme: config.theme, '--kima-reduced-motion': config.reducedMotion === 'reduce' ? 'reduce' : 'system'}]"><div v-if="native" v-outlet class="kima-config-provider__content" /><slot v-else :config="config" /></div></template>
 <style scoped lang="scss">
-.kima-config-provider { color: var(--kima-color-on-surface); font-family: var(--kima-font-family); --kima-color-layer-1: color-mix(in srgb, var(--kima-color-on-surface) 5%, transparent); --kima-color-layer-2: color-mix(in srgb, var(--kima-color-on-surface) 10%, transparent); --kima-color-layer-3: color-mix(in srgb, var(--kima-color-on-surface) 15%, transparent); --kima-color-popup: var(--kima-color-surface-container-high); --kima-color-popup-large: var(--kima-color-surface-container-highest); --kima-color-primary-container-hover: color-mix(in srgb, var(--kima-color-primary-container) 90%, var(--kima-color-on-primary-container)); }
+.kima-config-provider  {
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  --kima-color-layer-1: color-mix(in srgb, var(--kima-color-on-surface) 5%, transparent);
+  --kima-color-layer-2: color-mix(in srgb, var(--kima-color-on-surface) 10%, transparent);
+  --kima-color-layer-3: color-mix(in srgb, var(--kima-color-on-surface) 15%, transparent);
+  --kima-color-popup: var(--kima-color-surface-container-high);
+  --kima-color-popup-large: var(--kima-color-surface-container-highest);
+  --kima-color-primary-container-hover: color-mix(in srgb, var(--kima-color-primary-container) 90%, var(--kima-color-on-primary-container));
+
+}
 .kima-config-provider[data-kima-reduced-motion='reduce'] { --kima-duration-fast: 0ms; --kima-duration-medium: 0ms; --kima-duration-slow: 0ms; --kima-duration-slower: 0ms; --kima-duration-effects: 0ms; }
 .kima-config-provider[data-kima-reduced-motion='reduce'] :deep(*) { animation-duration: 0s !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
 </style>

@@ -36,7 +36,34 @@ function navigate(item, event) { emit('navigate', item, event); if (narrow.value
 </aside></template>
 <style scoped lang="scss">
 @use '../../styles/mixins' as *;
-.kima-sidebar { @include kima-layer(1); box-sizing: border-box; width: 288px; max-width: 100%; padding: var(--kima-space-3); border-radius: var(--kima-radius-l); transition: width var(--kima-duration-slow) var(--kima-curve-emphasized); &--collapsed { width: 180px; } &--mobile { width: 100%; } &__body:not(dialog) { display: flex; flex-direction: column; gap: var(--kima-space-4); } footer { margin-top: auto; } }
+.kima-sidebar  {
+  @include kima-layer(1);
+  box-sizing: border-box;
+  width: 288px;
+  max-width: 100%;
+  padding: var(--kima-space-3);
+  border-radius: var(--kima-radius-l);
+  transition: width var(--kima-duration-slow) var(--kima-curve-emphasized);
+  &--collapsed  {
+    width: 180px;
+
+  }
+  &--mobile  {
+    width: 100%;
+
+  }
+  &__body:not(dialog)  {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kima-space-4);
+
+  }
+  footer  {
+    margin-top: auto;
+
+  }
+
+}
 @media (prefers-reduced-motion: reduce) { .kima-sidebar { transition: none; } }
 </style>
 

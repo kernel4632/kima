@@ -25,5 +25,29 @@ function act(action) { if (props.disabled || !localOpen.value) return; updateOpe
 </template>
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
-.kima-popconfirm { @include interaction-root; display: inline-block; h3 { margin: 0 0 var(--kima-space-3); } p { color: var(--kima-color-on-surface-variant); } &__actions { display: flex; justify-content: flex-end; gap: var(--kima-space-2); margin-top: var(--kima-space-4); } &__danger { color: var(--kima-color-on-error); background: var(--kima-color-error); } }
+.kima-popconfirm  {
+  @include interaction-root;
+  display: inline-block;
+  h3  {
+    margin: 0 0 var(--kima-space-3);
+
+  }
+  p  {
+    color: var(--kima-color-on-surface-variant);
+
+  }
+  &__actions  {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--kima-space-2);
+    margin-top: var(--kima-space-4);
+
+  }
+  &__danger  {
+    color: var(--kima-color-on-error);
+    background: var(--kima-color-error);
+
+  }
+
+}
 </style>

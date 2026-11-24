@@ -248,16 +248,16 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   border: 0;
   border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
-  font-size: var(--kima-font-size-medium);
+  font-size: var(--kima-font-size-body-medium);
   font-weight: var(--kima-font-weight-medium);
   white-space: normal;
   overflow-wrap: anywhere;
   cursor: pointer;
   transition:
-    color var(--kima-duration-effects) var(--kima-ease-effects),
-    background-color var(--kima-duration-effects) var(--kima-ease-effects);
+    color var(--kima-duration-effects) var(--kima-curve-standard),
+    background-color var(--kima-duration-effects) var(--kima-curve-standard);
 
   /* 只改变轻状态底色，选中项与未选中项的文字都保持原配色。 */
   &:hover:not(:disabled) {
@@ -280,7 +280,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
 
   &:disabled {
     cursor: not-allowed;
-    color: var(--kima-color-on-surface-38);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
   }
 
   .kima-tabs--vertical & {
@@ -326,7 +326,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
 @media (max-width: 560px) {
   .kima-tabs__tab {
     padding-inline: var(--kima-space-2);
-    font-size: var(--kima-font-size-sm);
+    font-size: var(--kima-font-size-label-medium);
   }
 }
 </style>

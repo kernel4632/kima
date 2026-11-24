@@ -28,6 +28,64 @@ watch(narrow, () => setOpen(false));
 </div></template>
 <style scoped lang="scss">
 @use '../../styles/mixins' as *;
-.kima-app-shell { position: relative; display: grid; grid-template-columns: minmax(0, var(--kima-shell-sidebar-width)) minmax(0, 1fr); grid-template-areas: 'header header' 'sidebar main' 'footer footer'; gap: var(--kima-space-4); color: var(--kima-color-on-surface); font-family: var(--kima-font-family); &--narrow { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'header' 'main' 'footer'; } &__header { grid-area: header; display: flex; flex-wrap: wrap; align-items: center; gap: var(--kima-space-3); } &__sidebar { grid-area: sidebar; @include kima-layer(1); padding: var(--kima-space-4); border-radius: var(--kima-radius-l); } &__main { grid-area: main; min-width: 0; @include kima-focus-ring; } &__footer { grid-area: footer; } &__skip { position: absolute; z-index: 100; padding: var(--kima-space-3); color: var(--kima-color-on-primary); background: var(--kima-color-primary); clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; &:focus { clip-path: none; width: auto; height: auto; overflow: visible; } } }
+.kima-app-shell  {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, var(--kima-shell-sidebar-width)) minmax(0, 1fr);
+  grid-template-areas: 'header header' 'sidebar main' 'footer footer';
+  gap: var(--kima-space-4);
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-family);
+  &--narrow  {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'header' 'main' 'footer';
+
+  }
+  &__header  {
+    grid-area: header;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--kima-space-3);
+
+  }
+  &__sidebar  {
+    grid-area: sidebar;
+    @include kima-layer(1);
+    padding: var(--kima-space-4);
+    border-radius: var(--kima-radius-l);
+
+  }
+  &__main  {
+    grid-area: main;
+    min-width: 0;
+    @include kima-focus-ring;
+
+  }
+  &__footer  {
+    grid-area: footer;
+
+  }
+  &__skip  {
+    position: absolute;
+    z-index: 100;
+    padding: var(--kima-space-3);
+    color: var(--kima-color-on-primary);
+    background: var(--kima-color-primary);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    &:focus  {
+      clip-path: none;
+      width: auto;
+      height: auto;
+      overflow: visible;
+
+    }
+
+  }
+
+}
 </style>
 

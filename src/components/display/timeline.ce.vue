@@ -32,7 +32,28 @@ const itemKey = createCollectionKey(() => props.items);
   position: relative; display: grid; align-content: start;
   @include kima-block-host;
   margin: 0; padding: 0; list-style: none;
-  &__item { @include display-tones; display: flex; position: relative; gap: var(--kima-space-4); padding-bottom: var(--kima-space-8); &:last-child { padding-bottom: 0; } &:not(:last-child)::before { content: ''; position: absolute; inset-inline-start: 11px; top: 32px; bottom: 8px; width: 2px; background: var(--kima-color-layer-3); } }
+ &__item  {
+  @include display-tones;
+  display: flex;
+  position: relative;
+  gap: var(--kima-space-4);
+  padding-bottom: var(--kima-space-8);
+  &:last-child  {
+    padding-bottom: 0;
+
+  }
+  &:not(:last-child)::before  {
+    content: '';
+    position: absolute;
+    inset-inline-start: 11px;
+    top: 32px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--kima-color-layer-3);
+
+  }
+
+}
   &__marker { color: var(--kima-display-tone); display: inline-flex; flex: 0 0 24px; }
   &__body { min-width: 0; }
   time { display: block; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-body-small); margin-bottom: var(--kima-space-2); }

@@ -72,7 +72,7 @@ defineExpose({ focus: () => input.value?.focus() });
   font-size: var(--kima-font-size-title-large);
   width: calc(var(--kima-pin-length) * 2.5ch);
   max-width: 100%;
-  background: var(--kima-color-transparent);
+  background: transparent;
   &__cells { display: grid; grid-template-columns: repeat(var(--kima-pin-length), 1fr); gap: var(--kima-space-1); grid-area: 1 / 1; pointer-events: none; }
   &__cell { @include kima-motion-colors; background: var(--kima-color-layer-2); border-radius: var(--kima-radius-s); }
   input { @include input-control; grid-area: 1 / 1; width: 100%; font-size: inherit; letter-spacing: 1.5ch; padding-inline: 0.75ch 0; }

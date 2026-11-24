@@ -80,7 +80,7 @@ const hasContent = computed(() => Boolean(props.label.trim()) || hasSlotContent.
 
 .kima-divider__label {
   flex: 0 0 auto;
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
   line-height: 1.4;
   text-align: center;
 }

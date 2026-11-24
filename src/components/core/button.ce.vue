@@ -17,7 +17,7 @@ const props = defineProps({
     type: String,
     default: "filled",
   },
-  // DMS DankButton 默认形状 round（药丸），square 为方形。
+  // 默认形状 round（药丸），square 为方形。
   shape: {
     type: String,
     default: "round",
@@ -77,14 +77,14 @@ const isRound = computed(() => props.round || props.shape !== "square");
 @use "../../styles/mixins" as *;
 
 .kima-button {
-  /* DMS DankButton：最小宽 58、高 40、内边距 16、内容间距 8、字号 14 中等。 */
+  /* 几何基准：最小宽 64、高 48、内容间距 8、字号 label-large。 */
   min-width: var(--kima-button-min-width);
   min-height: var(--kima-button-height-s);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--kima-space-s);
-  padding: 0 var(--kima-space-l);
+  gap: var(--kima-space-2);
+  padding: 0 var(--kima-space-4);
   border: 0;
   /* square 用 M 12；round 用整高药丸。 */
   border-radius: var(--kima-radius-m);
@@ -107,15 +107,15 @@ const isRound = computed(() => props.round || props.shape !== "square");
     border-radius: var(--kima-radius-full);
   }
 
-  /* DMS 禁用：填充分支用 onSurface_12 底 + onSurface_38 字。 */
+  /* 禁用：填充分支用 onSurface 12% 底 + 38% 字。 */
   &:disabled {
     cursor: not-allowed;
   }
 
   &--filled:disabled,
   &--tonal:disabled {
-    color: var(--kima-color-on-surface-38);
-    background: var(--kima-color-on-surface-12);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+    background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
   }
 
   /* 柔和按钮：主色染过的浅底，比主操作弱一档，但一眼看得出是主色系。 */
@@ -129,19 +129,19 @@ const isRound = computed(() => props.round || props.shape !== "square");
    * 「不用边框分层次」说的是不拿线去切割版面，别把造型线也一起去掉。 */
   &--outlined {
     color: var(--kima-color-primary);
-    background: var(--kima-color-transparent);
+    background: transparent;
     border: var(--kima-outline-width) solid var(--kima-color-outline);
   }
 
   /* 文字按钮：完全不上底，只靠文字色，最弱的一档。 */
   &--text {
     color: var(--kima-color-primary);
-    background: var(--kima-color-transparent);
+    background: transparent;
   }
 
   &--outlined:disabled,
   &--text:disabled {
-    color: var(--kima-color-on-surface-38);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
   }
 
   &__label,
@@ -164,7 +164,7 @@ const isRound = computed(() => props.round || props.shape !== "square");
     height: 20px;
     flex: 0 0 20px;
     border: 2px solid currentColor;
-    border-right-color: var(--kima-color-transparent);
+    border-right-color: transparent;
     border-radius: var(--kima-radius-full);
     animation: kima-button-spin var(--kima-spinner-duration) linear infinite;
   }

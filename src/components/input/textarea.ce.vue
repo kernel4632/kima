@@ -103,7 +103,25 @@ defineExpose({ focus: () => input.value?.focus() });
   @include input-root;
   &__surface { @include input-surface; display: flex; align-items: flex-start; }
   textarea { @include input-control; @include kima-motion-colors; display: block; flex: 1 1 auto; width: 100%; line-height: 1.6; }
-  &__clear { @include kima-state-layer; @include kima-focus-ring; @include kima-motion-colors; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 32px; width: 32px; height: 32px; margin: var(--kima-space-3) var(--kima-space-2) 0 0; padding: 0; border: 0; border-radius: var(--kima-radius-full); color: inherit; background: var(--kima-color-transparent); cursor: pointer; }
+ &__clear  {
+  @include kima-state-layer;
+  @include kima-focus-ring;
+  @include kima-motion-colors;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  margin: var(--kima-space-3) var(--kima-space-2) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kima-radius-full);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+
+}
   &__message-wrap { display: grid; }
   &__message { @include input-message; grid-area: 1 / 1; &--error { color: var(--kima-color-error); } }
   &__count { @include input-message; text-align: end; }

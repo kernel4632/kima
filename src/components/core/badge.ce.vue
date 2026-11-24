@@ -1,6 +1,6 @@
 <!--
 徽章：显示短状态、数量或仅用于标记存在的圆点，并保留 status 语义。
-外观照 DMS 的 DankBadge 对齐：默认 primary 底、药丸形、高度 20、字号 12、字重中等。
+外观基准：默认 primary 底、药丸形、高度 20、字号 12、字重中等。
 调用示例：
   <kima-badge value="8" />
   <kima-badge :value="128" :max="99" variant="danger" aria-label="128 条未读消息" />
@@ -83,20 +83,20 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
 @use "../../styles/mixins" as *;
 .kima-badge {
   @include kima-motion-colors;
-  /* DMS DankBadge：文字高度 20（spacingL 16 + spacingXS 4），左右内边距 spacingS 8，
-     字号 Small 12，字重 Medium，圆角取一半高度成药丸。 */
+  /* 几何基准：文字高度 20（16 + 4），左右内边距 8，
+     字号 label-small，字重 medium，圆角取一半高度成药丸。 */
   min-width: 20px;
   min-height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--kima-space-xs);
-  padding: 0 var(--kima-space-s);
+  gap: var(--kima-space-1);
+  padding: 0 var(--kima-space-2);
   border: 0;
   border-radius: var(--kima-radius-full);
   box-sizing: border-box;
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-small);
+  font-size: var(--kima-font-size-label-small);
   font-weight: var(--kima-font-weight-medium);
   line-height: 1;
   white-space: nowrap;
@@ -109,8 +109,8 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
   }
 
   &--danger {
-    color: var(--kima-color-on-danger);
-    background: var(--kima-color-danger);
+    color: var(--kima-color-on-error);
+    background: var(--kima-color-error);
   }
 
   &--success {
@@ -118,7 +118,7 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
     background: var(--kima-color-success);
   }
 
-  /* DMS 无文字徽章高度 spacingXS + spacingXXS = 6，本身就是一个小圆点。 */
+  /* 无文字徽章高度 4 + 2 = 6，本身就是一个小圆点。 */
   &--dot {
     min-width: 6px;
     width: 6px;

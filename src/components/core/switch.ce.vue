@@ -162,7 +162,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     height: var(--kima-switch-track-height);
     border: var(--kima-switch-outline-width) solid var(--kima-color-outline);
     border-radius: var(--kima-radius-full);
-    background: var(--kima-color-transparent);
+    background: transparent;
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);

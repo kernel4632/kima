@@ -9,5 +9,37 @@ useContentMotion(message, () => Boolean(parsed.value.error));
 </script>
 <template><div ref="root" :class="['kima-json-input',attrs.class]" :style="attrs.style"><textarea ref="area" v-bind="controlAttrs" class="kima-json-input__control" :value="local" :name="name" :aria-label="controlAttrs['aria-label']||label" :rows="rows" :required="required" :disabled="disabled" :readonly="readonly" spellcheck="false" @input.stop="update($event.target.value,false)" @change.stop="emit('change',local)"></textarea><div ref="message" class="kima-json-input__message"><p v-if="parsed.error" role="alert">{{parsed.error.message}}<template v-if="parsed.error.position!==null"> · 位置 {{parsed.error.position}}</template></p><p v-else role="status">JSON 有效</p></div><KimaButton variant="tonal" :disabled="disabled||readonly||!!parsed.error" @click="format">格式化</KimaButton></div></template>
 <style scoped lang="scss">
-@use "../../styles/input" as *;.kima-json-input{@include input-root;display:grid;gap:var(--kima-space-2);&__control{@include input-surface;@include input-control;min-height:10em;resize:vertical;font-family:var(--kima-font-family);tab-size:2}p{margin:0;color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium)}p[role=alert]{color:var(--kima-color-error)}button{justify-self:start;min-height:var(--kima-touch-target);padding:var(--kima-space-2) var(--kima-space-3);border:0;border-radius:var(--kima-radius-full);background:var(--kima-color-primary-container);color:var(--kima-color-on-primary-container);font:inherit;cursor:pointer}}
+@use "../../styles/input" as *;
+.kima-json-input {
+  @include input-root;
+  display:grid;
+  gap:var(--kima-space-2);
+  &__control {
+    @include input-surface;
+    @include input-control;
+    min-height:10em;
+    resize:vertical;
+    font-family:var(--kima-font-family);
+    tab-size:2
+  }
+  p {
+    margin:0;
+    color:var(--kima-color-on-surface-variant);
+    font-size:var(--kima-font-size-label-medium)
+  }
+  p[role=alert] {
+    color:var(--kima-color-error)
+  }
+  button {
+    justify-self:start;
+    min-height:var(--kima-touch-target);
+    padding:var(--kima-space-2) var(--kima-space-3);
+    border:0;
+    border-radius:var(--kima-radius-full);
+    background:var(--kima-color-primary-container);
+    color:var(--kima-color-on-primary-container);
+    font:inherit;
+    cursor:pointer
+  }
+}
 </style>

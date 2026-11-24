@@ -152,7 +152,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     height: calc(var(--kima-slider-handle-height) + 4px);
     margin: 0;
     appearance: none;
-    background: var(--kima-color-transparent);
+    background: transparent;
     cursor: pointer;
 
     /* 轨道是线：填充部分用主色，未填充部分是一层中性色。
@@ -217,15 +217,15 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
     /* 禁用：填充和未填充都降成中性灰，看起来像"这条现在不能动"。 */
     &:disabled {
-      --kima-slider-fill-color: var(--kima-color-on-surface-38);
-      --kima-slider-track-color: var(--kima-color-on-surface-12);
+      --kima-slider-fill-color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+      --kima-slider-track-color: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
 
       cursor: not-allowed;
     }
   }
 
   &--disabled &__value {
-    color: var(--kima-color-on-surface-38);
+    color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
   }
 }
 @media (prefers-reduced-motion: reduce) {

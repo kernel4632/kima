@@ -1,7 +1,6 @@
 <!--
 组合框：用 items { value, label, disabled, description } 提供可输入、可过滤的单选框。
 modelValue 保存选中 value；freeSolo 为 true 时，输入的自由文本也会成为 modelValue。
-本地上游参考只有 DankDropdown、DankListView 和 DankListItem，没有 Cascader 或 Combobox 控件。
 原生表单提交 modelValue；对象会按 String(value) 提交。input 表示当前文字，change 只在确认值变化后发送一次。
 Vue 用 v-model 和 v-model:open 同步状态；调用示例：
   <kima-combobox v-model="country" name="country" label="国家" :items="countries" searchable clearable />
@@ -443,7 +442,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: inherit;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   outline: none;
 
@@ -482,7 +481,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   @include kima-motion-colors;
 
@@ -504,7 +503,7 @@ onBeforeUnmount(() => {
 }
 
 .kima-combobox__arrow {
-  transition: transform var(--kima-duration-fast) var(--kima-ease-standard);
+  transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
 }
 
 .kima-combobox--open .kima-combobox__arrow {
@@ -534,7 +533,7 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-md);
+  border-radius: var(--kima-radius-m);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -552,7 +551,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: var(--kima-space-3);
   padding: var(--kima-space-2) var(--kima-space-3);
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
   cursor: pointer;
   /* 悬停/高亮是"亮起来"，得看得见过程：底色和文字色都过渡，不瞬切。 */
@@ -604,7 +603,7 @@ onBeforeUnmount(() => {
 .kima-combobox__option-description,
 .kima-combobox__empty {
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
 }
 
 .kima-combobox__check {

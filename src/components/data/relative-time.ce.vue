@@ -42,5 +42,5 @@ onBeforeUnmount(() => clearInterval(timer));
 </script>
 <template><time v-bind="attrs" class="kima-relative-time" :datetime="iso">{{ text }}</time></template>
 <style scoped lang="scss">
-.kima-relative-time { color: var(--kima-color-on-surface-variant); font-family: var(--kima-font-family); font-size: var(--kima-font-size-sm); }
+.kima-relative-time { color: var(--kima-color-on-surface-variant); font-family: var(--kima-font-family); font-size: var(--kima-font-size-label-medium); }
 </style>

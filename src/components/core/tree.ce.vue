@@ -303,7 +303,7 @@ watch([visibleNodes, () => props.modelValue], () => {
   min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   line-height: 1.4;
 }
 
@@ -318,7 +318,7 @@ watch([visibleNodes, () => props.modelValue], () => {
   align-items: center;
   gap: var(--kima-space-2);
   padding: var(--kima-space-1) var(--kima-space-3) var(--kima-space-1) calc(var(--kima-space-4) + var(--kima-tree-level) * var(--kima-space-4));
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   box-sizing: border-box;
   color: var(--kima-color-on-surface);
   cursor: pointer;
@@ -369,9 +369,9 @@ watch([visibleNodes, () => props.modelValue], () => {
   justify-content: center;
   padding: 0;
   border: 0;
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: inherit;
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   /* 悬停和展开箭头都要看得见过程。 */
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);
@@ -393,7 +393,7 @@ watch([visibleNodes, () => props.modelValue], () => {
   /* 展开箭头用库里的图标：跟级联选项右侧的箭头是同一个，线条跟全库一致。
    * 手拼边框做箭头会跟图标库对不上。 */
   &-icon {
-    transition: transform var(--kima-duration-fast) var(--kima-ease-standard);
+    transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
   }
 
   &[aria-expanded="true"] .kima-tree__toggle-icon {

@@ -63,10 +63,10 @@ onBeforeUnmount(() => { const element = dialog.value; if (element?.open) element
 @use "../../styles/interaction" as *;
 @use "../../styles/mixins" as *;
 .kima-command__dialog {
-  position: fixed; inset: 0; box-sizing: border-box; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: var(--kima-space-4); border: 0; color: var(--kima-color-on-surface); background: var(--kima-color-transparent);
+  position: fixed; inset: 0; box-sizing: border-box; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: var(--kima-space-4); border: 0; color: var(--kima-color-on-surface); background: transparent;
   &[open] { display: grid; place-items: center; }
   transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized), display var(--kima-duration-medium) allow-discrete, overlay var(--kima-duration-medium) allow-discrete;
-  &::backdrop { background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), var(--kima-color-transparent)); backdrop-filter: var(--kima-backdrop-filter); transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized); }
+  &::backdrop { background: color-mix(in srgb, var(--kima-color-scrim) var(--kima-scrim-opacity), transparent); backdrop-filter: var(--kima-backdrop-filter); transition: opacity var(--kima-duration-medium) var(--kima-curve-emphasized); }
   &:not([open]), &:not([open])::backdrop { opacity: 0; }
   @starting-style { &[open], &[open]::backdrop { opacity: 0; } }
 }
@@ -78,6 +78,33 @@ onBeforeUnmount(() => { const element = dialog.value; if (element?.open) element
 }
 .kima-command__header { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-3); margin-bottom: var(--kima-space-4); h2 { margin: 0; font-size: var(--kima-font-size-title-large); } }
 @media (prefers-reduced-motion: reduce) { .kima-command__dialog, .kima-command__dialog::backdrop, .kima-command__panel { transition-duration: 1ms; } .kima-command__dialog .kima-command__panel { scale: 1; } }
-.kima-command { @include interaction-root; &__search { @include interaction-search; } &__list { max-height: 50vh; overflow: auto; } &__item { @include interaction-row; } h3 { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); margin: var(--kima-space-4) var(--kima-space-3) var(--kima-space-2); } small { display: block; color: var(--kima-color-on-surface-variant); } }
+.kima-command  {
+  @include interaction-root;
+  &__search  {
+    @include interaction-search;
+
+  }
+  &__list  {
+    max-height: 50vh;
+    overflow: auto;
+
+  }
+  &__item  {
+    @include interaction-row;
+
+  }
+  h3  {
+    color: var(--kima-color-on-surface-variant);
+    font-size: var(--kima-font-size-label-medium);
+    margin: var(--kima-space-4) var(--kima-space-3) var(--kima-space-2);
+
+  }
+  small  {
+    display: block;
+    color: var(--kima-color-on-surface-variant);
+
+  }
+
+}
 .kima-command__search { @include kima-motion-colors; }
 </style>

@@ -28,7 +28,34 @@ onBeforeUnmount(() => { observer?.disconnect(); media?.removeEventListener('chan
   <div class="kima-marquee__viewport"><div class="kima-marquee__track" :class="{'kima-marquee__track--moving': moving}" :style="{animationDuration: `${Math.max(1, duration)}s`, animationDirection: reverse ? 'reverse' : 'normal', animationPlayState: stopped ? 'paused' : 'running'}"><div v-if="native" ref="source" v-outlet class="kima-marquee__group" /><div v-else ref="source" class="kima-marquee__group"><slot /></div><div v-show="moving" ref="duplicate" class="kima-marquee__group" aria-hidden="true" inert /></div></div>
 </section></template>
 <style scoped lang="scss">
-.kima-marquee { min-width: 0; color: var(--kima-color-on-surface); &__viewport { overflow: hidden; } &__track { display: flex; width: max-content; max-width: 100%; &--moving { max-width: none; animation: kima-marquee-scroll linear infinite; } } &__group { display: flex; flex: 0 0 auto; align-items: center; gap: var(--kima-space-6); padding-inline-end: var(--kima-space-6); } }
+.kima-marquee  {
+  min-width: 0;
+  color: var(--kima-color-on-surface);
+  &__viewport  {
+    overflow: hidden;
+
+  }
+  &__track  {
+    display: flex;
+    width: max-content;
+    max-width: 100%;
+    &--moving  {
+      max-width: none;
+      animation: kima-marquee-scroll linear infinite;
+
+    }
+
+  }
+  &__group  {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--kima-space-6);
+    padding-inline-end: var(--kima-space-6);
+
+  }
+
+}
 @keyframes kima-marquee-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .kima-marquee__track { animation: none !important; transform: none !important; } }
 @media (forced-colors: active) { .kima-marquee__track { animation: none; } }

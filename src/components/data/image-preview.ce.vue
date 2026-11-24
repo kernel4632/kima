@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
 </template>
 <style scoped lang="scss">
 .kima-image-preview { display: inline-block; max-width: 100%; }
-.kima-image-preview__trigger { display: block; max-width: 100%; padding: 0; border: 0; border-radius: var(--kima-radius-m); color: inherit; background: var(--kima-color-transparent); cursor: zoom-in; }
+.kima-image-preview__trigger { display: block; max-width: 100%; padding: 0; border: 0; border-radius: var(--kima-radius-m); color: inherit; background: transparent; cursor: zoom-in; }
 .kima-image-preview__trigger:focus-visible { outline: 2px solid var(--kima-color-primary); outline-offset: 3px; }
 .kima-image-preview__overlay { position: fixed; z-index: 1200; inset: 0; display: grid; place-items: center; padding: var(--kima-space-4); background: color-mix(in srgb, var(--kima-color-scrim, var(--kima-color-on-surface)) 70%, transparent); }
 .kima-image-preview__dialog { display: grid; width: min(100%, 1200px); max-height: 100%; grid-template-rows: auto minmax(0, 1fr) auto; color: var(--kima-color-on-surface); background: var(--kima-color-popup-large); border-radius: var(--kima-radius-l); outline: none; overflow: hidden; }

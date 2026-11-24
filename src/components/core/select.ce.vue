@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
   padding: 0 0 0 var(--kima-field-padding);
   border: 0;
   color: var(--kima-color-on-surface);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   font-size: var(--kima-font-size-body-large);
   text-align: left;
@@ -500,7 +500,7 @@ onBeforeUnmount(() => {
   /* 单独放着时离右边缘 16px（场地 8 + 自己 8），跟旁边的清除按钮留出一个字的空。 */
   margin-right: var(--kima-space-2);
   color: var(--kima-color-on-surface-variant);
-  transition: transform var(--kima-duration-fast) var(--kima-ease-standard);
+  transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
 }
 
 .kima-select--open .kima-select__arrow {
@@ -520,7 +520,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
 
   &:hover:not(:disabled),
@@ -562,7 +562,7 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-md);
+  border-radius: var(--kima-radius-m);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -613,7 +613,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: var(--kima-space-3);
   padding: var(--kima-space-2) var(--kima-space-3);
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: var(--kima-color-on-surface);
   cursor: pointer;
   /* 悬停/高亮是"亮起来"，得看得见过程：底色和文字色都过渡，不瞬切。 */
@@ -664,7 +664,7 @@ onBeforeUnmount(() => {
 .kima-select__option-description,
 .kima-select__empty {
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
 }
 
 .kima-select__check {

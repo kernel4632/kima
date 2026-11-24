@@ -29,7 +29,49 @@ useInteractionReset(root, selected, update);
 <style scoped lang="scss">
 @use "../../styles/interaction" as *;
 @use "../../styles/mixins" as *;
-.kima-chip { @include interaction-root; @include kima-layer(2); display: inline-flex; vertical-align: middle; align-items: center; gap: var(--kima-space-1); border-radius: var(--kima-radius-s); min-height: 40px; &--interactive { border-radius: var(--kima-radius-full); } &__text { padding: var(--kima-space-2) var(--kima-space-3); } &__select { min-height: 40px; min-width: 0; color: inherit; } &__remove { width: 36px; height: 36px; min-width: 36px; min-height: 36px; color: inherit; margin-right: var(--kima-space-1); } &--selected { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); } &--disabled { opacity: var(--kima-opacity-disabled); } }
+.kima-chip  {
+  @include interaction-root;
+  @include kima-layer(2);
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  gap: var(--kima-space-1);
+  border-radius: var(--kima-radius-s);
+  min-height: 40px;
+  &--interactive  {
+    border-radius: var(--kima-radius-full);
+
+  }
+  &__text  {
+    padding: var(--kima-space-2) var(--kima-space-3);
+
+  }
+  &__select  {
+    min-height: 40px;
+    min-width: 0;
+    color: inherit;
+
+  }
+  &__remove  {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    color: inherit;
+    margin-right: var(--kima-space-1);
+
+  }
+  &--selected  {
+    background: var(--kima-color-primary-container);
+    color: var(--kima-color-on-primary-container);
+
+  }
+  &--disabled  {
+    opacity: var(--kima-opacity-disabled);
+
+  }
+
+}
 .kima-chip { @include kima-motion-colors; }
 // 删除由父层处理；父层列表可套 kima-list，芯片只负责选中与移除入口的过渡。
 </style>

@@ -84,7 +84,7 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
     height: 24px;
     border: 2px solid var(--kima-color-outline);
     border-radius: var(--kima-radius-xs);
-    background-color: var(--kima-color-transparent);
+    background-color: transparent;
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);

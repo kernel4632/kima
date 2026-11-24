@@ -688,7 +688,7 @@ onBeforeUnmount(() => {
 .kima-drawer__title {
   margin: 0;
   color: var(--kima-color-on-surface);
-  font-size: var(--kima-font-size-xl);
+  font-size: var(--kima-font-size-title-medium);
   font-weight: var(--kima-font-weight-bold);
   line-height: 1.25;
 }
@@ -709,7 +709,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: var(--kima-radius-full);
   color: var(--kima-color-on-surface-variant);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),

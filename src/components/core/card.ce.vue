@@ -101,8 +101,8 @@ function handleKeyup(event) {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: var(--kima-space-m);
-  padding: var(--kima-space-m);
+  gap: var(--kima-space-3);
+  padding: var(--kima-space-3);
   border: 0;
   border-radius: var(--kima-radius-m);
   color: var(--kima-color-on-surface);
@@ -118,13 +118,13 @@ function handleKeyup(event) {
 
 /* 描边卡片：透明底 + 一圈描边。线是这个变体的造型，不是用来分层次的。 */
 .kima-card--outlined {
-  background: var(--kima-color-transparent);
+  background: transparent;
   border: var(--kima-outline-width) solid var(--kima-color-outline-variant);
 }
 
 .kima-card--elevated {
   background: var(--kima-color-layer-3);
-  box-shadow: var(--kima-shadow-2);
+  box-shadow: var(--kima-elevation-2);
 }
 
 /* 可点击的卡片和按钮用同一套反馈：状态层、焦点环、涟漪、按下回弹。
@@ -157,12 +157,12 @@ function handleKeyup(event) {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: var(--kima-space-s);
+  gap: var(--kima-space-2);
 }
 
-/* DMS 标题：字号 Medium 14、字重 Medium、颜色 accent（primary）。 */
+/* 标题：字号 body-medium、字重 medium、颜色 primary。 */
 .kima-card__header {
-  font-size: var(--kima-font-size-medium);
+  font-size: var(--kima-font-size-body-medium);
   font-weight: var(--kima-font-weight-medium);
   color: var(--kima-color-primary);
 }

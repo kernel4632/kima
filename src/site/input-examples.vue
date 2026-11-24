@@ -62,7 +62,7 @@ function submit(event) {
   width: 100%;
   color: var(--kima-color-on-surface);
   form { display: grid; gap: var(--kima-space-4); min-width: 0; }
-  output { overflow-wrap: anywhere; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-small); }
+  output { overflow-wrap: anywhere; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-small); }
   &__actions { display: flex; justify-content: center; gap: var(--kima-space-3); flex-wrap: wrap; }
   [role="alert"] { color: var(--kima-color-error); }
 }

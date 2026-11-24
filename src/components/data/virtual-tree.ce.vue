@@ -32,9 +32,59 @@ watch(() => props.expanded, (value) => { localExpanded.value = [...value]; }, { 
 .kima-virtual-tree { min-width: 0; overflow: auto; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); outline: none; }
 .kima-virtual-tree:focus-visible, .kima-virtual-tree__node:focus-visible { outline: 2px solid var(--kima-color-primary); outline-offset: -2px; }
 .kima-virtual-tree__content { min-width: 100%; } .kima-virtual-tree__spacer { width: 1px; pointer-events: none; }
-.kima-virtual-tree__node { display: flex; min-width: 0; align-items: center; gap: var(--kima-space-2); box-sizing: border-box; padding: 0 var(--kima-space-3) 0 calc(var(--kima-space-4) + var(--kima-tree-level) * var(--kima-space-4)); border-radius: var(--kima-radius-s); transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); }
-.kima-virtual-tree__node:hover { background: var(--kima-color-layer-3); } .kima-virtual-tree__node--selected { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); } .kima-virtual-tree__node--selected:hover { background: var(--kima-color-primary-container-hover); } .kima-virtual-tree__node--disabled { opacity: var(--kima-opacity-disabled); }
-.kima-virtual-tree__toggle, .kima-virtual-tree__toggle--empty { display: inline-grid; width: 24px; height: 24px; flex: 0 0 24px; place-items: center; padding: 0; border: 0; border-radius: var(--kima-radius-s); color: inherit; background: var(--kima-color-transparent); } .kima-virtual-tree__toggle { cursor: pointer; } .kima-virtual-tree__toggle[aria-expanded="true"] :deep(svg) { transform: rotate(90deg); } .kima-virtual-tree__toggle :deep(svg) { transition: transform var(--kima-duration-fast) var(--kima-curve-standard); }
+.kima-virtual-tree__node  {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--kima-space-2);
+  box-sizing: border-box;
+  padding: 0 var(--kima-space-3) 0 calc(var(--kima-space-4) + var(--kima-tree-level) * var(--kima-space-4));
+  border-radius: var(--kima-radius-s);
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
+
+}
+.kima-virtual-tree__node:hover  {
+  background: var(--kima-color-layer-3);
+
+}
+.kima-virtual-tree__node--selected  {
+  color: var(--kima-color-on-primary-container);
+  background: var(--kima-color-primary-container);
+
+}
+.kima-virtual-tree__node--selected:hover  {
+  background: var(--kima-color-primary-container-hover);
+
+}
+.kima-virtual-tree__node--disabled  {
+  opacity: var(--kima-opacity-disabled);
+
+}
+.kima-virtual-tree__toggle, .kima-virtual-tree__toggle--empty  {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kima-radius-s);
+  color: inherit;
+  background: transparent;
+
+}
+.kima-virtual-tree__toggle  {
+  cursor: pointer;
+
+}
+.kima-virtual-tree__toggle[aria-expanded="true"] :deep(svg)  {
+  transform: rotate(90deg);
+
+}
+.kima-virtual-tree__toggle :deep(svg)  {
+  transition: transform var(--kima-duration-fast) var(--kima-curve-standard);
+
+}
 .kima-virtual-tree__label { min-width: 0; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .kima-virtual-tree__node, .kima-virtual-tree__toggle :deep(svg) { transition: none; } }
 </style>

@@ -31,7 +31,7 @@
   outline: 0;
   border-radius: inherit;
   color: inherit;
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
@@ -40,6 +40,6 @@
 @mixin input-message {
   margin: var(--kima-space-2) 0 0;
   color: var(--kima-color-on-surface-variant);
-  font-size: var(--kima-font-size-small);
+  font-size: var(--kima-font-size-label-small);
   &[role="alert"] { color: var(--kima-color-error); }
 }

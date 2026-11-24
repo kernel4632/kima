@@ -14,5 +14,45 @@ const rendered=computed(()=>{
 <template><figure ref="root" class="kima-equation" :class="{'kima-equation--inline':!display}" :aria-label="label"><div v-if="!rendered.error" class="kima-equation__math" v-html="rendered.html"></div><div v-else class="kima-equation__error" role="alert"><span>{{ rendered.error }}</span><code>{{ formula }}</code></div><figcaption v-if="label">{{ label }}</figcaption></figure></template>
 <style scoped lang="scss">
 @use '../../styles/content' as *;
-.kima-equation{@include content-root;@include content-reduced;margin:0;padding:var(--kima-space-4);overflow-x:auto;&--inline{display:inline-block;padding:0;vertical-align:middle}&__math{font-size:1.35em;:deep(math){font-family:math;max-width:100%}:deep(.katex-mathml){position:static;width:auto;height:auto;clip:auto;overflow:visible}}&__error{display:grid;gap:var(--kima-space-2);color:var(--kima-color-error);code{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}}figcaption{margin-top:var(--kima-space-3);color:var(--kima-color-on-surface-variant);font-size:var(--kima-font-size-label-medium)}}
+.kima-equation {
+  @include content-root;
+  @include content-reduced;
+  margin:0;
+  padding:var(--kima-space-4);
+  overflow-x:auto;
+  &--inline {
+    display:inline-block;
+    padding:0;
+    vertical-align:middle
+  }
+  &__math {
+    font-size:1.35em;
+    :deep(math) {
+      font-family:math;
+      max-width:100%
+    }
+    :deep(.katex-mathml) {
+      position:static;
+      width:auto;
+      height:auto;
+      clip:auto;
+      overflow:visible
+    }
+  }
+  &__error {
+    display:grid;
+    gap:var(--kima-space-2);
+    color:var(--kima-color-error);
+    code {
+      font:inherit;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere
+    }
+  }
+  figcaption {
+    margin-top:var(--kima-space-3);
+    color:var(--kima-color-on-surface-variant);
+    font-size:var(--kima-font-size-label-medium)
+  }
+}
 </style>

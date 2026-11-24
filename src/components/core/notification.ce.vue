@@ -349,7 +349,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   width: 24px;
-  height: calc(var(--kima-font-size-md) * 1.3);
+  height: calc(var(--kima-font-size-body-medium) * 1.3);
   opacity: 0.9;
 }
 
@@ -409,8 +409,8 @@ onBeforeUnmount(() => {
 }
 
 .kima-notification--danger {
-  color: var(--kima-color-on-danger);
-  background: var(--kima-color-danger);
+  color: var(--kima-color-on-error);
+  background: var(--kima-color-error);
 }
 
 /* 正文吃掉剩余宽度；min-width: 0 才能让它真的被压窄而不是撑破容器。 */
@@ -424,13 +424,13 @@ onBeforeUnmount(() => {
 }
 
 .kima-notification__title {
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   font-weight: var(--kima-font-weight-bold);
   line-height: 1.3;
 }
 
 .kima-notification__message {
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
   line-height: 1.45;
 }
 
@@ -451,14 +451,14 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   /* 往上提一点：图标栏高是按首行文字算的 20 来 px，32 的按钮不提起会显得整体偏低。 */
-  margin: calc((var(--kima-font-size-md) * 1.3 - 32px) / 2) calc(var(--kima-space-1) * -1) 0 0;
+  margin: calc((var(--kima-font-size-body-medium) * 1.3 - 32px) / 2) calc(var(--kima-space-1) * -1) 0 0;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: 0;
   border-radius: var(--kima-radius-full);
   color: inherit;
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: pointer;
   @include kima-state-layer;
   @include kima-focus-ring;
@@ -468,7 +468,7 @@ onBeforeUnmount(() => {
 }
 
 .kima-notification__close:hover {
-  background: color-mix(in srgb, currentColor 12%, var(--kima-color-transparent));
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

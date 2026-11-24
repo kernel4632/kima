@@ -386,7 +386,7 @@ onBeforeUnmount(stopResize);
   min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-md);
+  font-size: var(--kima-font-size-body-medium);
   line-height: 1.5;
   letter-spacing: 0;
 }
@@ -435,7 +435,7 @@ td {
 th {
   color: var(--kima-color-on-surface-variant);
   background: var(--kima-color-layer-1);
-  font-size: var(--kima-font-size-sm);
+  font-size: var(--kima-font-size-label-medium);
   font-weight: var(--kima-font-weight-bold);
 }
 
@@ -482,9 +482,9 @@ tbody th:last-child {
   justify-content: center;
   padding: 0;
   border: 0;
-  border-radius: var(--kima-radius-sm);
+  border-radius: var(--kima-radius-s);
   color: inherit;
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   letter-spacing: 0;
   cursor: pointer;
@@ -521,7 +521,7 @@ tbody th:last-child {
  border: 0;
  border-radius: var(--kima-radius-full);
  color: inherit;
- background: var(--kima-color-transparent);
+ background: transparent;
  cursor: pointer;
  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), transform var(--kima-duration-fast) var(--kima-curve-standard);
 
@@ -554,7 +554,7 @@ tbody th:last-child {
   margin-inline-start: auto;
   border: 0;
   border-radius: var(--kima-radius-full);
-  background: var(--kima-color-transparent);
+  background: transparent;
   cursor: col-resize;
   touch-action: none;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);

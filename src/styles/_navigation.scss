@@ -29,7 +29,7 @@
   border: 0;
   border-radius: var(--kima-radius-m);
   color: var(--kima-color-primary);
-  background: var(--kima-color-transparent);
+  background: transparent;
   font: inherit;
   cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
