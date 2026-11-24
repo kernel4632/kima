@@ -17,29 +17,31 @@
   /* ---- 基础色（全部来自系统，库不带品牌色）----
    * Canvas / CanvasText：页面背景和主文字，操作系统深浅模式切了它就跟着切。
    * ButtonFace / ButtonText：控件表面和控件文字。
-   * AccentColor / AccentColorText：用户在系统设置里选的强调色——
-   *   Windows 的"主题色"、macOS 的"强调色"，用户挑了什么主操作就是什么。
    * Field / FieldText：输入框的底和字。
-   * Highlight / HighlightText：选中高亮（文字选区、选中行）。
-   * GrayText：禁用文字。LinkText / VisitedText：链接色。
-   * 这些值浏览器会自动算出与背景的对比度，不用库自己操心可读性。 */
+   * GrayText：禁用文字。
+   *
+   * 主色（primary）也是黑白灰：就取前景色本身。
+   * 主按钮 = 黑底白字（浅色模式）/ 白底黑字（深色模式），焦点环、选中态、开关、
+   * 链接全是同一套前景色。整库默认无彩色，是"没有主题色"最彻底的表达；
+   * 语义色（成功/警告/危险）保留交通灯含义不掺和进来。
+   * 想要品牌色的宿主只需覆盖下面这一小簇 --kima-color-primary* 变量。 */
   --kima-color-surface: Canvas;
   --kima-color-on-surface: CanvasText;
   --kima-color-on-surface-variant: color-mix(in srgb, CanvasText 72%, Canvas);
   --kima-color-outline: color-mix(in srgb, CanvasText 38%, Canvas);
   --kima-color-outline-variant: color-mix(in srgb, CanvasText 20%, Canvas);
-  --kima-color-primary: AccentColor;
-  --kima-color-on-primary: AccentColorText;
-  --kima-color-primary-container: color-mix(in srgb, AccentColor 24%, Canvas);
-  --kima-color-on-primary-container: AccentColorText;
-  --kima-color-secondary-container: color-mix(in srgb, ButtonFace 60%, CanvasText);
+  --kima-color-primary: CanvasText;
+  --kima-color-on-primary: Canvas;
+  --kima-color-primary-container: color-mix(in srgb, CanvasText 12%, Canvas);
+  --kima-color-on-primary-container: CanvasText;
+  --kima-color-secondary-container: color-mix(in srgb, CanvasText 8%, Canvas);
   --kima-color-on-secondary-container: CanvasText;
-  --kima-color-tertiary-container: color-mix(in srgb, AccentColor 45%, Canvas);
+  --kima-color-tertiary-container: color-mix(in srgb, CanvasText 16%, Canvas);
   --kima-color-on-tertiary-container: CanvasText;
-  --kima-color-error: color-mix(in srgb, #d13438 80%, CanvasText);
-  --kima-color-on-error: #ffffff;
-  --kima-color-error-container: color-mix(in srgb, #d13438 22%, Canvas);
-  --kima-color-on-error-container: color-mix(in srgb, #d13438 75%, CanvasText);
+  --kima-color-error: light-dark(#b3261e, #f2b8b5);
+  --kima-color-on-error: light-dark(#ffffff, #5f1317);
+  --kima-color-error-container: light-dark(#f9dedc, #8c1d18);
+  --kima-color-on-error-container: light-dark(#5f1317, #f9dedc);
   --kima-color-inverse-surface: CanvasText;
   --kima-color-inverse-on-surface: Canvas;
   --kima-color-scrim: #000000;
@@ -155,7 +157,7 @@
 
   /* 主色系的浅底：柔和按钮用它，一眼看出"属于主色系但不用那么强"。
    * 同样用透明度写成，铺在模糊背景上也不会糊。 */
-  --kima-color-primary-soft: color-mix(in srgb, AccentColor 20%, transparent);
+  --kima-color-primary-soft: color-mix(in srgb, CanvasText 12%, transparent);
   --kima-error-soft: color-mix(in srgb, var(--kima-color-error) 20%, transparent);
   /* 未选中的控件底（开关轨道、复选框方框）：比 layer-3 淡一档，
    * 因为它要长期留在界面上，太实会跟选中态抢注意力。 */
@@ -164,7 +166,7 @@
    * 悬停时不能换成通用悬停色（配对一拆开，深浅两套下就成了字底不匹配）。
    * 所以给它一个从容器色派生的档位：把容器文字色按悬停档 8% 叠回容器色，
    * 深浅两套下都只挪一档明度，对比度不动。 */
-  --kima-color-primary-container-hover: color-mix(in srgb, AccentColorText 8%, var(--kima-color-primary-container));
+  --kima-color-primary-container-hover: color-mix(in srgb, CanvasText 8%, var(--kima-color-primary-container));
 
   /* ---- 层级 ----
    * M3 elevation：数字越大越浮起来。抽屉和弹层用 3 以上。 */
@@ -260,7 +262,7 @@
   /* 代码语法色：只服务可读性，不表达状态语义。
    * 关键字跟系统强调色走，字符串/数字借用固定的语义色相，
    * 函数名和属性名各给一个专属色相，这样一段代码里能分出五层，不是只有"蓝和灰"。 */
-  --kima-color-code-keyword: AccentColor;
+  --kima-color-code-keyword: var(--kima-color-primary);
   --kima-color-code-string: var(--kima-color-success);
   --kima-color-code-number: var(--kima-color-warning);
   --kima-color-code-function: light-dark(#6a4bb0, #c9a6ff);
