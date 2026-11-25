@@ -1,12 +1,14 @@
 <!--
-开关：用原生 checkbox 承担表单和辅助技术语义，再用 60×36 的轨道显示状态。
-形状和顺序跟复选框保持一致：控件在左、说明文字在右，外面的圆形光环承载悬停与涟漪。
+开关：原生 checkbox 承担表单和辅助技术语义（reset/required/读屏全部原生可靠），
+60×36 轨道显示状态。拇指滑动用 Motion 弹簧驱动：物理参数（刚度/阻尼）代替缓动曲线，
+快速来回拨动时弹簧带着速度衔接，不会像 CSS transition 那样每次都从头起跑。
 调用示例：
   <kima-switch v-model="enabled" name="enabled">启用同步</kima-switch>
   <kima-switch :model-value="true" disabled>已锁定</kima-switch>
 -->
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch } from "vue";
+import { motion } from "motion-v";
 import KimaIcon from "./icon.ce.vue";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { useNativeSlots } from "../../utils/native-slots.js";
@@ -35,6 +37,17 @@ let ownerDocument;
 
 // 涟漪落在轨道外面那圈光环上；轨道本身要裁剪滑块，不能兼作涟漪宿主。
 useRipple(control);
+
+// 拇指的弹簧参数：硬弹簧，短促到位带一丝过冲——开关是"啪嗒"的控件，
+// 弹簧太软会显得迟疑。x 是位移、size 是按压形变，都交给 Motion。
+const thumbSpring = { type: "spring", stiffness: 500, damping: 30 };
+
+// 未选中：x=0（左端）。选中：x = 轨道宽 - 拇指选中间隙差，用百分比容器算位移。
+// 位移量 = 轨道内宽(60-2×2) - 拇指选中宽(32) - 两端间隙(2×2) = 20px。
+const thumbX = computed(() => (localValue.value ? 20 : 0));
+// 选中瞬间拇指放大到 32（未选中 28）；按住时撑到 36。
+const pressed = ref(false);
+const thumbSize = computed(() => (pressed.value ? 36 : localValue.value ? 32 : 28));
 
 // 本地状态让没有立即回写 modelValue 的 Web Component 仍能完成点击反馈。
 watch(
@@ -90,12 +103,20 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       :value="value"
       @input.stop
       @change.stop="handleChange"
+      @pointerdown="pressed = true"
+      @pointerup="pressed = false"
+      @pointercancel="pressed = false"
     />
     <span ref="control" class="kima-switch__control" aria-hidden="true">
       <span class="kima-switch__track">
-        <span class="kima-switch__thumb">
+        <!-- 拇指交给 Motion：x 位移和尺寸都走弹簧，快速连拨时速度自然衔接。 -->
+        <motion.span
+          class="kima-switch__thumb"
+          :animate="{ x: thumbX, width: thumbSize, height: thumbSize }"
+          :transition="thumbSpring"
+        >
           <KimaIcon class="kima-switch__check" :icon="Tick02Icon" :size="16" />
-        </span>
+        </motion.span>
       </span>
     </span>
     <span v-if="$slots.default || hasNativeSlot('default')" class="kima-switch__label">
@@ -108,13 +129,9 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 @use "../../styles/mixins" as *;
 
 .kima-switch {
-  /* 开关造型参数：轨道 60×36，拇指 28（选中 32，按下撑满轨道留 2px 描边）。 */
+  /* 开关造型参数：轨道 60×36，拇指 28（选中 32，按压 36），描边 2。 */
   --kima-switch-track-width: 60px;
   --kima-switch-track-height: 36px;
-  --kima-switch-thumb-size: 28px;
-  --kima-switch-thumb-selected: 32px;
-  --kima-switch-outline-width: 2px;
-  --kima-switch-thumb-pressed: 32px;
 
   position: relative;
   display: inline-flex;
@@ -160,7 +177,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 
   /* 轨道：未选中是一圈描边（开关的范围靠它表达，是造型不是装饰），
-   * 选中时整块切成主色。 */
+   * 选中时整块切成主色。底色仍走 CSS 过渡（颜色不适合弹簧）。 */
   &__track {
     box-sizing: border-box;
     position: relative;
@@ -168,41 +185,32 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     flex: 0 0 var(--kima-switch-track-width);
     width: var(--kima-switch-track-width);
     height: var(--kima-switch-track-height);
-    border: var(--kima-switch-outline-width) solid var(--kima-color-outline);
+    border: 2px solid var(--kima-color-outline);
     border-radius: var(--kima-radius-full);
     background: transparent;
+    overflow: hidden;
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);
   }
 
-  /* 滑块：未选中 28，选中 32，按下再撑到轨道边缘。
-   * 位置按"轨道内边距减去描边"算，选中时贴右边。 */
+  /* 拇指：几何全部交给 Motion（x/width/height 走弹簧），CSS 只管颜色和落点。
+   * top 50% + translateY 居中；left 2px 是未选中的起点，Motion 的 x 从这里叠加。 */
   &__thumb {
-    box-sizing: border-box;
     position: absolute;
     top: 50%;
-    /* 绝对定位的 left 从轨道"边框内侧"算起，所以这里减掉描边宽度，
-     * 未选中的滑块才会和选中时一样离外缘 4px。 */
     left: 2px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--kima-switch-thumb-size);
-    height: var(--kima-switch-thumb-size);
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-on-surface-variant);
     transform: translateY(-50%);
-    /* 位置和尺寸都用强调曲线：滑块"滑过去"的过程本身就是状态变化的说明。 */
-    transition:
-      left var(--kima-duration-slow) var(--kima-curve-emphasized),
-      width var(--kima-duration-medium) var(--kima-curve-emphasized),
-      height var(--kima-duration-medium) var(--kima-curve-emphasized),
-      background-color var(--kima-duration-effects) var(--kima-curve-standard);
+    will-change: transform;
   }
 
   &__check {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-on-surface);
     opacity: 0;
     transition: opacity var(--kima-duration-effects) var(--kima-curve-standard);
   }
@@ -210,23 +218,14 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   &--checked &__track {
     border-color: var(--kima-color-primary);
     background: var(--kima-color-primary);
-
-    .kima-switch__thumb {
-      left: calc(100% - var(--kima-switch-thumb-selected) - 2px);
-      width: var(--kima-switch-thumb-selected);
-      height: var(--kima-switch-thumb-selected);
-      background: var(--kima-color-on-primary);
-    }
-
-    .kima-switch__check {
-      opacity: 1;
-    }
   }
 
-  /* 按下时滑块横向撑长——和 M3 一样，用形变而不是缩放表示"按住了"。
-   * 开关是横向控件，缩放会连轨道一起变小，看起来像整块沉下去。 */
-  &__input:active ~ .kima-switch__control &__track &__thumb {
-    width: var(--kima-switch-thumb-pressed);
+  &--checked &__thumb {
+    background: var(--kima-color-on-primary);
+  }
+
+  &--checked &__check {
+    opacity: 1;
   }
 
   &__input:focus-visible ~ .kima-switch__control {
@@ -250,6 +249,8 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kima-switch__track, .kima-switch__thumb, .kima-switch__check { transition: none; }
+  /* Motion 内部遵守 useReducedMotion（MotionConfig 的 reducedMotion="user" 默认），
+   * 弹簧会自动退化为瞬时；这里兜底清掉 CSS 侧的过渡。 */
+  .kima-switch__track, .kima-switch__check { transition: none; }
 }
 </style>

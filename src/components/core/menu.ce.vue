@@ -4,12 +4,12 @@
 <script setup>
 import { computed, nextTick, ref, useId, watch } from 'vue';
 import { DropdownMenuRoot, DropdownMenuTrigger, DropdownMenuContent } from 'reka-ui';
+import { AnimatePresence, motion } from 'motion-v';
 import KimaIcon from './icon.ce.vue';
 import MenuItems from '../../internal/menu-items.vue';
 import { ArrowDown01Icon, MoreHorizontalIcon, Search01Icon } from '@hugeicons/core-free-icons';
 import { useInteractionRoot, usePlacement, dismissInteraction, flattenChoices } from '../../utils/interaction.js';
 import { useShellModel, useMenuChecks } from '../../utils/shell.js';
-import { presenceTransition } from '../../utils/motion.js';
 import { useRipple } from '../../utils/ripple.js';
 defineOptions({ inheritAttrs: false });
 const props = defineProps({ open: Boolean, modelValue: { type: [String, Number, Boolean, Object, Array], default: null }, items: { type: Array, default: () => [] }, label: { type: String, default: '选择项目' }, disabled: Boolean, placement: { type: String, default: 'bottom-start' }, searchable: Boolean, checked: { type: Object, default: () => ({}) }, variant: { type: String, default: 'default' }, iconOnly: Boolean, icon: { type: Object, default: undefined }, size: { type: String, default: 'default' } });
@@ -41,10 +41,27 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   <div ref="root" v-bind="forwardedAttrs" class="kima-menu" :class="{'kima-menu--open': localOpen, 'kima-menu--icon': iconTrigger, [`kima-menu--${triggerSize}`]: true}">
     <DropdownMenuRoot :open="localOpen && !disabled" :modal="false" @update:open="setOpen">
       <DropdownMenuTrigger as-child><button ref="trigger" type="button" class="kima-menu__trigger" :disabled="disabled" :aria-label="iconTrigger ? label : undefined" :title="iconTrigger ? label : undefined"><slot name="trigger" :open="localOpen" :selected-item="selectedItem" :value="localValue"><KimaIcon v-if="iconTrigger" :icon="triggerIcon" :size="20" aria-hidden="true" /><span v-else>{{ selectedItem?.label || label }}</span></slot><KimaIcon v-if="!iconTrigger" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" /></button></DropdownMenuTrigger>
-      <Transition name="kima-popup" v-bind="presenceTransition"><DropdownMenuContent v-if="localOpen && !disabled" :id="menuId" force-mount v-bind="position" class="kima-menu__popup" :aria-label="label" loop @escape-key-down="(e) => dismissInteraction(e, () => setOpen(false))" @open-auto-focus="(e) => { if (searchable) { e.preventDefault(); nextTick(() => searchInput?.focus()); } }">
-        <div v-if="searchable" class="kima-menu__search-wrap"><KimaIcon :icon="Search01Icon" :size="18" aria-hidden="true" /><input ref="searchInput" v-model="query" type="search" class="kima-menu__search" role="searchbox" aria-label="搜索菜单项" @input.stop @change.stop @keydown.stop="searchKey"></div>
-        <MenuItems :items="visibleItems" :checked="checked" :model-value="localValue" selection :disabled="disabled" @select="select" @check="check" /><div v-if="!visibleItems.length" role="status">没有匹配项目</div>
-      </DropdownMenuContent></Transition>
+      <!-- 弹层交给 Motion：进场 = 弹簧缩放 + 淡入（从 0.96 弹到 1，带一丝过冲），
+           退场 = 快速淡出。AnimatePresence 保证关闭时退场动画能播完才卸载，
+           Vue 的 <Transition> 做不了嵌套子菜单的这种受控退出。 -->
+      <AnimatePresence>
+        <DropdownMenuContent v-if="localOpen && !disabled" :id="menuId" force-mount v-bind="position" as-child>
+          <motion.div
+            class="kima-menu__popup"
+            :initial="{ opacity: 0, scale: 0.96 }"
+            :animate="{ opacity: 1, scale: 1 }"
+            :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
+            :transition="{ type: 'spring', stiffness: 500, damping: 32 }"
+            :aria-label="label"
+            loop
+            @escape-key-down="(e) => dismissInteraction(e, () => setOpen(false))"
+            @open-auto-focus="(e) => { if (searchable) { e.preventDefault(); nextTick(() => searchInput?.focus()); } }"
+          >
+            <div v-if="searchable" class="kima-menu__search-wrap"><KimaIcon :icon="Search01Icon" :size="18" aria-hidden="true" /><input ref="searchInput" v-model="query" type="search" class="kima-menu__search" role="searchbox" aria-label="搜索菜单项" @input.stop @change.stop @keydown.stop="searchKey"></div>
+            <MenuItems :items="visibleItems" :checked="checked" :model-value="localValue" selection :disabled="disabled" @select="select" @check="check" /><div v-if="!visibleItems.length" role="status">没有匹配项目</div>
+          </motion.div>
+        </DropdownMenuContent>
+      </AnimatePresence>
     </DropdownMenuRoot>
   </div>
 </template>
@@ -110,9 +127,9 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 }
 .kima-menu--small .kima-menu__trigger { min-height: 40px; padding-inline: var(--kima-space-3); }
 .kima-menu--icon .kima-menu__trigger { width: var(--kima-touch-target); min-width: var(--kima-touch-target); padding: 0; justify-content: center; aspect-ratio: 1; }
-/* 菜单内容由 Reka 渲染并传送到 body，元素上没有本组件的 data-v 标记，
- * 普通 scoped 规则匹配不到它——弹层就会完全没有底色。
- * 这里用 :global 按类名命中（类名带 kima-menu 前缀，不会污染宿主页面）。 */
+/* 菜单内容由 Reka 渲染并传送到 body：现在外面套了 motion.div，
+ * data-v 标记在 motion.div 上，但 motion.div 由 Motion 渲染时同样带 scoped id，
+ * 加上弹层结构变了，继续用 :global 按类名命中最稳（类名带 kima- 前缀，不污染宿主）。 */
 :global(.kima-menu__popup) { min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
