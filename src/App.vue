@@ -6,6 +6,7 @@ import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBa
 import { Menu01Icon, SparklesIcon } from '@hugeicons/core-free-icons';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
+const Lab = defineAsyncComponent(() => import('./site/lab.vue'));
 import { catalog } from './site/catalog.js';
 import { tierMeta } from './component-tiers.js';
 import manifest from '../package.json';
@@ -45,10 +46,10 @@ function selectSearchResult(value, item) {
   navigate(value);
 }
 const nav = computed(() => [
-  { heading: '开始使用', items: [{ slug: 'overview', name: '概览' }, { slug: 'gallery', name: '全屏交互预览' }, { slug: 'installation', name: '安装与接入' }] },
+  { heading: '开始使用', items: [{ slug: 'lab', name: '实验台' }, { slug: 'overview', name: '概览' }, { slug: 'gallery', name: '全屏交互预览' }, { slug: 'installation', name: '安装与接入' }] },
   ...[...new Set(catalog.map((item) => item.group))].map((heading) => ({ heading, items: filtered.value.filter((item) => item.group === heading).map((item) => ({ slug: `components/${item.slug}`, name: `${item.name} ${item.label}` })) })),
 ]);
-const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', gallery: '全屏交互预览', playground: '全屏交互预览', installation: '安装与接入', theme: '颜色与字体跟随系统' }[route.value] || '页面不存在'));
+const title = computed(() => component.value ? component.value.name : ({ overview: '让交互，自然发生。', lab: '实验台', gallery: '全屏交互预览', playground: '全屏交互预览', installation: '安装与接入', theme: '颜色与字体跟随系统' }[route.value] || '页面不存在'));
 const sections = computed(() => component.value ? [{ id: 'preview', label: '交互预览' }, { id: 'usage', label: '使用方式' }, { id: 'properties', label: '属性参考' }] : route.value === 'gallery' ? [] : [{ id: 'introduction', label: '概览' }, { id: 'usage', label: '开始使用' }, { id: 'principles', label: '设计原则' }]);
 function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
 const showSource = ref(false);
@@ -79,9 +80,11 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 </script>
 
 <template>
+  <!-- 实验台：全部组件平铺一页，交互手感直接试。 -->
+  <Lab v-if="route === 'lab'" :navigate="navigate" />
   <!-- 组件速览是独立全屏页：不套文档站的顶栏/侧栏/页脚，一屏平铺全部基础组件。 -->
   <Gallery v-if="['gallery', 'playground'].includes(route)" :navigate="navigate" />
-  <div v-else class="kima-docs">
+  <div v-else-if="!['lab'].includes(route)" class="kima-docs">
     <header class="kima-docs__top">
       <div class="kima-docs__brand">
         <KimaIconButton class="kima-docs__mobile-toggle" :icon="Menu01Icon" label="打开文档导航" variant="text" @click="mobileMenu = true" />

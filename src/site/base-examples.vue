@@ -45,9 +45,10 @@ import {
   KimaVirtualScroll,
 } from "@/index";
 const props = defineProps({ component: { type: String, required: true } });
+// component="*" 是实验台模式：全部演示平铺，一次看到所有组件并直接交互。
 // 每个分组只在包含当前组件时渲染；空分组会留下 flex gap，把演示区撑高。
 function visible(...keywords) {
-  return keywords.includes(props.component);
+  return props.component === "*" || keywords.includes(props.component);
 }
 
 // --- 按钮与动作 ---
