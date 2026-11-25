@@ -180,11 +180,14 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
    * 选中时整块切成主色。底色仍走 CSS 过渡（颜色不适合弹簧）。 */
   &__track {
     box-sizing: border-box;
-    position: relative;
-    display: block;
+    display: flex;
+    /* 垂直居中交给 flex：transform 整个让给 Motion（它写 translateX 时会整体覆盖，
+     * 之前用 translateY(-50%) 居中就被它清掉，拇指整个掉到下半格）。 */
+    align-items: center;
     flex: 0 0 var(--kima-switch-track-width);
     width: var(--kima-switch-track-width);
     height: var(--kima-switch-track-height);
+    padding-inline: 2px;
     border: 2px solid var(--kima-color-outline);
     border-radius: var(--kima-radius-full);
     background: transparent;
@@ -194,18 +197,16 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       border-color var(--kima-duration-effects) var(--kima-curve-standard);
   }
 
-  /* 拇指：几何全部交给 Motion（x/width/height 走弹簧），CSS 只管颜色和落点。
-   * top 50% + translateY 居中；left 2px 是未选中的起点，Motion 的 x 从这里叠加。 */
+  /* 拇指：几何全部交给 Motion（x/width/height 走弹簧），CSS 只管颜色。
+   * 垂直居中由轨道的 flex 承担；x=0 未选中贴左，x=20 选中贴右。 */
   &__thumb {
-    position: absolute;
-    top: 50%;
-    left: 2px;
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-on-surface-variant);
-    transform: translateY(-50%);
     will-change: transform;
   }
 
