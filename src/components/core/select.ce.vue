@@ -11,11 +11,12 @@ form.reset() 恢复挂载时的 modelValue；清除选择返回 null，必填时
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, getCurrentInstance, watch } from "vue";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
+import { AnimatePresence, motion } from "motion-v";
 import KimaIcon from "./icon.ce.vue";
 import { useRemoteOptions } from "../../utils/remote-options.js";
 import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../../utils/ripple.js";
-import { presenceTransition } from "../../utils/motion.js";
 
 /* 模块加载即求值一次：Teleport 的 disabled 绑定在渲染期读这个常量，
  * 不会像 typeof document 那样在渲染函数里触碰全局对象（SSR 渲染会警告）。 */
@@ -58,7 +59,6 @@ const emit = defineEmits(["update:modelValue", "change", "update:open", "options
 const root = ref(null);
 const trigger = ref(null);
 const popup = ref(null);
-const popupStyle = ref({});
 // 整块场地（__control）是"点得动的东西"，按下时整块亮一下。
 // 亮层铺满整块底、由场地自己的圆角裁边，触发器或清除按钮都算在场地上。
 const control = ref(null);
@@ -138,6 +138,12 @@ function toggleSelect() {
   else openSelect();
 }
 
+/* PopoverRoot 的 update:open：只有"请求关闭"一种可能（我们自己的 openSelect 走 toggleSelect）。
+ * Reka 在点击外部/Escape 时触发。焦点返回由 closeSelect 内部处理，这里不重复。 */
+function setOpenFromPopover(open) {
+  if (!open) closeSelect();
+}
+
 // --- 提交一次选择；重复选择不重复发出 change ---
 function updateValue(value) {
   if (props.disabled || Object.is(value, localValue.value)) return;
@@ -206,27 +212,6 @@ function handleKeydown(event) {
 }
 
 // --- 外部点击与焦点离开：composedPath 也能识别 Shadow DOM 内部点击 ---
-function positionPopup() {
-  const anchor = trigger.value;
-  if (!anchor || !localOpen.value || typeof window === "undefined") return;
-  const rect = anchor.getBoundingClientRect();
-  const gap = 8;
-  const below = Math.max(0, window.innerHeight - rect.bottom - gap);
-  const above = Math.max(0, rect.top - gap);
-  const openUp = below < 240 && above > below;
-  const preferredSpace = openUp ? above : below;
-  const available = Math.min(360, Math.max(0, preferredSpace));
-  const proposedTop = openUp ? rect.top - available - gap : rect.bottom + gap;
-  const top = Math.max(gap, Math.min(proposedTop, window.innerHeight - available - gap));
-  popupStyle.value = {
-    position: "fixed",
-    top: `${top}px`,
-    left: `${Math.max(gap, Math.min(rect.left, window.innerWidth - rect.width - gap))}px`,
-    width: `${rect.width}px`,
-    maxHeight: `${available}px`,
-  };
-}
-
 function handleOutside(event) {
   const path = event.composedPath();
   if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) closeSelect(false);
@@ -243,7 +228,6 @@ watch(localOpen, async (open, wasOpen) => {
     highlight(selected >= 0 ? selected : (enabledIndexes.value[0] ?? -1));
     await nextTick();
     if (localOpen.value) {
-      positionPopup();
       (props.searchable ? searchInput.value : trigger.value)?.focus();
     }
   } else {
@@ -265,21 +249,21 @@ onMounted(() => {
   ownerDocument = root.value.ownerDocument;
   ownerDocument.addEventListener("pointerdown", handleOutside);
   ownerDocument.addEventListener("focusin", handleOutside);
-  ownerDocument.addEventListener("scroll", positionPopup, true);
-  window.addEventListener("resize", positionPopup);
 });
 onBeforeUnmount(() => {
   clearTimeout(resetTimer);
   form?.removeEventListener("reset", resetValue);
   ownerDocument.removeEventListener("pointerdown", handleOutside);
   ownerDocument.removeEventListener("focusin", handleOutside);
-  ownerDocument.removeEventListener("scroll", positionPopup, true);
-  window.removeEventListener("resize", positionPopup);
 });
 </script>
 
 <template>
   <div ref="root" v-bind="{ ...attrs, id: host ? undefined : attrs.id }" class="kima-select" :class="{ 'kima-select--open': localOpen, 'kima-select--disabled': disabled }">
+    <!-- PopoverRoot 包整个组件：PopoverAnchor 用插槽包裹锚点（Reka 自动取真实 DOM，
+         不手传元素引用），PopoverContent 负责弹层定位（翻转/碰撞/跟随）。 -->
+    <PopoverRoot :open="localOpen" :modal="false" @update:open="setOpenFromPopover">
+      <PopoverAnchor as-child>
     <div ref="control" class="kima-select__control" :aria-disabled="disabled || undefined">
       <button
         :id="triggerId"
@@ -316,6 +300,7 @@ onBeforeUnmount(() => {
       </button>
       </Transition>
     </div>
+      </PopoverAnchor>
 
     <!-- 原生选项保留真实值；阻止原生事件冒泡，只发出组件自己的 change。 -->
     <select
@@ -343,62 +328,66 @@ onBeforeUnmount(() => {
       </option>
     </select>
 
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。
-         isBrowser 放在 computed 外的模块常量里：渲染期读它不会触碰 window/document。 -->
-    <Teleport to="body" :disabled="!isBrowser">
-      <Transition name="kima-popup" v-bind="presenceTransition">
-      <div
-        v-if="localOpen"
-        ref="popup"
-        class="kima-select__popup"
-        :style="popupStyle"
-      >
-        <div v-if="searchable" class="kima-select__search-wrap">
-          <KimaIcon class="kima-select__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
-          <input
-            ref="searchInput"
-            v-model="query"
-            class="kima-select__search"
-            type="search"
-            role="combobox"
-            aria-label="搜索选项"
-            aria-expanded="true"
-            aria-autocomplete="list"
-            :aria-controls="listboxId"
-            :aria-activedescendant="activeId"
-            @input.stop
-            @change.stop
-            @keydown="handleKeydown"
-          >
-        </div>
+    <!-- 弹层定位全交给 Reka Popper：翻转/碰撞/跟随滚动自动处理，零手算坐标。 -->
+      <PopoverPortal :disabled="!isBrowser">
+        <AnimatePresence>
+          <PopoverContent v-if="localOpen" as-child :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached>
+            <motion.div
+              ref="popup"
+              class="kima-select__popup"
+              :initial="{ opacity: 0, scale: 0.96 }"
+              :animate="{ opacity: 1, scale: 1 }"
+              :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
+              :transition="{ type: 'spring', stiffness: 500, damping: 32 }"
+            >
+            <div v-if="searchable" class="kima-select__search-wrap">
+              <KimaIcon class="kima-select__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
+              <input
+                ref="searchInput"
+                v-model="query"
+                class="kima-select__search"
+                type="search"
+                role="combobox"
+                aria-label="搜索选项"
+                aria-expanded="true"
+                aria-autocomplete="list"
+                :aria-controls="listboxId"
+                :aria-activedescendant="activeId"
+                @input.stop
+                @change.stop
+                @keydown="handleKeydown"
+              >
+            </div>
 
-        <div :id="listboxId" class="kima-select__options" role="listbox" :aria-labelledby="triggerId" :aria-busy="remoteLoading || undefined">
-          <div v-if="remoteLoading" class="kima-select__status" role="status">加载中…</div>
-          <div v-else-if="remoteError" class="kima-select__status kima-select__status--error" role="alert">{{ remoteError }} <button type="button" @click="retryRemote">重试</button></div>
-          <div
-            v-for="(item, index) in visibleItems"
-            :id="`${listboxId}-option-${index}`"
-            :key="index"
-            :ref="(element) => { optionElements[index] = element; }"
-            class="kima-select__option"
-            :class="{ 'kima-select__option--active': index === activeIndex, 'kima-select__option--selected': Object.is(item.value, localValue) }"
-            role="option"
-            :aria-selected="Object.is(item.value, localValue)"
-            :aria-disabled="item.disabled || undefined"
-            @pointerdown.prevent
-            @click="selectItem(item)"
-          >
-            <span class="kima-select__option-copy">
-              <span class="kima-select__option-label">{{ item.label }}</span>
-              <span v-if="item.description" class="kima-select__option-description">{{ item.description }}</span>
-            </span>
-            <KimaIcon v-if="Object.is(item.value, localValue)" class="kima-select__check" :icon="Tick01Icon" :size="18" aria-hidden="true" />
-          </div>
-        </div>
-        <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
-      </div>
-      </Transition>
-    </Teleport>
+            <div :id="listboxId" class="kima-select__options" role="listbox" :aria-labelledby="triggerId" :aria-busy="remoteLoading || undefined">
+              <div v-if="remoteLoading" class="kima-select__status" role="status">加载中…</div>
+              <div v-else-if="remoteError" class="kima-select__status kima-select__status--error" role="alert">{{ remoteError }} <button type="button" @click="retryRemote">重试</button></div>
+              <div
+                v-for="(item, index) in visibleItems"
+                :id="`${listboxId}-option-${index}`"
+                :key="index"
+                :ref="(element) => { optionElements[index] = element; }"
+                class="kima-select__option"
+                :class="{ 'kima-select__option--active': index === activeIndex, 'kima-select__option--selected': Object.is(item.value, localValue) }"
+                role="option"
+                :aria-selected="Object.is(item.value, localValue)"
+                :aria-disabled="item.disabled || undefined"
+                @pointerdown.prevent
+                @click="selectItem(item)"
+              >
+                <span class="kima-select__option-copy">
+                  <span class="kima-select__option-label">{{ item.label }}</span>
+                  <span v-if="item.description" class="kima-select__option-description">{{ item.description }}</span>
+                </span>
+                <KimaIcon v-if="Object.is(item.value, localValue)" class="kima-select__check" :icon="Tick01Icon" :size="18" aria-hidden="true" />
+              </div>
+            </div>
+            <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
+            </motion.div>
+          </PopoverContent>
+        </AnimatePresence>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 
@@ -558,12 +547,9 @@ onBeforeUnmount(() => {
 
 .kima-select__popup {
   box-sizing: border-box;
-  position: fixed;
+  /* 定位由 Reka Popper 内联接管（锚定/翻转/碰撞），这里只剩视觉。 */
   z-index: 20;
-  top: 0;
-  left: 0;
-  width: 100%;
-  max-height: min(360px, 50vh);
+  max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;

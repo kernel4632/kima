@@ -8,10 +8,14 @@ Vue 用 v-model 和 v-model:open 同步状态；调用示例：
 -->
 <script setup>
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, watch } from "vue";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
 import KimaIcon from "./icon.ce.vue";
 import { useRemoteOptions } from "../../utils/remote-options.js";
 import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../../utils/ripple.js";
+
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== "undefined";
 
 defineOptions({ inheritAttrs: false });
 
@@ -56,6 +60,7 @@ const root = ref(null);
 const control = ref(null);
 useRipple(control);
 const input = ref(null);
+const popup = ref(null);
 const nativeInput = ref(null);
 const optionElements = ref([]);
 const query = ref("");
@@ -228,7 +233,9 @@ function handleKeydown(event) {
 }
 
 function handleOutside(event) {
-  if (!localOpen.value || event.composedPath().includes(root.value)) return;
+  const path = event.composedPath();
+  /* 弹层被 Portal 送到 body：点它不算"外部"（root 判定覆盖不了），要一并豁免。 */
+  if (!localOpen.value || path.includes(root.value) || path.includes(popup.value)) return;
   commitInput();
   closeCombobox(false);
 }
@@ -297,6 +304,9 @@ onBeforeUnmount(() => {
     class="kima-combobox"
     :class="{ 'kima-combobox--open': localOpen, 'kima-combobox--disabled': disabled }"
   >
+    <!-- PopoverRoot 只借 Popper 定位（锚定/翻转/碰撞），开关由组件自己的 localOpen 管理。 -->
+    <PopoverRoot :open="localOpen" :modal="false">
+      <PopoverAnchor as-child>
     <div ref="control" class="kima-combobox__control" :aria-disabled="disabled || undefined">
       <KimaIcon v-if="searchable" class="kima-combobox__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
       <input
@@ -337,6 +347,7 @@ onBeforeUnmount(() => {
         <KimaIcon class="kima-combobox__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
     </div>
+      </PopoverAnchor>
 
     <input
       ref="nativeInput"
@@ -353,9 +364,12 @@ onBeforeUnmount(() => {
       @invalid="handleInvalid"
     >
 
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+    <!-- 弹层定位交给 Reka Popper：碰撞翻转自动处理，零手算坐标。
+         出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+      <PopoverPortal :disabled="!isBrowser">
+        <PopoverContent as-child align="start" :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="localOpen ? undefined : true">
     <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
-      <div v-if="localOpen" class="kima-combobox__popup">
+      <div v-if="localOpen" ref="popup" class="kima-combobox__popup">
         <div :id="listboxId" class="kima-combobox__options" role="listbox" :aria-labelledby="inputId" :aria-busy="remoteLoading || undefined">
           <div v-if="remoteLoading" class="kima-combobox__status" role="status">加载中…</div>
           <div v-else-if="remoteError" class="kima-combobox__status kima-combobox__status--error" role="alert">{{ remoteError }} <button type="button" @click="retryRemote">重试</button></div>
@@ -383,6 +397,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </Transition>
+        </PopoverContent>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 
@@ -524,12 +541,11 @@ onBeforeUnmount(() => {
 
 .kima-combobox__popup {
   box-sizing: border-box;
-  position: absolute;
+  /* 定位由 Reka Popper 内联接管；宽度跟锚点（触发器）同宽。
+   * 不能写 100%：fixed wrapper 是 max-content，会循环退化成内容宽。 */
   z-index: 20;
-  top: calc(100% + var(--kima-space-2));
-  left: 0;
-  width: 100%;
-  max-height: min(360px, 50vh);
+  width: var(--reka-popper-anchor-width, 100%);
+  max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;

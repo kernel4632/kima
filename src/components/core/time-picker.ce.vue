@@ -10,8 +10,12 @@ modelValue 是 HH:mm 或 null；min、max 是同样格式，step 是分钟间隔
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useHost, useId, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
 import { ArrowDown01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
 import { useRipple } from "../../utils/ripple.js";
 import { presenceTransition } from "../../utils/motion.js";
+
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== "undefined";
 
 defineOptions({ inheritAttrs: false });
 
@@ -66,6 +70,7 @@ const forwardedAttrs = computed(() => host ? { ...attrs, id: undefined } : attrs
 
 const root = ref(null);
 const trigger = ref(null);
+const popup = ref(null);
 const nativeInput = ref(null);
 // 整块场地（__control）是"点得动的东西"，按下时整块亮一下。
 const control = ref(null);
@@ -363,7 +368,9 @@ function clearValue() {
 }
 
 function handleOutside(event) {
-  if (localOpen.value && !event.composedPath().includes(root.value)) closePicker(false, false);
+  const path = event.composedPath();
+  /* 弹层被 Portal 送到 body：点它不算"外部"（root 判定覆盖不了），要一并豁免。 */
+  if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) closePicker(false, false);
 }
 
 function resetValue(event) {
@@ -420,6 +427,9 @@ onBeforeUnmount(() => {
     class="kima-time-picker"
     :class="{ 'kima-time-picker--open': localOpen, 'kima-time-picker--disabled': disabled }"
   >
+    <!-- PopoverRoot 只借 Popper 定位，开关由组件自己的 localOpen 管理。 -->
+    <PopoverRoot :open="localOpen" :modal="false">
+      <PopoverAnchor as-child>
     <div ref="control" class="kima-time-picker__control" :aria-disabled="disabled || undefined">
       <button
         :id="triggerId"
@@ -455,6 +465,7 @@ onBeforeUnmount(() => {
       </button>
       </Transition>
     </div>
+      </PopoverAnchor>
 
     <!-- 隐藏输入框保留 HH:mm 原值，让 FormData、required 和 form.reset() 使用原生表单规则。 -->
     <input
@@ -472,9 +483,12 @@ onBeforeUnmount(() => {
       @invalid="handleInvalid"
     >
 
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+    <!-- 弹层定位交给 Reka Popper：碰撞翻转自动处理，零手算坐标。
+         出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+      <PopoverPortal :disabled="!isBrowser">
+        <PopoverContent as-child align="start" :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="localOpen ? undefined : true">
     <Transition name="kima-popup" v-bind="presenceTransition">
-      <div v-if="localOpen" :id="popupId" class="kima-time-picker__popup" role="dialog" :aria-label="label || placeholder" @keydown="handlePopupKeydown">
+      <div v-if="localOpen" :id="popupId" ref="popup" class="kima-time-picker__popup" role="dialog" :aria-label="label || placeholder" @keydown="handlePopupKeydown">
         <div class="kima-time-picker__summary" aria-live="polite">{{ formatTime(draftHour, draftMinute) }}</div>
         <div class="kima-time-picker__columns">
           <div class="kima-time-picker__column">
@@ -545,6 +559,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </Transition>
+        </PopoverContent>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 
@@ -709,11 +726,9 @@ onBeforeUnmount(() => {
 
 .kima-time-picker__popup {
   box-sizing: border-box;
-  position: absolute;
+  /* 定位由 Reka Popper 内联接管；宽度跟锚点同宽、保底 248（两列时刻表）。 */
   z-index: 20;
-  top: calc(100% + var(--kima-space-2));
-  left: 0;
-  width: max(100%, 248px);
+  width: max(var(--reka-popper-anchor-width, 100%), 248px);
   padding: var(--kima-space-3);
   border: 0;
   border-radius: var(--kima-radius-m);

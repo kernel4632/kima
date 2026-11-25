@@ -1,10 +1,13 @@
 <!-- 固定行高窗口；活动项立即进入窗口，再设置 aria-activedescendant。 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from 'reka-ui';
 import { useInteractionRoot } from '../../utils/interaction.js';
 import { useUtilityChoice } from '../../utils/utility-choice.js';
 import { presenceTransition } from '../../utils/motion.js';
 import { useRipple } from '../../utils/ripple.js';
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== 'undefined';
 defineOptions({ inheritAttrs: false });
 const props = defineProps({ modelValue: { type: [String, Number, Array], default: null }, options: { type: Array, default: () => [] }, multiple: Boolean, disabled: Boolean, searchable: { type: Boolean, default: true }, rowHeight: { type: Number, default: 48 }, height: { type: Number, default: 240 }, name: String, label: { type: String, default: '虚拟选择' } });
 const emit = defineEmits(['update:modelValue', 'change', 'update:open']);
@@ -43,17 +46,33 @@ function onScroll(event) {
   if (active.value < start.value || active.value >= end.value) active.value = filtered.value.findIndex((item, index) => index >= start.value && index < end.value && !item.disabled);
 }
 let doc;
-function outside(event) { if (!root.value?.contains(event.target)) setOpen(false); }
+/* 弹层被 Portal 送到 body：点它不算"外部"，portal 内容要一并豁免。 */
+function outside(event) { if (!root.value?.contains(event.target) && !viewport.value?.contains(event.target)) setOpen(false); }
 onMounted(() => { doc = root.value.ownerDocument; doc.addEventListener('pointerdown', outside); });
 onBeforeUnmount(() => doc?.removeEventListener('pointerdown', outside));
 useRipple(root);
 </script>
-<template><div ref="root" v-bind="forwardedAttrs" class="kima-virtual-select" @keydown="keydown"><input v-if="searchable" ref="control" v-model="query" class="kima-virtual-select__control" role="combobox" :aria-label="label" :placeholder="hint" :disabled="disabled" :aria-expanded="open" :aria-controls="open ? `${id}-list` : undefined" :aria-activedescendant="activeId" autocomplete="off" @input="setOpen(true)" @click="setOpen(!open)"><button v-else ref="control" type="button" class="kima-virtual-select__control kima-ripple-host" role="combobox" :aria-label="label" :disabled="disabled" :aria-expanded="open" :aria-controls="open ? `${id}-list` : undefined" :aria-activedescendant="activeId" @click="setOpen(!open)">{{ summary || '请选择' }}</button><span v-if="searchable && summary" class="kima-virtual-select__summary">{{ summary }}</span><Transition name="kima-popup" v-bind="presenceTransition"><div v-if="open" :id="`${id}-list`" ref="viewport" class="kima-virtual-select__viewport" role="listbox" :aria-label="label" :aria-multiselectable="multiple || undefined" :style="{ maxHeight: `${visibleHeight}px` }" @scroll="onScroll"><div :style="{ height: `${filtered.length * row}px`, position: 'relative' }"><div v-for="entry in windowRows" :id="`${id}-${entry.index}`" :key="entry.item.index" role="option" class="kima-virtual-select__option kima-ripple-host" :aria-selected="selected(entry.item)" :aria-disabled="entry.item.disabled" :aria-posinset="entry.index + 1" :aria-setsize="filtered.length" :data-active="entry.index === active" :data-disabled="entry.item.disabled || undefined" :style="{ height: `${row}px`, transform: `translateY(${entry.index * row}px)` }" @mousedown.prevent @click="select(entry.item)">{{ entry.item.label ?? entry.item.value }}</div></div><p v-if="!filtered.length">没有匹配选项</p></div></Transition><input v-for="(entry, index) in values" :key="index" type="hidden" :name="name" :value="entry" :disabled="disabled"></div></template>
+<template><div ref="root" v-bind="forwardedAttrs" class="kima-virtual-select" @keydown="keydown">
+  <!-- PopoverRoot 只借 Popper 定位，开关由组件自己的 open 管理。 -->
+  <PopoverRoot :open="open" :modal="false">
+    <PopoverAnchor as-child>
+      <div class="kima-virtual-select__anchor">
+        <input v-if="searchable" ref="control" v-model="query" class="kima-virtual-select__control" role="combobox" :aria-label="label" :placeholder="hint" :disabled="disabled" :aria-expanded="open" :aria-controls="open ? `${id}-list` : undefined" :aria-activedescendant="activeId" autocomplete="off" @input="setOpen(true)" @click="setOpen(!open)"><button v-else ref="control" type="button" class="kima-virtual-select__control kima-ripple-host" role="combobox" :aria-label="label" :disabled="disabled" :aria-expanded="open" :aria-controls="open ? `${id}-list` : undefined" :aria-activedescendant="activeId" @click="setOpen(!open)">{{ summary || '请选择' }}</button>
+      </div>
+    </PopoverAnchor>
+    <PopoverPortal :disabled="!isBrowser">
+      <PopoverContent as-child align="start" :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="open ? undefined : true">
+        <Transition name="kima-popup" v-bind="presenceTransition"><div v-if="open" :id="`${id}-list`" ref="viewport" class="kima-virtual-select__viewport" role="listbox" :aria-label="label" :aria-multiselectable="multiple || undefined" :style="{ maxHeight: `${visibleHeight}px` }" @scroll="onScroll"><div :style="{ height: `${filtered.length * row}px`, position: 'relative' }"><div v-for="entry in windowRows" :id="`${id}-${entry.index}`" :key="entry.item.index" role="option" class="kima-virtual-select__option kima-ripple-host" :aria-selected="selected(entry.item)" :aria-disabled="entry.item.disabled" :aria-posinset="entry.index + 1" :aria-setsize="filtered.length" :data-active="entry.index === active" :data-disabled="entry.item.disabled || undefined" :style="{ height: `${row}px`, transform: `translateY(${entry.index * row}px)` }" @mousedown.prevent @click="select(entry.item)">{{ entry.item.label ?? entry.item.value }}</div></div><p v-if="!filtered.length">没有匹配选项</p></div></Transition>
+      </PopoverContent>
+    </PopoverPortal>
+  </PopoverRoot>
+  <span v-if="searchable && summary" class="kima-virtual-select__summary">{{ summary }}</span>
+  <input v-for="(entry, index) in values" :key="index" type="hidden" :name="name" :value="entry" :disabled="disabled"></div></template>
 <style scoped lang="scss"> @use '../../styles/mixins' as *; .kima-virtual-select { min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
   font-size: var(--kima-font-size-body-medium);
-  line-height: 1.5; position: relative; &__control { box-sizing: border-box;
+  line-height: 1.5; position: relative; &__anchor { width: 100%; } &__control { box-sizing: border-box;
   width: 100%;
   min-height: 48px;
   margin-bottom: var(--kima-space-2);
@@ -63,7 +82,7 @@ useRipple(root);
   background: var(--kima-color-layer-2);
   color: var(--kima-color-on-surface);
   font: inherit;
-  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } margin: 0; } &__summary { display: block; padding: var(--kima-space-2); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-popup; position: absolute; top: 100%; left: 0; right: 0; z-index: 60; overflow: auto; border-radius: var(--kima-radius-m); overscroll-behavior: contain; } &__option { @include kima-focus-ring;
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } margin: 0; } &__summary { display: block; padding: var(--kima-space-2); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-popup; z-index: 60; width: var(--reka-popper-anchor-width, 100%); overflow: auto; border-radius: var(--kima-radius-m); overscroll-behavior: contain; } &__option { @include kima-focus-ring;
   @include kima-disabled;
   display: flex;
   box-sizing: border-box;

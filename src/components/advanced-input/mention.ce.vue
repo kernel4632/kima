@@ -2,9 +2,12 @@
 Select replaces ONLY the collapsed cursor's @query, preserving suffix. Emits select(item,{start,end,text}). -->
 <script setup>
 import { computed, nextTick, ref, useId, watch } from "vue";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { presenceTransition } from "../../utils/motion.js";
 import { useRipple } from "../../utils/ripple.js";
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== "undefined";
 defineOptions({ inheritAttrs: false });
 const props = defineProps({ modelValue: { type: String, default: "" }, items: { type: Array, default: () => [] }, trigger: { type: String, default: "@" }, label: { type: String, default: "消息" }, placeholder: String, name: String, disabled: Boolean, readonly: Boolean, required: Boolean, maxlength: Number, rows: { type: Number, default: 4 } });
 const emit = defineEmits(["update:modelValue", "change", "select"]);
@@ -61,13 +64,22 @@ defineExpose({ focus: () => input.value?.focus() });
 </script>
 <template>
   <div ref="root" :class="['kima-mention',attrs.class]" :style="attrs.style">
+    <!-- PopoverRoot 只借 Popper 定位，开关由组件自己的 open 管理。 -->
+    <PopoverRoot :open="open" :modal="false">
+      <PopoverAnchor as-child>
     <textarea ref="input" v-bind="controlAttrs" class="kima-mention__input" :value="local" :name="name" :aria-label="controlAttrs['aria-label'] || label" :placeholder="placeholder" :disabled="disabled" :readonly="readonly" :required="required" :maxlength="maxlength" :rows="rows" aria-autocomplete="list" :aria-controls="open ? id : undefined" :aria-activedescendant="open && suggestions[active] ? `${id}-${active}` : undefined" @input.stop="typed" @change.stop @keydown="keydown" @keyup="syncCursor" @click="dismissed=false;syncCursor()" @select.stop="syncCursor" @focus="focused=true;syncCursor()" @blur="focused=false" @compositionstart="composing=true" @compositionend="compositionEnd"></textarea>
+      </PopoverAnchor>
+      <PopoverPortal :disabled="!isBrowser">
+        <PopoverContent as-child align="start" :side-offset="4" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="open ? undefined : true">
     <Transition name="kima-popup" v-bind="presenceTransition">
       <div v-if="open" class="kima-mention__popup">
         <ul :id="id" class="kima-mention__list" role="listbox" aria-label="提及建议"><li v-for="(option,index) in suggestions" :id="`${id}-${index}`" :key="index" class="kima-mention__option" role="option" :aria-selected="index===active" :aria-disabled="option.disabled || undefined" @pointerdown.prevent="choose(option)">{{ option.label }}</li></ul>
         <p v-if="!suggestions.length" role="status">无匹配候选</p>
       </div>
     </Transition>
+        </PopoverContent>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 <style scoped lang="scss">
@@ -99,7 +111,7 @@ defineExpose({ focus: () => input.value?.focus() });
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
   width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } display:block; min-height:120px; resize:vertical; }
-  &__popup { @include kima-popup; position:absolute; z-index:20; inset-inline:0; top:calc(100% + var(--kima-space-1)); padding:var(--kima-space-2); border-radius:var(--kima-radius-m); }
+  &__popup { @include kima-popup; z-index:20; width:var(--reka-popper-anchor-width,100%); padding:var(--kima-space-2); border-radius:var(--kima-radius-m); }
   &__list { list-style:none; padding:0; margin:0; max-height:280px; overflow:auto; }
  &__option  {
   @include kima-motion-colors;

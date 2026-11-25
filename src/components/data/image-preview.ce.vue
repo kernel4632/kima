@@ -134,10 +134,12 @@ onBeforeUnmount(() => {
 .kima-image-preview__toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--kima-space-3); padding: var(--kima-space-3) var(--kima-space-4); }
 .kima-image-preview__actions { display: flex; flex-wrap: wrap; gap: var(--kima-space-1); }
 .kima-image-preview__count { color: var(--kima-color-on-surface-variant); }
-.kima-image-preview__stage { position: relative; display: grid; min-height: min(65vh, 640px); place-items: center; overflow: auto; background: var(--kima-color-surface); }
-.kima-image-preview__image { display: block; max-width: 90%; max-height: 62vh; object-fit: contain; transition: transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
-.kima-image-preview__prev, .kima-image-preview__next { position: absolute; top: 50%; z-index: 1; transform: translateY(-50%); }
-.kima-image-preview__prev { left: var(--kima-space-4); } .kima-image-preview__next { right: var(--kima-space-4); }
+/* 翻页按钮浮在图片两侧：grid 叠放（两列一行的第一列/最后一列自然贴边并垂直居中），
+ * 不用 top:50% + translateY 手动居中。 */
+.kima-image-preview__stage { display: grid; min-height: min(65vh, 640px); grid-template-columns: auto 1fr auto; align-items: center; justify-items: center; overflow: auto; background: var(--kima-color-surface); }
+.kima-image-preview__image { grid-column: 2; display: block; max-width: 90%; max-height: 62vh; object-fit: contain; transition: transform var(--kima-duration-medium) var(--kima-curve-emphasized); }
+.kima-image-preview__prev { grid-column: 1; z-index: 1; align-self: center; }
+.kima-image-preview__next { grid-column: 3; z-index: 1; align-self: center; }
 .kima-image-preview__caption { margin: 0; padding: var(--kima-space-3) var(--kima-space-4); color: var(--kima-color-on-surface-variant); text-align: center; }
 @media (prefers-reduced-motion: reduce) { .kima-image-preview__image { transition: none; } }
 </style>

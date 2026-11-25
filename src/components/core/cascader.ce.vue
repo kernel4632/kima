@@ -8,9 +8,13 @@ Vue 用 v-model 和 v-model:open 同步状态；调用示例：
 -->
 <script setup>
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, watch } from "vue";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
 import KimaIcon from "./icon.ce.vue";
 import { ArrowDown01Icon, ArrowRight01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../../utils/ripple.js";
+
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== "undefined";
 
 defineOptions({ inheritAttrs: false });
 
@@ -45,6 +49,7 @@ const forwardedAttrs = computed(() => host ? { ...attrs, id: undefined } : attrs
 
 const root = ref(null);
 const trigger = ref(null);
+const popup = ref(null);
 const nativeInput = ref(null);
 // 整块场地（__control）是"点得动的东西"，按下时整块亮一下。
 const control = ref(null);
@@ -246,7 +251,9 @@ function handleKeydown(event) {
 }
 
 function handleOutside(event) {
-  if (localOpen.value && !event.composedPath().includes(root.value)) closeCascader(false);
+  const path = event.composedPath();
+  /* 弹层被 Portal 送到 body：点它不算"外部"（root 判定覆盖不了），要一并豁免。 */
+  if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) closeCascader(false);
 }
 
 function handleInvalid(event) {
@@ -306,6 +313,10 @@ onBeforeUnmount(() => {
     class="kima-cascader"
     :class="{ 'kima-cascader--open': localOpen, 'kima-cascader--disabled': disabled }"
   >
+    <!-- PopoverRoot 只借 Popper 定位（锚定/翻转/碰撞），开关由组件自己的 localOpen 管理。
+         PopoverAnchor 插槽包裹锚点，Reka 自动取真实 DOM。 -->
+    <PopoverRoot :open="localOpen" :modal="false">
+      <PopoverAnchor as-child>
     <div ref="control" class="kima-cascader__control" :aria-disabled="disabled || undefined">
       <button
         :id="triggerId"
@@ -340,6 +351,7 @@ onBeforeUnmount(() => {
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
       </button></Transition>
     </div>
+      </PopoverAnchor>
 
     <input
       ref="nativeInput"
@@ -356,9 +368,12 @@ onBeforeUnmount(() => {
       @change.stop
       @invalid="handleInvalid"
     >
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+    <!-- 弹层定位交给 Reka Popper：碰撞翻转自动处理，零手算坐标。
+         出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+      <PopoverPortal :disabled="!isBrowser">
+        <PopoverContent as-child align="start" :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="localOpen ? undefined : true">
     <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
-      <div v-if="localOpen" :id="listboxId" class="kima-cascader__popup" role="group" :aria-labelledby="triggerId" @keydown="handleKeydown">
+      <div v-if="localOpen" :id="listboxId" ref="popup" class="kima-cascader__popup" role="group" :aria-labelledby="triggerId" @keydown="handleKeydown">
         <TransitionGroup name="kima-list" tag="div" class="kima-cascader__columns" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
         <div v-for="(items, column) in columns" :key="column" class="kima-cascader__column" role="listbox" :aria-label="`第 ${column + 1} 级`">
           <div
@@ -386,6 +401,9 @@ onBeforeUnmount(() => {
         </TransitionGroup>
       </div>
     </Transition>
+        </PopoverContent>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 
@@ -546,13 +564,11 @@ onBeforeUnmount(() => {
 
 .kima-cascader__popup {
   box-sizing: border-box;
-  position: absolute;
+  /* 定位由 Reka Popper 内联接管；这里只剩视觉。 */
   z-index: 20;
-  top: calc(100% + var(--kima-space-2));
-  left: 0;
   display: flex;
   max-width: min(720px, 100vw);
-  max-height: min(360px, 50vh);
+  max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;

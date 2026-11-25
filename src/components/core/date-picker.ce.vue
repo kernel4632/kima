@@ -13,7 +13,11 @@ Vue 用 v-model 和 v-model:open 同步状态；原生 HTML 直接写属性即�
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useHost, useId, watch } from "vue";
 import KimaIcon from "./icon.ce.vue";
 import { ArrowLeft01Icon, ArrowRight01Icon, Calendar01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from 'reka-ui';
 import { useRipple } from "../../utils/ripple.js";
+
+/* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
+const isBrowser = typeof document !== 'undefined';
 
 defineOptions({ inheritAttrs: false });
 const attrs = useAttrs();
@@ -76,6 +80,7 @@ const emit = defineEmits(["update:modelValue", "change", "update:open"]);
 
 const root = ref(null);
 const trigger = ref(null);
+const popup = ref(null);
 const nativeInput = ref(null);
 // 整块场地（__control）是"点得动的东西"，按下时整块亮一下。
 const control = ref(null);
@@ -339,7 +344,9 @@ function handleGridKeydown(event) {
 }
 
 function handleOutside(event) {
-  if (localOpen.value && !event.composedPath().includes(root.value)) hideCalendar(false, false);
+  const path = event.composedPath();
+  /* 弹层被 Portal 送到 body：点它不算"外部"（root 判定覆盖不了），要一并豁免。 */
+  if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) hideCalendar(false, false);
 }
 
 watch(() => props.modelValue, (value) => {
@@ -370,6 +377,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="root" v-bind="{ ...attrs, id: host ? undefined : attrs.id }" class="kima-date-picker" :class="{ 'kima-date-picker--open': localOpen, 'kima-date-picker--disabled': disabled }">
+    <!-- PopoverRoot 只借 Popper 定位，开关由组件自己的 localOpen 管理。 -->
+    <PopoverRoot :open="localOpen" :modal="false">
+      <PopoverAnchor as-child>
     <div ref="control" class="kima-date-picker__control" :aria-disabled="disabled || undefined">
       <button
         :id="triggerId"
@@ -403,6 +413,7 @@ onBeforeUnmount(() => {
         <KimaIcon :icon="Cancel01Icon" :size="18" aria-hidden="true" />
       </button></Transition>
     </div>
+      </PopoverAnchor>
 
     <!-- 隐藏输入框带着真实 ISO 值：原生表单能读到它，必填校验也能在这里触发。 -->
     <input
@@ -420,9 +431,12 @@ onBeforeUnmount(() => {
       @invalid="handleInvalid"
     >
 
-    <!-- 出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+    <!-- 弹层定位交给 Reka Popper：碰撞翻转自动处理，零手算坐标。
+         出场/退场走全库共用的 kima-popup 过渡（定义在 _tokens.scss）。 -->
+      <PopoverPortal :disabled="!isBrowser">
+        <PopoverContent as-child align="start" :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached :force-mount="localOpen ? undefined : true">
     <Transition name="kima-popup" @before-enter="(element) => { element.inert = false; element.removeAttribute('aria-hidden'); }" @before-leave="(element) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); }">
-      <div v-if="localOpen" class="kima-date-picker__popup" @keydown="handleGridKeydown">
+      <div v-if="localOpen" ref="popup" class="kima-date-picker__popup" @keydown="handleGridKeydown">
         <div class="kima-date-picker__head">
           <button
             class="kima-date-picker__nav"
@@ -487,6 +501,9 @@ onBeforeUnmount(() => {
         </Transition>
       </div>
     </Transition>
+        </PopoverContent>
+      </PopoverPortal>
+    </PopoverRoot>
   </div>
 </template>
 
@@ -640,11 +657,9 @@ onBeforeUnmount(() => {
 
 .kima-date-picker__popup {
   box-sizing: border-box;
-  position: absolute;
+  /* 定位由 Reka Popper 内联接管；宽度跟锚点同宽、保底 268（月网格）。 */
   z-index: 20;
-  top: calc(100% + var(--kima-space-2));
-  left: 0;
-  width: max(100%, 268px);
+  width: max(var(--reka-popper-anchor-width, 100%), 268px);
   padding: var(--kima-space-2);
   border: 0;
   border-radius: var(--kima-radius-m);
