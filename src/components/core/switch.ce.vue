@@ -38,16 +38,10 @@ let ownerDocument;
 // 涟漪落在轨道外面那圈光环上；轨道本身要裁剪滑块，不能兼作涟漪宿主。
 useRipple(control);
 
-// 拇指的弹簧参数：硬弹簧，短促到位带一丝过冲——开关是"啪嗒"的控件，
-// 弹簧太软会显得迟疑。x 是位移、size 是按压形变，都交给 Motion。
-const thumbSpring = { type: "spring", stiffness: 500, damping: 30 };
-
-// 未选中：x=0（左端）。选中：x = 轨道宽 - 拇指选中间隙差，用百分比容器算位移。
-// 位移量 = 轨道内宽(60-2×2) - 拇指选中宽(32) - 两端间隙(2×2) = 20px。
-const thumbX = computed(() => (localValue.value ? 20 : 0));
-// 选中瞬间拇指放大到 32（未选中 28）；按住时撑到 36。
-const pressed = ref(false);
-const thumbSize = computed(() => (pressed.value ? 36 : localValue.value ? 32 : 28));
+/* 位置由布局决定，不由 Motion 决定：轨道 justify-content 未选 flex-start、
+ * 选中 flex-end，flex 自己把拇指推到精确的终点（永远贴住内缘，无硬编码位移）。
+ * Motion 只做"从旧位置滑到新位置"的 FLIP 补偿（layout 属性量测前后位置差），
+ * 终点仍是布局值，永远不会超出轨道被 overflow 裁圆。 */
 
 // 本地状态让没有立即回写 modelValue 的 Web Component 仍能完成点击反馈。
 watch(
@@ -103,18 +97,16 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       :value="value"
       @input.stop
       @change.stop="handleChange"
-      @pointerdown="pressed = true"
-      @pointerup="pressed = false"
-      @pointercancel="pressed = false"
     />
     <span ref="control" class="kima-switch__control" aria-hidden="true">
       <span class="kima-switch__track">
-        <!-- 拇指交给 Motion：x 位移和尺寸都走弹簧，快速连拨时速度自然衔接。 -->
-        <motion.span
-          class="kima-switch__thumb"
-          :animate="{ x: thumbX, width: thumbSize, height: thumbSize }"
-          :transition="thumbSpring"
-        >
+        <!-- 拇指位置由布局决定（轨道 justify-content 切端点），Motion 的 layout
+             属性做 FLIP 位移：量测切换前后的位置差并补弹簧动画，终点永远是
+             布局的精确值。data-state 绑定 localValue：状态变化驱动本组件
+             re-render，Motion 才会重测布局（静态子节点不触发 onUpdated）。
+             尺寸（28→32，按压 36）交给 CSS 过渡——宽度若走弹簧，
+             过冲会把布局终点一起顶出轨道，被 overflow 裁成月牙。 -->
+        <motion.span class="kima-switch__thumb" layout :data-state="localValue ? 'checked' : 'unchecked'">
           <KimaIcon class="kima-switch__check" :icon="Tick02Icon" :size="16" />
         </motion.span>
       </span>
@@ -177,13 +169,14 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 
   /* 轨道：未选中是一圈描边（开关的范围靠它表达，是造型不是装饰），
-   * 选中时整块切成主色。底色仍走 CSS 过渡（颜色不适合弹簧）。 */
+   * 选中时整块切成主色。底色仍走 CSS 过渡（颜色不适合弹簧）。
+   * 拇指的水平端点由 justify-content 决定：未选贴左、选中贴右——
+   * 布局自己算终点，Motion 的 layout 只补"从旧位滑到新位"的位移。 */
   &__track {
     box-sizing: border-box;
     display: flex;
-    /* 垂直居中交给 flex：transform 整个让给 Motion（它写 translateX 时会整体覆盖，
-     * 之前用 translateY(-50%) 居中就被它清掉，拇指整个掉到下半格）。 */
     align-items: center;
+    justify-content: flex-start;
     flex: 0 0 var(--kima-switch-track-width);
     width: var(--kima-switch-track-width);
     height: var(--kima-switch-track-height);
@@ -197,17 +190,39 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
       border-color var(--kima-duration-effects) var(--kima-curve-standard);
   }
 
-  /* 拇指：几何全部交给 Motion（x/width/height 走弹簧），CSS 只管颜色。
-   * 垂直居中由轨道的 flex 承担；x=0 未选中贴左，x=20 选中贴右。 */
+  &--checked &__track {
+    justify-content: flex-end;
+  }
+
+/* 拇指：水平端点由布局（justify-content）定；Motion 的 layout 量差补位移。
+ * 尺寸变化（28→32 选中、36 按压）走 CSS 过渡：宽度走弹簧会过冲，
+ * 连布局终点一起顶出轨道，被 overflow 裁成月牙。 */
   &__thumb {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 28px;
+    height: 28px;
     margin: 0;
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-on-surface-variant);
-    will-change: transform;
+    transition:
+      width var(--kima-duration-effects) var(--kima-curve-standard),
+      height var(--kima-duration-effects) var(--kima-curve-standard),
+      background-color var(--kima-duration-effects) var(--kima-curve-standard);
+  }
+
+  &--checked &__thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* 按住撑满轨道：形变代替缩放表达"抓住了"（横向控件缩放会连轨道一起沉）。 */
+  &__input:active ~ .kima-switch__control &__thumb {
+    width: 36px;
+    height: 36px;
+    transition-duration: var(--kima-duration-fast);
   }
 
   &__check {
