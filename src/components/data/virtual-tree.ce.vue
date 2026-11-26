@@ -30,7 +30,7 @@ watch(() => props.expanded, (value) => { localExpanded.value = [...value]; }, { 
 </template>
 <style scoped lang="scss">
 .kima-virtual-tree { min-width: 0; overflow: auto; color: var(--kima-color-on-surface); font-family: var(--kima-font-family); outline: none; }
-.kima-virtual-tree:focus-visible, .kima-virtual-tree__node:focus-visible { outline: 2px solid var(--kima-color-primary); outline-offset: -2px; }
+.kima-virtual-tree:focus-visible, .kima-virtual-tree__node:focus-visible { outline: 2px solid var(--kima-color-focus-ring); outline-offset: -2px; }
 .kima-virtual-tree__content { min-width: 100%; } .kima-virtual-tree__spacer { width: 1px; pointer-events: none; }
 .kima-virtual-tree__node  {
   display: flex;
@@ -43,17 +43,16 @@ watch(() => props.expanded, (value) => { localExpanded.value = [...value]; }, { 
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
 
 }
-.kima-virtual-tree__node:hover  {
-  background: var(--kima-color-layer-3);
+.kima-virtual-tree__node:hover  { background: var(--kima-color-wash-hover);
 
 }
 .kima-virtual-tree__node--selected  {
-  color: var(--kima-color-on-primary-container);
-  background: var(--kima-color-primary-container);
+  color: var(--kima-color-on-accent-secondary);
+  background: var(--kima-color-accent-secondary);
 
 }
 .kima-virtual-tree__node--selected:hover  {
-  background: var(--kima-color-primary-container-hover);
+  background: var(--kima-color-accent-secondary-hover);
 
 }
 .kima-virtual-tree__node--disabled  {

@@ -86,7 +86,7 @@ defineExpose({ edit:begin, save, cancel, focus:()=>display.value?.focus() });
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
-  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; }resize:vertical; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; }resize:vertical; }
   textarea {min-height:120px;}
   &__actions {display:flex;gap:var(--kima-space-2);}
   p {margin:0;color:var(--kima-color-error);}

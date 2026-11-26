@@ -110,10 +110,10 @@ function fileKey(file, index) {
     padding: var(--kima-space-4);
     cursor: pointer;
 
-    &:hover { background: var(--kima-color-layer-3); }
-    &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary); }
+    &:hover { background: var(--kima-color-wash-hover); }
+    &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring); }
   }
-  &__drop--active { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
+  &__drop--active { background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
   input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
   p { margin: var(--kima-space-2) 0 0;
   color: var(--kima-color-on-surface-variant);

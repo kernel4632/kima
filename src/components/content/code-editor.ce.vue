@@ -22,8 +22,8 @@ let view=null,pendingExternal=null;const languageConfig=new Compartment(),access
 const editable=computed(()=>!props.disabled&&!props.readonly);
 const {local,update}=useContentState(props,emit,root,value=>String(value??''),()=>{if(view)view.setState(makeState(local.value));report();});
 const languages={javascript:()=>javascript(),js:()=>javascript(),json:()=>json(),html:()=>html(),css:()=>css()};
-const highlighting=HighlightStyle.define([{tag:[tags.keyword,tags.operator],color:'var(--kima-color-primary)'},{tag:[tags.string,tags.regexp],color:'color-mix(in srgb, var(--kima-color-primary) 70%, var(--kima-color-tertiary-container))'},{tag:[tags.number,tags.bool,tags.null],color:'color-mix(in srgb, var(--kima-color-primary) 70%, var(--kima-color-secondary-container))'},{tag:tags.comment,color:'var(--kima-color-on-surface-variant)',fontStyle:'italic'},{tag:[tags.typeName,tags.className,tags.tagName],color:'var(--kima-color-primary)'},{tag:tags.invalid,color:'var(--kima-color-error)'}]);
-const theme=EditorView.theme({'&':{color:'var(--kima-color-on-surface)',backgroundColor:'transparent',fontFamily:'var(--kima-font-family)'},'.cm-content':{fontFamily:'var(--kima-font-family)',padding:'16px 0',minHeight:'240px',caretColor:'var(--kima-color-primary)'},'.cm-scroller':{overflow:'auto',fontFamily:'var(--kima-font-family)',lineHeight:'1.7'},'.cm-gutters':{backgroundColor:'var(--kima-color-surface-container-high)',color:'var(--kima-color-on-surface-variant)',border:'none'},'.cm-activeLine,.cm-activeLineGutter':{backgroundColor:'var(--kima-color-layer-2)'},'&.cm-focused':{outline:'none'},'&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection':{backgroundColor:'var(--kima-color-primary-container)'},'.cm-cursor,.cm-dropCursor':{borderLeftColor:'var(--kima-color-primary)'},'.cm-panels':{backgroundColor:'var(--kima-color-popup)',color:'var(--kima-color-on-surface)',border:'none'},'.cm-searchMatch':{backgroundColor:'var(--kima-color-tertiary-container)'},'.cm-searchMatch-selected':{backgroundColor:'var(--kima-color-primary-container)'},'.cm-tooltip':{backgroundColor:'var(--kima-color-popup)',color:'var(--kima-color-on-surface)',border:'none'}});
+const highlighting=HighlightStyle.define([{tag:[tags.keyword,tags.operator],color:'var(--kima-color-code-keyword)'},{tag:[tags.string,tags.regexp],color:'var(--kima-color-code-string)'},{tag:[tags.number,tags.bool,tags.null],color:'var(--kima-color-code-number)'},{tag:tags.comment,color:'var(--kima-color-on-surface-variant)',fontStyle:'italic'},{tag:[tags.typeName,tags.className,tags.tagName],color:'var(--kima-color-code-function)'},{tag:tags.invalid,color:'var(--kima-color-error)'}]);
+const theme=EditorView.theme({'&':{color:'var(--kima-color-on-surface)',backgroundColor:'transparent',fontFamily:'var(--kima-font-family)'},'.cm-content':{fontFamily:'var(--kima-font-family)',padding:'16px 0',minHeight:'240px',caretColor:'var(--kima-color-accent)'},'.cm-scroller':{overflow:'auto',fontFamily:'var(--kima-font-family)',lineHeight:'1.7'},'.cm-gutters':{backgroundColor:'var(--kima-color-surface-container-high)',color:'var(--kima-color-on-surface-variant)',border:'none'},'.cm-activeLine,.cm-activeLineGutter':{backgroundColor:'var(--kima-color-layer-2)'},'&.cm-focused':{outline:'none'},'&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection':{backgroundColor:'var(--kima-color-accent-secondary)'},'.cm-cursor,.cm-dropCursor':{borderLeftColor:'var(--kima-color-accent)'},'.cm-panels':{backgroundColor:'var(--kima-color-popup)',color:'var(--kima-color-on-surface)',border:'none'},'.cm-searchMatch':{backgroundColor:'var(--kima-color-tertiary-container)'},'.cm-searchMatch-selected':{backgroundColor:'var(--kima-color-accent-secondary)'},'.cm-tooltip':{backgroundColor:'var(--kima-color-popup)',color:'var(--kima-color-on-surface)',border:'none'}});
 function access(){return [EditorState.readOnly.of(!editable.value),EditorView.editable.of(editable.value),EditorView.contentAttributes.of({'aria-label':props.label,'aria-readonly':String(props.readonly),'aria-disabled':String(props.disabled),tabindex:props.disabled?'-1':'0'})];}
 function makeState(doc){return EditorState.create({doc,extensions:[lineNumbers(),highlightActiveLineGutter(),history(),drawSelection(),indentOnInput(),bracketMatching(),closeBrackets(),foldGutter(),highlightActiveLine(),search({top:true}),keymap.of([{key:'Mod-Shift-z',run:redo},...closeBracketsKeymap,...defaultKeymap,...searchKeymap,...historyKeymap,...foldKeymap,indentWithTab]),syntaxHighlighting(highlighting),theme,placeholderConfig.of(codePlaceholder(props.placeholder)),languageConfig.of(languages[props.language]?.()||[]),accessConfig.of(access()),EditorView.updateListener.of(event=>{if(event.docChanged&&!event.transactions.some(t=>t.annotation(external)))update(event.state.doc.toString());if(event.docChanged||event.selectionSet)report();}),EditorView.domEventHandlers({compositionend:()=>{queueMicrotask(()=>{if(pendingExternal!==null){const value=pendingExternal;pendingExternal=null;receive(value);}});return false;}})]});}
 function report(){if(!view)return;const {from,to,head}=view.state.selection.main,line=view.state.doc.lineAt(head);selection.value={from,to,line:line.number,column:head-line.from+1};revision.value++;proxy.value?.setCustomValidity(props.required&&!local.value?'请填写代码':'');emit('selection-change',{...selection.value});}
@@ -51,12 +51,12 @@ defineExpose({focus:()=>view?.focus(),getSelection:()=>({...selection.value}),ge
 @use "../../styles/mixins" as *;
 
 .kima-code-editor {
-  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-1: var(--kima-color-accent);
   --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
   --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
   --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
   --kima-heatmap-low: var(--kima-color-layer-2);
-  --kima-heatmap-high: var(--kima-color-primary-container);
+  --kima-heatmap-high: var(--kima-color-accent-secondary);
   min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
@@ -64,7 +64,7 @@ defineExpose({focus:()=>view?.focus(),getSelection:()=>({...selection.value}),ge
   @include kima-layer(1);
   border-radius: var(--kima-radius-m);
   overflow: clip;
-  &:focus-within { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: 2px; }
+  &:focus-within { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: 2px; }
   &[aria-disabled='true'] { opacity: var(--kima-opacity-disabled); }
   @media (prefers-reduced-motion: reduce) { &, * { animation-duration: 0s !important; transition-duration: 0s !important; } }
   position:relative;

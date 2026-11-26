@@ -224,7 +224,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
   /* 键盘聚焦时方框外一圈主色；鼠标点击不出焦点环。 */
   &__input:focus-visible + .kima-checkbox__control {
-    outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+    outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
     outline-offset: var(--kima-focus-ring-offset);
   }
 

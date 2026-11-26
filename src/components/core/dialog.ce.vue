@@ -296,14 +296,12 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); });
     color var(--kima-duration-effects) var(--kima-curve-standard);
 }
 
-.kima-dialog__close:hover {
-  color: var(--kima-color-on-surface);
-  background: var(--kima-color-layer-3);
+.kima-dialog__close:hover { background: var(--kima-color-wash-hover);
 }
 
 .kima-dialog__close:focus-visible,
 .kima-dialog__panel:focus-visible {
-  outline: 2px solid var(--kima-color-primary);
+  outline: 2px solid var(--kima-color-focus-ring);
   outline-offset: 2px;
 }
 

@@ -102,7 +102,7 @@ defineExpose({ focus: () => input.value?.focus() });
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
-  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } display:block; min-height:120px; resize:vertical; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } display:block; min-height:120px; resize:vertical; }
   &__popup { @include kima-popup; z-index:20; width:var(--reka-popper-anchor-width,100%); padding:var(--kima-space-2); border-radius:var(--kima-radius-m); }
   &__list { list-style:none; padding:0; margin:0; max-height:280px; overflow:auto; }
  &__option  {
@@ -111,13 +111,13 @@ defineExpose({ focus: () => input.value?.focus() });
   border-radius:var(--kima-radius-s);
   cursor:pointer;
   &:hover  {
-    background:var(--kima-color-layer-3);
+    background:var(--kima-color-wash-hover);
   }
   &[aria-selected="true"] {
-    background:var(--kima-color-primary-container);
-    color:var(--kima-color-on-primary-container);
+    background:var(--kima-color-accent-secondary);
+    color:var(--kima-color-on-accent-secondary);
     &:hover {
-      background:var(--kima-color-primary-container-hover);
+      background:var(--kima-color-accent-secondary-hover);
     }
   }
   &[aria-disabled="true"] {

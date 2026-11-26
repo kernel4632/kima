@@ -63,7 +63,7 @@ function navigate(event, index) {
   align-items: center;
   justify-content: space-between;
   gap: var(--kima-space-3);
-  min-height: 48px;
+  min-height: var(--kima-control-height-2xl);
   padding: var(--kima-space-2) var(--kima-space-3);
   border: 0;
   border-radius: var(--kima-radius-s);
@@ -73,9 +73,9 @@ function navigate(event, index) {
   text-align: start;
   cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
-  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
+  &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-accent-secondary-hover); }
   &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } } small { color: var(--kima-color-on-surface-variant); } }
 /* 传送到 body 的内容拿不到 data-v，表面规则按类名全局命中。 */
 :global(.kima-menubar__popup) { min-width: 0;

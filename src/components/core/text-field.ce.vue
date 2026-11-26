@@ -262,7 +262,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     align-items: center;
     height: var(--kima-field-height);
     box-sizing: border-box;
-    border-radius: var(--kima-radius-m);
+    border-radius: var(--kima-radius-control);
     background: var(--kima-color-layer-2);
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
@@ -271,7 +271,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
   &__control:focus-within {
     background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
   }
 
   /* 出错不是"描一圈红"，而是这块底本身换成了危险容器的颜色，
@@ -345,12 +345,11 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     cursor: pointer;
 
     &:hover:not(:disabled) {
-      color: var(--kima-color-primary);
-      background: color-mix(in srgb, var(--kima-color-primary) 12%, transparent);
+      background: var(--kima-color-wash-hover);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--kima-color-primary);
+      outline: 2px solid var(--kima-color-focus-ring);
       outline-offset: 1px;
     }
 

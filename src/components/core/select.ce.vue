@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
               :initial="{ opacity: 0, scale: 0.96 }"
               :animate="{ opacity: 1, scale: 1 }"
               :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
-              :transition="{ type: 'spring', stiffness: 500, damping: 32 }"
+              :transition="{ type: 'spring', stiffness: 400, damping: 32 }"
             >
             <div v-if="searchable" class="kima-select__search-wrap">
               <KimaIcon class="kima-select__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
@@ -416,7 +416,7 @@ onBeforeUnmount(() => {
   height: var(--kima-field-height);
   box-sizing: border-box;
   padding-right: var(--kima-space-2);
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-control);
   background: var(--kima-color-layer-2);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
@@ -429,7 +429,11 @@ onBeforeUnmount(() => {
   @include kima-state-layer;
   @include kima-ripple-host;
 
-  &:hover:not([aria-disabled="true"]),
+  /* 悬停是轻洗（官方 hover 5%）；打开的触发器是激活态，底更深一档。 */
+  &:hover:not([aria-disabled="true"]) {
+    background: var(--kima-color-wash-hover);
+  }
+
   .kima-select--open & {
     background: var(--kima-color-layer-3);
   }
@@ -437,7 +441,7 @@ onBeforeUnmount(() => {
   /* 聚焦提示是一条内阴影：不占位置，也不会把元素撑大。
    * 焦点落在触发器或清除按钮上都算"停在这个框里"，所以用 focus-within。 */
   &:focus-within {
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
   }
 
   /* 打开的下拉仍要有"我停在这个框上"的提示，但不用第二圈线：
@@ -519,12 +523,11 @@ onBeforeUnmount(() => {
 
   &:hover:not(:disabled),
   &:focus-visible {
-    color: var(--kima-color-primary);
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 1px;
   }
 
@@ -553,7 +556,7 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-lg);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -578,7 +581,7 @@ onBeforeUnmount(() => {
   min-height: var(--kima-touch-target);
   padding: 0 var(--kima-space-3) 0 40px;
   border: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-control);
   color: var(--kima-color-on-surface);
   /* 搜索框跟页面里的输入框同一个做法：靠底色认出来，聚焦时叠一圈主色，
    * 不画描边。弹层是实色底，叠一层半透明的 on-surface 就看得出来。 */
@@ -588,7 +591,7 @@ onBeforeUnmount(() => {
 
   &:focus {
     background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
   }
 }
 
@@ -612,19 +615,20 @@ onBeforeUnmount(() => {
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     color var(--kima-duration-effects) var(--kima-curve-standard);
 
+  /* 选项行的悬停/键盘高亮：官方一律 wash 5-6%，不亮化。 */
   &:hover,
   &:focus-visible,
   &--active {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 
   &--selected {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-accent);
   }
 
   &[aria-disabled="true"] {
@@ -671,5 +675,5 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 .kima-select__status--error { color: var(--kima-color-error); }
-.kima-select__status button { margin-inline-start: var(--kima-space-2); color: var(--kima-color-primary); background: transparent; border: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+.kima-select__status button { margin-inline-start: var(--kima-space-2); color: var(--kima-color-accent); background: transparent; border: 0; font: inherit; text-decoration: underline; cursor: pointer; }
 </style>

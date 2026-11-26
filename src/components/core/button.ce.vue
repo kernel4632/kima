@@ -86,8 +86,8 @@ const isRound = computed(() => props.round || props.shape !== "square");
   gap: var(--kima-space-2);
   padding: 0 var(--kima-space-4);
   border: 0;
-  /* square 用 M 12；round 用整高药丸。 */
-  border-radius: var(--kima-radius-m);
+  /* square 用官方控件圆角 10；round 用整高药丸。 */
+  border-radius: var(--kima-radius-control);
   box-sizing: border-box;
   font-family: var(--kima-font-family);
   font-size: var(--kima-font-size-label-large);

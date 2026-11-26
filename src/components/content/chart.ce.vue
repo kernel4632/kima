@@ -71,12 +71,12 @@ function toggle(si){ hidden.value=hidden.value.includes(si)?hidden.value.filter(
 @use "../../styles/mixins" as *;
 
 .kima-chart  {
-  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-1: var(--kima-color-accent);
   --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
   --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
   --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
   --kima-heatmap-low: var(--kima-color-layer-2);
-  --kima-heatmap-high: var(--kima-color-primary-container);
+  --kima-heatmap-high: var(--kima-color-accent-secondary);
   min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
@@ -123,7 +123,7 @@ function toggle(si){ hidden.value=hidden.value.includes(si)?hidden.value.filter(
       filter:drop-shadow(0 0 3px currentColor)
     }
     &:focus-visible {
-      outline:2px solid var(--kima-color-primary);
+      outline:2px solid var(--kima-color-focus-ring);
       outline-offset:3px
     }
   }

@@ -88,13 +88,14 @@ async function copyCode() {
   min-width: 0;
   max-width: 100%;
   margin: 0;
-  border-radius: var(--kima-radius-m);
+  /* 官方代码块：12px 圆角、比页面深一档的底、IBM Plex Mono 0.9em。 */
+  border-radius: var(--kima-radius-lg);
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
   font-weight: var(--kima-font-weight-semi-bold);
   /* 代码行高 1.6：比正文松一档，逐行扫读不串行。 */
   --kima-line-height-code: 1.6;
-  @include kima-layer(1);
+  background: var(--kima-color-code-bg);
 
   /* 顶栏是一层独立的小场地：给它自己一层浅底，和代码正文分开，
    * 上下内边距压到 4px，别让"文件名那行"和第一行代码之间空出一条带。 */
@@ -105,7 +106,7 @@ async function copyCode() {
     flex-wrap: wrap;
     gap: var(--kima-space-2);
     padding: var(--kima-space-1) var(--kima-space-4);
-    border-radius: var(--kima-radius-m) var(--kima-radius-m) 0 0;
+    border-radius: var(--kima-radius-lg) var(--kima-radius-lg) 0 0;
     background: var(--kima-color-layer-2);
   }
   &__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--kima-space-3); min-width: 0; }
@@ -118,9 +119,10 @@ async function copyCode() {
     overflow: auto;
     margin: 0;
     padding: var(--kima-space-2) var(--kima-space-4) var(--kima-space-4);
-    border-radius: 0 0 var(--kima-radius-m) var(--kima-radius-m);
-    font: inherit;
-    font-size: var(--kima-font-size-body-small);
+    border-radius: 0 0 var(--kima-radius-lg) var(--kima-radius-lg);
+    font-size: 0.9em;
+    font-family: var(--kima-font-mono);
+    font-weight: var(--kima-font-weight-regular);
     /* 代码的节奏由行本身承担：1.6 比正文的 1.7 紧一点，一屏能多看两行。 */
     line-height: var(--kima-line-height-code);
     tab-size: 2;

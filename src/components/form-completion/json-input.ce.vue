@@ -52,8 +52,8 @@ useContentMotion(message, () => Boolean(parsed.value.error));
     padding:var(--kima-space-2) var(--kima-space-3);
     border:0;
     border-radius:var(--kima-radius-full);
-    background:var(--kima-color-primary-container);
-    color:var(--kima-color-on-primary-container);
+    background:var(--kima-color-accent-secondary);
+    color:var(--kima-color-on-accent-secondary);
     font:inherit;
     cursor:pointer
   }

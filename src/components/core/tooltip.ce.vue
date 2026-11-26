@@ -103,7 +103,7 @@ const triggerAttrs = computed(() => ({
                 :initial="{ opacity: 0, scale: 0.96 }"
                 :animate="{ opacity: 1, scale: 1 }"
                 :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.1 } }"
-                :transition="{ type: 'spring', stiffness: 500, damping: 32 }"
+                :transition="{ type: 'spring', stiffness: 400, damping: 32 }"
               >
                 <slot name="content">{{ text }}</slot>
               </motion.span>
@@ -141,7 +141,7 @@ const triggerAttrs = computed(() => ({
   width: max-content;
   max-width: min(320px, calc(100vw - 24px));
   padding: var(--kima-space-2) var(--kima-space-3);
-  border-radius: var(--kima-radius-s);
+  border-radius: var(--kima-radius-md);
   color: var(--kima-color-on-surface);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);

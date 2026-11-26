@@ -98,7 +98,7 @@ onBeforeUnmount(() => { mounted = false; observer?.disconnect(); cancelAnimation
   }
   &__spotlight  {
     position: fixed;
-    outline: 3px solid var(--kima-color-primary);
+    outline: 3px solid var(--kima-color-accent);
     border-radius: var(--kima-radius-s);
     pointer-events: none;
     transition: top var(--kima-duration-medium) var(--kima-curve-emphasized), left var(--kima-duration-medium) var(--kima-curve-emphasized), width var(--kima-duration-medium), height var(--kima-duration-medium);

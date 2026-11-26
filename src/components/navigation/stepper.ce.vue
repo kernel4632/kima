@@ -34,10 +34,10 @@ function blocked(item, index) { return props.disabled || item.disabled || (props
 .kima-stepper__number > span { grid-area: 1 / 1; }
 .kima-stepper .kima-stepper__status { display: grid; }
 .kima-stepper__status > span { grid-area: 1 / 1; }
-.kima-stepper [data-state="complete"] .kima-stepper__number { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
+.kima-stepper [data-state="complete"] .kima-stepper__number { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
 .kima-stepper [data-state="current"] .kima-stepper__number { color: var(--kima-color-on-primary); background: var(--kima-color-primary); }
 .kima-stepper__status { @include kima-motion-colors; color: var(--kima-color-on-surface-variant); }
-.kima-stepper [data-state="current"] .kima-stepper__status { color: var(--kima-color-on-primary-container); }
+.kima-stepper [data-state="current"] .kima-stepper__status { color: var(--kima-color-on-accent-secondary); }
 .kima-stepper  {
   box-sizing: border-box;
   min-width: 0;

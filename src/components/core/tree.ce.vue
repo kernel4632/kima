@@ -203,7 +203,7 @@ function selectItem(entry) {
   }
 
   &:focus-visible {
-    outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+    outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
     outline-offset: var(--kima-focus-ring-offset);
   }
 }
@@ -227,7 +227,7 @@ function selectItem(entry) {
   background: transparent;
   cursor: pointer;
 
-  &:hover:not(:disabled) { background: var(--kima-color-layer-3); }
+  &:hover:not(:disabled) { background: var(--kima-color-wash-hover); }
   &:disabled { cursor: not-allowed; }
 }
 
@@ -251,8 +251,8 @@ function selectItem(entry) {
 
 /* 选中态：行底用容器色整对配文字。 */
 .kima-tree__item--selected {
-  color: var(--kima-color-on-primary-container);
-  background: var(--kima-color-primary-container);
+  color: var(--kima-color-on-accent-secondary);
+  background: var(--kima-color-accent-secondary);
 }
 
 .kima-tree__empty {

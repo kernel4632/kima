@@ -2,7 +2,7 @@
  * 组件自己的样式里只写几何和颜色，交互反馈一律 @include 这几个 mixin，不各写一套。
  *
  * - kima-state-layer：内容色按透明度叠一层，悬停 8%、聚焦 10%、按下 10%。
- * - kima-focus-ring：键盘聚焦时的 2px 主色描边，偏移 3px，鼠标点击不出现。
+ * - kima-focus-ring：键盘聚焦时的 2px accent 蓝描边（官方焦点环永远是 accent，不用 base 色），鼠标点击不出现。
  * - kima-ripple-host：配合 utils/ripple.js，按下时整块场地均匀亮一下。
  * - kima-press：按下缩小、松开弹回，让点击有"按下去"的手感。
  * - kima-layer：页面内组件的表面，用半透明叠出层次（不用边框）。
@@ -58,7 +58,7 @@
 
 @mixin kima-focus-ring {
   &:focus-visible {
-    outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+    outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
     outline-offset: var(--kima-focus-ring-offset);
   }
 }
@@ -182,7 +182,7 @@
 
 /* ---- 字段皮肤（唯一来源）----
  * 一切"可输入的场地"（文本框、分段日期、密码组、下拉触发器底座……）共用这一份外观：
- * layer-2 底、状态层、涟漪、focus-within 内描边、字段高度、控件圆角。
+ * layer-2 底、状态层、涟漪、focus-within accent 内描边、字段高度、控件圆角（官方 10px）。
  * 全库 22 个字段类组件从这里取皮肤，组件自己只写额外几何（宽度、分格、对齐）——
  * 换主题（如 Grok）时字段外观只改这里一处。
  * 用法：@include kima-field-skin;  宽度布局由各组件自己决定。 */
@@ -196,7 +196,7 @@
   padding: var(--kima-space-3) var(--kima-field-padding);
   border: 0;
   outline: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-control);
   color: inherit;
   font: inherit;
   cursor: text;
@@ -206,11 +206,11 @@
 
   &::placeholder { color: var(--kima-color-on-surface-variant); }
 
-  /* 聚焦：底色升一档 + 主色内描边（内描边不占布局位置）。 */
+  /* 聚焦：底色升一档 + accent 内描边（内描边不占布局位置，官方焦点环永远是 accent 蓝）。 */
   &:focus-within,
   &:focus-visible {
     background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 

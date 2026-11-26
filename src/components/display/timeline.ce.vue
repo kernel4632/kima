@@ -40,7 +40,7 @@ const itemKey = createCollectionKey(() => props.items);
   margin: 0; padding: 0; list-style: none;
  &__item  {
   --kima-display-tone: var(--kima-color-on-surface-variant);
-  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-accent); }
   &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
   &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
   &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }

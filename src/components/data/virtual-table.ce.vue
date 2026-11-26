@@ -40,14 +40,14 @@ watch(() => tableRows.value.length, (length) => { if (activeIndex.value >= lengt
 </template>
 <style scoped lang="scss">
 .kima-virtual-table { min-width: 0; overflow: auto; color: var(--kima-color-on-surface); background: var(--kima-color-layer-1); font-family: var(--kima-font-family); }
-.kima-virtual-table:focus-visible, .kima-virtual-table tr:focus-visible { outline: 2px solid var(--kima-color-primary); outline-offset: -2px; }
+.kima-virtual-table:focus-visible, .kima-virtual-table tr:focus-visible { outline: 2px solid var(--kima-color-focus-ring); outline-offset: -2px; }
 .kima-virtual-table table { width: 100%; min-width: 36rem; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
 .kima-virtual-table th, .kima-virtual-table td { box-sizing: border-box; height: var(--kima-virtual-row-height, 56px); padding: var(--kima-space-3) var(--kima-space-4); border: 0; overflow-wrap: anywhere; text-align: start; vertical-align: middle; }
 .kima-virtual-table th { position: sticky; top: 0; z-index: 1; color: var(--kima-color-on-surface-variant); background: var(--kima-color-popup); }
 .kima-virtual-table tbody tr:not(.kima-virtual-table__spacer) { transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); }
-.kima-virtual-table tbody tr:not(.kima-virtual-table__spacer):hover { background: var(--kima-color-layer-3); }
-.kima-virtual-table__row--selected { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-.kima-virtual-table__row--selected:hover { background: var(--kima-color-primary-container-hover); }
+.kima-virtual-table tbody tr:not(.kima-virtual-table__spacer):hover { background: var(--kima-color-wash-hover); }
+.kima-virtual-table__row--selected { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+.kima-virtual-table__row--selected:hover { background: var(--kima-color-accent-secondary-hover); }
 .kima-virtual-table__spacer td { padding: 0; height: auto; }
 .kima-virtual-table__select { width: 72px; text-align: center; }
 .kima-virtual-table__message { height: 96px; color: var(--kima-color-on-surface-variant); text-align: center; }

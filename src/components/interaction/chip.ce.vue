@@ -65,8 +65,8 @@ useInteractionReset(root, selected, update);
 
   }
   &--selected  {
-    background: var(--kima-color-primary-container);
-    color: var(--kima-color-on-primary-container);
+    background: var(--kima-color-accent-secondary);
+    color: var(--kima-color-on-accent-secondary);
 
   }
   &--disabled  {

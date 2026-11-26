@@ -43,7 +43,7 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   align-items: center;
   justify-content: space-between;
   gap: var(--kima-space-3);
-  min-height: 48px;
+  min-height: var(--kima-control-height-2xl);
   padding: var(--kima-space-2) var(--kima-space-3);
   border: 0;
   border-radius: var(--kima-radius-s);
@@ -53,9 +53,9 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   text-align: start;
   cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
-  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
+  &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-accent-secondary-hover); }
   &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } } small { color: var(--kima-color-on-surface-variant); } }
 /* 菜单内容由 Reka 渲染并可能传送到 body：那里没有本组件的 data-v 祖先，
  * :deep 命中不了，弹层会连底色都没有。表面规则按类名全局命中。 */

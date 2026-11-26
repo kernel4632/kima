@@ -126,7 +126,7 @@ defineExpose({ focus: () => input.value?.focus() });
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; } flex: 1 1 8em; width: 8em; min-width: min(8em, 100%); max-width: 100%; padding-inline: var(--kima-space-2); }
-  &__tag { display: inline-flex; align-items: center; gap: var(--kima-space-1); padding-inline-start: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
+  &__tag { display: inline-flex; align-items: center; gap: var(--kima-space-1); padding-inline-start: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
 }
 /* 退场标签脱离排版：FLIP 重排时它不再占位，其余标签平滑补位（_tokens.scss 的 kima-list 管过渡）。
  * 这是动画期特例——absolute 只活在退场那 200ms，不是布局手段。 */

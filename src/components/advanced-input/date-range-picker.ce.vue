@@ -77,7 +77,7 @@ function changeSecond(value) { month.value = shiftMonth(value, -1); }
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
-  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } flex:1; min-width:0; }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } flex:1; min-width:0; }
   &__navigation { display:flex; flex-wrap:wrap; gap:var(--kima-space-2); }
   &__months { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--kima-space-4); }
   p { margin:0; color:var(--kima-color-error); }

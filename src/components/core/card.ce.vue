@@ -104,7 +104,7 @@ function handleKeyup(event) {
   gap: var(--kima-space-3);
   padding: var(--kima-space-3);
   border: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-card);
   color: var(--kima-color-on-surface);
   background: var(--kima-color-layer-2);
   font-family: var(--kima-font-family);

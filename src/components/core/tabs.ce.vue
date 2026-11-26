@@ -270,12 +270,12 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   }
 
   &:focus-visible {
-    outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+    outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
     outline-offset: var(--kima-focus-ring-offset);
   }
 
   &[aria-selected="true"] {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-accent);
 
   }
 
@@ -315,7 +315,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   outline: none;
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 2px;
   }
 

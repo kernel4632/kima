@@ -15,7 +15,7 @@ const props=defineProps({modelValue:{type:Number,default:0},name:String,label:{t
     width:var(--kima-angle-size);
     height:var(--kima-angle-size);
     border-radius:50%;
-    background:conic-gradient(from 0deg,var(--kima-color-primary),var(--kima-color-primary-container),var(--kima-color-primary));
+    background:conic-gradient(from 0deg,var(--kima-color-primary),var(--kima-color-accent-secondary),var(--kima-color-primary));
     cursor:crosshair;
     touch-action:none;
     &::before {
@@ -26,7 +26,7 @@ const props=defineProps({modelValue:{type:Number,default:0},name:String,label:{t
       background:var(--kima-color-surface)
     }
     &:focus-visible {
-      outline:var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline:var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
       outline-offset:var(--kima-focus-ring-offset)
     }
     output {
@@ -44,7 +44,7 @@ const props=defineProps({modelValue:{type:Number,default:0},name:String,label:{t
     height:20px;
     border-radius:50%;
     background:var(--kima-color-on-primary);
-    box-shadow:0 0 0 3px var(--kima-color-primary);
+    box-shadow:0 0 0 3px var(--kima-color-accent);
     transform:translate(-50%,-50%)
   }
   &__native {

@@ -40,5 +40,5 @@ const segments = computed(() => {
   font-weight: var(--kima-font-weight-semi-bold);
   line-height: var(--kima-line-height-normal);
   color: var(--kima-color-on-surface);
-  overflow-wrap: anywhere; white-space: pre-wrap; mark { border-radius: var(--kima-radius-xs); color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); } }
+  overflow-wrap: anywhere; white-space: pre-wrap; mark { border-radius: var(--kima-radius-xs); color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); } }
 </style>

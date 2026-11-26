@@ -223,16 +223,16 @@ watch(pageCount, (count) => {
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 1px;
   }
   &[aria-current="page"] {
-    color: var(--kima-color-on-primary-container);
-    background: var(--kima-color-primary-container);
+    color: var(--kima-color-on-accent-secondary);
+    background: var(--kima-color-accent-secondary);
     font-weight: var(--kima-font-weight-bold);
   }
 
@@ -240,7 +240,7 @@ watch(pageCount, (count) => {
    * 换回 layer-3 会让"容器文字 + 深灰底"配成一对，对比度就掉了。 */
   &[aria-current="page"]:hover:not(:disabled),
   &[aria-current="page"]:focus-visible {
-    background: var(--kima-color-primary-container-hover);
+    background: var(--kima-color-accent-secondary-hover);
   }
 
   &:disabled {

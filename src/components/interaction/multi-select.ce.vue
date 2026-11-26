@@ -87,7 +87,7 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   background: var(--kima-color-layer-2);
   color: var(--kima-color-on-surface);
   font: inherit;
-  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } }
   &__list { outline: none; }
   &__item { @include kima-focus-ring;
   @include kima-disabled;
@@ -107,9 +107,9 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   text-align: start;
   cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
-  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
+  &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-accent-secondary-hover); }
   &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } }
   &__native { position: absolute;
   width: 1px;

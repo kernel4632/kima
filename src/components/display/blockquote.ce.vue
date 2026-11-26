@@ -34,7 +34,7 @@ const { isCustomElement, hasNativeSlot } = useNativeSlots(root);
   padding: var(--kima-space-6);
   border-radius: var(--kima-radius-m);
   margin: 0;
-  &__icon { color: var(--kima-color-primary); margin-bottom: var(--kima-space-3); }
+  &__icon { color: var(--kima-color-accent); margin-bottom: var(--kima-space-3); }
   blockquote { margin: 0; font-size: var(--kima-font-size-title-medium); line-height: var(--kima-line-height-loose); }
   figcaption { display: flex; flex-wrap: wrap; gap: var(--kima-space-3); margin-top: var(--kima-space-4); color: var(--kima-color-on-surface-variant); }
 }

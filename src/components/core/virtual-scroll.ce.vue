@@ -259,7 +259,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
   outline: none;
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 }
@@ -288,18 +288,19 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     color var(--kima-duration-effects) var(--kima-curve-standard);
 
+  /* 选项行的悬停/键盘高亮：官方一律 wash 5-6%，不亮化。 */
   &:hover,
   &--active {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 
   &--selected {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-accent);
   }
 }
 

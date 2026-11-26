@@ -73,9 +73,9 @@ function onKey(event) {
     color: var(--kima-color-on-surface-variant);
     cursor: pointer;
     /* 值由星形本身表达；保留48px热区，不把评分画成连片的分段按钮。 */
-    &--filled { color: var(--kima-color-primary); }
-    &--filled :deep(.kima-rating__icon) { fill: var(--kima-color-primary); }
-    &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
+    &--filled { color: var(--kima-color-accent); }
+    &--filled :deep(.kima-rating__icon) { fill: var(--kima-color-accent); }
+    &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
     input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; z-index: 3; cursor: inherit; }
   }
 }

@@ -400,7 +400,7 @@ onBeforeUnmount(stopResize);
   overflow-y: hidden;
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 2px;
   }
 }
@@ -443,7 +443,7 @@ tbody tr {
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 }
@@ -464,13 +464,12 @@ tbody th:last-child {
   background: var(--kima-color-layer-1);
 }
 
-.kima-table--hoverable tbody tr:hover {
-  background: var(--kima-color-layer-3);
+.kima-table--hoverable tbody tr:hover { background: var(--kima-color-wash-hover);
 }
 
 .kima-table tbody tr.kima-table__row--selected {
-  color: var(--kima-color-on-primary-container);
-  background: var(--kima-color-primary-container);
+  color: var(--kima-color-on-accent-secondary);
+  background: var(--kima-color-accent-secondary);
 }
 
 .kima-table__sort-button,
@@ -492,11 +491,11 @@ tbody th:last-child {
   transition: color var(--kima-duration-effects) var(--kima-curve-standard);
 
   &:hover:not(:disabled) {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-accent);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 2px;
   }
 
@@ -525,8 +524,8 @@ tbody th:last-child {
  cursor: pointer;
  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), transform var(--kima-duration-fast) var(--kima-curve-standard);
 
- &:hover { background: var(--kima-color-layer-3); }
- &:focus-visible { outline: 2px solid var(--kima-color-primary); outline-offset: 2px; }
+ &:hover { background: var(--kima-color-wash-hover); }
+ &:focus-visible { outline: 2px solid var(--kima-color-focus-ring); outline-offset: 2px; }
  &[aria-expanded="true"] :deep(svg) { transform: rotate(90deg); }
  :deep(svg) { transition: transform var(--kima-duration-fast) var(--kima-curve-standard); }
 }
@@ -558,7 +557,7 @@ tbody th:last-child {
   cursor: col-resize;
   touch-action: none;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover, &:focus-visible { background: var(--kima-color-primary); outline: 0; }
+  &:hover, &:focus-visible { background: var(--kima-color-accent); outline: 0; }
 }
 
 .kima-table__sort-button {
@@ -583,7 +582,7 @@ tbody th:last-child {
 
   &[aria-checked="true"],
   &[aria-checked="mixed"] {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-accent);
   }
 }
 

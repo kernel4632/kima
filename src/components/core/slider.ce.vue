@@ -211,7 +211,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
     /* 焦点环套在整个控件上，比只套 20px 高的轨道更容易被看见。 */
     &:focus-visible {
-      outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
       outline-offset: var(--kima-focus-ring-offset);
     }
 

@@ -53,7 +53,7 @@ function close() { if (!visible.value) return; visible.value = false; emit("upda
   padding: var(--kima-space-6);
   border-radius: var(--kima-radius-m);
   --kima-display-tone: var(--kima-color-on-surface-variant);
-  &[data-variant="info"] { --kima-display-tone: var(--kima-color-primary); }
+  &[data-variant="info"] { --kima-display-tone: var(--kima-color-accent); }
   &[data-variant="success"] { --kima-display-tone: var(--kima-color-success); }
   &[data-variant="warning"] { --kima-display-tone: var(--kima-color-warning); }
   &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }

@@ -93,7 +93,7 @@ function handleChange(value) {
 
     &:focus-visible {
       border-color: var(--kima-color-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--kima-color-primary) 30%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--kima-color-accent) 30%, transparent);
     }
 
     /* Reka 的 data-state 与 Radix 同名，选择器直接对应 shadcn 的 data-[state=checked]。 */

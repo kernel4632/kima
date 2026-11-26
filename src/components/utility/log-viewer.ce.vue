@@ -45,4 +45,4 @@ defineExpose({ append, exportText, resume: () => follow(true) });
   background: var(--kima-color-layer-2);
   color: var(--kima-color-on-surface);
   font: inherit;
-  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } width: min(100%, 240px); } } &__follow-status { font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-focus-ring; height: 260px; overflow: auto; overflow-anchor: none; } &__line { min-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere; } }</style>
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } width: min(100%, 240px); } } &__follow-status { font-size: var(--kima-font-size-label-small); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-focus-ring; height: 260px; overflow: auto; overflow-anchor: none; } &__line { min-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere; } }</style>

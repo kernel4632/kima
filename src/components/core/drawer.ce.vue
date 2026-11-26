@@ -220,8 +220,8 @@ const descriptionId = `kima-drawer-description-${dialogId}`;
   width: 100%;
   min-width: 0;
   flex-direction: column;
-  /* 面板是弹层：实色底，必须挡住背后内容。 */
-  background: var(--kima-color-popup);
+  /* 面板是弹层：实色底，必须挡住背后内容。抽屉用 pane（官方 --grok-bg-pane）。 */
+  background: var(--kima-color-popup-large);
   box-shadow: var(--kima-elevation-4);
 }
 
@@ -230,21 +230,21 @@ const descriptionId = `kima-drawer-description-${dialogId}`;
   align-self: end;
   width: min(640px, 100%);
   max-height: 92vh;
-  border-radius: var(--kima-radius-xl) var(--kima-radius-xl) 0 0;
+  border-radius: var(--kima-radius-island) var(--kima-radius-island) 0 0;
 }
 
 .kima-drawer--right .kima-drawer__panel {
   justify-self: end;
   height: 100%;
   width: min(var(--kima-drawer-max-width), 90vw);
-  border-radius: var(--kima-radius-xl) 0 0 var(--kima-radius-xl);
+  border-radius: var(--kima-radius-island) 0 0 var(--kima-radius-island);
 }
 
 .kima-drawer--left .kima-drawer__panel {
   justify-self: start;
   height: 100%;
   width: min(var(--kima-drawer-max-width), 90vw);
-  border-radius: 0 var(--kima-radius-xl) var(--kima-radius-xl) 0;
+  border-radius: 0 var(--kima-radius-island) var(--kima-radius-island) 0;
 }
 
 /* 拖拽把手：短横视觉 + 更大的命中区。 */
@@ -301,8 +301,8 @@ const descriptionId = `kima-drawer-description-${dialogId}`;
   background: transparent;
   cursor: pointer;
 
-  &:hover { background: var(--kima-color-layer-3); }
-  &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: var(--kima-focus-ring-offset); }
+  &:hover { background: var(--kima-color-wash-hover); }
+  &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: var(--kima-focus-ring-offset); }
 }
 
 .kima-drawer__body {

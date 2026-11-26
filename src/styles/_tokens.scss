@@ -51,42 +51,50 @@
   --kima-color-primary-active: light-dark(#1b1b1b, #d4d3cf);
 
   /* ---- 强调色（accent，链接 / 选中 / 焦点环专用蓝）----
-   * 深浅两套同值；焦点环 = accent 90% alpha、2px（规格表一「accent 80-90% alpha」）。 */
+   * 深浅两套同值；焦点环官方 alpha：浅色 80%、深色 90%（--grok-alpha-focus-ring），
+   * 官方 focus-ring-offset 是 2px。 */
   --kima-color-accent: #1084fe;
   --kima-color-accent-hover: #4b9cff;
   --kima-color-accent-active: #0076e8;
-  --kima-color-focus-ring: color-mix(in srgb, var(--kima-color-accent) 90%, transparent);
+  /* 官方浅色 80% / 深色 90% alpha（--grok-alpha-focus-ring）。
+ * 注意写法：light-dark() 不能嵌在 color-mix 的百分比参数里——那是非法语法，
+ * 浏览器会静默回退成继承色（实测坑过：全库焦点环变米白）。必须 light-dark 在外层包两个 mix。 */
+--kima-color-focus-ring: light-dark(color-mix(in srgb, var(--kima-color-accent) 80%, transparent), color-mix(in srgb, var(--kima-color-accent) 90%, transparent));
+  /* 官方选中文本高亮（--grok-bg-text-selection）：浅 20% / 深 30%。 */
+  --kima-color-text-selection: light-dark(color-mix(in srgb, var(--kima-color-accent) 20%, transparent), color-mix(in srgb, var(--kima-color-accent) 30%, transparent));
 
   /* ---- 洗色（wash：悬停 / 次级填充 / 按下 / 选中的统一梯子）----
-   * wash 是概念基准色：深色主题洗白、浅色主题洗暖棕（#2B1C00）。
-   * 派生档一律 base 的 color-mix（官方「悬停层写法」），铺在任何底色上都成立：
-   *   hover 5% / secondary 8% / active 10% / selected 14%。 */
+   * 官方逻辑（--grok-bg-* 系）：所有 wash 档从基准洗色 --grok-base-wash mix，
+   * 不是从文字色 mix——浅色主题文字是冷黑 #2C2C2B，从它 mix 会丢掉 Grok 的暖调基因
+   * （浅色官方洗的是 #2B1C00 暖棕）。
+   * 官方刻度：hover 深色 5% / 浅色 6%、secondary 8%、active 深色 10% / 浅色 7%、
+   * selected = bg-secondary-active 16%。 */
   --kima-color-wash: light-dark(#2b1c00, #ffffff);
-  --kima-color-wash-hover: color-mix(in srgb, var(--kima-color-on-surface) 5%, transparent);
-  --kima-color-wash-secondary: color-mix(in srgb, var(--kima-color-on-surface) 8%, transparent);
-  --kima-color-wash-active: color-mix(in srgb, var(--kima-color-on-surface) 10%, transparent);
-  --kima-color-wash-selected: color-mix(in srgb, var(--kima-color-on-surface) 14%, transparent);
+  --kima-color-wash-hover: light-dark(color-mix(in srgb, var(--kima-color-wash) 6%, transparent), color-mix(in srgb, var(--kima-color-wash) 5%, transparent));
+  --kima-color-wash-secondary: color-mix(in srgb, var(--kima-color-wash) 8%, transparent);
+  --kima-color-wash-active: light-dark(color-mix(in srgb, var(--kima-color-wash) 7%, transparent), color-mix(in srgb, var(--kima-color-wash) 10%, transparent));
+  --kima-color-wash-selected: color-mix(in srgb, var(--kima-color-wash) 16%, transparent);
 
   /* ---- 层次（页面内组件的半透明叠层，不用边框）----
-   * 层级梯子对齐 wash 档位：1 = 悬停档 5%，2 = 次级填充档 8%，3 = 选中档 14%。
+   * 层级梯子对齐官方 bg 梯子：1 = hover 档、2 = secondary 8% 档、3 = 选中 16% 档。
    * 具体用法见 _mixins.scss 的 kima-layer。 */
   --kima-color-layer-1: var(--kima-color-wash-hover);
   --kima-color-layer-2: var(--kima-color-wash-secondary);
   --kima-color-layer-3: var(--kima-color-wash-selected);
 
-  /* ---- 容器色（旧名映射到 Grok 的选中 / 次级规则）----
-   * 选中态 = accent 14% 底 + accent 文字（规格第十节），primary-container 系指向它；
-   * 次级填充 = wash 8%（「次级=wash 8%」），secondary/tertiary 容器指向 wash 档。 */
-  --kima-color-primary-container: color-mix(in srgb, var(--kima-color-accent) 14%, transparent);
-  --kima-color-on-primary-container: var(--kima-color-accent);
+  /* ---- 选中态（accent 系，官方 --grok-bg-accent-secondary 梯子）----
+   * 官方选中 = accent 14% 底 + accent 文字，悬停 18%、按下 24%
+   * （alpha-hue-secondary 14% / hover 18% / active 24%）。 */
+  --kima-color-accent-secondary: color-mix(in srgb, var(--kima-color-accent) 14%, transparent);
+  --kima-color-accent-secondary-hover: color-mix(in srgb, var(--kima-color-accent) 18%, transparent);
+  --kima-color-accent-secondary-active: color-mix(in srgb, var(--kima-color-accent) 24%, transparent);
+  --kima-color-on-accent-secondary: var(--kima-color-accent);
   --kima-color-secondary-container: var(--kima-color-wash-secondary);
   --kima-color-on-secondary-container: var(--kima-color-on-surface);
   --kima-color-tertiary-container: var(--kima-color-wash-active);
   --kima-color-on-tertiary-container: var(--kima-color-on-surface);
   --kima-color-inverse-surface: var(--kima-color-primary);
   --kima-color-inverse-on-surface: var(--kima-color-on-primary);
-  /* 选中项的悬停底：accent 按悬停档叠回选中底，只挪一档强度、不拆配对。 */
-  --kima-color-primary-container-hover: color-mix(in srgb, var(--kima-color-on-primary-container) 8%, var(--kima-color-primary-container));
   /* 柔和按钮底 = 次级填充档（wash 8%），文字仍是 base。 */
   --kima-color-primary-soft: var(--kima-color-wash-secondary);
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
@@ -98,14 +106,18 @@
   --kima-color-popup-large: light-dark(#fefefc, #282726);
 
   /* ---- 玻璃（composer / 侧栏毛玻璃）----
-   * 底 = pane 色 75% alpha（规格 74-76%），边 = 官方三层发丝内描。 */
+   * 官方 --grok-glass-*：底 = pane 色 64-66% alpha；rim-edge 三层发丝内描
+   * 深色 #0000001a / #ffffff5c / #ffffff70，浅色是反色的 #ffffff2e / #00000038 / #ffffff38；
+   * rim-soft 单层顶描。 */
   --kima-color-glass: color-mix(in srgb, var(--kima-color-surface-container-high) 75%, transparent);
-  --kima-shadow-glass-edge: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1), inset 0 0 0 0.5px rgba(255, 255, 255, 0.36), inset 0 0.5px 0 rgba(255, 255, 255, 0.44);
+  --kima-shadow-glass-edge: inset 0 0 0 0.5px light-dark(rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.1)), inset 0 0 0 0.5px light-dark(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.36)), inset 0 0.5px 0 light-dark(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.44));
+  --kima-shadow-glass-soft: inset 0 0.5px 0 light-dark(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.36));
 
   /* ---- 遮罩 ----
-   * scrim = rgba(5,5,5,0.5)：遮罩色与透明度拆成两个 token，组件按需组合。 */
+   * 官方 scrim（--grok-bg-scrim）：浅色 #050505 20%、深色 #050505 50%。
+   * scrim-opacity 保持全库引用名，值按深浅拆开由 color-mix 读。 */
   --kima-color-scrim: #050505;
-  --kima-scrim-opacity: 0.5;
+  --kima-scrim-opacity: light-dark(20%, 50%);
   /* 毛玻璃滤镜：深色 blur(36px) saturate(160%)，浅色 saturate(180%)（规格第九节）。
    * blur 写成独立长度供只需要模糊的场合（遮罩、聚光遮罩）单独引用。 */
   --kima-backdrop-blur: 36px;
@@ -214,19 +226,23 @@
   --kima-radius-xl: var(--kima-radius-overlay);
   --kima-radius-full: 999px;
 
-  /* ---- 描边 ---- */
+  /* ---- 描边与焦点 ----
+   * 官方焦点环：宽 2px、offset 2px（--grok-focus-ring-width / -offset）。 */
   --kima-outline-width: 1px;
   --kima-outline-width-focused: 2px;
   --kima-focus-ring-width: 2px;
-  --kima-focus-ring-offset: 3px;
+  --kima-focus-ring-offset: 2px;
 
   /* ---- 状态层 ----
-   * 悬停对齐 wash 梯子（5%），按下 10%、拖拽 16% 在规格「按下 10-12% / 激活 14-16%」区间内。 */
+   * 悬停对齐官方 wash hover（浅 6% / 深 5%），按下 10%、拖拽 16%
+   * 在官方区间（按下 10-12% / 激活 14-16%）内；禁用官方是 base 24% 半透明底。 */
   --kima-state-hover: 0.05;
   --kima-state-focus: 0.1;
   --kima-state-pressed: 0.1;
   --kima-state-drag: 0.16;
   --kima-opacity-disabled: 0.38;
+  /* 主按钮禁用底（官方 --grok-bg-primary-disabled）：base 24% mix，深色另有 #5F5E59。 */
+  --kima-color-primary-disabled: color-mix(in srgb, var(--kima-color-primary) 24%, transparent);
 
   /* ---- 阴影（Grok 六档）----
    * 深色逐字官方 rgba；浅色用暖调（#0F0D0A 5-13%、#462500 3-8%），不用纯黑。
@@ -249,9 +265,9 @@
 
   /* ---- 动效 ----
    * 时长六档（官方）：fast 120 / base 180 / morph 200 / plate 260 / slow 320 / spring 400。
-   * 曲线四条（官方）：standard、decelerate、accelerate、spring。
-   * 旧名映射：medium→base、slower→spring、effects→fast、emphasized→decelerate、
-   * spring-snappy / spring-gentle→ease-spring。 */
+   * 曲线四条（官方）：standard、decelerate、accelerate、spring——单一命名层 curve-*，
+   * emphasized 映射 decelerate（旧引用保留），spring-snappy / spring-gentle 映射 ease-spring。
+   * 旧时长名映射：medium→base、slower→spring；effects 是官方 .15s 默认过渡档。 */
   --kima-duration-fast: 120ms;
   --kima-duration-base: 180ms;
   --kima-duration-morph: 200ms;
@@ -260,16 +276,16 @@
   --kima-duration-spring: 400ms;
   --kima-duration-medium: var(--kima-duration-base);
   --kima-duration-slower: var(--kima-duration-spring);
-  --kima-duration-effects: var(--kima-duration-fast);
+  /* 官方 Tailwind 默认过渡时长（--default-transition-duration:.15s，
+   * 官方 CSS 里 7 处硬值 .15s）：组件皮肤过渡（悬停/高亮变色）用这档，
+   * 不是 120ms 的 fast。 */
+  --kima-duration-effects: 150ms;
 
-  --kima-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --kima-ease-decelerate: cubic-bezier(0, 0, 0, 1);
-  --kima-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --kima-curve-standard: cubic-bezier(0.2, 0, 0, 1);
+  --kima-curve-decelerate: cubic-bezier(0, 0, 0, 1);
+  --kima-curve-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --kima-curve-emphasized: var(--kima-curve-decelerate);
   --kima-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
-  --kima-curve-standard: var(--kima-ease-standard);
-  --kima-curve-decelerate: var(--kima-ease-decelerate);
-  --kima-curve-accelerate: var(--kima-ease-accelerate);
-  --kima-curve-emphasized: var(--kima-ease-decelerate);
   --kima-spring-snappy: var(--kima-ease-spring);
   --kima-spring-gentle: var(--kima-ease-spring);
   /* 按下缩小的幅度。0.98 是缩 2%，几乎看不出，只有手感。 */
@@ -279,7 +295,15 @@
    * 只放跨组件共用的尺寸。单组件专属参数定义在各组件自己的样式里。
    * 命中区与字段/按钮档保持 KIMA 现值（触摸规矩：视觉可小、命中 ≥44）。
    * control-height 是 Grok 官方视觉档（xs 20 / sm 24 / md 28 / lg 32 / xl 36 / 2xl 44），
-   * 列表行高 40 也是官方值；组件视觉档逐个迁移时从这里取。 */
+   * 列表行高 40 也是官方值；组件视觉档逐个迁移时从这里取。
+   * icon-size 是官方图标档（--grok-icon-size-*）：14/16/18/20/22/24。 */
+  --kima-icon-size-xs: 14px;
+  --kima-icon-size-sm: 16px;
+  --kima-icon-size-md: 16px;
+  --kima-icon-size-lg: 18px;
+  --kima-icon-size-xl: 20px;
+  --kima-icon-size-2xl: 24px;
+  --kima-icon-size: 16px;
   --kima-touch-target: 48px;
   --kima-button-height-xs: 40px;
   --kima-button-height-s: 48px;
@@ -304,7 +328,9 @@
 
   /* ---- 代码语法色 ----
    * 只服务可读性，不表达状态语义。关键字用 accent 蓝与正文（base）拉开；
-   * 字符串/数字借用固定语义色相，函数名和属性名各给一个专属色相。 */
+   * 字符串/数字借用固定语义色相，函数名和属性名各给一个专属色相。
+   * 代码底（官方 terminal-bg）：浅 #F8F7F5、深 #111，比页面底深一档。 */
+  --kima-color-code-bg: light-dark(#f8f7f5, #111111);
   --kima-color-code-keyword: var(--kima-color-accent);
   --kima-color-code-string: var(--kima-color-success);
   --kima-color-code-number: var(--kima-color-warning);
@@ -402,6 +428,14 @@ kima-mention,
 kima-dynamic-input,
 kima-transfer {
   min-width: 0;
+}
+
+/* ---- 库内文字选中（一次定义，全库自动生效）----
+ * 官方 --grok-bg-text-selection：accent 20%（浅）/ 30%（深）。
+ * 只作用于 kima 前缀元素，不动宿主页面的 ::selection。 */
+[class^="kima-"]::selection,
+[class*=" kima-"]::selection {
+  background: var(--kima-color-text-selection);
 }
 
 /* ---- 弹层进出场（全库共用一套）----

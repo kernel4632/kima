@@ -48,7 +48,7 @@ useRipple(root);
   padding: var(--kima-space-3) var(--kima-space-5);
   border-radius: var(--kima-radius-full);
   cursor: pointer;
-  &[aria-pressed="true"] { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
-  &[aria-pressed="true"]:hover:not(:disabled) { background: var(--kima-color-primary-container-hover); }
+  &[aria-pressed="true"] { background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
+  &[aria-pressed="true"]:hover:not(:disabled) { background: var(--kima-color-accent-secondary-hover); }
 }
 </style>

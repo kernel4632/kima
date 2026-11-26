@@ -326,7 +326,8 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-4);
   border: 0;
-  border-radius: var(--kima-radius-l);
+  /* 通知是弹层，官方圆角档是 alert 14px。 */
+  border-radius: var(--kima-radius-alert);
   color: var(--kima-color-on-surface);
   /* 弹层是实色：浮在内容之上，必须挡住背后。 */
   background: var(--kima-color-popup);
@@ -394,8 +395,8 @@ onBeforeUnmount(() => {
  * 语义类用固定的语义色（成功绿 / 警告橙 / 危险红），不跟种子变。
  * 之前 warning 用 layer-2 当底——那是半透明的叠层，通知浮在页面上会透出背后内容。 */
 .kima-notification--info {
-  color: var(--kima-color-on-primary-container);
-  background: var(--kima-color-primary-container);
+  color: var(--kima-color-on-accent-secondary);
+  background: var(--kima-color-accent-secondary);
 }
 
 .kima-notification--warning {

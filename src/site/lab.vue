@@ -107,8 +107,8 @@ onBeforeUnmount(() => observer?.disconnect());
   }
 
   :deep(.kima-button[aria-current='true']) {
-    background: var(--kima-color-primary-container);
-    color: var(--kima-color-on-primary-container);
+    background: var(--kima-color-accent-secondary);
+    color: var(--kima-color-on-accent-secondary);
   }
 }
 

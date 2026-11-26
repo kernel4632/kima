@@ -432,7 +432,7 @@ onBeforeUnmount(() => {
   height: var(--kima-field-height);
   box-sizing: border-box;
   padding-right: var(--kima-space-2);
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-control);
   background: var(--kima-color-layer-2);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
@@ -445,7 +445,11 @@ onBeforeUnmount(() => {
   @include kima-state-layer;
   @include kima-ripple-host;
 
-  &:hover:not([aria-disabled="true"]),
+  /* 悬停是轻洗；打开的触发器是激活态，底更深一档。 */
+  &:hover:not([aria-disabled="true"]) {
+    background: var(--kima-color-wash-hover);
+  }
+
   .kima-cascader--open & {
     background: var(--kima-color-layer-3);
   }
@@ -453,7 +457,7 @@ onBeforeUnmount(() => {
   /* 聚焦提示是一条内阴影：不占位置，也不会把元素撑大。
    * 焦点落在触发器或清除按钮上都算"停在这个框里"，所以用 focus-within。 */
   &:focus-within {
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
   }
 
   /* 打开的下拉仍要有"我停在这个框上"的提示，但不用第二圈线：
@@ -536,12 +540,11 @@ onBeforeUnmount(() => {
 
   &:hover:not(:disabled),
   &:focus-visible {
-    color: var(--kima-color-primary);
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: 1px;
   }
 
@@ -572,7 +575,7 @@ onBeforeUnmount(() => {
   overflow: auto;
   padding: var(--kima-space-2);
   border: 0;
-  border-radius: var(--kima-radius-m);
+  border-radius: var(--kima-radius-lg);
   /* 弹层是实色：它是浮在内容之上的一层，必须挡住背后，不能透。 */
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
@@ -591,7 +594,7 @@ onBeforeUnmount(() => {
 }
 
 .kima-cascader__column + .kima-cascader__column {
-  border-left: 1px solid var(--kima-color-outline);
+  border-left: 1px solid var(--kima-color-outline-variant);
 }
 
 .kima-cascader__option {
@@ -609,28 +612,29 @@ onBeforeUnmount(() => {
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     color var(--kima-duration-effects) var(--kima-curve-standard);
 
+  /* 选项行的悬停/键盘高亮：官方一律 wash 5-6%，不亮化。 */
   &:hover,
   &--active {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--kima-color-primary);
+    outline: 2px solid var(--kima-color-focus-ring);
     outline-offset: -2px;
   }
 
   /* 选中项是"容器色底"，文字必须配 on-primary-container：
    * 容器色在浅色主题下本身就是浅底，用 primary 当文字色就成了浅字浅底，看不清。 */
   &--selected {
-    color: var(--kima-color-on-primary-container);
-    background: var(--kima-color-primary-container);
+    color: var(--kima-color-on-accent-secondary);
+    background: var(--kima-color-accent-secondary);
   }
 
   /* 选中项被悬停或键盘高亮时，底色从容器色派生，不落回通用悬停色：
    * 换回 layer-3 会让"容器文字 + 深灰底"配成一对，对比度就掉了。 */
   &--selected:hover,
   &--selected.kima-cascader__option--active {
-    background: var(--kima-color-primary-container-hover);
+    background: var(--kima-color-accent-secondary-hover);
   }
 
   &[aria-disabled="true"] {

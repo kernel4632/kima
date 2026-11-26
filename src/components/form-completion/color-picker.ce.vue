@@ -140,7 +140,7 @@ const hsl = computed(() => {
     }
 
     &:focus-visible {
-      outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
       outline-offset: var(--kima-focus-ring-offset);
     }
   }
@@ -163,7 +163,7 @@ const hsl = computed(() => {
     }
 
     &:focus-visible {
-      outline: var(--kima-focus-ring-width) solid var(--kima-color-primary);
+      outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
       outline-offset: 3px;
     }
   }
@@ -213,7 +213,7 @@ const hsl = computed(() => {
     background: var(--kima-color-layer-1);
     cursor: pointer;
 
-    &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); }
+    &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); }
   }
 
   &__hex {

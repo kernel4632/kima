@@ -183,7 +183,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__heading { margin-bottom: var(--kima-space-10); }
 .kima-docs__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--kima-space-2); font-size: var(--kima-font-size-label-small); color: var(--kima-color-primary); letter-spacing: .08em; margin: 0 0 var(--kima-space-6); }
 /* 维护水位：核心/扩展/实验。颜色只用来区分优先级，不承担状态语义。 */
-.kima-docs__tier { padding: 2px var(--kima-space-2); border-radius: var(--kima-radius-full); letter-spacing: 0; background: var(--kima-color-layer-3); color: var(--kima-color-on-surface-variant); &[data-tier="core"] { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); } &[data-tier="experimental"] { color: var(--kima-color-warning); } }
+.kima-docs__tier { padding: 2px var(--kima-space-2); border-radius: var(--kima-radius-full); letter-spacing: 0; background: var(--kima-color-layer-3); color: var(--kima-color-on-surface-variant); &[data-tier="core"] { background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); } &[data-tier="experimental"] { color: var(--kima-color-warning); } }
 .kima-docs__heading h1 { margin: 0; font-size: clamp(32px, 4vw, 56px); line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .kima-docs__lead { color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-body-large); line-height: 1.8; margin-top: var(--kima-space-6); }
 .kima-docs__section { margin-top: var(--kima-space-12); scroll-margin-top: 120px; }

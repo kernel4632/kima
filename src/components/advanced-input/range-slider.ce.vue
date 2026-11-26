@@ -67,7 +67,7 @@ const fill = computed(() => { const span = maximum.value - minimum.value || 1; r
 }
     &::-moz-range-track {height:var(--kima-slider-track-height);background:transparent;}
     &::-moz-range-thumb {width:var(--kima-slider-handle-width);height:var(--kima-slider-handle-height);border:0;border-radius:var(--kima-radius-full);background:var(--kima-color-primary);pointer-events:auto;cursor:ew-resize;}
-    &:focus-visible {outline:var(--kima-focus-ring-width) solid var(--kima-color-primary);outline-offset:var(--kima-focus-ring-offset);}
+    &:focus-visible {outline:var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);outline-offset:var(--kima-focus-ring-offset);}
     &:disabled {pointer-events:none;}
   }
   &[aria-disabled="true"] {opacity:var(--kima-opacity-disabled);}

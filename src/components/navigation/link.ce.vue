@@ -34,11 +34,12 @@ function navigate(event) { if (props.disabled) { event.preventDefault(); event.s
   padding: var(--kima-space-2) var(--kima-space-4);
   border: 0;
   border-radius: var(--kima-radius-m);
-  color: var(--kima-color-primary);
+  /* 链接是 accent 的三大专属用途之一（链接/选中/焦点环），不用 base 色。 */
+  color: var(--kima-color-accent);
   background: transparent;
   font: inherit;
   cursor: pointer;
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); padding-inline: var(--kima-space-2); text-decoration: none; overflow-wrap: anywhere; &--underline { text-decoration: underline; text-underline-offset: .2em; } &[aria-current] { color: var(--kima-color-on-primary-container);
-  background: var(--kima-color-primary-container);
-  &:hover { background: var(--kima-color-primary-container-hover); } } }
+  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard); padding-inline: var(--kima-space-2); text-decoration: none; overflow-wrap: anywhere; &--underline { text-decoration: underline; text-underline-offset: .2em; } &[aria-current] { color: var(--kima-color-on-accent-secondary);
+  background: var(--kima-color-accent-secondary);
+  &:hover { background: var(--kima-color-accent-secondary-hover); } } }
 </style>

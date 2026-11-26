@@ -20,7 +20,8 @@ const { isCustomElement } = useNativeSlots(root);
 .kima-spinner {
   display: inline-flex;
   vertical-align: middle;
-  color: var(--kima-color-primary);
+  /* 加载指示用 accent（官方加载点是 accent 蓝），不用 base。 */
+  color: var(--kima-color-accent);
   &__ring { box-sizing: border-box; width: 32px; height: 32px; border: 3px solid var(--kima-color-layer-3); border-top-color: currentColor; border-radius: 50%; animation: kima-spinner-turn var(--kima-spinner-duration) linear infinite; }
   &--small &__ring { width: 20px; height: 20px; }
   &--large &__ring { width: 48px; height: 48px; }

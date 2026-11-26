@@ -51,7 +51,7 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
             :initial="{ opacity: 0, scale: 0.96 }"
             :animate="{ opacity: 1, scale: 1 }"
             :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
-            :transition="{ type: 'spring', stiffness: 500, damping: 32 }"
+            :transition="{ type: 'spring', stiffness: 400, damping: 32 }"
             :aria-label="label"
             loop
             @escape-key-down="(e) => dismissInteraction(e, () => setOpen(false))"
@@ -81,14 +81,14 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 :deep(.kima-shell-menu__item) {
   @include kima-focus-ring; @include kima-disabled;
   display: flex; box-sizing: border-box; width: 100%; align-items: center; justify-content: space-between;
-  gap: var(--kima-space-3); min-height: 48px; padding: var(--kima-space-2) var(--kima-space-3);
+  gap: var(--kima-space-3); min-height: var(--kima-control-height-2xl); padding: var(--kima-space-2) var(--kima-space-3);
   border: 0; border-radius: var(--kima-radius-s); background: transparent; color: var(--kima-color-on-surface);
   font: inherit; text-align: start; cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
-  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
-  &[aria-checked='true'] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); &:hover, &[data-highlighted] { background: var(--kima-color-primary-container-hover); } }
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
+  &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-accent-secondary-hover); }
+  &[aria-checked='true'] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); &:hover, &[data-highlighted] { background: var(--kima-color-accent-secondary-hover); } }
   &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
 }
 :deep(.kima-shell-menu__copy) { display: grid; gap: var(--kima-space-1); }
@@ -155,5 +155,5 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   background: var(--kima-color-layer-2);
   color: var(--kima-color-on-surface);
   font: inherit;
-  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } }
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } }
 </style>

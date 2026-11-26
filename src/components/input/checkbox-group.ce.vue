@@ -71,8 +71,8 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
     padding: 0 var(--kima-space-3);
     border-radius: var(--kima-radius-m);
     cursor: pointer;
-    &:has(input:checked) { background: var(--kima-color-primary-container); color: var(--kima-color-on-primary-container); }
-    &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
+    &:has(input:checked) { background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
+    &:has(input:focus-visible) { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: calc(-1 * var(--kima-focus-ring-width)); }
     &--disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; }
   }
 

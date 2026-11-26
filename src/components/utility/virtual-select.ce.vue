@@ -82,7 +82,7 @@ useRipple(root);
   background: var(--kima-color-layer-2);
   color: var(--kima-color-on-surface);
   font: inherit;
-  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } margin: 0; } &__summary { display: block; padding: var(--kima-space-2); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-popup; z-index: 60; width: var(--reka-popper-anchor-width, 100%); overflow: auto; border-radius: var(--kima-radius-m); overscroll-behavior: contain; } &__option { @include kima-focus-ring;
+  &:focus { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } margin: 0; } &__summary { display: block; padding: var(--kima-space-2); color: var(--kima-color-on-surface-variant); } &__viewport { @include kima-popup; z-index: 60; width: var(--reka-popper-anchor-width, 100%); overflow: auto; border-radius: var(--kima-radius-m); overscroll-behavior: contain; } &__option { @include kima-focus-ring;
   @include kima-disabled;
   display: flex;
   box-sizing: border-box;
@@ -100,7 +100,7 @@ useRipple(root);
   text-align: start;
   cursor: pointer;
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
-  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-layer-3); }
-  &[aria-selected="true"] { color: var(--kima-color-on-primary-container); background: var(--kima-color-primary-container); }
-  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-primary-container-hover); }
+  &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
+  &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
+  &[aria-selected="true"]:hover, &[aria-selected="true"][data-active="true"] { background: var(--kima-color-accent-secondary-hover); }
   &[data-disabled] { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } position: absolute; top: 0; left: 0; overflow: hidden; } }</style>

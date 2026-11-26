@@ -21,12 +21,12 @@ async function key(event,index){let target=index;switch(event.key){case'ArrowRig
 @use "../../styles/mixins" as *;
 @use '../../styles/mixins' as *;
 .kima-heatmap {
-  --kima-chart-series-1: var(--kima-color-primary);
+  --kima-chart-series-1: var(--kima-color-accent);
   --kima-chart-series-2: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-tertiary-container));
   --kima-chart-series-3: color-mix(in srgb, var(--kima-color-primary) 65%, var(--kima-color-secondary-container));
   --kima-chart-series-4: color-mix(in srgb, var(--kima-color-primary) 55%, var(--kima-color-on-surface));
   --kima-heatmap-low: var(--kima-color-layer-2);
-  --kima-heatmap-high: var(--kima-color-primary-container);
+  --kima-heatmap-high: var(--kima-color-accent-secondary);
   min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
@@ -55,7 +55,7 @@ async function key(event,index){let target=index;switch(event.key){case'ArrowRig
       cursor:pointer;
       transition:background-color var(--kima-duration-effects) var(--kima-curve-standard),box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
       &:hover,&[aria-selected=true] {
-        box-shadow:inset 0 0 0 3px var(--kima-color-primary);
+        box-shadow:inset 0 0 0 3px var(--kima-color-accent);
       }
       &:focus-visible {
         outline-offset:-3px

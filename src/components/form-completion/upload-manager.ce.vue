@@ -60,7 +60,7 @@ watch(()=>props.modelValue,value=>{if(Array.isArray(value)&&value.length&&!tasks
     }
     progress {
       width:100%;
-      accent-color:var(--kima-color-primary)
+      accent-color:var(--kima-color-accent)
     }
   }
   &__actions {

@@ -45,5 +45,5 @@ const maxYear = computed(() => props.mode === "year" ? Number(String(props.max |
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; }
-  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-primary); outline-offset: -2px; } flex:1; min-width:160px; } p { flex-basis:100%; margin:0; color:var(--kima-color-error); } }
+  width: 100%; border-radius: var(--kima-radius-m); background: var(--kima-color-layer-2); &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: -2px; } flex:1; min-width:160px; } p { flex-basis:100%; margin:0; color:var(--kima-color-error); } }
 </style>
