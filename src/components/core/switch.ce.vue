@@ -76,11 +76,13 @@ function handleChange(value) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    width: 32px;
-    height: 1.15rem;
+    /* 触摸档：44×26 满圆（shadcn 几何等比放大），
+     * 44px 是触摸目标下限，26 保证拇指上下留白。 */
+    width: 44px;
+    height: 26px;
     box-sizing: border-box;
     /* 官方几何：无 padding。1px 透明边框是 focus 时换色的占位（shadcn 同款 border-transparent）。
-     * 拇指的左右留白全靠位移公式里的 -2px，上下留白靠轨道高度富余（18.4-16）。 */
+     * 拇指的左右留白全靠位移公式里的 -2px，上下留白靠轨道高度富余。 */
     padding: 0;
     border: 1px solid transparent;
     border-radius: var(--kima-radius-full);
@@ -107,17 +109,21 @@ function handleChange(value) {
 
   &__thumb {
     display: block;
-    width: 16px;
-    height: 16px;
+    /* 触摸档拇指 22：44 轨道 - 22 拇指 = 22px 可动区间。
+     * 两端视觉留白各 2px 由 margin（静态左留白）+ 位移公式（100% - 6px）共同构成：
+     * 起点 = 2(margin)，终点 = 2 + 22-6 = 18 → 占位 18..40，两侧各留 2px。 */
+    width: 22px;
+    height: 22px;
+    margin-inline-start: 2px;
     border-radius: var(--kima-radius-full);
     /* shadcn 拇指配色：未选背景色（深浅两套对调），选中主色对文字 */
     background: var(--kima-color-surface-container-highest);
     box-shadow: 0 1px 2px oklch(0 0 0 / 0.2);
     transition: transform var(--kima-duration-effects) var(--kima-curve-standard), background-color var(--kima-duration-effects) var(--kima-curve-standard);
 
-    /* 位移 = 拇指自身宽的 100% 减 2px：相对自身百分比，零硬编码。 */
+    /* 位移 = 拇指自身宽的 100% 减去两端留白（2px 起点 + 2px 终点补差）：相对自身百分比，零硬编码。 */
     &[data-state="checked"] {
-      transform: translateX(calc(100% - 2px));
+      transform: translateX(calc(100% - 6px));
       background: var(--kima-color-on-primary);
     }
 
