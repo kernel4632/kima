@@ -1,10 +1,9 @@
 <!--
-图标：包一层 Hugeicons，全库统一线宽。
-Hugeicons 按 24×24 画布设计，图标数据自带 stroke-width 1.5。
-只传 stroke-width 不管用：它是在 24 的画布坐标系里画的，图标缩到 18px 时
-视觉线宽也跟着缩水，看起来还是细的。所以要配 absolute-stroke-width，
-让线宽不随尺寸缩放——给 2 就是屏幕上实打实的 2px。
-全库粗细只由下面 iconStrokeWidth 一个值决定，不要在别的组件里单独传 strokeWidth。
+图标：包一层 Hugeicons，线宽按尺寸等比缩放。
+Hugeicons 按 24×24 画布设计；不传 absolute-stroke-width 时，strokeWidth
+是画布坐标系里的值——图标放大到多少 px，线条就跟着等比放大多少。
+24px 图标视觉线宽 1.75px，48px 图标自然长到 3.5px，比例永远协调。
+全库粗细只由下面 iconStrokeWidth 一个值决定（画布坐标系），不要在别的组件里单独传 strokeWidth。
 调用示例：
   <kima-icon :icon="Search01Icon" :size="20" />
   <kima-icon :icon="StarIcon" :size="32" class="my-icon" />
@@ -12,10 +11,10 @@ Hugeicons 按 24×24 画布设计，图标数据自带 stroke-width 1.5。
 <script setup>
 import { HugeiconsIcon } from "@hugeicons/vue";
 
-// 全库图标线宽的唯一来源。想整体调粗细只改这一个数。
+// 全库图标线宽的唯一来源（24 画布坐标系）。想整体调粗细只改这一个数。
 // 为什么不放 CSS token：线宽要传给 Hugeicons 组件当属性用，JS 读不到 CSS 变量，
 // 放两处就会出现"改了 token 图标没变"的情况。
-const iconStrokeWidth = 2;
+const iconStrokeWidth = 1.75;
 
 const props = defineProps({
   icon: {
@@ -46,7 +45,6 @@ const props = defineProps({
     :size="props.size"
     :color="props.color"
     :stroke-width="props.strokeWidth"
-    absolute-stroke-width
   />
 </template>
 
