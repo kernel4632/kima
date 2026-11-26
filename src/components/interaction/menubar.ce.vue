@@ -57,21 +57,24 @@ function navigate(event, index) {
   font-size: var(--kima-font-size-body-medium);
   line-height: 1.5; @include kima-layer(1); display: flex; flex-wrap: wrap; gap: var(--kima-space-2); padding: var(--kima-space-2); border-radius: var(--kima-radius-m); &__item { @include kima-focus-ring;
   @include kima-disabled;
+  /* Grok 官方菜单项：视觉行 32 + radius-control 10 + ::before 外扩触摸（同 menu.ce.vue）。 */
   display: flex;
+  position: relative;
   box-sizing: border-box;
   width: 100%;
   align-items: center;
   justify-content: space-between;
   gap: var(--kima-space-3);
-  min-height: var(--kima-control-height-2xl);
-  padding: var(--kima-space-2) var(--kima-space-3);
+  min-height: var(--kima-control-height-lg);
+  padding: 0 var(--kima-space-3);
   border: 0;
-  border-radius: var(--kima-radius-s);
+  border-radius: var(--kima-radius-control);
   background: transparent;
   color: var(--kima-color-on-surface);
   font: inherit;
   text-align: start;
   cursor: pointer;
+  &::before { content: ""; position: absolute; inset-block: calc((var(--kima-touch-target) - var(--kima-control-height-lg)) / -2); inset-inline: calc(-1 * var(--kima-space-2)); z-index: 0; }
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
   &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
   &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }

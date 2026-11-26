@@ -80,10 +80,30 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 }
 :deep(.kima-shell-menu__item) {
   @include kima-focus-ring; @include kima-disabled;
-  display: flex; box-sizing: border-box; width: 100%; align-items: center; justify-content: space-between;
-  gap: var(--kima-space-3); min-height: var(--kima-control-height-2xl); padding: var(--kima-space-2) var(--kima-space-3);
-  border: 0; border-radius: var(--kima-radius-s); background: transparent; color: var(--kima-color-on-surface);
+  /* Grok 官方菜单项一比一（证据：docs/grok-component-reference.md 四）：
+   * 视觉行 32（--grok-control-height-lg 档）、radius-control 10。
+   * 触摸靠 ::before 外扩到 44（官方 data-touch-target 模式）。 */
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kima-space-3);
+  position: relative;
+  min-height: var(--kima-control-height-lg);
+  padding: 0 var(--kima-space-3);
+  border: 0;
+  border-radius: var(--kima-radius-control);
+  background: transparent; color: var(--kima-color-on-surface);
   font: inherit; text-align: start; cursor: pointer;
+  /* 触摸外扩：视觉 32，命中补到 44+。::after 是状态层（z1），::before 管命中不画东西。 */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: calc((var(--kima-touch-target) - var(--kima-control-height-lg)) / -2);
+    inset-inline: calc(-1 * var(--kima-space-2));
+    z-index: 0;
+  }
   transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), color var(--kima-duration-effects) var(--kima-curve-standard);
   &:hover:not([aria-disabled="true"]):not([data-disabled]), &[data-highlighted], &[data-active="true"] { background: var(--kima-color-wash-hover); }
   &[aria-selected="true"] { color: var(--kima-color-on-accent-secondary); background: var(--kima-color-accent-secondary); }
@@ -139,11 +159,13 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   box-sizing: border-box;
   z-index: 60;
   width: min(360px, calc(100vw - 24px));
+  /* 官方 --grok-menu-min-width: 240px 保底。 */
+  min-width: 240px;
   max-height: min(70vh, var(--reka-popper-available-height, 70vh));
   overflow: auto;
-  padding: var(--kima-space-4);
-  border-radius: var(--kima-radius-l);
-  outline: none; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
+  padding: var(--kima-space-2);
+  border-radius: var(--kima-radius-lg);
+  outline: none; }
 .kima-menu__search-wrap { position: relative; display: flex; align-items: center; margin-bottom: var(--kima-space-2); }
 .kima-menu__search-wrap > .kima-icon { position: absolute; left: var(--kima-space-3); color: var(--kima-color-on-surface-variant); pointer-events: none; }
 .kima-menu__search { box-sizing: border-box;

@@ -1,7 +1,9 @@
 <!--
-开关：行为层全由 Reka Switch 承担（键盘、表单 input、aria），几何与配色缝合 shadcn v4 官方 Switch：
-拇指位移用 translate-x 百分比（相对拇指自身宽），天然自适应尺寸、零硬编码像素；
-尺寸沿用 shadcn（轨道 32×18.4、拇指 16），整体比 KIMA 旧版（60×36）更精致，符合 shadcn 手感。
+开关：行为层全由 Reka Switch 承担（键盘、表单 input、aria），皮肤按 Grok 官方 web toggle 一比一：
+44×24 胶囊（官方类 w-11 h-6，chunk 1eqhhq8j5i595.js 明文）+ toggle-border 1px 边框
++ 选中 toggle-selected 半透明 wash 底 + 20px base 实色拇指滑移（官方 size-5/translate-x-5，
+KIMA 用 inset token 公式，视觉行程 18px）。过渡 transform 150ms ease-out（官方 duration-150）。
+label 竖向 padding 补足 44 触摸命中（视觉行高不变）。证据链见 docs/grok-component-reference.md。
 label 属性只落到内部输入的 aria-label 上，可见标签由使用者自己排版。
 调用示例：
   <kima-switch v-model="enabled" name="enabled">启用同步</kima-switch>
@@ -60,14 +62,17 @@ function handleChange(value) {
 <style scoped lang="scss">
 @use "../../styles/mixins" as *;
 
-/* 官方 Grok toggle 风格：轨道透明底 + 1px toggle-border 边框；选中 = toggle-selected
- * 半透明 wash 底（深色白 24% / 浅色黑 8%）+ 边框微亮；拇指永远是 base 实色圆 + 轻阴影。
- * 与 shadcn 实色轨道翻转不同——官方设置页就是"边框轨道 + wash 选中 + 实色拇指"。
- * 几何保持触摸档 44×26 满圆，拇指 20。 */
+/* 官方 Grok web toggle 一比一：44×24 胶囊轨道（官方 w-11 h-6）+ toggle-border 1px 边框
+ * + 选中 toggle-selected 半透明 wash 底 + 20px base 实色拇指滑移（官方 size-5）。
+ * 官方没有实色轨道翻转——选中感 = wash 底变深 + 拇指从左滑到右。
+ * Reka SwitchRoot 行为层（data-state）不动，只改皮肤几何与动画。 */
 .kima-switch {
   display: inline-flex;
   align-items: center;
   gap: var(--kima-space-2);
+  /* 触摸命中：官方用伪元素外扩（见 docs/grok-component-reference.md 六）。
+   * 这里 label 竖向 padding 补到 44 命中（28 轨道 + 2×8 padding），视觉行高不变。 */
+  padding-block: calc((var(--kima-touch-target) - var(--kima-switch-height)) / 2);
   color: var(--kima-color-on-surface);
   font-size: var(--kima-font-size-body-medium);
   cursor: pointer;
@@ -77,17 +82,16 @@ function handleChange(value) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    /* 触摸档：44×26 满圆，44px 是触摸目标下限。 */
-    width: 44px;
-    height: 26px;
+    /* 官方 web 规格：44×24 胶囊（w-11 h-6）；触摸命中由 label 竖向 padding 补足 44。 */
+    width: var(--kima-switch-width);
+    height: var(--kima-switch-height);
     box-sizing: border-box;
     padding: 0;
-    /* 官方几何：无 padding，1px 边框是轨道造型（toggle-border），focus 时换 accent。 */
+    /* 轨道造型：1px toggle-border 边框 + 透明底；focus 时边框换 accent。 */
     border: 1px solid var(--kima-color-toggle-border);
     border-radius: var(--kima-radius-full);
-    /* 官方模式：轨道本身透明，选中感靠 wash 底 + 拇指位移。 */
     background: transparent;
-    transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), border-color var(--kima-duration-effects) var(--kima-curve-standard);
+    transition: background-color var(--kima-duration-fast) var(--kima-curve-standard), border-color var(--kima-duration-fast) var(--kima-curve-standard);
     outline: none;
 
     &:focus-visible {
@@ -95,7 +99,7 @@ function handleChange(value) {
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--kima-color-accent) 30%, transparent);
     }
 
-    /* Reka 的 data-state 与 Radix 同名。选中 = 官方 toggle-selected wash 底 + 边框微亮。 */
+    /* 选中 = 官方 toggle-selected wash 底（深白 24% / 浅黑 8%）+ 边框微亮。 */
     &[data-state="checked"] {
       background: var(--kima-color-toggle-selected);
       border-color: color-mix(in srgb, var(--kima-color-on-surface) 30%, var(--kima-color-toggle-border));
@@ -109,20 +113,21 @@ function handleChange(value) {
 
   &__thumb {
     display: block;
-    /* 触摸档拇指 20：44 轨道 - 20 拇指 = 20px 可动区间，两端视觉留白各 2px
-     * 由 margin（静态左留白）+ 位移公式（100% - 4px）共同构成。 */
-    width: 20px;
-    height: 20px;
-    margin-inline-start: 2px;
+    /* 官方 web 实测：thumb size-5 = 20px、位移 translate-x-5 = 20px、
+     * transition-transform duration-150 ease-out。两端内距 2px 由 margin 承担。
+     * 行程 = 轨道 44 − 2×1px 边框 − 拇指 20 − 2×2 内距 = 18px ≈ 官方 20px
+     * （官方 border-2 占位无视觉差，行程取 token 公式）。 */
+    width: var(--kima-switch-thumb);
+    height: var(--kima-switch-thumb);
+    margin-inline-start: var(--kima-switch-inset);
     border-radius: var(--kima-radius-full);
-    /* 官方模式：拇指永远是 base 实色圆（选中/未选同色），带轻阴影。 */
+    /* 官方模式：拇指恒 base 实色（选中/未选同色）+ shadow-lg 轻阴影。 */
     background: var(--kima-color-primary);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    transition: transform var(--kima-duration-effects) var(--kima-curve-standard);
+    transition: transform 150ms ease-out;
 
-    /* 位移 = 拇指自身宽的 100% 减去两端留白（2px 起点 + 2px 终点补差）：相对自身百分比，零硬编码。 */
     &[data-state="checked"] {
-      transform: translateX(calc(100% - 4px));
+      transform: translateX(calc(var(--kima-switch-width) - 2px - var(--kima-switch-thumb) - 2 * var(--kima-switch-inset)));
     }
 
     &[data-state="unchecked"] {

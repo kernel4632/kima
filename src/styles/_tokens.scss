@@ -102,8 +102,20 @@
    * 浅 8%、深 24%——官方开关没有实色轨道，选中感靠 wash 底 + 实色拇指。 */
   --kima-color-toggle-border: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.09));
   --kima-color-toggle-selected: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.24));
+  /* Switch 几何（官方 web 实测类：w-11/h-6 = 44×24、thumb size-5 = 20、
+   * 位移 translate-x-5 = 20px、过渡 duration-150 ease-out——证据链见
+   * docs/grok-component-reference.md 三）：胶囊 44×24、拇指 20、行程 20、两端内距 2。 */
+  --kima-switch-width: 44px;
+  --kima-switch-height: 24px;
+  --kima-switch-thumb: 20px;
+  --kima-switch-inset: 2px;
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
+  /* 官方输入框描边 token（--input-border / --input-border-focus）：
+   * 深色发丝白 4% / 聚焦白 16%；浅色 neutral-200 38% / 聚焦 neutral-500 50%
+   * → KIMA 映射：发丝 = outline-tertiary 档、聚焦 = base 16%/50% 洗色档。 */
+  --kima-color-input-border: var(--kima-color-outline-tertiary);
+  --kima-color-input-border-focus: color-mix(in srgb, var(--kima-color-on-surface) light-dark(50%, 16%), transparent);
 
   /* ---- 浮层表面（弹层专用，实色）----
    * 弹层浮在内容之上必须挡住背后的东西：菜单/下拉用 elevated，模态/抽屉用 pane。 */
@@ -311,9 +323,9 @@
   /* ---- 控件尺寸 ----
    * 只放跨组件共用的尺寸。单组件专属参数定义在各组件自己的样式里。
    * 命中区与字段/按钮档保持 KIMA 现值（触摸规矩：视觉可小、命中 ≥44）。
-   * control-height 是 Grok 官方视觉档（xs 20 / sm 24 / md 28 / lg 32 / xl 36 / 2xl 44），
-   * 列表行高 40 也是官方值；组件视觉档逐个迁移时从这里取。
-   * icon-size 是官方图标档（--grok-icon-size-*）：14/16/18/20/22/24。 */
+   * control-height 是 Grok 官方视觉档（Button CVA 实测 h-10=40、h-11=44，
+   * 见 docs/grok-component-reference.md 七）：xs 20 / sm 24 / md 28 / lg 32 / xl 40 / 2xl 44。
+   * 行高 40 是官方 --grok-row-height；icon-size 是官方 --grok-icon-size-*。 */
   --kima-icon-size-xs: 14px;
   --kima-icon-size-sm: 16px;
   --kima-icon-size-md: 16px;
@@ -322,10 +334,11 @@
   --kima-icon-size-2xl: 24px;
   --kima-icon-size: 16px;
   --kima-touch-target: 48px;
-  --kima-button-height-xs: 40px;
-  --kima-button-height-s: 48px;
-  --kima-button-height-m: 56px;
-  --kima-button-height-l: 64px;
+  /* 按钮档对齐官方 Button CVA 尺寸（h-8=32 小 / h-10=40 主力 / h-11=44 大档）。 */
+  --kima-button-height-xs: 32px;
+  --kima-button-height-s: 40px;
+  --kima-button-height-m: 44px;
+  --kima-button-height-l: 44px;
   --kima-button-min-width: 64px;
   --kima-field-height: 64px;
   --kima-field-padding: 20px;
@@ -333,9 +346,14 @@
   --kima-control-height-sm: 24px;
   --kima-control-height-md: 28px;
   --kima-control-height-lg: 32px;
-  --kima-control-height-xl: 36px;
+  --kima-control-height-xl: 40px;
   --kima-control-height-2xl: 44px;
   --kima-row-height: 40px;
+  /* 滑块私有几何（slider 组件内部引用；官方轨道细条形）：
+   * 轨道 8、拇指指示条 6×36。第一轮 token 重写时被误删，此处于组件侧对齐回归。 */
+  --kima-slider-track-height: 8px;
+  --kima-slider-handle-width: 6px;
+  --kima-slider-handle-height: 36px;
   --kima-spinner-duration: 1568ms;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。

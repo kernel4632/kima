@@ -1,12 +1,12 @@
 // 自动化只验证目视发现的问题不再回归；视觉是否协调仍查看截图。
 import { test, expect } from '@playwright/test';
 
+// Grok 主题深浅跟随系统（colorScheme 驱动，零 JS 切换）：light 用浏览器级 colorScheme 模拟。
 for (const theme of ['dark', 'light']) {
-  test(`空间图审回归与局部截图 · ${theme}`, async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+  test(`空间图审回归与局部截图 · ${theme}`, async ({ browser }) => {
+    const page = await browser.newPage({ colorScheme: theme, viewport: { width: 1440, height: 900 } });
     await page.goto('/#/playground');
     await expect(page.locator('[data-scene]')).toHaveCount(8);
-    if (theme === 'light') await page.getByRole('button', { name: '切换明暗主题', exact: true }).click();
     await page.mouse.move(0, 0);
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
     await page.waitForTimeout(350);
@@ -65,10 +65,10 @@ for (const theme of ['dark', 'light']) {
     await expect(page.locator('.kima-chart__point[data-point="0-1"]')).toBeFocused();
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(900);
 
-    // 06：评分只靠星形表达值，48px热区保留且键盘可用。
+    // 06：评分只靠星形表达值，44px 热区保留且键盘可用（官方 2xl 触摸档）。
     const stars = page.locator('.kima-rating__star');
     expect(await stars.first().evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
-    expect((await stars.first().boundingBox()).height).toBeGreaterThanOrEqual(48);
+    expect((await stars.first().boundingBox()).height).toBeGreaterThanOrEqual(44);
     await page.getByRole('radio', { name: '4 / 5', exact: true }).focus();
     await page.keyboard.press('ArrowRight');
     await expect(page.getByRole('radio', { name: '5 / 5', exact: true })).toBeChecked();
@@ -85,16 +85,16 @@ for (const theme of ['dark', 'light']) {
     expect(ring.stroke).toBe(8);
     expect((await page.locator('.kima-divider__line').boundingBox()).height).toBe(2);
 
-    // 14：顶栏字段与操作按钮同高，不更改其他64px字段。
-    const topField = await page.locator('.kima-playground__tools .kima-select__control').boundingBox();
-    const topButton = await page.getByRole('button', { name: '切换明暗主题', exact: true }).boundingBox();
-    expect(topField.height).toBe(topButton.height);
+    // 14：顶栏按钮几何对齐官方 Button CVA 档（命令触发 = h-10 40；图标按钮 = shape:square 2xl 44）。
+    const commandTrigger = await page.getByRole('button', { name: '搜索 / Ctrl K', exact: true }).boundingBox();
+    const iconButton = await page.getByRole('button', { name: '查看通知', exact: true }).boundingBox();
+    expect(commandTrigger.height).toBe(40);
+    expect(iconButton.height).toBe(44);
     expect((await page.locator('[data-scene=schedule] .kima-date-picker__control').boundingBox()).height).toBe(64);
 
     // 默认态截图不混入测试中选中的数据点、评分或焦点滚动。
     await page.reload();
     await expect(page.locator('[data-scene]')).toHaveCount(8);
-    if (theme === 'light') await page.getByRole('button', { name: '切换明暗主题', exact: true }).click();
     await page.mouse.move(0, 0);
     await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
     await page.waitForTimeout(350);
@@ -102,5 +102,6 @@ for (const theme of ['dark', 'light']) {
       await page.locator(`[data-scene=${scene}]`).screenshot({ path: `shots/space-audit/verified-${scene}-${theme}.png` });
     }
     await page.screenshot({ path: `shots/space-audit/verified-${theme}.png` });
+    await page.close();
   });
 }

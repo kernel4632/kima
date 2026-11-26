@@ -432,8 +432,9 @@ onBeforeUnmount(() => {
   height: var(--kima-field-height);
   box-sizing: border-box;
   padding-right: var(--kima-space-2);
+  border: var(--kima-outline-width) solid var(--kima-color-input-border);
   border-radius: var(--kima-radius-control);
-  background: var(--kima-color-layer-2);
+  background: var(--kima-color-layer-1);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     box-shadow var(--kima-duration-effects) var(--kima-curve-standard),
@@ -451,13 +452,13 @@ onBeforeUnmount(() => {
   }
 
   .kima-cascader--open & {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   /* 聚焦提示是一条内阴影：不占位置，也不会把元素撑大。
    * 焦点落在触发器或清除按钮上都算"停在这个框里"，所以用 focus-within。 */
   &:focus-within {
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
+    border-color: var(--kima-color-input-border-focus);
   }
 
   /* 打开的下拉仍要有"我停在这个框上"的提示，但不用第二圈线：

@@ -94,9 +94,10 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
 @use "../../styles/mixins" as *;
 
 .kima-icon-button {
-  /* s 档 48×48、图标 24、整圆。 */
-  width: var(--kima-button-height-s);
-  height: var(--kima-button-height-s);
+  /* 官方 Button CVA square/circle 复合档（docs/grok-component-reference.md 七）：
+   * 默认 = shape:square + size:2xl → h-11 w-11 (44)，图标 p-2.5；small = h-8 (32)。 */
+  width: var(--kima-control-height-2xl);
+  height: var(--kima-control-height-2xl);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +107,7 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   border-radius: var(--kima-radius-full);
   box-sizing: border-box;
   font-family: var(--kima-font-family);
-  /* standard 外观：透明底，图标用 onSurfaceVariant。 */
+  /* standard 外观 = 官方 ghost：次级文字 + hover 洗色。 */
   color: var(--kima-color-on-surface-variant);
   background: transparent;
   cursor: pointer;
@@ -116,6 +117,15 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   @include kima-focus-ring;
   @include kima-ripple-host;
   @include kima-press(var(--kima-press-scale-sm));
+  transition:
+    transform var(--kima-duration-spring) var(--kima-ease-spring),
+    background-color 100ms var(--kima-curve-standard),
+    color 100ms var(--kima-curve-standard);
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    color: var(--kima-color-on-surface);
+    background: var(--kima-color-wash-hover);
+  }
 
   /* 禁用：图标降到 onSurface 38%。 */
   &:disabled {
@@ -123,15 +133,16 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
     cursor: not-allowed;
   }
 
+  /* 小档 = 官方 shape:square + size:lg → w-8 (32)。 */
   &--small {
-    width: var(--kima-button-height-xs);
-    height: var(--kima-button-height-xs);
+    width: var(--kima-control-height-lg);
+    height: var(--kima-control-height-lg);
   }
 
-  /* m 档 56×56，图标仍为 24。 */
+  /* 大档 = 官方 size:2xl 同级（图标放大一档 24）。 */
   &--large {
-    width: var(--kima-button-height-m);
-    height: var(--kima-button-height-m);
+    width: var(--kima-control-height-2xl);
+    height: var(--kima-control-height-2xl);
   }
 
   &--filled {

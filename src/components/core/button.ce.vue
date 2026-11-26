@@ -77,7 +77,9 @@ const isRound = computed(() => props.round || props.shape !== "square");
 @use "../../styles/mixins" as *;
 
 .kima-button {
-  /* 几何基准：最小宽 64、高 48、内容间距 8、字号 label-large。 */
+  /* 官方 Button CVA 对齐（docs/grok-component-reference.md 七）：
+   * 尺寸 h-10(40) 主力档、圆角 rounded-xl(12)（lg/xl/2xl 档统一 12）、
+   * 过渡 transition-colors duration-100、行高 1.4。 */
   min-width: var(--kima-button-min-width);
   min-height: var(--kima-button-height-s);
   display: inline-flex;
@@ -86,13 +88,13 @@ const isRound = computed(() => props.round || props.shape !== "square");
   gap: var(--kima-space-2);
   padding: 0 var(--kima-space-4);
   border: 0;
-  /* square 用官方控件圆角 10；round 用整高药丸。 */
-  border-radius: var(--kima-radius-control);
+  /* 官方按钮圆角档：sm/md 档 rounded-lg(8)、lg+ 档 rounded-xl(12)——radius-control(10) 是菜单项/输入框档。 */
+  border-radius: var(--kima-radius-lg);
   box-sizing: border-box;
   font-family: var(--kima-font-family);
   font-size: var(--kima-font-size-label-large);
   font-weight: var(--kima-font-weight-semi-bold);
-  line-height: 1;
+  line-height: 1.4;
   color: var(--kima-color-on-primary);
   background: var(--kima-color-primary);
   cursor: pointer;
@@ -102,9 +104,23 @@ const isRound = computed(() => props.round || props.shape !== "square");
   @include kima-focus-ring;
   @include kima-ripple-host;
   @include kima-press(var(--kima-press-scale-md));
+  /* 官方按钮过渡：transition-colors duration-100（覆盖 motion-colors 的 150ms 通用档）。 */
+  transition:
+    transform var(--kima-duration-spring) var(--kima-ease-spring),
+    background-color 100ms var(--kima-curve-standard),
+    color 100ms var(--kima-curve-standard);
 
   &--round {
     border-radius: var(--kima-radius-full);
+  }
+
+  /* 官方 primary：hover/active 用 bg-primary-hover/active 档（token 已备）。 */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--kima-color-primary-hover);
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--kima-color-primary-active);
   }
 
   /* 禁用：填充分支用 onSurface 12% 底 + 38% 字。 */
@@ -118,25 +134,48 @@ const isRound = computed(() => props.round || props.shape !== "square");
     background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
   }
 
-  /* 柔和按钮：主色染过的浅底，比主操作弱一档，但一眼看得出是主色系。 */
+  /* 柔和按钮 = 官方 muted 变体：secondary 填充底 + base 文字 + hover/active 洗色档。 */
   &--tonal {
     color: var(--kima-color-primary);
     background: var(--kima-color-primary-soft);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-active);
+    }
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-selected);
+    }
   }
 
-  /* 描边按钮：透明底 + 一圈可见的描边。
-   * 这里的线是它这个变体的造型本身，不是用来分层次的——
-   * 「不用边框分层次」说的是不拿线去切割版面，别把造型线也一起去掉。 */
+  /* 描边按钮：透明底 + border-l2 一圈描边 + hover 洗色（官方 outline）。 */
   &--outlined {
     color: var(--kima-color-primary);
     background: transparent;
     border: var(--kima-outline-width) solid var(--kima-color-outline);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-hover);
+    }
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-active);
+    }
   }
 
-  /* 文字按钮：完全不上底，只靠文字色，最弱的一档。 */
+  /* 文字按钮 = 官方 ghost：次级文字 + hover 洗色 + hover 文字提亮 base。 */
   &--text {
-    color: var(--kima-color-primary);
+    color: var(--kima-color-on-surface-variant);
     background: transparent;
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      color: var(--kima-color-on-surface);
+      background: var(--kima-color-wash-hover);
+    }
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-active);
+    }
   }
 
   &--outlined:disabled,

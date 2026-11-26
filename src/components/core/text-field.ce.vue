@@ -251,10 +251,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
 
-  /* 输入区域是一块有底色的平面，跟卡片一样靠底色认出层次，不画描边——
-   * 线是用来切版面的，不该拿来圈一个输入框。
-   * 聚焦时叠上一圈主色（用 inset 阴影，不占位置也不会把元素撑大），
-   * 告诉键盘操作的人现在落在哪个框里。 */
+  /* 官方输入框描边模式（同 kima-field-skin）：1px 发丝 + 浅底 + focus 描边加深。 */
   &__control {
     @include kima-state-layer;
     @include kima-ripple-host;
@@ -262,28 +259,28 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     align-items: center;
     height: var(--kima-field-height);
     box-sizing: border-box;
+    border: var(--kima-outline-width) solid var(--kima-color-input-border);
     border-radius: var(--kima-radius-control);
-    background: var(--kima-color-layer-2);
+    background: var(--kima-color-layer-1);
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
-      box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+      border-color var(--kima-duration-effects) var(--kima-curve-standard);
   }
 
   &__control:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
+    border-color: var(--kima-color-input-border-focus);
   }
 
   /* 出错用官方模式：危险色薄叠底 + danger 描边 + base 文字，
    * 错误信息由下方 danger 小字承担——官方没有"红底红字"的实色错误容器。 */
   &--error &__control {
     background: var(--kima-color-error-secondary);
-    box-shadow: inset 0 0 0 var(--kima-outline-width) var(--kima-color-error);
+    border-color: var(--kima-color-error);
   }
 
   &--error &__control:focus-within {
     background: var(--kima-color-error-secondary-hover);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-error);
+    border-color: var(--kima-color-error);
   }
 
   &--disabled {

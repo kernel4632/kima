@@ -429,9 +429,9 @@ onBeforeUnmount(() => {
   gap: var(--kima-space-1);
   box-sizing: border-box;
   padding-right: var(--kima-space-2);
-  border: 0;
+  border: var(--kima-outline-width) solid var(--kima-color-input-border);
   border-radius: var(--kima-radius-control);
-  background: var(--kima-color-layer-2);
+  background: var(--kima-color-layer-1);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
@@ -439,11 +439,11 @@ onBeforeUnmount(() => {
   /* 聚焦时底色升一档，再叠一圈主色。和文本框用同一种提示。 */
   &:focus-within,
   .kima-combobox--open & {
-    background: var(--kima-color-layer-3);
+    background: var(--kima-color-wash-hover);
   }
 
   &:focus-within {
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
+    border-color: var(--kima-color-input-border-focus);
   }
 }
 
