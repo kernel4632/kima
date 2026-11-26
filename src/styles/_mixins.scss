@@ -179,3 +179,40 @@
     opacity: var(--kima-opacity-disabled);
   }
 }
+
+/* ---- 字段皮肤（唯一来源）----
+ * 一切"可输入的场地"（文本框、分段日期、密码组、下拉触发器底座……）共用这一份外观：
+ * layer-2 底、状态层、涟漪、focus-within 内描边、字段高度、控件圆角。
+ * 全库 22 个字段类组件从这里取皮肤，组件自己只写额外几何（宽度、分格、对齐）——
+ * 换主题（如 Grok）时字段外观只改这里一处。
+ * 用法：@include kima-field-skin;  宽度布局由各组件自己决定。 */
+@mixin kima-field-skin {
+  @include kima-layer(2);
+  @include kima-state-layer;
+  @include kima-ripple-host;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--kima-field-height);
+  padding: var(--kima-space-3) var(--kima-field-padding);
+  border: 0;
+  outline: 0;
+  border-radius: var(--kima-radius-m);
+  color: inherit;
+  font: inherit;
+  cursor: text;
+  transition:
+    background-color var(--kima-duration-effects) var(--kima-curve-standard),
+    box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
+
+  &::placeholder { color: var(--kima-color-on-surface-variant); }
+
+  /* 聚焦：底色升一档 + 主色内描边（内描边不占布局位置）。 */
+  &:focus-within,
+  &:focus-visible {
+    background: var(--kima-color-layer-3);
+    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
+    outline-offset: -2px;
+  }
+
+  &:disabled { cursor: not-allowed; }
+}

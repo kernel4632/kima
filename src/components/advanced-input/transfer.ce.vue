@@ -54,15 +54,7 @@ function selectAll(side) { const source=side==='left'?filteredLeft.value:filtere
   min-width: 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--kima-space-4);
   &__panel { @include kima-layer(1); display:grid;gap:var(--kima-space-2);min-width:0;padding:var(--kima-space-3);border-radius:var(--kima-radius-m); }
   header {display:flex;justify-content:space-between;gap:var(--kima-space-2);span{color:var(--kima-color-on-surface-variant);}}
-  &__search { @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+  &__search { @include kima-field-skin;
   box-sizing: border-box;
   min-width: 0;
   min-height: var(--kima-field-height);

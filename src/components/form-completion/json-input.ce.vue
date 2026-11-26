@@ -20,15 +20,7 @@ useContentMotion(message, () => Boolean(parsed.value.error));
   display:grid;
   gap:var(--kima-space-2);
   &__control {
-    @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+    @include kima-field-skin;
     box-sizing: border-box;
   min-width: 0;
   min-height: var(--kima-field-height);

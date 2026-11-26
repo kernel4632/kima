@@ -102,15 +102,7 @@ function fileKey(file, index) {
   @include kima-motion-colors;
   /* 原生 file 控件的外观不可控，整块拖放区就是点击目标；输入框只保留语义与键盘焦点。 */
   &__drop {
-    @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+    @include kima-field-skin;
     @include kima-motion-colors;
     position: relative;
     display: grid;

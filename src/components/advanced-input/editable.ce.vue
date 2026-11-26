@@ -75,15 +75,7 @@ defineExpose({ edit:begin, save, cancel, focus:()=>display.value?.focus() });
   border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
   &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } justify-self:start;text-align:start;border-radius:var(--kima-radius-s); }
   &__editor {display:grid;gap:var(--kima-space-2);}
-  &__input { @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+  &__input { @include kima-field-skin;
   box-sizing: border-box;
   min-width: 0;
   min-height: var(--kima-field-height);

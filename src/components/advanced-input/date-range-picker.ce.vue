@@ -66,15 +66,7 @@ function changeSecond(value) { month.value = shiftMonth(value, -1); }
   &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
   min-width: 0; display:grid; gap:var(--kima-space-3); max-width:800px;
   &__fields { display:flex; align-items:center; gap:var(--kima-space-2); min-width:0; }
-  &__input { @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+  &__input { @include kima-field-skin;
   box-sizing: border-box;
   min-width: 0;
   min-height: var(--kima-field-height);

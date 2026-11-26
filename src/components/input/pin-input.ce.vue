@@ -70,15 +70,7 @@ defineExpose({ focus: () => input.value?.focus() });
   font-size: var(--kima-font-size-body-large);
   font-weight: var(--kima-font-weight-semi-bold);
   &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
-  @include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }
+  @include kima-field-skin;
   @include kima-motion-colors;
   display: inline-grid;
   font-size: var(--kima-font-size-title-large);

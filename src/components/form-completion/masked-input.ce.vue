@@ -14,15 +14,8 @@ function onInput(e){apply(e.target.value,e.target.selectionStart||0);}function v
   font-family: var(--kima-font-family);
   font-size: var(--kima-font-size-body-large);
   font-weight: var(--kima-font-weight-semi-bold);
-  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }@include kima-layer(2);
-  @include kima-state-layer;
-  @include kima-ripple-host;
-  border-radius: var(--kima-radius-m);
-  transition: background-color var(--kima-duration-effects) var(--kima-curve-standard), box-shadow var(--kima-duration-effects) var(--kima-curve-standard);
-  &:focus-within {
-    background: var(--kima-color-layer-3);
-    box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-primary);
-  }&__control{box-sizing: border-box;
+  &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }@include kima-field-skin;
+&__control{box-sizing: border-box;
   min-width: 0;
   min-height: var(--kima-field-height);
   padding: var(--kima-space-3) var(--kima-field-padding);
