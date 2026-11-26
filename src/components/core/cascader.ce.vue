@@ -567,8 +567,9 @@ onBeforeUnmount(() => {
 
 .kima-cascader__popup {
   box-sizing: border-box;
-  /* 宽度跟随触发器（官方下拉模式），多列时按内容展开但不超 720。 */
-  width: var(--reka-popper-anchor-width, 100%);
+  /* 锚宽是下限不是精确值：多列内容更宽时弹层跟着变宽（width: max-content 随内容），
+   * 保底 = max(锚宽, 240)，上限 720。 */
+  width: max-content;
   min-width: max(var(--reka-popper-anchor-width, 0px), 240px);
   z-index: 20;
   display: flex;

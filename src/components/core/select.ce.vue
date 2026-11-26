@@ -549,9 +549,11 @@ onBeforeUnmount(() => {
 
 .kima-select__popup {
   box-sizing: border-box;
-  /* 宽度跟随触发器（官方下拉模式：弹层与锚同宽），定位由 Reka Popper 接管。 */
-  width: var(--reka-popper-anchor-width, 100%);
+  /* 锚宽是下限：选项描述文字更长时弹层能撑开（width: max-content 随内容），
+   * 保底 = max(锚宽, 180)。定位由 Reka Popper 接管。 */
+  width: max-content;
   min-width: max(var(--reka-popper-anchor-width, 0px), 180px);
+  max-width: calc(100vw - 24px);
   z-index: 20;
   max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;

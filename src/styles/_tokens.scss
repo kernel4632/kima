@@ -97,6 +97,11 @@
   --kima-color-inverse-on-surface: var(--kima-color-on-primary);
   /* 柔和按钮底 = 次级填充档（wash 8%），文字仍是 base。 */
   --kima-color-primary-soft: var(--kima-color-wash-secondary);
+  /* 未选中控件底（滑块轨道）官方 toggle token（--toggle-border / --toggle-selected）：
+   * 轨道边框：浅 hsl(black/10%)、深 hsl(white/9%)；选中轨道底是半透明 wash：
+   * 浅 8%、深 24%——官方开关没有实色轨道，选中感靠 wash 底 + 实色拇指。 */
+  --kima-color-toggle-border: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.09));
+  --kima-color-toggle-selected: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.24));
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
 

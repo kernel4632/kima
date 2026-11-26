@@ -234,6 +234,8 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', shortcut); clearTi
 .kima-playground__brand strong { font-size: var(--kima-font-size-title-medium); }
 .kima-playground__brand > span { color: var(--kima-color-on-surface-variant); }
 .kima-playground__tools { margin-inline-start: auto; --kima-field-height: var(--kima-touch-target); }
+/* 顶栏的文档链接：文字链接不占触摸档高（顶栏是密集区），与旁边 48 的按钮不齐高也不怪。 */
+.kima-playground__tools :deep(.kima-link) { min-height: 40px; padding-block: 0; }
 .kima-playground__tools > .kima-select { width: 132px; }
 .kima-playground__layout { flex: 1; min-height: 0; }
 .kima-playground__scenes { display: grid; grid-template-columns: 1.06fr 1fr 1.08fr 1.02fr; gap: var(--kima-space-3); align-items: start; }

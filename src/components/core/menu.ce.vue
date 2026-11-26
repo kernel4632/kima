@@ -126,7 +126,7 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 
 }
 .kima-menu--small .kima-menu__trigger { min-height: 40px; padding-inline: var(--kima-space-3); }
-.kima-menu--icon .kima-menu__trigger { width: var(--kima-touch-target); min-width: var(--kima-touch-target); padding: 0; justify-content: center; aspect-ratio: 1; }
+.kima-menu--icon .kima-menu__trigger { width: var(--kima-touch-target); min-width: var(--kima-touch-target); height: var(--kima-touch-target); padding: 0; justify-content: center; aspect-ratio: 1; }
 /* 菜单内容由 Reka 渲染并传送到 body：现在外面套了 motion.div，
  * data-v 标记在 motion.div 上，但 motion.div 由 Motion 渲染时同样带 scoped id，
  * 加上弹层结构变了，继续用 :global 按类名命中最稳（类名带 kima- 前缀，不污染宿主）。 */
@@ -144,12 +144,13 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   padding: var(--kima-space-4);
   border-radius: var(--kima-radius-l);
   outline: none; width: max(220px, var(--reka-dropdown-menu-trigger-width)); padding: var(--kima-space-2); }
-.kima-menu__search-wrap { display: flex; align-items: center; gap: var(--kima-space-2); }
+.kima-menu__search-wrap { position: relative; display: flex; align-items: center; margin-bottom: var(--kima-space-2); }
+.kima-menu__search-wrap > .kima-icon { position: absolute; left: var(--kima-space-3); color: var(--kima-color-on-surface-variant); pointer-events: none; }
 .kima-menu__search { box-sizing: border-box;
   width: 100%;
   min-height: 48px;
   margin-bottom: var(--kima-space-2);
-  padding: var(--kima-space-3);
+  padding: 0 var(--kima-space-3) 0 40px;
   border: 0;
   border-radius: var(--kima-radius-m);
   background: var(--kima-color-layer-2);

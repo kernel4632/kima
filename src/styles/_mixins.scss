@@ -77,7 +77,9 @@
   overflow: hidden;
 
   /* :deep 让规则不加 data-v 作用域标记：亮层是 JS 动态插入的，没有那个标记。
-   * z-index 2：亮层盖在场地所有内容之上，按钮边界处不会把它切开。 */
+   * z-index 2：亮层盖在场地所有内容之上，按钮边界处不会把它切开。
+   * 组级容器（radio/checkbox 组）把 useRipple 挂在组上时，ripple.js 会把亮层
+   * 放到「被按下项」自己的 data-kima-ripple-host 场地里——见 ripple.js 落点逻辑。 */
   :deep(.kima-ripple) {
     position: absolute;
     inset: 0;

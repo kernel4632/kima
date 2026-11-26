@@ -56,10 +56,11 @@ useInteractionReset(root, selected, update);
 
   }
   &__remove  {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
+    /* 小圆钮：28px 视觉、命中同尺寸，× 图标 18 居中——不占满整颗芯片。 */
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
     color: inherit;
     margin-right: var(--kima-space-1);
 

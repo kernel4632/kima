@@ -30,7 +30,7 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
 </script>
 <template>
   <fieldset ref="root" v-bind="controlAttrs" :class="['kima-checkbox-group', attrs.class]" :style="attrs.style" :aria-label="controlAttrs['aria-label'] || label" :aria-orientation="orientation" :disabled="disabled" :aria-disabled="disabled || undefined">
-    <label v-for="(item, index) in items" :key="item.value" class="kima-checkbox-group__item" :aria-disabled="disabled || item.disabled || undefined" :class="{ 'kima-checkbox-group__item--disabled': disabled || item.disabled }">
+    <label v-for="(item, index) in items" :key="item.value" class="kima-checkbox-group__item" data-kima-ripple-host :aria-disabled="disabled || item.disabled || undefined" :class="{ 'kima-checkbox-group__item--disabled': disabled || item.disabled }">
       <!-- 原生 input 只留语义和整块的点击面，方框和勾都是自己画的：
            accent-color 画出来的是系统复选框，深浅主题下都跟库里的方框对不上。 -->
       <input class="kima-checkbox-group__input" type="checkbox" :name="name" :value="item.value" :checked="local.includes(item.value)" :disabled="disabled || item.disabled" :required="required && !hasSelection && index === firstEnabled" @input.stop @change.stop="toggle(item.value, $event.target.checked)" />
@@ -52,7 +52,6 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
   font-size: var(--kima-font-size-body-large);
   font-weight: var(--kima-font-weight-semi-bold);
   &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
-  @include kima-ripple-host;
   border: 0;
   padding: 0;
   margin: 0;
@@ -64,6 +63,7 @@ function toggle(value, checked) { update(checked ? [...local.value, value] : loc
   &__item {
     @include kima-state-layer;
     @include kima-motion-colors;
+    /* 涟漪场地在选项自己身上（data-kima-ripple-host），不在组级。 */
     @include kima-ripple-host;
     display: inline-flex;
     align-items: center;

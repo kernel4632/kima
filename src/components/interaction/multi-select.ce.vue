@@ -131,8 +131,10 @@ watch(() => props.disabled, (value) => { if (value) setOpen(false); });
   @include kima-popup;
   box-sizing: border-box;
   z-index: 60;
-  /* 宽度跟随触发器（官方下拉模式），保底 280 保证选项可读。 */
-  width: max(var(--reka-popper-anchor-width, 100%), 280px);
+  /* 锚宽是下限：选项内容更长时弹层能撑开，保底 280 保证选项可读。 */
+  width: max-content;
+  min-width: max(var(--reka-popper-anchor-width, 100%), 280px);
+  max-width: calc(100vw - 24px);
   max-height: min(70vh, var(--reka-popper-available-height, 70vh));
   overflow: auto;
   padding: var(--kima-space-4);

@@ -61,10 +61,15 @@ const pageItems = computed(() => {
 
   const orderedPages = [...pages].sort((left, right) => left - right);
   const result = [];
+  let seenEllipsis = 0;
   orderedPages.forEach((page, index) => {
     const previousPage = orderedPages[index - 1];
     if (previousPage && page - previousPage > 1) {
-      result.push({ type: "ellipsis", key: `ellipsis-${previousPage}-${page}` });
+      // key 按位置身份（第几个省略号），不掺页码窗口：翻中间页时省略号位置没变，
+      // 就地复用同一个 DOM——掺页码会让 Vue 当成"删旧+增新"，离场项仍占位、
+      // 入场项又带着位移挤进来，首末页码被挤开再弹回（假 FLIP）。
+      seenEllipsis += 1;
+      result.push({ type: "ellipsis", key: `ellipsis-${seenEllipsis}` });
     }
     result.push({ type: "page", page, key: `page-${page}` });
   });
@@ -193,6 +198,7 @@ watch(pageCount, (count) => {
 }
 
 .kima-pagination__list {
+  position: relative;
   display: flex;
   max-width: 100%;
   align-items: center;
@@ -253,6 +259,11 @@ watch(pageCount, (count) => {
 .kima-pagination__button:is(.kima-list-enter-active, .kima-list-leave-active) {
   transition: opacity var(--kima-duration-medium) var(--kima-curve-standard),
     transform var(--kima-duration-medium) var(--kima-curve-emphasized);
+}
+/* 离场页码脱离排版：不脱离的话，翻页时离场项还占着位、入场项又挤进来，
+ * 位置没变的页码（如第 1 页）会被挤开再弹回——用户看到的"假移动"。 */
+.kima-pagination__button.kima-list-leave-active {
+  position: absolute;
 }
 .kima-pagination__button.kima-list-move {
   transition: transform var(--kima-duration-slow) var(--kima-curve-emphasized);

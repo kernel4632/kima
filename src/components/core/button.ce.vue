@@ -149,6 +149,9 @@ const isRound = computed(() => props.round || props.shape !== "square");
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    /* default slot 里可以混排 icon 和文字（如"搜索 / Ctrl K"触发器）：
+     * inline-flex 无 gap 时它们会贴叠，这里统一给出行内间距。 */
+    gap: var(--kima-space-2);
   }
 
   &__label {

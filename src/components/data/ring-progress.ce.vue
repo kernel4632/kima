@@ -7,7 +7,7 @@ const props = defineProps({
   value: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
   size: { type: [Number, String], default: 96 },
-  strokeWidth: { type: [Number, String], default: 6 },
+  strokeWidth: { type: [Number, String], default: 8 },
   indeterminate: Boolean,
   label: { type: String, default: "进度" },
   showValue: Boolean,
@@ -21,7 +21,7 @@ const percent = computed(() => safeValue.value / safeMax.value);
 const dimension = computed(() => Math.max(32, Number(props.size) || 96));
 // 画布使用实际size：尺寸、线宽、半径和周长始终处于同一坐标系。
 // 线宽是几何输入，必须与半径共用同一个数，不能只在CSS里改描边。
-const width = computed(() => Math.min(dimension.value - 2, Math.max(2, Number(props.strokeWidth) || 6)));
+const width = computed(() => Math.min(dimension.value - 2, Math.max(2, Number(props.strokeWidth) || 8)));
 const radius = computed(() => (dimension.value - width.value) / 2);
 const circumference = computed(() => 2 * Math.PI * radius.value);
 const dashOffset = computed(() => circumference.value * (1 - percent.value));

@@ -539,10 +539,12 @@ onBeforeUnmount(() => {
 
 .kima-combobox__popup {
   box-sizing: border-box;
-  /* 定位由 Reka Popper 内联接管；宽度跟锚点（触发器）同宽。
-   * 不能写 100%：fixed wrapper 是 max-content，会循环退化成内容宽。 */
+  /* 锚宽是下限不是精确值：选项内容更长时弹层能撑开（max-content 随内容）。
+   * 定位由 Reka Popper 内联接管。 */
   z-index: 20;
-  width: var(--reka-popper-anchor-width, 100%);
+  width: max-content;
+  min-width: var(--reka-popper-anchor-width, 100%);
+  max-width: calc(100vw - 24px);
   max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;
   padding: var(--kima-space-2);

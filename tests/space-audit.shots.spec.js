@@ -82,7 +82,7 @@ for (const theme of ['dark', 'light']) {
     expect(ring.dimension).toBe(80);
     expect(ring.center).toBe(40);
     expect(ring.radius + ring.stroke / 2).toBe(40);
-    expect(ring.stroke).toBe(6);
+    expect(ring.stroke).toBe(8);
     expect((await page.locator('.kima-divider__line').boundingBox()).height).toBe(2);
 
     // 14：顶栏字段与操作按钮同高，不更改其他64px字段。

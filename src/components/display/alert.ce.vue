@@ -59,7 +59,10 @@ function close() { if (!visible.value) return; visible.value = false; emit("upda
   &[data-variant="danger"] { --kima-display-tone: var(--kima-color-error); }
   @include kima-motion-colors;
   display: flex; align-items: flex-start; gap: var(--kima-space-4);
-  &__icon { @include kima-motion-colors; display: inline-flex; flex: 0 0 auto; color: var(--kima-display-tone); padding-block: var(--kima-space-1); }
+  /* 图标与首行文字垂直居中：单行标题的提示（如"团队空间已就绪"）里，
+   * flex-start 会让 28px 图标顶在格子里、和文字错开——
+   * 图标盒高 = 28 + padding 8 = 36，对齐到 heading 的行盒中线上。 */
+  &__icon { @include kima-motion-colors; display: inline-flex; flex: 0 0 auto; align-items: center; height: calc(var(--kima-font-size-title-medium) * var(--kima-line-height-tight)); color: var(--kima-display-tone); }
   &__body { min-width: 0; flex: 1; }
   &__heading { display: block; margin-bottom: var(--kima-space-2); font-size: var(--kima-font-size-title-medium); }
   &__action { display: flex; flex-wrap: wrap; gap: var(--kima-space-2); margin-top: var(--kima-space-4); }

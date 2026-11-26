@@ -14,7 +14,8 @@ import { HugeiconsIcon } from "@hugeicons/vue";
 // 全库图标线宽的唯一来源（24 画布坐标系）。想整体调粗细只改这一个数。
 // 为什么不放 CSS token：线宽要传给 Hugeicons 组件当属性用，JS 读不到 CSS 变量，
 // 放两处就会出现"改了 token 图标没变"的情况。
-const iconStrokeWidth = 1.75;
+// 2.25 = 1.75 × 1.28：用户实测反馈整体偏细，全局基准加粗约 1.3 倍。
+const iconStrokeWidth = 2.25;
 
 const props = defineProps({
   icon: {

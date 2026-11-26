@@ -42,7 +42,7 @@ function onKey(event) {
 </script>
 <template>
   <fieldset ref="root" v-bind="controlAttrs" :class="['kima-radio-group', attrs.class]" :style="attrs.style" role="radiogroup" :aria-label="controlAttrs['aria-label'] || label" :aria-required="required || undefined" :aria-orientation="orientation" :disabled="disabled" :aria-disabled="disabled || undefined" @keydown="onKey">
-    <label v-for="(item, index) in items" :key="item.value" class="kima-radio-group__item" :class="{ 'kima-radio-group__item--disabled': item.disabled }">
+    <label v-for="(item, index) in items" :key="item.value" class="kima-radio-group__item" data-kima-ripple-host :class="{ 'kima-radio-group__item--disabled': item.disabled }">
       <input type="radio" :name="name" :value="item.value" :checked="local === item.value" :disabled="disabled || item.disabled" :required="required" :tabindex="index === activeIndex ? 0 : -1" @input.stop @change.stop="update(item.value)" />
       <slot name="option" :item="item" :selected="local === item.value" :disabled="disabled || item.disabled">
         <KimaIcon v-if="item.icon" :icon="item.icon" :size="20" aria-hidden="true" />
@@ -60,7 +60,6 @@ function onKey(event) {
   font-size: var(--kima-font-size-body-large);
   font-weight: var(--kima-font-weight-semi-bold);
   &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
-  @include kima-ripple-host;
   border: 0;
   padding: 0;
   margin: 0;
@@ -72,6 +71,9 @@ function onKey(event) {
   &__item {
     @include kima-state-layer;
     @include kima-motion-colors;
+    /* 涟漪场地在选项自己身上（data-kima-ripple-host），不在组级——
+     * 点一个选项亮一个选项，整组亮会让用户以为全组都被选中。 */
+    @include kima-ripple-host;
     display: inline-flex;
     align-items: center;
     gap: var(--kima-space-3);

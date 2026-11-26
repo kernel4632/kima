@@ -6,7 +6,6 @@
 import { computed, ref, watchEffect } from "vue";
 import { useContentMotion } from "../../utils/content-motion.js";
 import { presenceTransition } from "../../utils/motion.js";
-import KimaButton from "../core/button.ce.vue";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
 defineOptions({ inheritAttrs: false });
@@ -91,7 +90,7 @@ defineExpose({ focus: () => input.value?.focus() });
     <TransitionGroup name="kima-list" v-bind="tagTransition">
     <span v-for="(tag, index) in local" :key="tag" class="kima-tags-input__tag">
       <span>{{ tag }}</span>
-      <KimaButton v-if="!readonly" variant="text" :disabled="disabled" :aria-label="`移除 ${tag}`" @click="remove(index)">×</KimaButton>
+      <button v-if="!readonly" type="button" class="kima-tags-input__tag-remove" :disabled="disabled" :aria-label="`移除 ${tag}`" @click="remove(index)">×</button>
     </span>
     </TransitionGroup>
     <input v-for="tag in local" :key="tag" type="hidden" :name="name" :value="tag" :disabled="disabled" />
@@ -127,6 +126,34 @@ defineExpose({ focus: () => input.value?.focus() });
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; } flex: 1 1 8em; width: 8em; min-width: min(8em, 100%); max-width: 100%; padding-inline: var(--kima-space-2); }
   &__tag { display: inline-flex; align-items: center; gap: var(--kima-space-1); padding-inline-start: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
+
+  /* 移除按钮是标签里的小圆钮：24px 视觉、32px 命中，不再是塞进来一整颗按钮
+   * （之前用 KimaButton 64×48 的几何把标签撑到变形）。 */
+  &__tag-remove {
+    flex: 0 0 auto;
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-inline-end: var(--kima-space-1);
+    border: 0;
+    border-radius: var(--kima-radius-full);
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    font-size: var(--kima-font-size-body-medium);
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);
+
+    &:hover:not(:disabled) { background: var(--kima-color-wash-hover); }
+
+    &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: var(--kima-focus-ring-offset); }
+
+    &:disabled { cursor: not-allowed; }
+  }
 }
 /* 退场标签脱离排版：FLIP 重排时它不再占位，其余标签平滑补位（_tokens.scss 的 kima-list 管过渡）。
  * 这是动画期特例——absolute 只活在退场那 200ms，不是布局手段。 */
