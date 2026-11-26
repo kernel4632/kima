@@ -97,7 +97,7 @@ defineExpose({ validate, reportValidity });
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
   &__legend { display: flex; align-items: baseline; gap: var(--kima-space-2); padding: 0; font-size: var(--kima-font-size-title-small); font-weight: var(--kima-font-weight-semi-bold); }
-  &__required { color: var(--kima-color-error); font-size: var(--kima-font-size-label-small); font-weight: var(--kima-font-weight-regular); }
+  &__required { color: var(--kima-color-error); font-size: var(--kima-font-size-label-small); font-weight: var(--kima-font-weight-semi-bold); }
   &__fields { display: grid; gap: var(--kima-space-3); min-width: 0; }
   &__messages { display: grid; gap: var(--kima-space-1); }
   &__hint, &__error { margin: 0; font-size: var(--kima-font-size-label-medium); line-height: var(--kima-line-height-normal); }

@@ -82,7 +82,7 @@ defineProps({
 
 .kima-empty-state__title {
   font-size: var(--kima-font-size-title-small);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
 }
 
 .kima-empty-state__description {

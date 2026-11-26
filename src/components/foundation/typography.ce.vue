@@ -26,7 +26,7 @@ const tokenColor = computed(() => choice(props.color, ['default', 'muted', 'prim
   line-height: var(--kima-line-height-normal);
   &--heading { line-height: var(--kima-line-height-tight); font-weight: var(--kima-font-weight-semi-bold); text-wrap: balance; }
   &--body { max-width: 72ch; }
-  &--caption { color: var(--kima-color-on-surface-variant); font-weight: var(--kima-font-weight-regular); line-height: var(--kima-line-height-normal); }
+  &--caption { color: var(--kima-color-on-surface-variant); font-weight: var(--kima-font-weight-semi-bold); line-height: var(--kima-line-height-normal); }
   &--color-muted { color: var(--kima-color-on-surface-variant); }
   &--color-primary { color: var(--kima-color-primary); }
   &--color-success { color: var(--kima-color-success); }

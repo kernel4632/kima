@@ -163,7 +163,7 @@ function handleKeyup(event) {
 /* 标题：字号 body-medium、字重 medium、颜色 primary。 */
 .kima-card__header {
   font-size: var(--kima-font-size-body-medium);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
   color: var(--kima-color-primary);
 }
 

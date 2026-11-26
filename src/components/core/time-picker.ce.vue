@@ -585,7 +585,7 @@ onBeforeUnmount(() => {
 .kima-time-picker__column-label {
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-medium);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
 }
 
 /* 控件是一块完整的场地：触发器、箭头、清除按钮都是场地里的排布项。

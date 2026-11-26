@@ -678,7 +678,7 @@ onBeforeUnmount(() => {
 
 .kima-date-picker__month {
   font-size: var(--kima-font-size-body-medium);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
   text-align: center;
 }
 
@@ -730,7 +730,7 @@ onBeforeUnmount(() => {
   padding: var(--kima-space-1) 0;
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-small);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
   text-align: center;
 }
 

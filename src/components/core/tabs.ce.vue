@@ -252,7 +252,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   background: transparent;
   font: inherit;
   font-size: var(--kima-font-size-body-medium);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
   white-space: normal;
   overflow-wrap: anywhere;
   cursor: pointer;

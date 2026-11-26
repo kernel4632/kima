@@ -97,7 +97,7 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
   box-sizing: border-box;
   font-family: var(--kima-font-family);
   font-size: var(--kima-font-size-label-small);
-  font-weight: var(--kima-font-weight-medium);
+  font-weight: var(--kima-font-weight-semi-bold);
   line-height: 1;
   white-space: nowrap;
   color: var(--kima-color-on-primary);
