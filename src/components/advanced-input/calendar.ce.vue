@@ -99,7 +99,7 @@ defineExpose({ focus: () => focus(tabDate.value || month.value), navigate });
   &__nav { @include kima-state-layer;
   @include kima-ripple-host;
   @include kima-focus-ring;
-  @include kima-press;
+  @include kima-press(var(--kima-press-scale-sm));
   box-sizing: border-box; min-height: var(--kima-touch-target); padding: var(--kima-space-2) var(--kima-space-3);
   border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
   &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } width:var(--kima-touch-target); padding:0; font-size:var(--kima-font-size-title-large); }

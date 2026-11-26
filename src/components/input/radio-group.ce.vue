@@ -7,7 +7,6 @@ import { computed, ref } from "vue";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
 import KimaIcon from "../core/icon.ce.vue";
-import { Tick01Icon } from "@hugeicons/core-free-icons";
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
   modelValue: { type: [String, Number], default: "" },
@@ -48,7 +47,6 @@ function onKey(event) {
       <slot name="option" :item="item" :selected="local === item.value" :disabled="disabled || item.disabled">
         <KimaIcon v-if="item.icon" :icon="item.icon" :size="20" aria-hidden="true" />
         <span class="kima-radio-group__copy"><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span>
-        <KimaIcon v-if="local === item.value" :icon="Tick01Icon" :size="18" aria-hidden="true" />
       </slot>
     </label>
   </fieldset>

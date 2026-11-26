@@ -118,10 +118,13 @@
    * scrim-opacity 保持全库引用名，值按深浅拆开由 color-mix 读。 */
   --kima-color-scrim: #050505;
   --kima-scrim-opacity: light-dark(20%, 50%);
-  /* 毛玻璃滤镜：深色 blur(36px) saturate(160%)，浅色 saturate(180%)（规格第九节）。
-   * blur 写成独立长度供只需要模糊的场合（遮罩、聚光遮罩）单独引用。 */
-  --kima-backdrop-blur: 36px;
-  --kima-backdrop-filter: blur(36px) saturate(160%);
+  /* 毛玻璃滤镜分两档：
+   * 遮罩/弹层用 blur(12px) saturate(1.6)——官方遮罩就是 12px 档（36px 用在全屏遮罩上会糊成一坨）；
+   * composer 玻璃专属 blur(36px) saturate(160%)——官方 --grok-glass-filter 仅 6 处使用。
+   * blur 写成独立长度供只需要模糊的场合（聚光遮罩）单独引用。 */
+  --kima-backdrop-blur: 12px;
+  --kima-backdrop-filter: blur(12px) saturate(1.6);
+  --kima-backdrop-filter-glass: blur(36px) saturate(160%);
 
   /* ---- 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 ---- */
   --kima-color-picker-white: #ffffff;
@@ -135,11 +138,17 @@
 
   /* ---- 语义色（成功 / 警告 / 危险）----
    * 像交通灯，含义固定。error（danger）深浅同值；success / warning 深浅各一套。
-   * on-* 配对色不在规格里，沿用现有值保证底字互读。 */
+   * 危险浅底走官方 --grok-bg-danger-secondary 梯子：danger mix 14%/18%/24%，
+   * 与 accent 选中梯子同构——官方没有"实色红容器"，错误容器=危险色薄叠，
+   * 文字仍是 base，出错信息用 danger 实色小字。 */
   --kima-color-error: #ff263c;
-  --kima-color-on-error: light-dark(oklch(0.97 0.01 17), oklch(0.58 0.22 27));
-  --kima-color-error-container: light-dark(oklch(0.97 0.01 17), oklch(0.58 0.22 27));
-  --kima-color-on-error-container: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --kima-color-on-error: light-dark(#ffffff, #1e1d1d);
+  --kima-color-error-secondary: color-mix(in srgb, var(--kima-color-error) 14%, transparent);
+  --kima-color-error-secondary-hover: color-mix(in srgb, var(--kima-color-error) 18%, transparent);
+  --kima-color-error-secondary-active: color-mix(in srgb, var(--kima-color-error) 24%, transparent);
+  /* 旧名映射：error-container 系指向官方危险薄叠，on- 是 base（红底上用红字会隐形）。 */
+  --kima-color-error-container: var(--kima-color-error-secondary);
+  --kima-color-on-error-container: var(--kima-color-on-surface);
   --kima-color-success: light-dark(#05a95f, #00c972);
   --kima-color-on-success: light-dark(#ffffff, #00391c);
   --kima-color-warning: light-dark(#d77f02, #ff9800);
@@ -288,8 +297,11 @@
   --kima-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
   --kima-spring-snappy: var(--kima-ease-spring);
   --kima-spring-gentle: var(--kima-ease-spring);
-  /* 按下缩小的幅度。0.98 是缩 2%，几乎看不出，只有手感。 */
+  /* 按下缩小的幅度按控件尺寸分档（官方 active:scale 0.95–0.99 区间）：
+   * 大档 0.98（卡片/大按钮 64px+）、中档 0.97（按钮 56px）、小档 0.96（图标按钮 48px）。 */
   --kima-press-scale: 0.98;
+  --kima-press-scale-md: 0.97;
+  --kima-press-scale-sm: 0.96;
 
   /* ---- 控件尺寸 ----
    * 只放跨组件共用的尺寸。单组件专属参数定义在各组件自己的样式里。
@@ -344,7 +356,8 @@
  * light-dark() 只能解析颜色，滤镜只能用媒体查询镜像同一个信号，仍然零 JS。 */
 @media (prefers-color-scheme: light) {
   :root {
-    --kima-backdrop-filter: blur(36px) saturate(180%);
+    --kima-backdrop-filter: blur(12px) saturate(180%);
+    --kima-backdrop-filter-glass: blur(36px) saturate(180%);
   }
 }
 

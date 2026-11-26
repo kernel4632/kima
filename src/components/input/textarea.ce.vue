@@ -146,7 +146,7 @@ defineExpose({ focus: () => input.value?.focus() });
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-small);
   &[role="alert"] { color: var(--kima-color-error); } text-align: end; }
-  &--error &__surface { background: var(--kima-color-error-container); color: var(--kima-color-on-error-container); &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-error); } }
-  &--error textarea::placeholder { color: var(--kima-color-on-error-container); }
+  &--error &__surface { background: var(--kima-color-error-secondary); color: var(--kima-color-on-surface); box-shadow: inset 0 0 0 var(--kima-outline-width) var(--kima-color-error); &:focus-within { box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-error); } }
+  &--error textarea::placeholder { color: var(--kima-color-on-surface-variant); }
 }
 </style>

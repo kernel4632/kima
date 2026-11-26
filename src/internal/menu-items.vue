@@ -2,7 +2,7 @@
 import { computed, reactive } from 'vue';
 import * as Reka from 'reka-ui';
 import KimaIcon from '../components/core/icon.ce.vue';
-import { ArrowRight01Icon, Tick01Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { presenceTransition } from '../utils/motion.js';
 const props = defineProps({ items: Array, family: { type: String, default: 'DropdownMenu' }, checked: Object, modelValue: null, selection: Boolean, disabled: Boolean });
 const emit = defineEmits(['select', 'check']);
@@ -29,8 +29,8 @@ function choose(item, event) { if (props.disabled || item.disabled) { event.prev
         <menu-items :items="item.children" :family="family" :checked="checked" :model-value="modelValue" :selection="selection" :disabled="disabled || item.disabled" @select="emit('select', $event)" @check="(item, value) => emit('check', item, value)" />
       </component></Transition>
     </component>
-    <component :is="part.CheckboxItem" v-else-if="item.type === 'checkbox'" class="kima-shell-menu__item" :disabled="disabled || item.disabled" :model-value="selected(item)" :text-value="item.label" @select="choose(item, $event)" @update:model-value="emit('check', item, $event)"><span>{{ item.label }}</span><KimaIcon v-if="selected(item)" :icon="Tick01Icon" :size="18" aria-hidden="true" /></component>
-    <component :is="part.RadioGroup" v-else-if="item.type === 'radio'" :model-value="checked?.[item.group || 'default']" :aria-label="item.group || 'default'" @update:model-value="emit('check', item, $event)"><component :is="part.RadioItem" class="kima-shell-menu__item" :value="item.value" :disabled="disabled || item.disabled" :text-value="item.label" @select="choose(item, $event)"><span>{{ item.label }}</span><KimaIcon v-if="selected(item)" :icon="Tick01Icon" :size="18" aria-hidden="true" /></component></component>
-    <component :is="part.Item" v-else class="kima-shell-menu__item" :role="selection ? 'menuitemradio' : 'menuitem'" :aria-checked="selection ? selected(item) : undefined" :disabled="disabled || item.disabled" :text-value="item.label" @select="choose(item, $event)"><span class="kima-shell-menu__copy"><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span><small v-if="item.shortcut">{{ item.shortcut }}</small><KimaIcon v-if="selected(item)" :icon="Tick01Icon" :size="18" aria-hidden="true" /></component>
+    <component :is="part.CheckboxItem" v-else-if="item.type === 'checkbox'" class="kima-shell-menu__item" :disabled="disabled || item.disabled" :model-value="selected(item)" :text-value="item.label" @select="choose(item, $event)" @update:model-value="emit('check', item, $event)"><span>{{ item.label }}</span></component>
+    <component :is="part.RadioGroup" v-else-if="item.type === 'radio'" :model-value="checked?.[item.group || 'default']" :aria-label="item.group || 'default'" @update:model-value="emit('check', item, $event)"><component :is="part.RadioItem" class="kima-shell-menu__item" :value="item.value" :disabled="disabled || item.disabled" :text-value="item.label" @select="choose(item, $event)"><span>{{ item.label }}</span></component></component>
+    <component :is="part.Item" v-else class="kima-shell-menu__item" :role="selection ? 'menuitemradio' : 'menuitem'" :aria-checked="selection ? selected(item) : undefined" :disabled="disabled || item.disabled" :text-value="item.label" @select="choose(item, $event)"><span class="kima-shell-menu__copy"><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span><small v-if="item.shortcut">{{ item.shortcut }}</small></component>
   </template>
 </template>

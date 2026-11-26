@@ -567,7 +567,9 @@ onBeforeUnmount(() => {
 
 .kima-cascader__popup {
   box-sizing: border-box;
-  /* 定位由 Reka Popper 内联接管；这里只剩视觉。 */
+  /* 宽度跟随触发器（官方下拉模式），多列时按内容展开但不超 720。 */
+  width: var(--reka-popper-anchor-width, 100%);
+  min-width: max(var(--reka-popper-anchor-width, 0px), 240px);
   z-index: 20;
   display: flex;
   max-width: min(720px, 100vw);

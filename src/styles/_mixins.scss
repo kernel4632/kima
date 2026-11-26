@@ -105,19 +105,25 @@
 }
 
 /* ---- 按下回弹 ----
- * 弹簧写在 transition 而不是 animation：松手时能接着按下的进度往回弹，不会跳一下。
+ * 官方按钮按下有 active scale（官方 CSS 的 active:scale-95…[0.99] 档），
+ * 幅度按控件尺寸递减：小控件缩得多、大控件缩得少——
+ *   $scale-sm 0.96（图标按钮 48px 档）/ $scale-md 0.97（按钮 56px 档）/ 默认 0.98（卡片/大按钮 64px+ 档）。
+ * 回弹用官方 ease-spring 曲线（cubic-bezier(.22,1,.36,1) 400ms 档）：
+ * 弹簧写在 transition 而不是 animation——松手时能接着按下的进度往回弹，不会跳一下。
  *
  * 两段速度刻意不一样：
  *   按下去 —— 60ms，几乎瞬时，手感和手指同步（长了会觉得"软"）。
- *   弹回来 —— 320ms + spring-gentle，平滑收回，末尾几乎没有过冲。
+ *   弹回来 —— spring 曲线，平滑收回，末尾几乎没有过冲。
  *
- * 幅度刻意做得小：默认缩 2%，48 高的按钮整体只缩不到 1px。
- * 需要别的幅度时自己传：@include kima-press($scale: 0.99) */
+ * 只给"点击确认成功"的控件（按钮、卡片、勾选框、toggle）；字段类与选项行不接——
+ * 见 AGENTS.md 的反馈分配规则。
+ * 用法：@include kima-press;（默认 0.98 大档）
+ *       @include kima-press(0.97)（中档）/ @include kima-press(0.96)（小档） */
 @mixin kima-press($scale: var(--kima-press-scale)) {
   --kima-press-here: #{$scale};
 
   transition:
-    transform 320ms var(--kima-spring-gentle),
+    transform var(--kima-duration-spring) var(--kima-ease-spring),
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     color var(--kima-duration-effects) var(--kima-curve-standard);
 

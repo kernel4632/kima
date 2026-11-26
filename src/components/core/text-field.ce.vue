@@ -274,15 +274,15 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-focus-ring);
   }
 
-  /* 出错不是"描一圈红"，而是这块底本身换成了危险容器的颜色，
-   * 一眼能看出这个框和别人不一样。 */
+  /* 出错用官方模式：危险色薄叠底 + danger 描边 + base 文字，
+   * 错误信息由下方 danger 小字承担——官方没有"红底红字"的实色错误容器。 */
   &--error &__control {
-    background: var(--kima-color-error-container);
-    box-shadow: none;
+    background: var(--kima-color-error-secondary);
+    box-shadow: inset 0 0 0 var(--kima-outline-width) var(--kima-color-error);
   }
 
   &--error &__control:focus-within {
-    background: var(--kima-color-error-container);
+    background: var(--kima-color-error-secondary-hover);
     box-shadow: inset 0 0 0 var(--kima-outline-width-focused) var(--kima-color-error);
   }
 
@@ -306,9 +306,9 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     font-size: var(--kima-font-size-body-large);
   }
 
-  /* 错误底是浅红，文字得跟着换成这套红底上的颜色才看得清。 */
+  /* 错误底是危险薄叠，文字保持 base（官方模式：底淡、字实、信息用 danger 小字）。 */
   &--error &__control input {
-    color: var(--kima-color-on-error-container);
+    color: var(--kima-color-on-surface);
   }
 
   &__control input::placeholder {
@@ -317,7 +317,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
   }
 
   &--error &__control input::placeholder {
-    color: var(--kima-color-on-error-container);
+    color: var(--kima-color-on-surface-variant);
     opacity: 0.7;
   }
 

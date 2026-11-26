@@ -42,7 +42,7 @@ useRipple(root);
   @include kima-motion-colors;
   @include kima-focus-ring;
   @include kima-ripple-host;
-  @include kima-press;
+  @include kima-press(var(--kima-press-scale-md));
   @include kima-disabled;
   min-height: var(--kima-field-height);
   padding: var(--kima-space-3) var(--kima-space-5);

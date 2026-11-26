@@ -11,7 +11,7 @@ import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref
 import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
 import KimaIcon from "./icon.ce.vue";
 import { useRemoteOptions } from "../../utils/remote-options.js";
-import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../../utils/ripple.js";
 
 /* 模块加载即求值一次：Portal 在 SSR 渲染期不触碰 document。 */
@@ -391,7 +391,6 @@ onBeforeUnmount(() => {
               <span class="kima-combobox__option-label">{{ item.label }}</span>
               <span v-if="item.description" class="kima-combobox__option-description">{{ item.description }}</span>
             </span>
-            <Transition name="kima-fade"><KimaIcon v-if="Object.is(item.value, localValue)" class="kima-combobox__check" :icon="Tick01Icon" :size="18" aria-hidden="true" /></Transition>
           </div>
           <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-combobox__empty" role="status">没有匹配选项</div>
         </div>
@@ -620,13 +619,6 @@ onBeforeUnmount(() => {
 .kima-combobox__empty {
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-medium);
-}
-
-.kima-combobox__check {
-  flex: 0 0 auto;
-  /* 勾跟着所在行的文字色走：选中行是 on-primary-container，勾也用同一个色。
-   * 不能写死成 primary——容器色底上 primary 也是浅色，勾会跟底色糊在一起。 */
-  color: inherit;
 }
 
 .kima-combobox__empty,

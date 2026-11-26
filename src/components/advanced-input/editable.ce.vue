@@ -70,7 +70,6 @@ defineExpose({ edit:begin, save, cancel, focus:()=>display.value?.focus() });
   &__display { @include kima-state-layer;
   @include kima-ripple-host;
   @include kima-focus-ring;
-  @include kima-press;
   box-sizing: border-box; min-height: var(--kima-touch-target); padding: var(--kima-space-2) var(--kima-space-3);
   border: 0; border-radius: var(--kima-radius-full); background: var(--kima-color-layer-2); color: var(--kima-color-on-surface); font: inherit; cursor: pointer;
   &:disabled { opacity: var(--kima-opacity-disabled); cursor: not-allowed; } justify-self:start;text-align:start;border-radius:var(--kima-radius-s); }

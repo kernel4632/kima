@@ -115,7 +115,7 @@ const iconSize = computed(() => ({ small: 20, default: 24, large: 24 })[buttonSi
   @include kima-state-layer;
   @include kima-focus-ring;
   @include kima-ripple-host;
-  @include kima-press;
+  @include kima-press(var(--kima-press-scale-sm));
 
   /* 禁用：图标降到 onSurface 38%。 */
   &:disabled {

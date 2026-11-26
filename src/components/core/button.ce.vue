@@ -101,7 +101,7 @@ const isRound = computed(() => props.round || props.shape !== "square");
   @include kima-state-layer;
   @include kima-focus-ring;
   @include kima-ripple-host;
-  @include kima-press;
+  @include kima-press(var(--kima-press-scale-md));
 
   &--round {
     border-radius: var(--kima-radius-full);

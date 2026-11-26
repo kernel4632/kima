@@ -15,7 +15,7 @@ import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-
 import { AnimatePresence, motion } from "motion-v";
 import KimaIcon from "./icon.ce.vue";
 import { useRemoteOptions } from "../../utils/remote-options.js";
-import { ArrowDown01Icon, Cancel01Icon, Search01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { useRipple } from "../../utils/ripple.js";
 
 /* 模块加载即求值一次：Teleport 的 disabled 绑定在渲染期读这个常量，
@@ -379,7 +379,6 @@ onBeforeUnmount(() => {
                   <span class="kima-select__option-label">{{ item.label }}</span>
                   <span v-if="item.description" class="kima-select__option-description">{{ item.description }}</span>
                 </span>
-                <KimaIcon v-if="Object.is(item.value, localValue)" class="kima-select__check" :icon="Tick01Icon" :size="18" aria-hidden="true" />
               </div>
             </div>
             <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
@@ -550,7 +549,9 @@ onBeforeUnmount(() => {
 
 .kima-select__popup {
   box-sizing: border-box;
-  /* 定位由 Reka Popper 内联接管（锚定/翻转/碰撞），这里只剩视觉。 */
+  /* 宽度跟随触发器（官方下拉模式：弹层与锚同宽），定位由 Reka Popper 接管。 */
+  width: var(--reka-popper-anchor-width, 100%);
+  min-width: max(var(--reka-popper-anchor-width, 0px), 180px);
   z-index: 20;
   max-height: min(360px, var(--reka-popper-available-height, 50vh));
   overflow: auto;
@@ -660,13 +661,6 @@ onBeforeUnmount(() => {
 .kima-select__empty {
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-medium);
-}
-
-.kima-select__check {
-  flex: 0 0 auto;
-  /* 勾跟着所在行的文字色走：选中行是 primary（选中项不加底色），勾也用同一个色。
-   * 写死颜色的话，选中行换配色时勾会和文字对不上。 */
-  color: inherit;
 }
 
 .kima-select__empty,
