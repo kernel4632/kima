@@ -286,7 +286,7 @@ onBeforeUnmount(() => {
         </span>
         <KimaIcon class="kima-select__arrow" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" />
       </button>
-      <Transition name="kima-fade" v-bind="presenceTransition">
+      <Transition name="kima-fade">
       <button
         v-if="clearable && selectedItem"
         class="kima-select__clear"
