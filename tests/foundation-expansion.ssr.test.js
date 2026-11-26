@@ -13,7 +13,6 @@ const samples = [
   ['banner', { heading: '维护', variant: 'warning', closable: true }, { default: () => '今晚维护' }],
   ['error-state', { heading: '加载失败', description: '请重试', code: 'NETWORK' }, { default: () => '补充信息' }],
   ['typography', { type: 'heading', level: 2, size: 'headline-medium' }, { default: () => '语义标题' }],
-  ['time-display', { value: '2026-06-01T01:30:00Z', mode: 'datetime', locale: 'en-GB', timeZone: 'UTC' }, {}],
 ];
 
 test('foundation components SSR render without browser globals', async () => {
@@ -32,30 +31,8 @@ test('foundation components SSR render without browser globals', async () => {
       if (slug === 'banner') assert.match(html, /role="alert"/);
       if (slug === 'error-state') assert.match(html, /加载失败/);
       if (slug === 'typography') assert.match(html, /<h2[^>]*class="kima-typography/);
-      if (slug === 'time-display') {
-        assert.match(html, /datetime="2026-06-01T01:30:00.000Z"/);
-        assert.match(html, /01:30/);
-      }
       if (slug === 'grid') assert.match(html, /grid-template-areas/);
     }
-  } finally {
-    await server.close();
-  }
-});
-
-test('SSR time display is deterministic with explicit zone and safe on invalid input', async () => {
-  const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
-  const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');
-  try {
-    const Component = (await server.ssrLoadModule(componentPaths['time-display'])).default;
-    const render = (props) => renderToString(createSSRApp({ render: () => h(Component, props) }));
-    const date = await render({ value: '2026-06-01', mode: 'date', locale: 'en-GB', timeZone: 'UTC', dateStyle: 'full' });
-    assert.match(date, /Monday,? 1 June 2026/);
-    const invalid = await render({ value: 'invalid', mode: 'datetime', timeZone: 'UTC' });
-    assert.match(invalid, /时间不可用/);
-    assert.doesNotMatch(invalid, /datetime="/);
-    const badZone = await render({ value: '2026-06-01T01:30:00Z', mode: 'time', locale: 'en-GB', timeZone: 'Mars/Olympus' });
-    assert.doesNotMatch(badZone, /时间不可用/);
   } finally {
     await server.close();
   }

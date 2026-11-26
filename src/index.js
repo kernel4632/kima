@@ -38,8 +38,6 @@ export { default as KimaCombobox } from "./components/core/combobox.ce.vue";
 export { default as KimaCommand } from "./components/interaction/command.ce.vue";
 export { default as KimaConfigProvider } from "./components/shell/config-provider.ce.vue";
 export { default as KimaContextMenu } from "./components/interaction/context-menu.ce.vue";
-export { default as KimaCopyButton } from "./components/data/copy-button.ce.vue";
-export { default as KimaCountdown } from "./components/display/countdown.ce.vue";
 export { default as KimaDateField } from "./components/form-completion/date-field.ce.vue";
 export { default as KimaDatePicker } from "./components/core/date-picker.ce.vue";
 export { default as KimaDateRangePicker } from "./components/advanced-input/date-range-picker.ce.vue";
@@ -101,7 +99,6 @@ export { default as KimaQrCode } from "./components/utility/qr-code.ce.vue";
 export { default as KimaRadioGroup } from "./components/input/radio-group.ce.vue";
 export { default as KimaRangeSlider } from "./components/advanced-input/range-slider.ce.vue";
 export { default as KimaRating } from "./components/input/rating.ce.vue";
-export { default as KimaRelativeTime } from "./components/data/relative-time.ce.vue";
 export { default as KimaResult } from "./components/display/result.ce.vue";
 export { default as KimaRichTextEditor } from "./components/content/rich-text-editor.ce.vue";
 export { default as KimaRingProgress } from "./components/data/ring-progress.ce.vue";
@@ -112,7 +109,6 @@ export { default as KimaSkeleton } from "./components/display/skeleton.ce.vue";
 export { default as KimaSlider } from "./components/core/slider.ce.vue";
 export { default as KimaSpinner } from "./components/display/spinner.ce.vue";
 export { default as KimaSplitter } from "./components/navigation/splitter.ce.vue";
-export { default as KimaStatistic } from "./components/display/statistic.ce.vue";
 export { default as KimaStepper } from "./components/navigation/stepper.ce.vue";
 export { default as KimaSwitch } from "./components/core/switch.ce.vue";
 export { default as KimaTable } from "./components/data/table.ce.vue";
@@ -121,7 +117,6 @@ export { default as KimaTagGroup } from "./components/utility/tag-group.ce.vue";
 export { default as KimaTagsInput } from "./components/input/tags-input.ce.vue";
 export { default as KimaTextField } from "./components/core/text-field.ce.vue";
 export { default as KimaTextarea } from "./components/input/textarea.ce.vue";
-export { default as KimaTimeDisplay } from "./components/foundation/time-display.ce.vue";
 export { default as KimaTimeField } from "./components/form-completion/time-field.ce.vue";
 export { default as KimaTimePicker } from "./components/core/time-picker.ce.vue";
 export { default as KimaTimeRangePicker } from "./components/advanced-input/time-range-picker.ce.vue";
@@ -140,7 +135,6 @@ export { default as KimaVirtualSelect } from "./components/utility/virtual-selec
 export { default as KimaVirtualTable } from "./components/data/virtual-table.ce.vue";
 export { default as KimaVirtualTree } from "./components/data/virtual-tree.ce.vue";
 export { default as KimaVisuallyHidden } from "./components/navigation/visually-hidden.ce.vue";
-export { default as KimaWatermark } from "./components/utility/watermark.ce.vue";
 
 export const componentNames = [
   "KimaAccordion",
@@ -176,8 +170,6 @@ export const componentNames = [
   "KimaCommand",
   "KimaConfigProvider",
   "KimaContextMenu",
-  "KimaCopyButton",
-  "KimaCountdown",
   "KimaDateField",
   "KimaDatePicker",
   "KimaDateRangePicker",
@@ -239,7 +231,6 @@ export const componentNames = [
   "KimaRadioGroup",
   "KimaRangeSlider",
   "KimaRating",
-  "KimaRelativeTime",
   "KimaResult",
   "KimaRichTextEditor",
   "KimaRingProgress",
@@ -250,7 +241,6 @@ export const componentNames = [
   "KimaSlider",
   "KimaSpinner",
   "KimaSplitter",
-  "KimaStatistic",
   "KimaStepper",
   "KimaSwitch",
   "KimaTable",
@@ -259,7 +249,6 @@ export const componentNames = [
   "KimaTagsInput",
   "KimaTextField",
   "KimaTextarea",
-  "KimaTimeDisplay",
   "KimaTimeField",
   "KimaTimePicker",
   "KimaTimeRangePicker",
@@ -277,8 +266,7 @@ export const componentNames = [
   "KimaVirtualSelect",
   "KimaVirtualTable",
   "KimaVirtualTree",
-  "KimaVisuallyHidden",
-  "KimaWatermark"
+  "KimaVisuallyHidden"
 ];
 
 /* 代码块的内置语言是 highlight.js 的 common 集；其余语言由宿主补登记。 */

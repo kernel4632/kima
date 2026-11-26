@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import Tour from '../components/utility/tour.ce.vue';
 import QrCode from '../components/utility/qr-code.ce.vue';
-import Watermark from '../components/utility/watermark.ce.vue';
 import Affix from '../components/utility/affix.ce.vue';
 import FloatButton from '../components/utility/float-button.ce.vue';
 import LogViewer from '../components/utility/log-viewer.ce.vue';
@@ -36,7 +35,6 @@ const steps = [{ target: '#kima-utility-tour-first', title: '选择项目', desc
   <article v-if="utilityCatalog[component]" :key="component" class="kima-gallery__demo kima-utility-demo" :data-utility="component">
     <template v-if="component === 'tour'"><Button @click="open = true">开始导览</Button><p id="kima-utility-tour-first">当前项目：KIMA</p><Button id="kima-utility-tour-second" variant="tonal">保存项目</Button><Tour v-model:open="open" :steps="steps"/></template>
     <QrCode v-else-if="component === 'qr-code'" value="https://kima.example/你好" label="KIMA 示例链接"/>
-    <Watermark v-else-if="component === 'watermark'" :text="['KIMA', '仅供预览']"><p class="kima-utility-demo__document">项目预览 · 文本水印是视觉提示，可被移除，不提供安全保护。</p></Watermark>
     <div v-else-if="component === 'affix'" class="kima-utility-demo__scroll"><div class="kima-utility-demo__tall"><Affix :offset="8"><Button variant="tonal">容器内吸附操作</Button></Affix><p>滚动这里观察吸附，组件受父容器底边约束。</p></div></div>
     <FloatButton v-else-if="component === 'float-button'" :actions="[{ id: 'new', label: '新建项目' }, { id: 'share', label: '分享项目' }]" @action="item => action = item.label"/>
     <template v-else-if="component === 'log-viewer'"><Button @click="log?.append(`INFO 追加日志 ${Date.now()}`)">追加日志</Button><LogViewer ref="log" :lines="['INFO 启动完成', 'WARN 等待网络', 'INFO 已连接']" :max-lines="100"/></template>

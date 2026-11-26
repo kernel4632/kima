@@ -9,7 +9,6 @@ import KimaPageHeader from '../components/foundation/page-header.ce.vue';
 import KimaBanner from '../components/foundation/banner.ce.vue';
 import KimaErrorState from '../components/foundation/error-state.ce.vue';
 import KimaTypography from '../components/foundation/typography.ce.vue';
-import KimaTimeDisplay from '../components/foundation/time-display.ce.vue';
 import KimaTextField from '../components/core/text-field.ce.vue';
 import KimaButton from '../components/core/button.ce.vue';
 import KimaLink from '../components/navigation/link.ce.vue';
@@ -78,11 +77,6 @@ function resetError() { errorKey.value = `route-${Date.now()}`; errorStatus.valu
       <KimaTypography type="body" color="muted">正文尺寸与颜色只来自 token 白名单，组件不生成输入标签。</KimaTypography>
       <KimaTypography type="caption">说明文字使用 caption 语义。</KimaTypography>
     </template>
-    <div v-else-if="component === 'time-display'" class="kima-foundation-example__times">
-      <KimaTimeDisplay value="2026-06-01T01:30:00Z" mode="datetime" locale="zh-CN" time-zone="UTC" />
-      <KimaTimeDisplay value="2026-06-01" mode="date" locale="zh-CN" time-zone="UTC" date-style="full" />
-      <KimaTimeDisplay value="09:30" mode="time" locale="zh-CN" time-zone="UTC" />
-    </div>
   </article>
 </template>
 <style scoped lang="scss">

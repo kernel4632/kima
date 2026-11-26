@@ -7,9 +7,7 @@ import KimaVirtualTable from "../components/data/virtual-table.ce.vue";
 import KimaVirtualTree from "../components/data/virtual-tree.ce.vue";
 import KimaImagePreview from "../components/data/image-preview.ce.vue";
 import KimaNotificationQueue from "../components/utility/notification-queue.ce.vue";
-import KimaRelativeTime from "../components/data/relative-time.ce.vue";
 import KimaRingProgress from "../components/data/ring-progress.ce.vue";
-import KimaCopyButton from "../components/data/copy-button.ce.vue";
 import KimaLongText from "../components/data/long-text.ce.vue";
 import { dataCatalog } from "./data-catalog.js";
 
@@ -41,7 +39,6 @@ const notifications = ref([
   { id: "review", heading: "需要复核", message: "有 2 条数据等待确认", variant: "warning", duration: 0 },
 ]);
 const percent = ref(68);
-const copyText = "KIMA keeps data states observable.";
 const longText = "这是一段需要按真实容器宽度折叠的长文本。内容不会被截断丢失，展开后仍然是同一份文本；ResizeObserver 会在窄屏、字体变化或父容器尺寸变化时重新判断是否需要展示展开动作。";
 const virtualColumns = [{ key: "id", label: "编号", width: 96 }, { key: "name", label: "名称" }, { key: "value", label: "数值", align: "end" }];
 const dataColumns = [{ key: "name", label: "任务", filterable: true, width: "34%", editable: true }, { key: "state", label: "状态", filterable: true, width: "26%" }, { key: "owner", label: "负责人", editable: true }];
@@ -62,9 +59,7 @@ function addNotification() { const id = `notice-${Date.now()}`; notifications.va
     <KimaVirtualTree v-else-if="component === 'virtual-tree'" :items="treeItems" v-model="treeValue" v-model:expanded="treeExpanded" selectable :height="320" item-height="48" aria-label="大数据目录树" />
     <KimaImagePreview v-else-if="component === 'image-preview'" src="/th.jpg" alt="山间风景" :items="imageItems" caption="点击进入可键盘操作的预览" />
     <div v-else-if="component === 'notification-queue'" class="kima-data-demo__stack"><KimaNotificationQueue :items="notifications" capacity="3" @update:items="notifications = $event" /><KimaButton @click="addNotification">追加队列通知</KimaButton><output>队列中 {{ notifications.length }} 条</output></div>
-    <div v-else-if="component === 'relative-time'" class="kima-data-demo__row"><KimaRelativeTime :date="Date.now() - 92000" locale="zh-CN" update-interval="1000" /><KimaRelativeTime :date="Date.now() + 3600000" locale="zh-CN" numeric="auto" /></div>
     <div v-else-if="component === 'ring-progress'" class="kima-data-demo__row"><KimaRingProgress :value="percent" show-value label="上传进度" /><KimaRingProgress indeterminate label="正在处理" /><KimaButton variant="tonal" @click="percent = percent >= 100 ? 0 : percent + 8">调整到 {{ statusLabel }}</KimaButton></div>
-    <div v-else-if="component === 'copy-button'" class="kima-data-demo__row"><code>{{ copyText }}</code><KimaCopyButton :text="copyText" /></div>
     <KimaLongText v-else-if="component === 'long-text'" :text="longText" :lines="3" />
   </article>
 </template>

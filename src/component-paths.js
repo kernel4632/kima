@@ -35,8 +35,6 @@ export const componentPaths = {
   "command": "/src/components/interaction/command.ce.vue",
   "config-provider": "/src/components/shell/config-provider.ce.vue",
   "context-menu": "/src/components/interaction/context-menu.ce.vue",
-  "copy-button": "/src/components/data/copy-button.ce.vue",
-  "countdown": "/src/components/display/countdown.ce.vue",
   "date-field": "/src/components/form-completion/date-field.ce.vue",
   "date-picker": "/src/components/core/date-picker.ce.vue",
   "date-range-picker": "/src/components/advanced-input/date-range-picker.ce.vue",
@@ -98,7 +96,6 @@ export const componentPaths = {
   "radio-group": "/src/components/input/radio-group.ce.vue",
   "range-slider": "/src/components/advanced-input/range-slider.ce.vue",
   "rating": "/src/components/input/rating.ce.vue",
-  "relative-time": "/src/components/data/relative-time.ce.vue",
   "result": "/src/components/display/result.ce.vue",
   "rich-text-editor": "/src/components/content/rich-text-editor.ce.vue",
   "ring-progress": "/src/components/data/ring-progress.ce.vue",
@@ -109,7 +106,6 @@ export const componentPaths = {
   "slider": "/src/components/core/slider.ce.vue",
   "spinner": "/src/components/display/spinner.ce.vue",
   "splitter": "/src/components/navigation/splitter.ce.vue",
-  "statistic": "/src/components/display/statistic.ce.vue",
   "stepper": "/src/components/navigation/stepper.ce.vue",
   "switch": "/src/components/core/switch.ce.vue",
   "table": "/src/components/data/table.ce.vue",
@@ -118,7 +114,6 @@ export const componentPaths = {
   "tags-input": "/src/components/input/tags-input.ce.vue",
   "text-field": "/src/components/core/text-field.ce.vue",
   "textarea": "/src/components/input/textarea.ce.vue",
-  "time-display": "/src/components/foundation/time-display.ce.vue",
   "time-field": "/src/components/form-completion/time-field.ce.vue",
   "time-picker": "/src/components/core/time-picker.ce.vue",
   "time-range-picker": "/src/components/advanced-input/time-range-picker.ce.vue",
@@ -136,6 +131,5 @@ export const componentPaths = {
   "virtual-select": "/src/components/utility/virtual-select.ce.vue",
   "virtual-table": "/src/components/data/virtual-table.ce.vue",
   "virtual-tree": "/src/components/data/virtual-tree.ce.vue",
-  "visually-hidden": "/src/components/navigation/visually-hidden.ce.vue",
-  "watermark": "/src/components/utility/watermark.ce.vue"
+  "visually-hidden": "/src/components/navigation/visually-hidden.ce.vue"
 };
