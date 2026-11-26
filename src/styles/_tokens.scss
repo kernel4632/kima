@@ -14,44 +14,41 @@
   /* 声明深浅两套都支持：浏览器据此决定系统色取哪一套，滚动条、原生控件也跟着走。 */
   color-scheme: light dark;
 
-  /* ---- 基础色（全部来自系统，库不带品牌色）----
-   * Canvas / CanvasText：页面背景和主文字，操作系统深浅模式切了它就跟着切。
-   * 其他层次一律从这一对前景/背景派生，不再引用 ButtonFace 等其他系统色——
-   * Windows 深色模式的 ButtonFace 是中灰，跟文字拉不开对比度。
-   *
-   * 主色（primary）也是黑白灰：就取前景色本身。
-   * 主按钮 = 黑底白字（浅色模式）/ 白底黑字（深色模式），焦点环、选中态、开关、
-   * 链接全是同一套前景色。整库默认无彩色，是"没有主题色"最彻底的表达；
+  /* ---- 基础色（取 shadcn 的中性灰阶，OKLCH，深浅两套都是纯灰）----
+   * 页面与前景是全对：背景近白/近黑，前景近黑/近白。
+   * 弹层（popover/card）比页面亮一档（深色）/ 同白（浅色），
+   * 层次感来自明度档位而不是色相——这就是 shadcn 中性主题"干净"的来源。
+   * 主按钮 = 黑底白字（浅色）/ 白底黑字（深色）。
    * 语义色（成功/警告/危险）保留交通灯含义不掺和进来。
    * 想要品牌色的宿主只需覆盖下面这一小簇 --kima-color-primary* 变量。 */
-  --kima-color-surface: Canvas;
-  --kima-color-on-surface: CanvasText;
-  --kima-color-on-surface-variant: color-mix(in srgb, CanvasText 72%, Canvas);
-  --kima-color-outline: color-mix(in srgb, CanvasText 38%, Canvas);
-  --kima-color-outline-variant: color-mix(in srgb, CanvasText 20%, Canvas);
-  --kima-color-primary: CanvasText;
-  --kima-color-on-primary: Canvas;
-  --kima-color-primary-container: color-mix(in srgb, CanvasText 12%, Canvas);
-  --kima-color-on-primary-container: CanvasText;
-  --kima-color-secondary-container: color-mix(in srgb, CanvasText 8%, Canvas);
-  --kima-color-on-secondary-container: CanvasText;
-  --kima-color-tertiary-container: color-mix(in srgb, CanvasText 16%, Canvas);
-  --kima-color-on-tertiary-container: CanvasText;
-  --kima-color-error: light-dark(#b3261e, #f2b8b5);
-  --kima-color-on-error: light-dark(#ffffff, #5f1317);
-  --kima-color-error-container: light-dark(#f9dedc, #8c1d18);
-  --kima-color-on-error-container: light-dark(#5f1317, #f9dedc);
-  --kima-color-inverse-surface: CanvasText;
-  --kima-color-inverse-on-surface: Canvas;
+  --kima-color-surface: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --kima-color-on-surface: light-dark(oklch(0 0 0), oklch(0.985 0 0));
+  --kima-color-on-surface-variant: light-dark(oklch(0.556 0 0), oklch(0.708 0 0));
+  --kima-color-outline: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 10%));
+  --kima-color-outline-variant: light-dark(oklch(0.97 0 0), oklch(1 0 0 / 15%));
+  --kima-color-primary: light-dark(oklch(0 0 0), oklch(0.922 0 0));
+  --kima-color-on-primary: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
+  --kima-color-primary-container: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
+  --kima-color-on-primary-container: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
+  --kima-color-secondary-container: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
+  --kima-color-on-secondary-container: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
+  --kima-color-tertiary-container: light-dark(oklch(0.97 0 0), oklch(0.371 0 0));
+  --kima-color-on-tertiary-container: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
+  --kima-color-error: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --kima-color-on-error: light-dark(oklch(0.97 0.01 17), oklch(0.58 0.22 27));
+  --kima-color-error-container: light-dark(oklch(0.97 0.01 17), oklch(0.58 0.22 27));
+  --kima-color-on-error-container: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --kima-color-inverse-surface: light-dark(oklch(0 0 0), oklch(0.985 0 0));
+  --kima-color-inverse-on-surface: light-dark(oklch(0.985 0 0), oklch(0.145 0 0));
   --kima-color-scrim: #000000;
 
-  /* 容器层次：从前景色与页面底的混合派生五档，深浅两套都只差一档明度。
-   * 不用 ButtonFace（深色模式下是中灰，和页面拉不开差距）。 */
-  --kima-color-surface-container-lowest: Canvas;
-  --kima-color-surface-container-low: color-mix(in srgb, CanvasText 4%, Canvas);
-  --kima-color-surface-container: color-mix(in srgb, CanvasText 8%, Canvas);
-  --kima-color-surface-container-high: color-mix(in srgb, CanvasText 12%, Canvas);
-  --kima-color-surface-container-highest: color-mix(in srgb, CanvasText 16%, Canvas);
+  /* 容器层次：沿用 shadcn 灰阶的明度档位（muted/secondary/accent 三档），
+   * popup 系深色下取 card（0.205）——比页面亮一档，浅色下取白。 */
+  --kima-color-surface-container-lowest: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --kima-color-surface-container-low: light-dark(oklch(0.98 0 0), oklch(0.2 0 0));
+  --kima-color-surface-container: light-dark(oklch(0.97 0 0), oklch(0.205 0 0));
+  --kima-color-surface-container-high: light-dark(oklch(0.96 0 0), oklch(0.269 0 0));
+  --kima-color-surface-container-highest: light-dark(oklch(0.922 0 0), oklch(0.371 0 0));
 
   /* ---- 字体 ----
    * 不引入任何自定义字体，完全跟随操作系统的 UI 字体。
@@ -141,12 +138,10 @@
   /* ---- 浮层表面（弹层专用，实色）----
    * 弹层（菜单、下拉、对话框、抽屉）浮在内容之上，必须挡住背后的东西，
    * 所以用实色，不能像页面内的组件那样用透明度——那会让下面的文字透上来，看不清。
-   * 不用 ButtonFace：Windows 深色模式的 ButtonFace 是中灰，白字压上去对比度只有 5.3:1，
-   * 视觉上"灰底白字糊成一片"。改从 Canvas（页面底）派生：
-   * 深色下比页面亮一档（28% 混白），浅色下比页面暗一档（4% 混黑），
-   * 弹层和页面永远差一档明度，文字对比度两套都在 10:1 以上。 */
-  --kima-color-popup: light-dark(color-mix(in srgb, CanvasText 4%, Canvas), color-mix(in srgb, CanvasText 28%, Canvas));
-  --kima-color-popup-large: light-dark(color-mix(in srgb, CanvasText 8%, Canvas), color-mix(in srgb, CanvasText 36%, Canvas));
+   * 取 shadcn 的 popover/card 档：深色下 0.205（比页面 0.145 亮一档），
+   * 浅色下纯白——弹层和页面永远差一档明度，文字对比度两套都在 10:1 以上。 */
+  --kima-color-popup: light-dark(oklch(1 0 0), oklch(0.205 0 0));
+  --kima-color-popup-large: light-dark(oklch(0.98 0 0), oklch(0.269 0 0));
   /* 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 */
   --kima-color-picker-white: #ffffff;
   --kima-color-picker-black: #000000;
@@ -159,15 +154,15 @@
 
   /* 主色系的浅底：柔和按钮用它，一眼看出"属于主色系但不用那么强"。
    * 同样用透明度写成，铺在模糊背景上也不会糊。 */
-  --kima-color-primary-soft: color-mix(in srgb, CanvasText 12%, transparent);
+  --kima-color-primary-soft: color-mix(in srgb, var(--kima-color-primary) 10%, transparent);
   /* 未选中的控件底（开关轨道、复选框方框）：比 layer-3 淡一档，
    * 因为它要长期留在界面上，太实会跟选中态抢注意力。 */
-  --kima-color-track: color-mix(in srgb, var(--kima-color-on-surface) 22%, transparent);
+  --kima-color-track: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 15%));
   /* 选中项的悬停底：选中项的文字和底是"容器色 + 容器文字"的一整对，
    * 悬停时不能换成通用悬停色（配对一拆开，深浅两套下就成了字底不匹配）。
    * 所以给它一个从容器色派生的档位：把容器文字色按悬停档 8% 叠回容器色，
    * 深浅两套下都只挪一档明度，对比度不动。 */
-  --kima-color-primary-container-hover: color-mix(in srgb, CanvasText 8%, var(--kima-color-primary-container));
+  --kima-color-primary-container-hover: color-mix(in srgb, var(--kima-color-on-primary-container) 8%, var(--kima-color-primary-container));
 
   /* ---- 层级 ----
    * M3 elevation：数字越大越浮起来。抽屉和弹层用 3 以上。 */
