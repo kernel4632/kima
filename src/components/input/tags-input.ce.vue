@@ -8,6 +8,8 @@ import { useContentMotion } from "../../utils/content-motion.js";
 import { presenceTransition } from "../../utils/motion.js";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
+import KimaIcon from "../core/icon.ce.vue";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
@@ -90,7 +92,7 @@ defineExpose({ focus: () => input.value?.focus() });
     <TransitionGroup name="kima-list" v-bind="tagTransition">
     <span v-for="(tag, index) in local" :key="tag" class="kima-tags-input__tag">
       <span>{{ tag }}</span>
-      <button v-if="!readonly" type="button" class="kima-tags-input__tag-remove" :disabled="disabled" :aria-label="`移除 ${tag}`" @click="remove(index)">×</button>
+      <KimaIcon v-if="!readonly" class="kima-tags-input__tag-remove" :icon="Cancel01Icon" :size="14" role="button" tabindex="0" :disabled="disabled" :aria-label="`移除 ${tag}`" @click="remove(index)" @keydown.enter.prevent="remove(index)" />
     </span>
     </TransitionGroup>
     <input v-for="tag in local" :key="tag" type="hidden" :name="name" :value="tag" :disabled="disabled" />
@@ -125,30 +127,43 @@ defineExpose({ focus: () => input.value?.focus() });
   font: inherit;
   &::placeholder { color: var(--kima-color-on-surface-variant); }
   &:disabled { cursor: not-allowed; } flex: 1 1 8em; width: 8em; min-width: min(8em, 100%); max-width: 100%; padding-inline: var(--kima-space-2); }
-  &__tag { display: inline-flex; align-items: center; gap: var(--kima-space-1); padding-inline-start: var(--kima-space-3); border-radius: var(--kima-radius-full); background: var(--kima-color-accent-secondary); color: var(--kima-color-on-accent-secondary); }
+  /* 标签左右同 padding（此前右 padding 0，靠按钮 margin 撑，readonly 无按钮时文字贴边）。
+   * 高度锁 28（field-height 的一半弱）：文字行盒 22.4 上下各 2.8，与左右 12 形成官方
+   * token 的紧凑节奏。 */
+  &__tag {
+    display: inline-flex; align-items: center; gap: var(--kima-space-1);
+    min-height: 28px;
+    padding-inline: var(--kima-space-3);
+    border-radius: var(--kima-radius-full);
+    background: var(--kima-color-accent-secondary);
+    color: var(--kima-color-on-accent-secondary);
+  }
 
-  /* 移除按钮是标签里的小圆钮：24px 视觉、32px 命中，不再是塞进来一整颗按钮
-   * （之前用 KimaButton 64×48 的几何把标签撑到变形）。 */
+  /* 移除钮：Hugeicons Cancel01Icon 14px，与库内清除钮同族。
+   * 视觉盒与图标同宽（无额外留白）——× 墨迹到标签右缘 = padding 12，与文字左边 12 对称
+   * （此前 28px 盒 + 右 padding 12 实测墨迹右边距 19，上下也因 em 盒不对称偏沉）。
+   * 44 触摸命中靠透明外扩，不靠视觉盒。 */
   &__tag-remove {
     flex: 0 0 auto;
     display: inline-flex;
-    width: 32px;
-    height: 32px;
+    width: 14px;
+    height: 14px;
     align-items: center;
     justify-content: center;
     padding: 0;
-    margin-inline-end: var(--kima-space-1);
     border: 0;
     border-radius: var(--kima-radius-full);
     color: inherit;
     background: transparent;
-    font: inherit;
-    font-size: var(--kima-font-size-body-medium);
-    line-height: 1;
     cursor: pointer;
-    transition: background-color var(--kima-duration-effects) var(--kima-curve-standard);
+    position: relative;
+    transition: color var(--kima-duration-effects) var(--kima-curve-standard);
 
-    &:hover:not(:disabled) { background: var(--kima-color-wash-hover); }
+    /* 44 命中：视觉 14 + 透明外扩。hover 光圈落在外扩前的 28px 视觉区（更醒目的热区提示）。 */
+    &::before { content: ""; position: absolute; inset: -8px; border-radius: var(--kima-radius-full); background: transparent; transition: background-color var(--kima-duration-effects) var(--kima-curve-standard); }
+    &::after { content: ""; position: absolute; inset: -15px; }
+
+    &:hover::before { background: var(--kima-color-wash-hover); }
 
     &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: var(--kima-focus-ring-offset); }
 
