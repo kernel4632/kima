@@ -2,7 +2,7 @@
      pnpm dev 查看；#/components/button 可直达组件并刷新保留位置。 -->
 <script setup>
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaCodeBlock, KimaTable, KimaIcon, KimaCommand } from './index.js';
+import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaTable, KimaIcon, KimaPopover, KimaTooltip } from './index.js';
 import { Menu01Icon, SparklesIcon } from '@hugeicons/core-free-icons';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
@@ -14,6 +14,7 @@ const route = ref(location.hash.slice(2) || 'overview');
 function readRoute() { route.value = location.hash.slice(2) || 'overview'; }
 window.addEventListener('hashchange', readRoute);
 const commandOpen = ref(false);
+const commandQuery = ref('');
 /* 只有从搜索结果进来才需要跳到某一节；普通点导航应该停在页面顶部，
  * 否则每次换页都会先滚到预览，标题反而被顶出屏幕。 */
 const pendingSection = ref('');
@@ -33,16 +34,18 @@ const search = ref('');
 const mobileMenu = ref(false);
 const component = computed(() => catalog.find((item) => route.value === `components/${item.slug}`));
 const filtered = computed(() => catalog.filter((item) => `${item.slug} ${item.label}`.toLowerCase().includes(search.value.toLowerCase().trim())));
-const commandItems = computed(() => catalog.map((item) => ({
-  value: `components/${item.slug}`,
-  label: `${item.name} · ${item.label}`,
-  group: item.group,
-  description: item.description,
-  keywords: [item.slug, item.label, ...item.attributes.map((attribute) => attribute.name), ...item.events],
-  section: 'properties',
-})));
+/* 全文搜索：Popover + 列表组合（原语组合替代旧 Command 组件）。
+ * 关键词命中组件名、label、属性与事件。 */
+const commandResults = computed(() => {
+  const q = commandQuery.value.trim().toLowerCase();
+  if (!q) return catalog.slice(0, 8);
+  return catalog.filter((item) => `${item.name} ${item.label} ${item.slug} ${item.description}`.toLowerCase().includes(q)
+    || item.attributes.some((attribute) => attribute.name.toLowerCase().includes(q))
+    || item.events.some((event) => event.toLowerCase().includes(q)));
+});
 function selectSearchResult(value, item) {
-  pendingSection.value = item.section || 'preview';
+  pendingSection.value = item?.section || 'preview';
+  commandOpen.value = false;
   navigate(value);
 }
 const nav = computed(() => [
@@ -92,7 +95,16 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
         <KimaBadge :value="manifest.version" variant="primary" />
       </div>
       <KimaTextField v-model="search" class="kima-docs__search" label="搜索组件" type="search" placeholder="搜索组件 / Search components" clearable />
-      <KimaCommand v-model:open="commandOpen" class="kima-docs__command" label="内容搜索" trigger-label="全文搜索" placeholder="搜索组件、属性、事件或关键词…" :items="commandItems" @select="selectSearchResult" />
+      <KimaPopover v-model:open="commandOpen" class="kima-docs__command" label="全文搜索" content-label="搜索结果">
+        <template #trigger><KimaButton variant="tonal"><KimaIcon :icon="Search01Icon" />搜索 / Ctrl K</KimaButton></template>
+        <div class="kima-docs__command-panel">
+          <KimaTextField v-model="commandQuery" label="搜索组件、属性、事件或关键词" placeholder="输入关键词…" clearable />
+          <div class="kima-docs__command-list" role="listbox" aria-label="搜索结果">
+            <KimaButton v-for="item in commandResults" :key="item.slug" variant="text" role="option" :aria-selected="false" @click="selectSearchResult(`components/${item.slug}`, item)">{{ item.name }} · {{ item.label }}</KimaButton>
+            <p v-if="!commandResults.length" role="status">没有匹配的组件。</p>
+          </div>
+        </div>
+      </KimaPopover>
       <div class="kima-docs__tools">
         <KimaButton variant="tonal" @click="navigate('installation')">开始使用</KimaButton>
       </div>
@@ -119,11 +131,11 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
             <KimaTabs v-model="previewTab" :items="previewTabs">
               <template #panel="{ item }">
                 <div v-if="item.value === 'preview'" class="kima-docs__canvas"><Examples :key="component.slug" :component="component.slug" /></div>
-                <KimaCodeBlock v-else :code="component.examples" language="vue" line-numbers />
+                <pre v-else class="kima-docs__code">{{ component.examples }}</pre>
               </template>
             </KimaTabs>
           </section>
-          <section id="usage" class="kima-docs__section"><h2>使用方式</h2><p>先安装并导入全局样式，然后按需导入组件。</p><KimaCodeBlock :code="importCode" language="javascript" /></section>
+          <section id="usage" class="kima-docs__section"><h2>使用方式</h2><p>先安装并导入全局样式，然后按需导入组件。</p><pre class="kima-docs__code">{{ importCode }}</pre></section>
           <section id="properties" class="kima-docs__section">
             <h2>属性参考</h2>
             <p>属性类型和默认值直接读取组件声明，与实际组件保持同步。</p>
@@ -132,18 +144,18 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
             <p>{{ component.events.length ? component.events.join(' / ') : '该组件没有自定义事件；可交互元素保留原生事件。' }}</p>
             <p>Vue 中直接接收参数；自定义元素通过 event.detail 数组接收参数。按钮 click 仍是原生事件。</p>
             <KimaButton variant="text" :aria-expanded="showSource" @click="toggleSource">{{ showSource ? '收起源码' : '查看完整组件源码' }}</KimaButton>
-            <KimaCodeBlock v-if="showSource" :code="fullSource || '正在加载源码…'" :filename="`${component.slug}.ce.vue`" language="vue" line-numbers />
+            <pre v-if="showSource" class="kima-docs__code">{{ fullSource || '正在加载源码…' }}</pre>
           </section>
         </template>
         <template v-else-if="route === 'overview'">
           <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
             <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('gallery')">组件总览</KimaButton><KimaButton variant="text" @click="navigate('installation')">了解接入方式</KimaButton></div></KimaCard>
           </section>
-          <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><KimaCodeBlock :code="install" language="shell" /><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
+          <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><pre class="kima-docs__code">{{ install }}</pre><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
           <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><KimaCard><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></KimaCard><KimaCard><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></KimaCard><KimaCard><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></KimaCard></div></section>
         </template>
         <template v-else-if="route === 'installation'">
-          <section id="usage" class="kima-docs__section"><h2>1. 安装依赖</h2><KimaCodeBlock :code="install" language="shell" /><p>公共 npm 包是否可下载，以仓库 README 的发布状态为准。正式发布前可安装本地产出的 tarball。</p><h2>2. 在 Vue 中使用</h2><KimaCodeBlock :code="vueUsage" filename="App.vue" language="vue" line-numbers /><h2>3. 在原生网页中使用</h2><KimaCodeBlock :code="elementUsage" language="javascript" /></section>
+          <section id="usage" class="kima-docs__section"><h2>1. 安装依赖</h2><pre class="kima-docs__code">{{ install }}</pre><p>公共 npm 包是否可下载，以仓库 README 的发布状态为准。正式发布前可安装本地产出的 tarball。</p><h2>2. 在 Vue 中使用</h2><pre class="kima-docs__code">{{ vueUsage }}</pre><h2>3. 在原生网页中使用</h2><pre class="kima-docs__code">{{ elementUsage }}</pre></section>
           <section id="principles" class="kima-docs__section"><h2>接入约定</h2><p>Vue 入口需显式导入样式；自定义元素入口自带样式和运行时。自定义事件参数位于 event.detail 数组中。样式不重置宿主页面。</p></section>
         </template>
         <template v-else-if="route === 'theme'">
@@ -194,7 +206,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
 .kima-docs__hero-canvas h2 { font-size: var(--kima-font-size-headline-small); line-height: 1.5; }
 .kima-docs__hero-canvas p { color: var(--kima-color-on-surface-variant); line-height: 1.8; margin-bottom: var(--kima-space-6); }
 .kima-docs__canvas { display: flex; flex-direction: column; justify-content: center; padding: var(--kima-space-6); background: var(--kima-color-layer-1); border-radius: var(--kima-radius-m); min-height: 180px; }
-.kima-docs__section > .kima-code-block { margin: var(--kima-space-5) 0; }
+.kima-docs__section > .kima-docs__code { margin: var(--kima-space-5) 0; }
 .kima-docs__principles { display: grid; gap: var(--kima-space-4); }
 .kima-docs__principles h3 { margin: 0; }
 .kima-docs__toc { display: flex; flex-direction: column; gap: var(--kima-space-1); padding-top: var(--kima-space-4); }
@@ -218,6 +230,25 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
   .kima-docs__tools { order: 2; }
   .kima-docs__command { order: 3; }
 }
+
+/* 文档站代码块：库组件裁掉 CodeBlock 后，文档站用原生 pre 自持样式（官方 terminal-bg 底 + mono 字体）。 */
+.kima-docs__code {
+  margin: 0;
+  padding: var(--kima-space-4);
+  border-radius: var(--kima-radius-lg);
+  background: var(--kima-color-code-bg);
+  color: var(--kima-color-on-surface);
+  font-family: var(--kima-font-mono);
+  font-size: 0.9em;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* 全文搜索面板（Popover + 列表组合）：窄面板、独立滚动。 */
+.kima-docs__command-panel { display: grid; gap: var(--kima-space-2); width: min(420px, calc(100vw - 48px)); }
+.kima-docs__command-list { display: grid; gap: var(--kima-space-1); max-height: 320px; overflow-y: auto; }
+.kima-docs__command-list :deep(.kima-button) { justify-content: flex-start; min-height: 40px; text-align: start; }
 
 @media (max-width: 760px) {
   .kima-docs__top { gap: var(--kima-space-2) var(--kima-space-3); padding: var(--kima-space-2) var(--kima-space-4); }

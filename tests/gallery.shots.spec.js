@@ -7,7 +7,7 @@ for (const size of [{ width: 1440, height: 900 }, { width: 1920, height: 1080 }]
     await page.setViewportSize(size);
     await page.goto('/#/gallery');
     await expect(page.getByTestId('playground')).toBeVisible();
-    await expect(page.locator('[data-scene]')).toHaveCount(8);
+    await expect(page.locator('[data-scene]')).toHaveCount(4);
     await expect(page.locator('.kima-docs')).toHaveCount(0);
     await expect(page.locator('vite-error-overlay')).toHaveCount(0);
     await page.evaluate(() => document.fonts.ready);

@@ -4,33 +4,21 @@
  */
 import { defineKimaElements } from "./utils/register-elements.js";
 
-import KimaAlert from "./components/display/alert.ce.vue";
 import KimaAvatar from "./components/display/avatar.ce.vue";
 import KimaBadge from "./components/core/badge.ce.vue";
-import KimaBreadcrumb from "./components/navigation/breadcrumb.ce.vue";
 import KimaButton from "./components/core/button.ce.vue";
-import KimaButtonGroup from "./components/core/button-group.ce.vue";
+import KimaCalendar from "./components/advanced-input/calendar.ce.vue";
 import KimaCard from "./components/core/card.ce.vue";
 import KimaCheckbox from "./components/core/checkbox.ce.vue";
-import KimaCheckboxGroup from "./components/input/checkbox-group.ce.vue";
-import KimaConfigProvider from "./components/shell/config-provider.ce.vue";
-import KimaDatePicker from "./components/core/date-picker.ce.vue";
+import KimaCollapsible from "./components/navigation/collapsible.ce.vue";
+import KimaCombobox from "./components/core/combobox.ce.vue";
 import KimaDialog from "./components/core/dialog.ce.vue";
 import KimaDivider from "./components/core/divider.ce.vue";
 import KimaDrawer from "./components/core/drawer.ce.vue";
-import KimaEmptyState from "./components/core/empty-state.ce.vue";
-import KimaField from "./components/input/field.ce.vue";
-import KimaFieldGroup from "./components/foundation/field-group.ce.vue";
-import KimaFlex from "./components/foundation/flex.ce.vue";
-import KimaForm from "./components/form-completion/form.ce.vue";
-import KimaGrid from "./components/foundation/grid.ce.vue";
 import KimaIcon from "./components/core/icon.ce.vue";
 import KimaIconButton from "./components/core/icon-button.ce.vue";
 import KimaLink from "./components/navigation/link.ce.vue";
 import KimaMenu from "./components/core/menu.ce.vue";
-import KimaNotification from "./components/core/notification.ce.vue";
-import KimaNumberField from "./components/input/number-field.ce.vue";
-import KimaPagination from "./components/core/pagination.ce.vue";
 import KimaPopover from "./components/interaction/popover.ce.vue";
 import KimaProgress from "./components/core/progress.ce.vue";
 import KimaRadioGroup from "./components/input/radio-group.ce.vue";
@@ -43,39 +31,26 @@ import KimaTable from "./components/data/table.ce.vue";
 import KimaTabs from "./components/core/tabs.ce.vue";
 import KimaTextField from "./components/core/text-field.ce.vue";
 import KimaTextarea from "./components/input/textarea.ce.vue";
-import KimaTimePicker from "./components/core/time-picker.ce.vue";
 import KimaTooltip from "./components/core/tooltip.ce.vue";
+import KimaTree from "./components/core/tree.ce.vue";
 import KimaTypography from "./components/foundation/typography.ce.vue";
-import KimaVisuallyHidden from "./components/navigation/visually-hidden.ce.vue";
 
 export const elements = defineKimaElements({
-  "alert": KimaAlert,
   "avatar": KimaAvatar,
   "badge": KimaBadge,
-  "breadcrumb": KimaBreadcrumb,
   "button": KimaButton,
-  "button-group": KimaButtonGroup,
+  "calendar": KimaCalendar,
   "card": KimaCard,
   "checkbox": KimaCheckbox,
-  "checkbox-group": KimaCheckboxGroup,
-  "config-provider": KimaConfigProvider,
-  "date-picker": KimaDatePicker,
+  "collapsible": KimaCollapsible,
+  "combobox": KimaCombobox,
   "dialog": KimaDialog,
   "divider": KimaDivider,
   "drawer": KimaDrawer,
-  "empty-state": KimaEmptyState,
-  "field": KimaField,
-  "field-group": KimaFieldGroup,
-  "flex": KimaFlex,
-  "form": KimaForm,
-  "grid": KimaGrid,
   "icon": KimaIcon,
   "icon-button": KimaIconButton,
   "link": KimaLink,
   "menu": KimaMenu,
-  "notification": KimaNotification,
-  "number-field": KimaNumberField,
-  "pagination": KimaPagination,
   "popover": KimaPopover,
   "progress": KimaProgress,
   "radio-group": KimaRadioGroup,
@@ -88,8 +63,7 @@ export const elements = defineKimaElements({
   "tabs": KimaTabs,
   "text-field": KimaTextField,
   "textarea": KimaTextarea,
-  "time-picker": KimaTimePicker,
   "tooltip": KimaTooltip,
+  "tree": KimaTree,
   "typography": KimaTypography,
-  "visually-hidden": KimaVisuallyHidden,
 });

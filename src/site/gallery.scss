@@ -79,12 +79,12 @@
 }
 
 /* 这些组件本身就是一块宽场地，居中会把它压成缩略图。 */
-.kima-gallery__demo > :is(.kima-chart, .kima-heatmap, .kima-code-block, .kima-log-viewer, .kima-progress-group, .kima-descriptions, .kima-transfer, .kima-tabs, .kima-grid, .kima-listbox, .kima-tree, .kima-virtual-tree, .kima-virtual-scroll, .kima-masonry) {
+.kima-gallery__demo > :is(.kima-tabs, .kima-tree, .kima-table) {
   width: 100%;
 }
 
 /* 表单控件统一到可读宽度：横向铺满所在格子，但不把整页拉成一条。 */
-.kima-gallery__demo :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-cascader, .kima-multi-select, .kima-tree-select, .kima-virtual-select, .kima-date-picker, .kima-time-picker, .kima-date-range-picker, .kima-time-range-picker, .kima-period-picker, .kima-date-field, .kima-time-field, .kima-masked-input, .kima-json-input, .kima-number-field, .kima-tags-input, .kima-pin-input, .kima-color-picker, .kima-slider, .kima-range-slider, .kima-file-upload, .kima-upload-manager) {
+.kima-gallery__demo :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-slider) {
   width: 100%;
   min-width: 0;
   max-width: 520px;
@@ -92,27 +92,9 @@
 }
 
 /* 表单已经限宽，里面的控件跟着表单走，避免标签和控件各居一次中。 */
-.kima-gallery__demo form :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-cascader, .kima-multi-select, .kima-tree-select, .kima-virtual-select, .kima-date-picker, .kima-time-picker, .kima-date-range-picker, .kima-time-range-picker, .kima-period-picker, .kima-date-field, .kima-time-field, .kima-masked-input, .kima-json-input, .kima-number-field, .kima-tags-input, .kima-pin-input, .kima-color-picker, .kima-slider, .kima-range-slider, .kima-file-upload, .kima-upload-manager) {
+.kima-gallery__demo form :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox, .kima-slider) {
   max-width: none;
   margin-inline: 0;
-}
-
-/* 组合容器（前缀/后缀、字段组）里的控件必须填满容器，否则前后缀会被甩到两端。 */
-.kima-gallery__demo :is(.kima-input-group, .kima-field-group) :is(.kima-text-field, .kima-textarea, .kima-select, .kima-combobox) {
-  max-width: none;
-  margin-inline: 0;
-}
-
-/* 组合容器本身也收在同一条可读宽度里，前缀和输入不会被拉开一整屏。 */
-.kima-gallery__demo > :is(.kima-input-group, .kima-field-group) {
-  width: 100%;
-  max-width: 520px;
-}
-
-/* 输入类控件自带固有宽度（input 的 size 默认值）。作为栅格项时，
- * 默认的 min-width:auto 会把字段撑出手机屏幕，这里让容器可以被压缩。 */
-.kima-gallery__demo :is(form, .kima-field, .kima-field-group, label) {
-  min-width: 0;
 }
 
 .kima-gallery__row {

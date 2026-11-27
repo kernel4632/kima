@@ -46,3 +46,16 @@
 - 当前矩阵 136 行且与源码入口一一对应；组件源码文档链接无断链。
 
 第一批主要减少公开 API 与维护面。全量独立包为 3,831,356 字节，gzip 936,144 字节；并非重型引擎拆包，因此不承诺显著体积收益。
+
+# 组件删减：第二批（100 个入口，裁员到 30 个原语）
+
+本轮将公开入口从 130 个收缩到 30 个。分档为 core 30、extras 0、experimental 0。
+判据：Grok 官方有独立组件实锤（docs/grok-component-reference.md）且是不可组合替代的行为原语。
+可组合件（级联=菜单嵌套、通知=dialog 定制、评分=图标组合等）与官方无对应的扩展件全部移除；
+组合用法改由文档站演示（gallery 场景页）展示。依赖同步裁剪：codemirror/tiptap/highlight.js/katex/qrcode 系全部移除。
+
+## 保留 30 清单
+
+button icon-button checkbox radio-group switch slider text-field textarea select combobox menu
+dialog drawer popover tooltip progress spinner skeleton avatar badge divider icon link card
+typography tabs table tree calendar collapsible

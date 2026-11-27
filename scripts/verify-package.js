@@ -35,9 +35,7 @@ try {
   report.checks.push('All declared export targets exist');
   const notices = await readFile(new URL('dist/THIRD_PARTY_NOTICES.txt', root), 'utf8');
   check('Standalone third-party license texts are shipped', () => {
-    for (const name of ['vue@', 'reka-ui@', 'highlight.js@', '@hugeicons/vue@']) assert.ok(notices.includes(name), `Missing notice: ${name}`);
-    assert.match(notices, /Redistribution and use in source and binary forms/);
-    assert.match(notices, /Apache License/);
+    for (const name of ['vue@', 'reka-ui@', '@hugeicons/vue@']) assert.ok(notices.includes(name), `Missing notice: ${name}`);
     assert.match(notices, /Permission is hereby granted/);
   });
   // Imports are inside the failure boundary so SSR failures also leave an exit artifact.
@@ -51,8 +49,8 @@ try {
       assert.ok(component.styles?.length, `missing inline element CSS for ${tag}`);
     }
   });
-  const codeHtml = await renderToString(createSSRApp({ render: () => h(library.KimaCodeBlock, { code: 'const value = 42;', language: 'javascript' }) }));
-  check('SSR syntax highlighting', () => assert.match(codeHtml, /hljs-keyword/));
+  const codeHtml = await renderToString(createSSRApp({ render: () => h(library.KimaButton, { disabled: true }) }));
+  check('SSR button render', () => assert.match(codeHtml, /kima-button/));
   const css = await readFile(new URL('dist/style.css', root), 'utf8');
   for (const file of ['kima.js', 'kima-elements.js', 'kima-elements-core.js', 'style.css']) {
     const content = await readFile(new URL(`dist/${file}`, root));
@@ -78,15 +76,10 @@ try {
       assert.doesNotMatch(code, /\bprocess(?:\.env|\s*\[)/, 'Standalone must not depend on Node process globals');
     });
   }
-  // 主入口除组件外还导出代码块的语言登记工具；它们不算组件，但必须在产物里。
-  const libraryExtras = ['codeLanguages', 'hasCodeLanguage', 'registerCodeLanguage'];
+  // 裁员后主入口只导出组件：导出注册表与入口注册必须一一对应。
   check('Export registry parity', () => {
-    assert.deepEqual(library.componentNames, Object.keys(library).filter(name => name !== 'componentNames' && !libraryExtras.includes(name)));
+    assert.deepEqual(library.componentNames, Object.keys(library).filter(name => name !== 'componentNames'));
     assert.equal(library.componentNames.length, Object.keys(elements).length);
-    for (const name of libraryExtras) assert.equal(typeof library[name], name === 'codeLanguages' ? 'object' : 'function', `Missing ${name}`);
-    assert.ok(library.codeLanguages.length >= 35, 'Code block must ship the highlight.js common set');
-    assert.equal(library.hasCodeLanguage('vue'), true);
-    assert.equal(library.hasCodeLanguage('ts'), true);
   });
   check('CSS tokens and host isolation', () => {
     assert.match(css, /--kima-color-primary:/);
@@ -128,8 +121,6 @@ try {
   }
   report.checks.push('All component CSS entries resolve tokens, transitive styles and runtime scope IDs');
   for (const [tag, selectors] of Object.entries({
-    'kima-code-editor': ['.cm-editor', '.cm-textfield', '.cm-panel.cm-search'],
-    'kima-rich-text-editor': ['.tiptap', ':first-child', 'text-decoration:underline'],
     'kima-menu': ['.kima-shell-menu__popup', '.kima-shell-menu__item'],
   })) {
     check(`${tag}: inline scoped nested styles`, () => {

@@ -144,16 +144,6 @@
   --kima-backdrop-filter: blur(12px) saturate(1.6);
   --kima-backdrop-filter-glass: blur(36px) saturate(160%);
 
-  /* ---- 颜色编辑器的光谱停靠点：组件只引用 token，主题仍可统一替换。 ---- */
-  --kima-color-picker-white: #ffffff;
-  --kima-color-picker-black: #000000;
-  --kima-color-picker-red: #ff0000;
-  --kima-color-picker-yellow: #ffff00;
-  --kima-color-picker-green: #00ff00;
-  --kima-color-picker-cyan: #00ffff;
-  --kima-color-picker-blue: #0000ff;
-  --kima-color-picker-magenta: #ff00ff;
-
   /* ---- 语义色（成功 / 警告 / 危险）----
    * 像交通灯，含义固定。error（danger）深浅同值；success / warning 深浅各一套。
    * 危险浅底走官方 --grok-bg-danger-secondary 梯子：danger mix 14%/18%/24%，
@@ -397,80 +387,27 @@
  * 列表删掉一行），整块就按新的内容宽度重新排，看起来是"瞬间变窄"。
  * 这些组件本身就是一块场地，宿主要和组件根一样占满可用宽度。
  * 不在这个名单里的（按钮、徽标、头像这类）保持按内容排。 */
-kima-accordion,
-kima-collapsible,
 kima-tabs,
-kima-carousel,
-kima-alert,
-kima-banner,
-kima-result,
-kima-empty-state,
-kima-error-state,
-kima-page-header,
-kima-descriptions,
-kima-list,
-kima-timeline,
-kima-stepper,
-kima-breadcrumb,
-kima-progress-group,
+kima-card,
+kima-collapsible,
 kima-table,
-kima-virtual-table,
-kima-tree,
-kima-virtual-tree,
-kima-code-block,
-kima-log-viewer,
-kima-chart,
-kima-heatmap,
-kima-transfer,
-kima-splitter,
-kima-masonry,
-kima-scroll-area,
-kima-toolbar,
-kima-navigation-menu,
-kima-anchor,
-kima-overflow-list,
-kima-app-shell {
+kima-tree {
   display: block;
   width: 100%;
   min-width: 0;
 }
 
 /* ---- 字段类宿主的默认 ----
- * 宿主（<kima-cascader> 这类标签本身）放进网格或弹性排版时，浏览器默认
+ * 宿主（<kima-select> 这类标签本身）放进网格或弹性排版时，浏览器默认
  * 最小宽度是"内容有多宽就多宽"（min-width: auto）。字段类的值是"电子/手机/安卓"
  * 这种不换行的长文本，会把宿主撑得比容器还宽，整个页面跟着溢出，手机宽度下尤其明显。
  * 这里给宿主放行一次：允许被容器压窄，内部再用省略号收尾。
  * 只在字段类上放，不动其他组件，避免影响它们各自的大小表现。 */
 kima-text-field,
 kima-textarea,
-kima-number-field,
-kima-tags-input,
-kima-pin-input,
-kima-masked-input,
-kima-json-input,
 kima-select,
 kima-combobox,
-kima-cascader,
-kima-multi-select,
-kima-tree-select,
-kima-virtual-select,
-kima-date-picker,
-kima-time-picker,
-kima-date-range-picker,
-kima-time-range-picker,
-kima-period-picker,
-kima-date-field,
-kima-time-field,
-kima-color-picker,
-kima-angle-slider,
-kima-slider,
-kima-range-slider,
-kima-file-upload,
-kima-upload-manager,
-kima-editable,
-kima-mention,
-kima-dynamic-input,
-kima-transfer {
+kima-slider {
   min-width: 0;
 }
 

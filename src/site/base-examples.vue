@@ -13,36 +13,36 @@ import {
   StarIcon,
 } from "@hugeicons/core-free-icons";
 import {
+  KimaAvatar,
   KimaBadge,
+  KimaCalendar,
+  KimaCollapsible,
   KimaButton,
-  KimaButtonGroup,
   KimaCard,
-  KimaCascader,
   KimaCheckbox,
   KimaCombobox,
-  KimaCodeBlock,
-  KimaDatePicker,
+  KimaLink,
+  KimaPopover,
   KimaDialog,
   KimaDivider,
   KimaDrawer,
-  KimaEmptyState,
   KimaIcon,
   KimaIconButton,
-  KimaLayout,
   KimaMenu,
-  KimaNotification,
-  KimaPagination,
   KimaProgress,
+  KimaRadioGroup,
   KimaSelect,
+  KimaSkeleton,
+  KimaSpinner,
   KimaSlider,
   KimaSwitch,
   KimaTable,
   KimaTabs,
   KimaTextField,
-  KimaTimePicker,
+  KimaTextarea,
+  KimaTypography,
   KimaTooltip,
   KimaTree,
-  KimaVirtualScroll,
 } from "@/index";
 const props = defineProps({ component: { type: String, required: true } });
 // component="*" 是实验台模式：全部演示平铺，一次看到所有组件并直接交互。
@@ -66,14 +66,12 @@ const partial = ref(false);
 const syncEnabled = ref(true);
 const volume = ref(40);
 const progressValue = ref(65);
+const notes = ref('');
+const calendarDate = ref('2026-06-15');
+const collapsibleOpen = ref(true);
+const popoverOpen = ref(false);
 
-// --- 选择与日期 ---
-const presetTime = ref('09:00');
-const presetTimes = [
-  { value: '09:00', label: '09:00 · 上午', description: '工作日' },
-  { value: '12:30', label: '12:30 · 午间' },
-  { value: '18:00', label: '18:00 · 不可用', disabled: true },
-];
+// --- 选择 ---
 const countries = [
   { value: "cn", label: "中国" },
   { value: "jp", label: "日本", description: "东亚" },
@@ -81,28 +79,18 @@ const countries = [
   { value: "br", label: "巴西", disabled: true },
 ];
 const country = ref("cn");
+const plan = ref("pro");
+const plans = [
+  { value: "free", label: "免费版", description: "基础功能" },
+  { value: "pro", label: "专业版", description: "全部功能与优先支持" },
+  { value: "team", label: "团队版", description: "协作与共享", disabled: true },
+];
 const tags = [
   { value: "design", label: "设计" },
   { value: "code", label: "开发" },
   { value: "docs", label: "文档" },
 ];
 const tag = ref(null);
-const categoryPath = ref(["tech", "web"]);
-const categoryOptions = [
-  {
-    value: "tech",
-    label: "技术",
-    children: [
-      { value: "web", label: "前端", children: [{ value: "vue", label: "Vue" }, { value: "react", label: "React" }] },
-      { value: "native", label: "原生" },
-    ],
-  },
-  { value: "life", label: "生活" },
-];
-const birthday = ref("1998-06-15");
-const dateOpen = ref(false);
-const startTime = ref("09:30");
-const timeOpen = ref(false);
 
 // --- 反馈与提示 ---
 const dialogOpen = ref(false);
@@ -113,10 +101,6 @@ const drawerLeftOpen = ref(false);
 // 吸附版：四档高度，拖一下就换档。当前档位让组件自己管，这里只读不回写。
 const drawerSnapOpen = ref(false);
 const drawerSnap = ref(0.4);
-const noticeOpen = ref(false);
-const noticeVariant = ref("success");
-const noticeHeading = ref("操作完成");
-const noticeMessage = ref("四种语义各配一个图标，状态不只靠颜色表达。");
 // --- 数据展示 ---
 const columns = [
   { key: "name", label: "名称", sortable: true },
@@ -185,12 +169,8 @@ const viewItems = [
         <article v-if="component === 'icon'" class="kima-gallery__demo">
           <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
         </article>
-        <article v-if="component === 'code-block'" class="kima-gallery__demo">
-          <KimaCodeBlock :code="`// KIMA 颜色与字体跟随操作系统：\n// 强调色 = 系统设置里的强调色，深浅模式自动切换，字体即系统 UI 字体。\nconst button = document.querySelector('kima-button');`" language="javascript" line-numbers />
-          <KimaCodeBlock code="pnpm add @kernel4632/kima vue" language="shell" />
-        </article>
         <!-- 按钮与动作 -->
-        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'button-group', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
+        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
           <h2>按钮与动作</h2>
 
           <article v-show="visible('button', '按钮')" class="kima-gallery__demo">
@@ -222,13 +202,7 @@ const viewItems = [
             </div>
           </article>
 
-          <article v-show="visible('button-group', '按钮组')" class="kima-gallery__demo">
-            <header><h3>ButtonGroup 按钮组</h3><p>单选切换视图，支持方向键。</p></header>
-            <div class="kima-gallery__row">
-              <kima-button-group v-model="viewValue" :items="viewItems" />
-              <kima-button-group v-model="viewValue" :items="viewItems" size="small" />
-            </div>
-          </article>
+        
 
           <article v-show="visible('badge', '徽章')" class="kima-gallery__demo">
             <header><h3>Badge 徽章</h3><p>状态、数量和圆点三种用法。</p></header>
@@ -271,6 +245,18 @@ const viewItems = [
               </kima-card>
             </div>
           </article>
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <!-- 表单输入 -->
@@ -307,6 +293,11 @@ const viewItems = [
             </div>
           </article>
 
+
+          <article v-show="visible('textarea', '多行文本')" class="kima-gallery__demo">
+            <header><h3>Textarea 多行文本</h3><p>可调整大小的多行输入。</p></header>
+            <kima-textarea v-model="notes" label="备注" :rows="3" placeholder="写下你的想法…" />
+          </article>
           <article v-show="visible('slider', '滑块')" class="kima-gallery__demo">
             <header><h3>Slider 滑块</h3><p>音量：{{ volume }}</p></header>
             <div class="kima-gallery__stack">
@@ -327,10 +318,22 @@ const viewItems = [
               </div>
             </div>
           </article>
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <!-- 选择与日期 -->
-        <section v-show="visible('选择与日期', 'select', 'combobox', 'cascader', 'date-picker', 'time-picker')" id="pickers" class="kima-gallery__section">
+        <section v-show="visible('选择与日期', 'select', 'combobox')" id="pickers" class="kima-gallery__section">
           <h2>选择与日期</h2>
 
           <article v-show="visible('select', '选择器')" class="kima-gallery__demo">
@@ -338,7 +341,6 @@ const viewItems = [
             <div class="kima-gallery__grid">
               <kima-select v-model="country" label="国家" :items="countries" searchable clearable />
               <kima-select :model-value="null" label="必填" :items="countries" required placeholder="请选择国家" />
-              <kima-select v-model="presetTime" label="预设时刻" :items="presetTimes" clearable placeholder="选择时刻" />
             </div>
           </article>
 
@@ -350,47 +352,38 @@ const viewItems = [
             </div>
           </article>
 
-          <article v-show="visible('cascader', '级联')" class="kima-gallery__demo">
-            <header><h3>Cascader 级联选择</h3><p>路径：{{ categoryPath.join(" / ") }}</p></header>
-            <kima-cascader v-model="categoryPath" label="分类" :options="categoryOptions" clearable />
-          </article>
-
-          <article v-show="visible('date-picker', '日期')" class="kima-gallery__demo">
-            <header><h3>DatePicker 日期选择</h3><p>日期：{{ birthday || "未选择" }}</p></header>
+          <article v-show="visible('radio-group', '单选组')" class="kima-gallery__demo">
+            <header><h3>Radio Group 单选组</h3><p>箭头键在选项间移动，当前：{{ plan || "未选择" }}</p></header>
             <div class="kima-gallery__grid">
-              <kima-date-picker v-model="birthday" v-model:open="dateOpen" label="生日" locale="zh-CN" clearable />
-              <kima-date-picker
-                :model-value="'2024-06-15'"
-                min="2024-06-01"
-                max="2024-06-20"
-                label="限定范围"
-                locale="zh-CN"
-              />
+              <kima-radio-group v-model="plan" label="订阅方案" name="plan" :options="plans" />
+              <kima-radio-group :model-value="'free'" label="禁用态" name="plan-disabled" :options="plans" disabled />
             </div>
           </article>
 
-          <article v-show="visible('time-picker', '时间')" class="kima-gallery__demo">
-            <header><h3>TimePicker 时间选择</h3><p>时间：{{ startTime || "未选择" }}</p></header>
-            <div class="kima-gallery__grid">
-              <kima-time-picker v-model="startTime" v-model:open="timeOpen" label="开始时间" locale="zh-CN" :step="15" clearable />
-              <kima-time-picker :model-value="'14:00'" label="12 小时制" locale="en-US" :hour12="true" />
-            </div>
-          </article>
+        
+
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <!-- 反馈与提示 -->
-        <section v-show="visible('反馈与提示', 'notification', 'dialog', 'drawer', 'tooltip', 'empty-state')" id="feedback" class="kima-gallery__section">
+        <section v-show="visible('反馈与提示', 'dialog', 'drawer', 'tooltip')" id="feedback" class="kima-gallery__section">
           <h2>反馈与提示</h2>
 
-          <article v-show="visible('notification', '通知')" class="kima-gallery__demo">
-            <header><h3>Notification 通知</h3><p>右上角浮层，可自动关闭。</p></header>
-            <div class="kima-gallery__row">
-              <kima-button variant="tonal" @click="noticeVariant = 'success'; noticeOpen = true">成功通知</kima-button>
-              <kima-button variant="tonal" @click="noticeVariant = 'warning'; noticeOpen = true">警告通知</kima-button>
-              <kima-button variant="tonal" @click="noticeVariant = 'danger'; noticeOpen = true">错误通知</kima-button>
-              <kima-button variant="outlined" @click="noticeVariant = 'info'; noticeOpen = true">信息通知</kima-button>
-            </div>
-          </article>
+        
 
           <article v-show="visible('dialog', '对话框')" class="kima-gallery__demo">
             <header><h3>Dialog 对话框</h3><p>模态弹层，按 Esc 或点遮罩关闭。</p></header>
@@ -418,17 +411,23 @@ const viewItems = [
             </div>
           </article>
 
-          <article v-show="visible('empty-state', '空状态')" class="kima-gallery__demo">
-            <header><h3>EmptyState 空状态</h3><p>没有内容时的占位。</p></header>
-            <kima-empty-state heading="还没有项目" description="创建第一个项目后，它会显示在这里。">
-              <template #icon><KimaIcon :icon="Folder01Icon" :size="40" /></template>
-              <template #action><kima-button variant="tonal">创建项目</kima-button></template>
-            </kima-empty-state>
-          </article>
+        
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <!-- 数据展示 -->
-        <section v-show="visible('数据展示', 'table', 'tree', 'pagination', 'virtual-scroll')" id="data" class="kima-gallery__section">
+        <section v-show="visible('数据展示', 'table', 'tree')" id="data" class="kima-gallery__section">
           <h2>数据展示</h2>
 
           <article v-show="visible('table', '表格')" class="kima-gallery__demo">
@@ -458,35 +457,34 @@ const viewItems = [
             />
           </article>
 
-          <article v-show="visible('pagination', '分页')" class="kima-gallery__demo">
-            <header><h3>Pagination 分页</h3><p>当前第 {{ page }} 页。</p></header>
-            <div class="kima-gallery__stack">
-              <kima-pagination v-model="page" :total="480" :page-size="treePageSize" />
-              <kima-pagination v-model="page" :total="480" :page-size="treePageSize" compact :sibling-count="1" />
-            </div>
-          </article>
+        
 
-          <article v-show="visible('virtual-scroll', '虚拟滚动')" class="kima-gallery__demo">
-            <header><h3>VirtualScroll 虚拟滚动</h3><p>5000 行只渲染可见部分，已选：{{ virtualSelected || "未点击" }}</p></header>
-            <kima-virtual-scroll
-              v-model="virtualSelected"
-              :items="virtualItems"
-              :item-height="36"
-              height="280"
-              :overscan="3"
-            >
-              <template #default="{ item, index }">
-                <span class="kima-gallery__row-index">{{ index + 1 }}</span>
-                {{ item.label }}
-              </template>
-            </kima-virtual-scroll>
-          </article>
+        
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <!-- 结构与导航 -->
-        <section v-show="visible('结构与导航', 'layout', 'menu', 'tabs')" id="structure" class="kima-gallery__section">
+        <section v-show="visible('结构与导航', 'menu', 'tabs')" id="structure" class="kima-gallery__section">
           <h2>结构与导航</h2>
 
+
+          <article v-show="visible('collapsible', '折叠')" class="kima-gallery__demo">
+            <header><h3>Collapsible 折叠</h3><p>内容展开与收起，高度平滑过渡。</p></header>
+            <kima-collapsible v-model:open="collapsibleOpen" label="详情">
+              <p>展开的内容区。收起时高度过渡为 0，不会一帧跳到位。</p>
+            </kima-collapsible>
+          </article>
           <article v-show="visible('menu', '菜单')" class="kima-gallery__demo">
             <header><h3>Menu 菜单</h3><p>可搜索的单选菜单，已选：{{ menuValue }}</p></header>
             <div class="kima-gallery__row">
@@ -503,29 +501,58 @@ const viewItems = [
             </kima-tabs>
           </article>
 
-          <article v-show="visible('layout', '布局')" class="kima-gallery__demo">
-            <header><h3>Layout 布局容器</h3><p>页面和面板两种容器。</p></header>
-            <div class="kima-gallery__stack">
-              <kima-layout variant="panel" :max-width="520" :gap="12">
-                <template #header><strong>面板标题</strong></template>
-                <span>面板内容，最大宽度 520。</span>
-                <template #footer><kima-button variant="tonal">确定</kima-button></template>
-              </kima-layout>
+        
+
+          <article v-show="visible('calendar', '日历')" class="kima-gallery__demo">
+            <header><h3>Calendar 日历</h3><p>月视图网格，支持范围选择。已选：{{ calendarDate || '未选' }}</p></header>
+            <kima-calendar v-model="calendarDate" label="日期" />
+          </article>
+
+          <article v-show="visible('avatar', '头像')" class="kima-gallery__demo">
+            <header><h3>Avatar 头像</h3><p>文字首字与图片占位。</p></header>
+            <div class="kima-gallery__row">
+              <kima-avatar name="林青" />
+              <kima-avatar name="陈禾" size="small" />
+              <kima-avatar name="Alex" size="large" />
             </div>
+          </article>
+
+          <article v-show="visible('skeleton', '骨架屏')" class="kima-gallery__demo">
+            <header><h3>Skeleton 骨架屏</h3><p>加载占位。</p></header>
+            <kima-skeleton :rows="2" label="加载占位" />
+          </article>
+
+          <article v-show="visible('spinner', '加载指示')" class="kima-gallery__demo">
+            <header><h3>Spinner 加载指示</h3><p>独立加载动画。</p></header>
+            <div class="kima-gallery__row">
+              <kima-spinner label="加载中" />
+              <kima-spinner size="small" label="小号" />
+              <kima-spinner size="large" label="大号" />
+            </div>
+          </article>
+
+          <article v-show="visible('link', '链接')" class="kima-gallery__demo">
+            <header><h3>Link 链接</h3><p>行内导航，焦点环与涟漪齐全。</p></header>
+            <kima-link href="#/overview">查看项目文档</kima-link>
+          </article>
+
+          <article v-show="visible('typography', '排版')" class="kima-gallery__demo">
+            <header><h3>Typography 排版</h3><p>语义化标题与正文的 token 尺寸。</p></header>
+            <kima-typography type="heading" :level="2" size="title-medium">成员列表</kima-typography>
+            <kima-typography size="body">正文使用 body 档 15px，行高 1.5。</kima-typography>
+            <kima-typography type="caption" size="label-medium">caption 档 14px</kima-typography>
+          </article>
+
+          <article v-show="visible('popover', '气泡')" class="kima-gallery__demo">
+            <header><h3>Popover 气泡</h3><p>锚定弹层，点击或聚焦打开。</p></header>
+            <kima-popover v-model:open="popoverOpen" label="项目详情" content-label="详情">
+              <p>弹层是独立实色平面，挡住背后的内容。</p>
+            </kima-popover>
           </article>
         </section>
 
       </div>
     </div>
-    <kima-notification
-      v-model:open="noticeOpen"
-      :variant="noticeVariant"
-      :duration="8000"
-      :heading="noticeHeading"
-      :message="noticeMessage"
-      position="top-right"
-    />
-
     <kima-dialog v-model:open="dialogOpen" title="确认操作" description="这个示例展示对话框的标题、说明和按钮区。">
       <p>对话框使用原生 modal 实现，会自动隔离背景并管理键盘焦点。</p>
       <template #footer>
@@ -561,9 +588,7 @@ const viewItems = [
       :snap-points="[0.4, 0.6, 0.8, 0.95]"
       description="往上拖长高、往下拖变矮，松手吸到最近的一档；拖过最矮一档的 40% 就关闭。"
     >
-      <kima-layout>
-        <kima-card v-for="index in 6" :key="index">第 {{ index }} 张卡片：档位换了但内容位置不变，只是看到的部分多少不同。</kima-card>
-      </kima-layout>
+      <kima-card v-for="index in 6" :key="index">第 {{ index }} 张卡片：档位换了但内容位置不变，只是看到的部分多少不同。</kima-card>
       <template #footer>
         <kima-button variant="text" @click="drawerSnapOpen = false">关闭</kima-button>
       </template>

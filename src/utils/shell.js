@@ -26,17 +26,6 @@ export function useMenuChecks(props, emit) {
   }
   return { checked, check };
 }
-export function useNarrow(root, breakpoint, parent = false) {
-  const narrow = ref(false);
-  let observer;
-  onMounted(() => {
-    const target = parent ? root.value.closest('kima-sidebar')?.parentElement || root.value.parentElement : root.value;
-    const measure = () => { narrow.value = target.getBoundingClientRect().width < Number(breakpoint()); };
-    observer = new ResizeObserver(measure); observer.observe(target); measure();
-  });
-  watch(breakpoint, () => { if (root.value) narrow.value = root.value.getBoundingClientRect().width < Number(breakpoint()); });
-  onBeforeUnmount(() => observer?.disconnect());
-  return narrow;
-}
+// useNarrow 已随 sidebar 裁撤移除（无消费者）。需要时从 git 历史找回。
 export const navKey = (item) => String(item.value ?? item.href ?? item.label);
 export function navContains(item, value) { return navKey(item) === value || (item.children || []).some((child) => navContains(child, value)); }

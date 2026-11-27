@@ -5,269 +5,66 @@
  */
 import "./styles/_tokens.scss";
 
-export { default as KimaAccordion } from "./components/navigation/accordion.ce.vue";
-export { default as KimaAffix } from "./components/utility/affix.ce.vue";
-export { default as KimaAlert } from "./components/display/alert.ce.vue";
-export { default as KimaAlertDialog } from "./components/utility/alert-dialog.ce.vue";
-export { default as KimaAnchor } from "./components/navigation/anchor.ce.vue";
-export { default as KimaAngleSlider } from "./components/form-completion/angle-slider.ce.vue";
-export { default as KimaAnimatedNumber } from "./components/utility/animated-number.ce.vue";
-export { default as KimaAppShell } from "./components/shell/app-shell.ce.vue";
 export { default as KimaAvatar } from "./components/display/avatar.ce.vue";
-export { default as KimaAvatarGroup } from "./components/display/avatar-group.ce.vue";
-export { default as KimaBackTop } from "./components/navigation/back-top.ce.vue";
 export { default as KimaBadge } from "./components/core/badge.ce.vue";
-export { default as KimaBanner } from "./components/foundation/banner.ce.vue";
-export { default as KimaBlockquote } from "./components/display/blockquote.ce.vue";
-export { default as KimaBreadcrumb } from "./components/navigation/breadcrumb.ce.vue";
 export { default as KimaButton } from "./components/core/button.ce.vue";
-export { default as KimaButtonGroup } from "./components/core/button-group.ce.vue";
 export { default as KimaCalendar } from "./components/advanced-input/calendar.ce.vue";
 export { default as KimaCard } from "./components/core/card.ce.vue";
-export { default as KimaCarousel } from "./components/navigation/carousel.ce.vue";
-export { default as KimaCascader } from "./components/core/cascader.ce.vue";
-export { default as KimaChart } from "./components/content/chart.ce.vue";
 export { default as KimaCheckbox } from "./components/core/checkbox.ce.vue";
-export { default as KimaCheckboxGroup } from "./components/input/checkbox-group.ce.vue";
-export { default as KimaChip } from "./components/interaction/chip.ce.vue";
-export { default as KimaCodeBlock } from "./components/core/code-block.ce.vue";
-export { default as KimaCodeEditor } from "./components/content/code-editor.ce.vue";
 export { default as KimaCollapsible } from "./components/navigation/collapsible.ce.vue";
-export { default as KimaColorPicker } from "./components/form-completion/color-picker.ce.vue";
 export { default as KimaCombobox } from "./components/core/combobox.ce.vue";
-export { default as KimaCommand } from "./components/interaction/command.ce.vue";
-export { default as KimaConfigProvider } from "./components/shell/config-provider.ce.vue";
-export { default as KimaContextMenu } from "./components/interaction/context-menu.ce.vue";
-export { default as KimaDateField } from "./components/form-completion/date-field.ce.vue";
-export { default as KimaDatePicker } from "./components/core/date-picker.ce.vue";
-export { default as KimaDateRangePicker } from "./components/advanced-input/date-range-picker.ce.vue";
-export { default as KimaDescriptions } from "./components/display/descriptions.ce.vue";
 export { default as KimaDialog } from "./components/core/dialog.ce.vue";
 export { default as KimaDivider } from "./components/core/divider.ce.vue";
 export { default as KimaDrawer } from "./components/core/drawer.ce.vue";
-export { default as KimaDynamicInput } from "./components/form-completion/dynamic-input.ce.vue";
-export { default as KimaEditable } from "./components/advanced-input/editable.ce.vue";
-export { default as KimaEmptyState } from "./components/core/empty-state.ce.vue";
-export { default as KimaEquation } from "./components/content/equation.ce.vue";
-export { default as KimaErrorState } from "./components/foundation/error-state.ce.vue";
-export { default as KimaField } from "./components/input/field.ce.vue";
-export { default as KimaFieldGroup } from "./components/foundation/field-group.ce.vue";
-export { default as KimaFileUpload } from "./components/input/file-upload.ce.vue";
-export { default as KimaFlex } from "./components/foundation/flex.ce.vue";
-export { default as KimaFloatButton } from "./components/utility/float-button.ce.vue";
-export { default as KimaForm } from "./components/form-completion/form.ce.vue";
-export { default as KimaGrid } from "./components/foundation/grid.ce.vue";
-export { default as KimaHeatmap } from "./components/content/heatmap.ce.vue";
-export { default as KimaHighlight } from "./components/display/highlight.ce.vue";
-export { default as KimaHoverCard } from "./components/interaction/hover-card.ce.vue";
 export { default as KimaIcon } from "./components/core/icon.ce.vue";
 export { default as KimaIconButton } from "./components/core/icon-button.ce.vue";
-export { default as KimaImage } from "./components/display/image.ce.vue";
-export { default as KimaImagePreview } from "./components/data/image-preview.ce.vue";
-export { default as KimaInfiniteScroll } from "./components/data/infinite-scroll.ce.vue";
-export { default as KimaInputGroup } from "./components/foundation/input-group.ce.vue";
-export { default as KimaJsonInput } from "./components/form-completion/json-input.ce.vue";
-export { default as KimaLayout } from "./components/core/layout.ce.vue";
 export { default as KimaLink } from "./components/navigation/link.ce.vue";
-export { default as KimaList } from "./components/display/list.ce.vue";
-export { default as KimaListbox } from "./components/utility/listbox.ce.vue";
-export { default as KimaLoadingBar } from "./components/utility/loading-bar.ce.vue";
-export { default as KimaLoadingOverlay } from "./components/interaction/loading-overlay.ce.vue";
-export { default as KimaLogViewer } from "./components/utility/log-viewer.ce.vue";
-export { default as KimaLongText } from "./components/data/long-text.ce.vue";
-export { default as KimaMarquee } from "./components/shell/marquee.ce.vue";
-export { default as KimaMaskedInput } from "./components/form-completion/masked-input.ce.vue";
-export { default as KimaMasonry } from "./components/shell/masonry.ce.vue";
-export { default as KimaMention } from "./components/advanced-input/mention.ce.vue";
 export { default as KimaMenu } from "./components/core/menu.ce.vue";
-export { default as KimaMenubar } from "./components/interaction/menubar.ce.vue";
-export { default as KimaMultiSelect } from "./components/interaction/multi-select.ce.vue";
-export { default as KimaNavigationMenu } from "./components/navigation/navigation-menu.ce.vue";
-export { default as KimaNotification } from "./components/core/notification.ce.vue";
-export { default as KimaNotificationQueue } from "./components/utility/notification-queue.ce.vue";
-export { default as KimaNumberField } from "./components/input/number-field.ce.vue";
-export { default as KimaOverflowList } from "./components/navigation/overflow-list.ce.vue";
-export { default as KimaPageHeader } from "./components/foundation/page-header.ce.vue";
-export { default as KimaPagination } from "./components/core/pagination.ce.vue";
-export { default as KimaPeriodPicker } from "./components/form-completion/period-picker.ce.vue";
-export { default as KimaPinInput } from "./components/input/pin-input.ce.vue";
-export { default as KimaPopconfirm } from "./components/interaction/popconfirm.ce.vue";
 export { default as KimaPopover } from "./components/interaction/popover.ce.vue";
 export { default as KimaProgress } from "./components/core/progress.ce.vue";
-export { default as KimaProgressGroup } from "./components/utility/progress-group.ce.vue";
-export { default as KimaQrCode } from "./components/utility/qr-code.ce.vue";
 export { default as KimaRadioGroup } from "./components/input/radio-group.ce.vue";
-export { default as KimaRangeSlider } from "./components/advanced-input/range-slider.ce.vue";
-export { default as KimaRating } from "./components/input/rating.ce.vue";
-export { default as KimaResult } from "./components/display/result.ce.vue";
-export { default as KimaRichTextEditor } from "./components/content/rich-text-editor.ce.vue";
-export { default as KimaRingProgress } from "./components/data/ring-progress.ce.vue";
-export { default as KimaScrollArea } from "./components/navigation/scroll-area.ce.vue";
 export { default as KimaSelect } from "./components/core/select.ce.vue";
-export { default as KimaSidebar } from "./components/shell/sidebar.ce.vue";
 export { default as KimaSkeleton } from "./components/display/skeleton.ce.vue";
 export { default as KimaSlider } from "./components/core/slider.ce.vue";
 export { default as KimaSpinner } from "./components/display/spinner.ce.vue";
-export { default as KimaSplitter } from "./components/navigation/splitter.ce.vue";
-export { default as KimaStepper } from "./components/navigation/stepper.ce.vue";
 export { default as KimaSwitch } from "./components/core/switch.ce.vue";
 export { default as KimaTable } from "./components/data/table.ce.vue";
 export { default as KimaTabs } from "./components/core/tabs.ce.vue";
-export { default as KimaTagGroup } from "./components/utility/tag-group.ce.vue";
-export { default as KimaTagsInput } from "./components/input/tags-input.ce.vue";
 export { default as KimaTextField } from "./components/core/text-field.ce.vue";
 export { default as KimaTextarea } from "./components/input/textarea.ce.vue";
-export { default as KimaTimeField } from "./components/form-completion/time-field.ce.vue";
-export { default as KimaTimePicker } from "./components/core/time-picker.ce.vue";
-export { default as KimaTimeRangePicker } from "./components/advanced-input/time-range-picker.ce.vue";
-export { default as KimaTimeline } from "./components/display/timeline.ce.vue";
-export { default as KimaToggle } from "./components/input/toggle.ce.vue";
-export { default as KimaToolbar } from "./components/navigation/toolbar.ce.vue";
 export { default as KimaTooltip } from "./components/core/tooltip.ce.vue";
-export { default as KimaTour } from "./components/utility/tour.ce.vue";
-export { default as KimaTransfer } from "./components/advanced-input/transfer.ce.vue";
 export { default as KimaTree } from "./components/core/tree.ce.vue";
-export { default as KimaTreeSelect } from "./components/interaction/tree-select.ce.vue";
 export { default as KimaTypography } from "./components/foundation/typography.ce.vue";
-export { default as KimaUploadManager } from "./components/form-completion/upload-manager.ce.vue";
-export { default as KimaVirtualScroll } from "./components/core/virtual-scroll.ce.vue";
-export { default as KimaVirtualSelect } from "./components/utility/virtual-select.ce.vue";
-export { default as KimaVirtualTable } from "./components/data/virtual-table.ce.vue";
-export { default as KimaVirtualTree } from "./components/data/virtual-tree.ce.vue";
-export { default as KimaVisuallyHidden } from "./components/navigation/visually-hidden.ce.vue";
 
 export const componentNames = [
-  "KimaAccordion",
-  "KimaAffix",
-  "KimaAlert",
-  "KimaAlertDialog",
-  "KimaAnchor",
-  "KimaAngleSlider",
-  "KimaAnimatedNumber",
-  "KimaAppShell",
   "KimaAvatar",
-  "KimaAvatarGroup",
-  "KimaBackTop",
   "KimaBadge",
-  "KimaBanner",
-  "KimaBlockquote",
-  "KimaBreadcrumb",
   "KimaButton",
-  "KimaButtonGroup",
   "KimaCalendar",
   "KimaCard",
-  "KimaCarousel",
-  "KimaCascader",
-  "KimaChart",
   "KimaCheckbox",
-  "KimaCheckboxGroup",
-  "KimaChip",
-  "KimaCodeBlock",
-  "KimaCodeEditor",
   "KimaCollapsible",
-  "KimaColorPicker",
   "KimaCombobox",
-  "KimaCommand",
-  "KimaConfigProvider",
-  "KimaContextMenu",
-  "KimaDateField",
-  "KimaDatePicker",
-  "KimaDateRangePicker",
-  "KimaDescriptions",
   "KimaDialog",
   "KimaDivider",
   "KimaDrawer",
-  "KimaDynamicInput",
-  "KimaEditable",
-  "KimaEmptyState",
-  "KimaEquation",
-  "KimaErrorState",
-  "KimaField",
-  "KimaFieldGroup",
-  "KimaFileUpload",
-  "KimaFlex",
-  "KimaFloatButton",
-  "KimaForm",
-  "KimaGrid",
-  "KimaHeatmap",
-  "KimaHighlight",
-  "KimaHoverCard",
   "KimaIcon",
   "KimaIconButton",
-  "KimaImage",
-  "KimaImagePreview",
-  "KimaInfiniteScroll",
-  "KimaInputGroup",
-  "KimaJsonInput",
-  "KimaLayout",
   "KimaLink",
-  "KimaList",
-  "KimaListbox",
-  "KimaLoadingBar",
-  "KimaLoadingOverlay",
-  "KimaLogViewer",
-  "KimaLongText",
-  "KimaMarquee",
-  "KimaMaskedInput",
-  "KimaMasonry",
-  "KimaMention",
   "KimaMenu",
-  "KimaMenubar",
-  "KimaMultiSelect",
-  "KimaNavigationMenu",
-  "KimaNotification",
-  "KimaNotificationQueue",
-  "KimaNumberField",
-  "KimaOverflowList",
-  "KimaPageHeader",
-  "KimaPagination",
-  "KimaPeriodPicker",
-  "KimaPinInput",
-  "KimaPopconfirm",
   "KimaPopover",
   "KimaProgress",
-  "KimaProgressGroup",
-  "KimaQrCode",
   "KimaRadioGroup",
-  "KimaRangeSlider",
-  "KimaRating",
-  "KimaResult",
-  "KimaRichTextEditor",
-  "KimaRingProgress",
-  "KimaScrollArea",
   "KimaSelect",
-  "KimaSidebar",
   "KimaSkeleton",
   "KimaSlider",
   "KimaSpinner",
-  "KimaSplitter",
-  "KimaStepper",
   "KimaSwitch",
   "KimaTable",
   "KimaTabs",
-  "KimaTagGroup",
-  "KimaTagsInput",
   "KimaTextField",
   "KimaTextarea",
-  "KimaTimeField",
-  "KimaTimePicker",
-  "KimaTimeRangePicker",
-  "KimaTimeline",
-  "KimaToggle",
-  "KimaToolbar",
   "KimaTooltip",
-  "KimaTour",
-  "KimaTransfer",
   "KimaTree",
-  "KimaTreeSelect",
-  "KimaTypography",
-  "KimaUploadManager",
-  "KimaVirtualScroll",
-  "KimaVirtualSelect",
-  "KimaVirtualTable",
-  "KimaVirtualTree",
-  "KimaVisuallyHidden"
+  "KimaTypography"
 ];
-
-/* 代码块的内置语言是 highlight.js 的 common 集；其余语言由宿主补登记。 */
-export { registerCodeLanguage, hasCodeLanguage, codeLanguages } from "./utils/code-highlight.js";
