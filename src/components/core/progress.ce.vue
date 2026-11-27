@@ -505,9 +505,11 @@ const isLinearMode = (v) => v === "determinate" || v === "indeterminate" || v ==
 const props = defineProps({
   value: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
-  /* KIMA 命名层：determinate（默认）| indeterminate | buffer | query = 官方 linear
-   * mode 透传；circular = 官方 m3e-circular-progress-indicator。 */
-  mode: { type: String, default: "determinate" },
+  /* KIMA 命名层：determinate | indeterminate | buffer | query = 官方 linear
+   * mode 透传；circular = 官方 m3e-circular-progress-indicator。
+   * 默认 undefined——写了 indeterminate 布尔（官方无此写法，KIMA 糖）时按
+   * 官方 indeterminate 模式渲染；显式 mode 永远优先（官方语义）。 */
+  mode: { type: String, default: undefined },
   /* circular 官方 indeterminate 布尔；linear 的 indeterminate 由 mode 表达。 */
   indeterminate: { type: Boolean, default: false },
   bufferValue: { type: Number, default: 0 },
@@ -525,8 +527,17 @@ const uid = getCurrentInstance()?.uid ?? 0;
 /* #applyVariant / #applyMode 逐行：非法值回落官方默认。 */
 const variant = computed(() => (isVariant(props.variant) ? props.variant : "flat"));
 const isCircular = computed(() => props.mode === "circular");
-const linearMode = computed(() => (isLinearMode(props.mode) ? props.mode : "determinate"));
-/* 官方语义：circular 看 indeterminate 布尔；linear 的 indeterminate/query 都是不定态。 */
+/* 官方语义（LinearProgressIndicatorElement.ts 只有 mode，indeterminate 布尔是
+ * circular 独有属性）：linear 的 indeterminate/query 都是官方 mode 值。
+ * KIMA 的 indeterminate 布尔在 linear 下是 mode="indeterminate" 的等价糖
+ * （用户写 <kima-progress indeterminate> 不写 mode 时按官方 indeterminate 模式渲染）；
+ * 显式 mode 优先。 */
+const linearMode = computed(() => {
+  if (isLinearMode(props.mode)) return props.mode;
+  if (props.mode === "circular") return "determinate";
+  /* 未写 mode：官方默认 determinate；KIMA indeterminate 布尔糖 = mode="indeterminate"。 */
+  return props.indeterminate ? "indeterminate" : "determinate";
+});
 const indeterminate = computed(() =>
   isCircular.value ? props.indeterminate : linearMode.value === "indeterminate" || linearMode.value === "query",
 );
@@ -568,7 +579,10 @@ function bindSpinnerNodes() {
   spinnerNodes.track = markRaw(el.querySelector(".spinner.track") ?? null);
 }
 
-/* #updateDiameterAndStroke / #updateAmplitudeAndWavelength / #updateStroke 逐行。 */
+/* #updateDiameterAndStroke / #updateAmplitudeAndWavelength / #updateStroke 逐行。
+ * 注意官方两套读法：linear 探针用 clientWidth/Height（整数即够）；
+ * circular 全部用 getComputedStyle parseFloat（CircularProgressIndicatorElement.ts
+ * 555-586 逐行——1.6px 波幅的 used value 1.59375 必须保小数，clientWidth 会取整）。 */
 function readProbes() {
   const el = root.value;
   if (!el) return;
@@ -581,8 +595,17 @@ function readProbes() {
   }
   const aw = amplitudeProbe.value;
   if (aw) {
-    next.amplitude = aw.clientHeight;
-    next.wavelength = aw.clientWidth;
+    if (isCircular.value) {
+      const style = getComputedStyle(aw);
+      const amplitude = parseFloat(style.width);
+      const wavelength = parseFloat(style.height);
+
+      if (Number.isFinite(amplitude)) next.amplitude = amplitude;
+      if (Number.isFinite(wavelength)) next.wavelength = wavelength;
+    } else {
+      next.amplitude = aw.clientHeight;
+      next.wavelength = aw.clientWidth;
+    }
   }
   const ds = diameterProbe.value;
   if (ds) {
@@ -594,6 +617,7 @@ function readProbes() {
       if (Number.isFinite(diameter)) next.diameter = diameter;
       if (Number.isFinite(strokeWidth)) next.strokeWidth = strokeWidth;
     } else {
+      /* flat 官方走 clientWidth/Height（567-570 行的 else 分支）。 */
       next.diameter = ds.clientWidth;
       next.strokeWidth = ds.clientHeight;
     }
@@ -822,7 +846,7 @@ watch([() => props.value, () => props.max, () => props.bufferValue], () => {
     :class="[
       isCircular ? 'kima-progress--circular' : 'kima-progress--linear',
       `kima-progress--${variant}`,
-      isCircular ? {} : `kima-progress--${linearMode}`,
+      isCircular ? {} : { [`kima-progress--${linearMode}`]: linearMode !== 'indeterminate' },
       { 'kima-progress--indeterminate': indeterminate },
     ]"
     role="progressbar"

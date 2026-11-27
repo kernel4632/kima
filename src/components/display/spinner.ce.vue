@@ -43,16 +43,31 @@ const attrs = useAttrs();
 const root = ref(null);
 const { isCustomElement } = useNativeSlots(root);
 
-/* 官方隐藏量测探针同构：diameter/stroke 只能通过 DOM 布局读 token 像素。
- * 直径三档写在 scoped 样式，这里读回。 */
+/* 官方隐藏量测探针同构（CircularProgressIndicatorElement.ts #updateDiameterAndStroke
+ * + #updateAmplitudeAndWavelength）：diameter/stroke/amplitude 只能通过 DOM 布局读像素。
+ * flat indeterminate 的 viewBox padding = amplitude + stroke/2（官方 #drawArc 默认
+ * padding = #amplitude，1.59375px used value → viewBox 47.1875），直径三档写在 scoped 样式。 */
 const probe = ref(null);
-const measured = ref({ diameter: 0, strokeWidth: 0 });
+const amplitudeProbe = ref(null);
+const measured = ref({ diameter: 0, strokeWidth: 0, amplitude: 0 });
 let observer = null;
 
 function readProbes() {
   const el = probe.value;
   if (!el) return;
-  measured.value = { diameter: el.clientWidth, strokeWidth: el.clientHeight };
+  /* 官方 circular 探针用 getComputedStyle parseFloat（#updateDiameterAndStroke 559-566），
+   * 保留小数——clientWidth 会四舍五入把 1.59375px 波幅读成 2px，viewBox 就错了。 */
+  const style = getComputedStyle(el);
+  const diameter = parseFloat(style.width);
+  const strokeWidth = parseFloat(style.height);
+  const next = {
+    diameter: Number.isFinite(diameter) ? diameter : measured.value.diameter,
+    strokeWidth: Number.isFinite(strokeWidth) ? strokeWidth : measured.value.strokeWidth,
+    amplitude: measured.value.amplitude,
+  };
+  const aw = amplitudeProbe.value;
+  if (aw) next.amplitude = parseFloat(getComputedStyle(aw).width);
+  measured.value = next;
 }
 
 onMounted(() => {
@@ -65,7 +80,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => observer?.disconnect());
 
-/* 官方 #drawArc 两段（#renderFlatIndicator indeterminate 逐行）。 */
+/* 官方 #drawArc 两段（#renderFlatIndicator indeterminate 逐行；
+ * 默认 padding = #amplitude——flat viewBox 47.1875 的来源）。 */
 const left = ref({ path: "", viewBox: "0 0 0 0" });
 const right = ref({ path: "", viewBox: "0 0 0 0" });
 
@@ -75,10 +91,12 @@ watch(
     left.value = circularProgressArc(m.diameter, m.strokeWidth, "flat", {
       startAngle: -45,
       endAngle: 90 + m.strokeWidth,
+      padding: m.amplitude,
     });
     right.value = circularProgressArc(m.diameter, m.strokeWidth, "flat", {
       startAngle: -m.strokeWidth,
       endAngle: 135,
+      padding: m.amplitude,
     });
   },
   { deep: true },
@@ -133,8 +151,9 @@ watch(
         </span>
       </span>
     </span>
-    <!-- 官方量测探针：直径/厚度 token 的 DOM 读点。 -->
+    <!-- 官方量测探针（118-130）：直径/厚度 + 波幅/波长 token 的 DOM 读点。 -->
     <span ref="probe" class="kima-spinner__diameter-and-stroke" aria-hidden="true"></span>
+    <span ref="amplitudeProbe" class="kima-spinner__amplitude-and-wavelength" aria-hidden="true"></span>
   </span>
 </template>
 
@@ -223,12 +242,18 @@ watch(
   animation-delay: calc(-0.5 * var(--_arc-duration)), 0ms;
 }
 
-/* 量测探针（官方 118-126 的 .diameter-and-stroke）。 */
+/* 量测探针（官方 118-130 的 .diameter-and-stroke / .amplitude-and-wavelength）。 */
 .kima-spinner__diameter-and-stroke {
   visibility: hidden;
   position: absolute;
   width: inherit;
   height: var(--kima-spinner-thickness, 4px);
+}
+.kima-spinner__amplitude-and-wavelength {
+  visibility: hidden;
+  position: absolute;
+  width: var(--kima-progress-circular-wavy-amplitude, 1.6px);
+  height: var(--kima-progress-circular-wavy-wavelength, 15px);
 }
 
 /* 官方 keyframes（186-227）逐帧值照抄。 */
