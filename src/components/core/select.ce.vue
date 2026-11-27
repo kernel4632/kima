@@ -419,7 +419,7 @@ onBeforeUnmount(() => {
    * 1px border + shadow-sm + bg-transparent——描边突出是选择器的官方模式
    * （文本输入框才是背景突出，两者不同源，勿混）。 */
   border: var(--kima-outline-width) solid var(--kima-color-input-border);
-  border-radius: 6px;
+  border-radius: var(--kima-radius-input);
   background: transparent;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   transition:

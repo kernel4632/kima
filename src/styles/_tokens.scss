@@ -117,6 +117,9 @@
    * 官方文本输入靠背景色突出（用户实测指认），此前透明底+边框是把 Select 触发器
    * （57px border bg-transparent shadow-sm）的皮肤错安到文本框——组件归属修正。 */
   --kima-color-input-bg: light-dark(#ffffff, hsl(0 0% 21%));
+  /* 输入框圆角：grok-radius-control 10px（官方控件档，菜单/弹层内嵌输入消费档）——
+   * 不是 shadcn rounded-md 6px（那是登录页 Select 触发器的档）。 */
+  --kima-radius-input: 10px;
   --kima-color-input-bg-hover: light-dark(#ffffff, hsl(0 0% 24%));
   --kima-color-input-border: light-dark(rgba(43, 43, 42, 0.38), rgba(255, 255, 255, 0.04));
   --kima-color-input-border-focus: color-mix(in srgb, var(--kima-color-on-surface) light-dark(50%, 16%), transparent);

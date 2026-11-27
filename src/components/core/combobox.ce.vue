@@ -431,7 +431,7 @@ onBeforeUnmount(() => {
   padding-right: var(--kima-space-2);
   /* combobox 是输入族：官方背景突出模式（--input 底），描边为辅助。 */
   border: var(--kima-outline-width) solid var(--kima-color-input-border);
-  border-radius: 6px;
+  border-radius: var(--kima-radius-input);
   background: var(--kima-color-input-bg);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
