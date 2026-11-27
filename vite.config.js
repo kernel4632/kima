@@ -42,6 +42,8 @@ export default defineConfig(async ({ mode }) => {
       },
       rolldownOptions: {
         external: elements ? [] : [/^vue(?:\/|$)/, /^@hugeicons\//],
+        // 元素产物必须单文件：switch 的守卫式动态注册（@m3e/web）在此内联提升为同步模块。
+        ...(elements ? { output: { inlineDynamicImports: true } } : {}),
       },
     } : {
       outDir: "site-dist",

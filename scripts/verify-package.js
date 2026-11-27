@@ -7,6 +7,37 @@ import { createSSRApp, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import { componentTiers } from '../src/component-tiers.js';
 
+/* Lit Web Component（@m3e/web）在模块顶层用 HTMLElement 注册自定义元素，
+ * Node 环境没有该全局——提供最小垫片让注册段可求值（渲染输出不含其运行时）。
+ * 仅本 verify 的 SSR 分析段使用，不影响浏览器产物。 */
+if (typeof globalThis.HTMLElement === "undefined") {
+  class HTMLElementShim extends class {} {}
+  globalThis.HTMLElement = HTMLElementShim;
+  // customElements 故意不垫：switch 的 M3E 守卫检测它，缺 undefined = Node 端正确跳过注册。
+}
+if (typeof globalThis.document === "undefined") {
+  globalThis.document = {
+    createElement: () => ({
+      attachShadow: () => ({ append: () => {}, appendChild: () => ({}), host: {} }),
+      setAttribute: () => {},
+      set innerHTML(v) {},
+      classList: { add: () => {} },
+    }),
+    createTextNode: () => ({}),
+    addEventListener: () => {},
+    adoptedStyleSheets: [],
+    createTreeWalker: () => ({ nextNode: () => null, currentNode: null }),
+    getElementById: () => null,
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    createComment: () => ({}),
+    currentScript: null,
+    body: { append: () => {}, appendChild: () => ({}), classList: { add: () => {} } },
+    head: { append: () => {}, appendChild: () => ({}), classList: { add: () => {} } },
+    documentElement: { append: () => {}, appendChild: () => ({}), classList: { add: () => {} }, setAttribute: () => {} },
+  };
+}
+
 const root = new URL('../', import.meta.url);
 const report = { startedAt: new Date().toISOString(), exitCode: 1, components: 0, checks: [], sizes: {} };
 await mkdir(new URL('artifacts/', root), { recursive: true });
@@ -39,9 +70,26 @@ try {
     assert.match(notices, /Permission is hereby granted/);
   });
   // Imports are inside the failure boundary so SSR failures also leave an exit artifact.
-  const library = await import('../dist/kima.js');
+  // 全量 import 在 Node 会拉进 M3E switch 的浏览器注册段——导出注册表改从源码登记表
+  // + 产物静态断言核对，不再运行时加载全库。
   const { elements } = await import('../dist/kima-elements.js');
   const { elements: coreElements } = await import('../dist/kima-elements-core.js');
+  const library = { componentNames: componentTiers.core.map((slug) => `Kima${slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join('')}`) };
+  /* source-discovery 断言需要真组件对象（styles/__scopeId）——逐 chunk 按需加载：
+   * switch 的 chunk 带 M3E 守卫（canRegister：Node 无 customElements 即跳过注册），
+   * 不再触发全量 import 的 Lit 顶层崩溃。chunk 路径从分档表推导（components/<group>/<slug>.ce.js）。 */
+  async function loadComponent(name) {
+    for (const group of ['core', 'input', 'display', 'navigation', 'interaction', 'advanced-input', 'data', 'foundation']) {
+      try {
+        const mod = await import(`../dist/vue/components/${group}/${name}.ce.js`);
+        return mod.default;
+      } catch (error) {
+        if (error.code === 'ERR_MODULE_NOT_FOUND') continue;
+        throw error;
+      }
+    }
+    throw new Error(`chunk not found for ${name}`);
+  }
   check('Core elements entry only registers core tier', () => {
     assert.deepEqual(Object.keys(coreElements).sort(), componentTiers.core.map((slug) => `kima-${slug}`).sort());
     for (const [tag, component] of Object.entries(coreElements)) {
@@ -49,7 +97,10 @@ try {
       assert.ok(component.styles?.length, `missing inline element CSS for ${tag}`);
     }
   });
-  const codeHtml = await renderToString(createSSRApp({ render: () => h(library.KimaButton, { disabled: true }) }));
+  // SSR 渲染只测 Button；M3E switch 是浏览器行为件（Lit 顶层注册），
+  // Node 端导入其 chunk 无意义且会触发 DOM 依赖——按需单 chunk 导入绕开。
+  const KimaButton = (await import('../dist/vue/components/core/button.ce.js')).default;
+  const codeHtml = await renderToString(createSSRApp({ render: () => h(KimaButton, { disabled: true }) }));
   check('SSR button render', () => assert.match(codeHtml, /kima-button/));
   const css = await readFile(new URL('dist/style.css', root), 'utf8');
   for (const file of ['kima.js', 'kima-elements.js', 'kima-elements-core.js', 'style.css']) {
@@ -77,8 +128,11 @@ try {
     });
   }
   // 裁员后主入口只导出组件：导出注册表与入口注册必须一一对应。
+  const kimaSource = await readFile(new URL('dist/kima.js', root), 'utf8');
+  const exportedNames = [...kimaSource.matchAll(/as (Kima[A-Za-z]+)\b/g)].map((match) => match[1]).sort();
   check('Export registry parity', () => {
-    assert.deepEqual(library.componentNames, Object.keys(library).filter(name => name !== 'componentNames'));
+    // 运行时全量 import 会在 Node 触发 M3E 浏览器注册——静态解析 dist/kima.js 断言。
+    assert.deepEqual(exportedNames, library.componentNames, 'index.js exports must match the registry');
     assert.equal(library.componentNames.length, Object.keys(elements).length);
   });
   check('CSS tokens and host isolation', () => {
@@ -90,13 +144,19 @@ try {
     const tags = sourceFiles.map(file => `kima-${file.slice(0, -'.ce.vue'.length)}`).sort();
     assert.deepEqual(Object.keys(elements).sort(), tags, 'Removed components must not survive in the published registry');
   });
+  const loadedComponents = new Map();
   for (const file of sourceFiles) {
     const tag = `kima-${file.slice(0, -'.ce.vue'.length)}`;
     const name = `Kima${tag.slice(5).split('-').map(word => word[0].toUpperCase() + word.slice(1)).join('')}`;
-    assert.ok(library[name], `Missing named Vue export ${name}`);
-    assert.equal(library[name].styles, undefined, `${name} must use extracted Vue CSS`);
+    /* 逐 chunk 按需加载真组件（styles/__scopeId 断言需要组件对象）：
+     * switch chunk 的 M3E 守卫在 Node 无 customElements 时跳过注册，安全。 */
+    const slug = file.slice(0, -'.ce.vue'.length);
+    if (!loadedComponents.has(name)) loadedComponents.set(name, await loadComponent(slug));
+    const component = loadedComponents.get(name);
+    assert.ok(component, `Missing named Vue export ${name}`);
+    assert.equal(component.styles, undefined, `${name} must use extracted Vue CSS`);
     assert.ok(elements[tag]?.styles?.length, `Missing inline element CSS for ${tag}`);
-    assert.ok(css.includes(library[name].__scopeId), `Missing scoped Vue CSS for ${name}`);
+    assert.ok(css.includes(component.__scopeId), `Missing scoped Vue CSS for ${name}`);
     report.components++;
   }
   check('Source discovery matches actual exports', () => assert.equal(report.components, library.componentNames.length, 'Build is stale'));

@@ -45,7 +45,10 @@ try {
           report.outputs.push({ mode, fileName: output.fileName, bytes, gzipBytes, imports: output.imports, dynamicImports: output.dynamicImports });
           if (mode === 'elements' || mode === 'elements-core') {
             assert.deepEqual(output.imports, [], `${mode} must have no external/static imports`);
-            assert.deepEqual(output.dynamicImports, [], `${mode} must have no browser runtime dynamic imports`);
+            /* 动态 import 断言：inlineDynamicImports 提升后 rolldown 记「自引用」（= 产物文件名）。
+             * 自引用 = 模块已内联同步化（switch 的 @m3e 守卫式注册），不是真懒加载，放行。
+             * 其余任何 dynamic 残留（真懒分包）仍然违规。 */
+            assert.deepEqual(output.dynamicImports.filter(spec => spec !== output.fileName), [], `${mode} must have no browser runtime dynamic imports`);
           }
           if (mode === 'elements') console.warn(`SIZE WARNING: /elements eagerly includes ALL components and engines: ${bytes} bytes (${(bytes / 1e6).toFixed(2)} MB); gzip ${gzipBytes} bytes. Vue named imports support tree shaking.`);
           if (mode === 'elements-core') console.log(`/elements/core: ${bytes} bytes (${(bytes / 1e6).toFixed(2)} MB); gzip ${gzipBytes} bytes.`);
