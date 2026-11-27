@@ -175,7 +175,7 @@ const viewItems = [
           </kima-card>
 
           <kima-card v-show="visible('button', '按钮')" class="kima-gallery__demo">
-            <header><kima-typography type="heading" :level="3" size="title-medium">Button 按钮</kima-typography><kima-typography type="caption">四种外观、加载和禁用状态。点击计数：{{ clicks }}</kima-typography></header>
+            <header><kima-typography type="heading" :level="3" size="title-medium">Button 按钮</kima-typography><kima-typography type="caption">一个原语覆盖纯文字、图文与纯图标（icon-only）三种形态。点击计数：{{ clicks }}</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-button @click="countClick">填充</kima-button>
               <kima-button variant="tonal" @click="countClick">柔和</kima-button>
@@ -188,10 +188,6 @@ const viewItems = [
                 新建
               </kima-button>
             </div>
-          </kima-card>
-
-          <kima-card v-show="visible('button', '按钮')" class="kima-gallery__demo">
-            <header><kima-typography type="heading" :level="3" size="title-medium">Button 纯图标形态</kima-typography><kima-typography type="caption">icon-only 组合：一个按钮原语覆盖纯文字与纯图标，不再有独立图标按钮组件。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-button variant="standard" icon-only label="收藏"><kima-icon :icon="HeartIcon" :size="24" /></kima-button>
               <kima-button variant="tonal" icon-only label="收藏"><kima-icon :icon="FavouriteIcon" :size="24" /></kima-button>
