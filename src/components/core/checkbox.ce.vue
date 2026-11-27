@@ -167,13 +167,16 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
 
   /* 方框：整图标方案（与 table 勾选列同款视觉）。
    * 空框是 SquareIcon 线稿、选中是 CheckmarkSquare02Icon 实心勾、半选是 MinusSignSquareIcon，
-   * 三个图标叠在同一格，由类切换显隐——勾选弹出动画保留（独立场景勾选是主交互）。 */
+   * 三个图标叠在同一格，由类切换显隐——勾选弹出动画保留（独立场景勾选是主交互）。
+   * 未选框用 on-surface-variant（官方 fg-secondary 64.7% 灰档）而非 border-primary：
+   * 边框灰 #5f5e59 在深底上线条密度太低、会被误读为禁用（用户实测反馈），
+   * 交互控件的造型线应比"分隔线"亮一档。 */
   &__box {
     position: relative;
     display: block;
     width: 24px;
     height: 24px;
-    color: var(--kima-color-outline);
+    color: var(--kima-color-on-surface-variant);
     @include kima-press(var(--kima-press-scale-sm));
   }
 
