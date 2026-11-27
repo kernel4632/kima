@@ -378,18 +378,58 @@
   --kima-control-height-xl: 40px;
   --kima-control-height-2xl: 44px;
   --kima-row-height: 40px;
-  /* 滑块私有几何（M3E Slider extra-small 档，SliderElement/ThumbElement 源码）：
-   * 总高 44、轨道 16px（secondaryContainer 段）、thumb 容器 16 宽
-   * （handle 4 + padding 6×2）、按压 handle 变 2px 细、命中区 48。 */
-  --kima-slider-total-height: 44px;
-  --kima-slider-track-height: 16px;
-  --kima-slider-handle-width: 4px;
-  --kima-slider-handle-pressed-width: 2px;
-  --kima-slider-thumb-padding: 6px;
-  /* thumb 容器半宽（(4 + 6×2) / 2）：M3E 的轨道到 thumb 容器边缘为止，
-   * handle 与轨道间保持容器宽度的断开（官方实测 active 到 92 / end 从 108）。 */
-  --kima-slider-thumb-gap: 8px;
+  /* ---- 滑块（M3E Slider 全量 token，SliderElement/ThumbElement/FocusRing 源码逐行）----
+   * 官方名 --m3e-slider-* → --kima-slider-*；默认值 = M3E 源码编译值，不发明。
+   * 尺寸档：extra-small 总高 44（与 small 同档）/ medium 52 / large 68 / extra-large 108；
+   * 轨道高：16 / 24 / 40 / 56 / 96；thumb 宽 4（按压 2）+ padding 6×2；tick 4px。
+   * 配色映射（M3E DesignToken → KIMA token）：
+   *   primary → --kima-color-primary；onPrimary → --kima-color-on-primary
+   *   secondaryContainer → --kima-color-secondary-container；onSecondaryContainer → 同名
+   *   inverseSurface → --kima-color-inverse-surface；inverseOnSurface → 同名
+   *   onSurface → --kima-color-on-surface。 */
+  --kima-slider-min-width: 200px;
+  --kima-slider-small-height: 44px;
+  --kima-slider-medium-height: 52px;
+  --kima-slider-large-height: 68px;
+  --kima-slider-extra-large-height: 108px;
+  --kima-slider-extra-small-track-height: 16px;
+  --kima-slider-small-track-height: 24px;
+  --kima-slider-medium-track-height: 40px;
+  --kima-slider-large-track-height: 56px;
+  --kima-slider-extra-large-track-height: 96px;
   --kima-slider-tick-size: 4px;
+  --kima-slider-tick-shape: var(--kima-radius-full);
+  --kima-slider-thumb-width: 4px;
+  --kima-slider-thumb-padding: 6px;
+  --kima-slider-thumb-pressed-width: 2px;
+  --kima-slider-thumb-shape: var(--kima-radius-full);
+  --kima-slider-corner-small: 8px;
+  --kima-slider-corner-medium: 12px;
+  --kima-slider-corner-large: 16px;
+  --kima-slider-corner-extra-large: 28px;
+  /* 动效（MotionToken 编译值）：spring.fastEffects = 150ms cubic-bezier(0.31,0.94,0.34,1)；
+   * duration.short2 = 100ms / short3 = 150ms；easing.standard = cubic-bezier(0.2,0,0,1)。
+   * 官方 --md-sys-motion-* 名与 KIMA token 体系并存，组件样式直接消费。 */
+  --kima-slider-motion-fast-effects: 150ms cubic-bezier(0.31, 0.94, 0.34, 1);
+  --kima-slider-motion-short2: 100ms;
+  --kima-slider-motion-short3: 150ms;
+  --kima-slider-focus-ring-color: var(--kima-color-focus-ring);
+  --kima-slider-focus-ring-duration: 500ms;
+  --kima-slider-focus-ring-thickness: 3px;
+  --kima-slider-focus-ring-outward-offset: 2px;
+  --kima-slider-focus-ring-inward-offset: 0px;
+  --kima-slider-focus-ring-visibility: visible;
+  --kima-slider-focus-ring-growth-factor: 2;
+  --kima-slider-label-width: 48px;
+  --kima-slider-label-height: 44px;
+  --kima-slider-label-margin: 4px;
+  --kima-slider-label-shape: var(--kima-radius-full);
+  --kima-slider-label-container-color: var(--kima-color-inverse-surface);
+  --kima-slider-label-color: var(--kima-color-inverse-on-surface);
+  --kima-slider-label-font-size: var(--kima-font-size-label-medium);
+  --kima-slider-label-font-weight: var(--kima-font-weight-medium);
+  --kima-slider-label-line-height: 16px;
+  --kima-slider-label-tracking: 0.5px;
   --kima-spinner-duration: 1568ms;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
@@ -471,6 +511,12 @@ kima-slider {
   transition:
     opacity var(--kima-duration-medium) var(--kima-curve-emphasized),
     scale var(--kima-duration-medium) var(--kima-curve-emphasized);
+}
+/* 菜单弹层（M3E bounce-open）：scaleY 由 keyframes 弹簧接管，通用 scale 过渡
+   关掉防打架；opacity 对齐官方 short2 = 100ms 快进。 */
+.kima-popup-enter-active.kima-menu__popup {
+  transition: opacity 100ms cubic-bezier(0.2, 0, 0, 1);
+  scale: none;
 }
 
 .kima-popup-leave-active {
@@ -575,4 +621,21 @@ kima-slider {
 [class*=" kima-"]::-webkit-scrollbar-thumb:hover {
   background: var(--kima-color-scrollbar-thumb-hover);
   background-clip: padding-box;
+}
+
+/* M3E bounce-open（MenuElement.ts 311-320）——菜单弹层进场 scaleY 弹簧过冲。
+ * 官方就是 CSS keyframes + spring fast-spatial 的 linear() 采样串（motion-v 的
+ * JS 插值器不支持 >1 过冲，官方同款方案是唯一保真路径）。必须在顶层独立声明：
+ * 混进 .kima-popup-* 选择器组会被编译器并组，且 scoped @keyframes 会加 data-v
+ * 哈希导致传送元素的引用断链。 */
+/* 菜单弹层进场 scaleY 弹簧（M3E bounce-open）——只在进场期间（enter-active）跑，
+   退场走 .kima-popup-leave-*（缩回 + 淡出）。常驻 animation 会让 leave 期间冲突。 */
+.kima-popup-enter-active.kima-menu__popup {
+  animation-name: kima-menu-bounce-open;
+  animation-duration: 350ms;
+  animation-timing-function: linear(0, 0.0017 0.6%, 0.0079 1.3%, 0.0164 1.9%, 0.0298 2.6%, 0.0665 4%, 0.1178 5.5%, 0.1742 6.9%, 0.2412 8.4%, 0.5471 14.7%, 0.6213 16.3%, 0.6871 17.8%, 0.7523 19.4%, 0.8119 21%, 0.8655 22.6%, 0.9129 24.2%, 0.9564 25.9%, 0.995 27.7%, 1.0264 29.5%, 1.0521 31.4%, 1.071 33.3%, 1.0843 35.3%, 1.0922 37.4%, 1.0948 39.7%, 1.0919 42.3%, 1.0835 45.2%, 1.0299 57.4%, 1.0082 63.9%, 0.9951 71%, 0.991 79.3%, 0.9982 99.9%, 1);
+}
+@keyframes kima-menu-bounce-open {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }

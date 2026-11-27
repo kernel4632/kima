@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- M3E 官方 slider demo 逐值对表台：与 matraic.github.io/m3e/components/slider.html
+     同构的 14 个状态，官方在 m3e-slider 标签上，KIMA 在 #kima-stage 里。 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KIMA slider 对表台</title>
+    <style>
+      body { margin: 24px; display: grid; gap: 24px; max-width: 720px; }
+      #kima-stage { display: grid; gap: 24px; }
+      .row { display: flex; gap: 32px; align-items: center; }
+    </style>
+  </head>
+  <body>
+    <div id="kima-stage"></div>
+    <script type="module">
+      import "/src/elements.js";
+      import "/src/styles/_tokens.scss";
+      import { createApp, h } from "vue";
+      import KimaSlider from "/src/components/core/slider.ce.vue";
+
+      /* 官方 demo 的 14 个状态（value 在 thumb 上，这里给同值 modelValue）。 */
+      const states = [
+        { label: "default", props: { modelValue: null } },
+        { label: "min1 max5 step0.5 v1.5", props: { min: 1, max: 5, step: 0.5, modelValue: 1.5 } },
+        { label: "range 20/80", props: { modelValue: [20, 80] } },
+        { label: "min-50 v-20", props: { min: -50, modelValue: -20 } },
+        { label: "vertical v50", props: { orientation: "vertical", modelValue: 50 } },
+        { label: "small v50", props: { size: "small", modelValue: 50 } },
+        { label: "medium v50", props: { size: "medium", modelValue: 50 } },
+        { label: "large v50", props: { size: "large", modelValue: 50 } },
+        { label: "extra-large v50", props: { size: "extra-large", modelValue: 50 } },
+        { label: "labelled v20", props: { labelled: true, modelValue: 20 } },
+        { label: "discrete step10 v20", props: { discrete: true, step: 10, modelValue: 20 } },
+        { label: "labelled v20 (2)", props: { labelled: true, modelValue: 20 } },
+        { label: "labelled disabled v20", props: { labelled: true, disabled: true, modelValue: 20 } },
+        { label: "labelled range 20/80", props: { labelled: true, modelValue: [20, 80] } },
+      ];
+
+      const app = createApp({
+        render: () =>
+          h("div", { id: "kima-stage" },
+            states.map((s) => h(KimaSlider, { ...s.props, label: s.label, "data-state": s.label })),
+          ),
+      });
+      app.mount("#kima-stage");
+      document.documentElement.dataset.ready = "true";
+    </script>
+  </body>
+</html>

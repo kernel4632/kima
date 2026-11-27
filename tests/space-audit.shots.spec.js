@@ -22,8 +22,9 @@ for (const theme of ['dark', 'light']) {
       return context.measureText(element.value).width <= element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) + 1;
     })).toBe(true);
 
-    // 02：滑块 token 真实几何（裁员后仍保留 slider 断言）。
-    expect(await page.locator('.kima-slider__input').evaluate(element => getComputedStyle(element).getPropertyValue('--kima-slider-track-height').trim())).toBe('8px');
+    // 02：滑块官方几何（M3E SliderElement :host 档）——extra-small 总高 44、轨道 16。
+    const sliderBox = await page.locator('.kima-slider').first().boundingBox();
+    expect(sliderBox.height).toBe(44);
     expect((await page.locator('.kima-divider__line').boundingBox()).height).toBe(2);
 
     // 03：顶栏按钮几何对齐官方 Button CVA 档（图标按钮 = shape:square 2xl 44）。
