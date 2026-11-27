@@ -125,9 +125,15 @@ onBeforeUnmount(() => observer?.disconnect());
   align-self: stretch;
 }
 
-/* 平铺模式把分组标题（KimaTypography）显出来，组距由 section gap 承担。 */
+/* 平铺模式把分组标题（KimaTypography）显出来，组标题上方让开一档（24px），
+ * 与上一组的末卡拉开呼吸感；下方靠 section gap 16 承担。 */
 .kima-lab__body :deep(.kima-gallery__section > .kima-typography) {
   display: block;
+  margin: var(--kima-space-6) 0 0;
+}
+
+.kima-lab__body :deep(.kima-gallery__section:first-child > .kima-typography) {
+  margin-top: 0;
 }
 
 /* 单列一排排：demo 卡片占满行宽，组间用 KimaDivider 分隔（组件自己渲染）。 */

@@ -101,8 +101,10 @@ function handleKeyup(event) {
   display: flex;
   min-width: 0;
   flex-direction: column;
+  /* 官方卡内边距 p-4（16px）档：p-4 是官方 surface 卡的主节奏（p-6 是全屏容器）。
+   * 此前 12 偏紧，实测演示卡内容顶边、标题贴框。 */
   gap: var(--kima-space-3);
-  padding: var(--kima-space-3);
+  padding: var(--kima-space-4);
   border: 0;
   border-radius: var(--kima-radius-card);
   color: var(--kima-color-on-surface);
