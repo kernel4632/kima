@@ -364,11 +364,14 @@
   --kima-control-height-xl: 40px;
   --kima-control-height-2xl: 44px;
   --kima-row-height: 40px;
-  /* 滑块私有几何（slider 组件内部引用；官方轨道细条形）：
-   * 轨道 8、拇指指示条 6×36。第一轮 token 重写时被误删，此处于组件侧对齐回归。 */
-  --kima-slider-track-height: 8px;
-  --kima-slider-handle-width: 6px;
-  --kima-slider-handle-height: 36px;
+  /* 滑块私有几何（M3E Slider extra-small 档，SliderElement/ThumbElement 源码）：
+   * 总高 44、轨道 16px（secondaryContainer 段）、thumb 容器 16 宽
+   * （handle 4 + padding 6×2）、按压 handle 变 2px 细、命中区 48。 */
+  --kima-slider-total-height: 44px;
+  --kima-slider-track-height: 16px;
+  --kima-slider-handle-width: 4px;
+  --kima-slider-handle-pressed-width: 2px;
+  --kima-slider-thumb-padding: 6px;
   --kima-spinner-duration: 1568ms;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
