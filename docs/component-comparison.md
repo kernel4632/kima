@@ -40,7 +40,7 @@
 | [badge](../src/components/core/badge.ce.vue:1) | 徽章 | 文本、计数上限与圆点；不是可移除筛选芯片 | E Badge；N Badge；A Badge |
 | [banner](../src/components/foundation/banner.ce.vue:1) | 持久横幅 | 文档流提示、动作、关闭/恢复；不做全局调度或自动消失 | U Banner；E/N/A Alert 相邻 |
 | [blockquote](../src/components/display/blockquote.ce.vue:1) | 引用内容 | 引文、作者、来源与语义；不是富文本或 Markdown 解析器 | M Blockquote |
-| [breadcrumb](../src/components/navigation/breadcrumb.ce.vue:1) | 面包屑 | 有序真链接、末项当前位置；没有测宽自动省略或路径路由推导 | E Breadcrumb；U Breadcrumb；M Breadcrumbs |
+| [breadcrumb](../src/components/navigation/breadcrumb.ce.vue:1) + [breadcrumb-item](../src/components/navigation/breadcrumb-item.ce.vue:1) | 面包屑 | M3E 全源码复刻（2026-11 第四批回补）：末项 current 追踪、role 三态、伪链接、icon-only、自定义分隔符、单行省略；官方无溢出折叠 | E Breadcrumb；U Breadcrumb；M Breadcrumbs |
 | [button](../src/components/core/button.ce.vue:1) | 操作按钮 | 原生按钮、变体、加载/禁用、表单动作；不接管业务请求 | E Button；U Button；S Button |
 | [button-group](../src/components/core/button-group.ce.vue:1) | 分段单选/多选按钮组 | 方向键、横竖布局；不是新增一个 Segmented 才算覆盖 | E Segmented；R Toggle Group；M SegmentedControl |
 | [calendar](../src/components/advanced-input/calendar.ce.vue:1) | 独立内联日历 | 本地单日、网格键盘、月/年翻页、上下限/禁用日与表单；非多日选择 | E/N/U/R/S Calendar |

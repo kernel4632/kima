@@ -73,3 +73,20 @@ button 本身可以承载空内容/纯文字/纯图标/图文——独立图标�
 - 消费者迁移：App.vue（移动端目录钮）、base-examples（演示块改组合教学）、
   gallery.vue（查看文件钮）；dialog/drawer 的关闭钮本来就是 button+icon 组合，无需动。
 - catalog.js 的死映射（旧 136 时代残留 21 个已删组件条目）顺手清理成 30 清单同步。
+
+## 第四批回补：breadcrumb（M3E 全源码复刻，2026-11）
+
+第二批把 breadcrumb 按"link 组合件"删除。重审 M3E 源码（BreadcrumbElement.ts 166 行 +
+BreadcrumbItemElement.ts 259 行 + BreadcrumbItemButtonElement.ts 273 行）后确认它有
+不可组合的行为面，按原语标准回补为**两个入口**（官方 index.ts 同样导出两个元素）：
+
+- `breadcrumb`：末项 current 追踪（item 增删/移动后自动改写 aria-current）、
+  自定义分隔符克隆分发、wrap 折行——容器级状态机，link 排一排表达不出。
+- `breadcrumb-item`：role 三态（link/button/无）、current 项摘除全部交互反馈、
+  伪链接全铺层（原生中键/右键行为）、icon-only 判定（单元素 ≤28×28）、
+  space/Enter 合成 click、禁用移出 tab 序、单行省略截断。
+
+官方无溢出折叠/overflow 菜单（M3E 文档与源码均无此能力；仅有 wrap 属性与
+单项 text-overflow 省略），不需接 KIMA menu 做溢出。逐行翻译与实测对表记录
+见 [src/components/navigation/breadcrumb.ce.vue](../src/components/navigation/breadcrumb.ce.vue:1)
+文件头注释。

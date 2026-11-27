@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KIMA breadcrumb 测量页</title>
+    <style>
+      body { margin: 24px; font-family: system-ui, sans-serif; }
+      .cases { display: grid; gap: 24px; max-width: 720px; }
+      .narrow { max-width: 280px; }
+      .wide { max-width: 894px; }
+    </style>
+  </head>
+  <body>
+    <div class="cases">
+      <kima-breadcrumb id="basic">
+        <kima-breadcrumb-item>仪表盘</kima-breadcrumb-item>
+        <kima-breadcrumb-item>报表</kima-breadcrumb-item>
+        <kima-breadcrumb-item>年度</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="links">
+        <kima-breadcrumb-item href="https://developer.mozilla.org/docs/Web" target="_blank">Web</kima-breadcrumb-item>
+        <kima-breadcrumb-item href="https://developer.mozilla.org/docs/Web/API">API</kima-breadcrumb-item>
+        <kima-breadcrumb-item>Web Components</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="disabled">
+        <kima-breadcrumb-item href="/" disabled>禁用链接</kima-breadcrumb-item>
+        <kima-breadcrumb-item current="step">当前步骤</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="custom-sep">
+        <span slot="separator">/</span>
+        <kima-breadcrumb-item>首页</kima-breadcrumb-item>
+        <kima-breadcrumb-item>文档</kima-breadcrumb-item>
+        <kima-breadcrumb-item>组件</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="narrow" class="wide" wrap>
+        <kima-breadcrumb-item>Lorem ipsum dolor sit amet</kima-breadcrumb-item>
+        <kima-breadcrumb-item>Consectetur adipiscing elit sed do</kima-breadcrumb-item>
+        <kima-breadcrumb-item>Tempor incididunt ut labore</kima-breadcrumb-item>
+        <kima-breadcrumb-item>Magna aliqua ut enim ad minim</kima-breadcrumb-item>
+        <kima-breadcrumb-item>Quis nostrud exercitation ullamco laboris nisi ut aliquip</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="nowrap" class="narrow">
+        <kima-breadcrumb-item>首页</kima-breadcrumb-item>
+        <kima-breadcrumb-item>设置</kima-breadcrumb-item>
+        <kima-breadcrumb-item>账户与安全中心偏好</kima-breadcrumb-item>
+      </kima-breadcrumb>
+      <kima-breadcrumb id="icon-only">
+        <kima-breadcrumb-item item-label="工作台"><span aria-hidden="true">⌂</span></kima-breadcrumb-item>
+        <kima-breadcrumb-item>年度报告</kima-breadcrumb-item>
+      </kima-breadcrumb>
+    </div>
+    <script type="module">
+      /* dev 模式 CE 的 component.styles 为空（customElement 只在 elements 构建开），
+       * 显式 import 组件源 + tokens 让 Vite 把 scoped 样式编进页面（fixture.js 同理）。 */
+      import "../src/styles/_tokens.scss";
+      import "../src/components/navigation/breadcrumb.ce.vue";
+      import "../src/components/navigation/breadcrumb-item.ce.vue";
+      import "../src/elements.js";
+    </script>
+  </body>
+</html>

@@ -28,6 +28,8 @@ export const componentTiers = {
   core: [
     "avatar",
     "badge",
+    "breadcrumb",
+    "breadcrumb-item",
     "button",
     "calendar",
     "card",

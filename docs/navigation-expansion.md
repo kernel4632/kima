@@ -15,6 +15,8 @@ Vue 从包入口导入对应的 Kima 组件，并引入库样式。原生 HTML �
 | accordion | modelValue: string/array (`""`), items (`[]`), multiple, disabled, collapsible (`true`), label | update:modelValue, change | panel-{value}，参数 item/index |
 | collapsible | open, disabled, label (`展开内容`) | update:open, change | default 正文，trigger 触发文字；不要在 trigger 中再嵌交互控件 |
 | breadcrumb | items (`[]`), label, separator (`/`) | — | default 追加内容 |
+
+> 2026-11 第四批：breadcrumb 已按 M3E 官方双元素结构（breadcrumb + breadcrumb-item 插槽子项）重做并回补为原语，上表旧 API 不再适用；现行 API 见源码文件头。
 | link | href, target, rel, disabled, current: boolean/string, underline (`true`) | navigate（原始点击事件） | default 链接内容 |
 | stepper | modelValue (`0`), items (`[]`), linear, disabled, orientation (`horizontal`), label | update:modelValue, change | default 追加内容 |
 | navigation-menu | modelValue (`""`), items (`[]`), label, orientation (`horizontal`), disabled | update:modelValue, change, navigate（item/event） | default 追加内容 |
