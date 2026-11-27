@@ -1052,9 +1052,14 @@ watch([() => props.value, () => props.max, () => props.bufferValue], () => {
   }
 }
 
-/* ---- 线形 :host（LinearProgressIndicatorElement.ts 85-121）---- */
+/* ---- 线形 :host（LinearProgressIndicatorElement.ts 85-121）----
+ * 官方 :host { display:block } 是元素级满宽；KIMA 组件根是 div（Vue 模式下宿主
+ * 标签不渲染，CE 模式下另有 tokens 的 kima-progress 宿主规则兜底）。
+ * flex column + align-items:center 的舞台里不写 width 会按 content 收缩——
+ * width:100% 两种宿主形态下都是官方块级语义的等值物。 */
 .kima-progress--linear {
   display: block;
+  width: 100%;
   position: relative;
 }
 .kima-progress--linear .progress {

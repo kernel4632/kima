@@ -339,6 +339,13 @@ const viewItems = [
             <div class="kima-gallery__stack">
               <kima-progress :value="progressValue" label="下载进度" />
               <kima-progress indeterminate label="正在连接" />
+              <kima-progress mode="buffer" :value="progressValue" :buffer-value="80" label="缓冲" />
+              <kima-progress mode="query" label="等待响应" />
+              <div class="kima-gallery__row">
+                <kima-progress mode="circular" :value="progressValue" label="完成度">{{ progressValue }}</kima-progress>
+                <kima-progress mode="circular" indeterminate label="加载中" />
+                <kima-progress mode="circular" variant="wavy" indeterminate label="波动加载" />
+              </div>
               <div class="kima-gallery__row">
               <kima-button variant="tonal" @click="progressValue = Math.max(0, progressValue - 10)">减 10</kima-button>
               <kima-button variant="tonal" @click="progressValue = Math.min(100, progressValue + 10)">加 10</kima-button>

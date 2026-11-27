@@ -462,6 +462,13 @@
   --kima-radio-selected-icon-color: var(--kima-color-primary);
   --kima-radio-disabled-icon-color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
   --kima-spinner-duration: 1568ms;
+  /* ---- Spinner（M3E circular flat 直径/厚度，CircularProgressIndicatorElement.ts 125/131/140）----
+   * medium=官方 flat 默认 40px；small 20 / large 48 沿旧档视觉衔接。
+   * 官方厚度 4px（--m3e-circular-progress-indicator-thickness 默认）。 */
+  --kima-spinner-small-diameter: 20px;
+  --kima-spinner-medium-diameter: 40px;
+  --kima-spinner-large-diameter: 48px;
+  --kima-spinner-thickness: 4px;
   /* ---- Progress（M3E progress-indicator 官方 cssprop 编译值，2026-11-27 官网实测）----
    * 官方 --m3e-* → KIMA --kima-progress-*（重命名，值照抄）：
    *   linear-thickness 4px / linear shape = corner.extraSmall 4px（实测 primary 圆角 4px）
@@ -522,6 +529,16 @@ kima-card,
 kima-collapsible,
 kima-table,
 kima-tree {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 线形进度条宿主（M3E 官方 :host display:block，LinearProgressIndicatorElement.ts 85-88）：
+ * 官方 Lit 宿主本身块级，flex column 居中舞台里也满宽。KIMA 组件根在 light DOM，
+ * 宿主标签不声明块级就会按 content 收缩——进度条塌成 stroke 探针的 4px。
+ * circular 模式官方 inline-flex 定宽（40/48px），不进块级名单，属性选择器分开。 */
+kima-progress:not([mode="circular"]) {
   display: block;
   width: 100%;
   min-width: 0;
