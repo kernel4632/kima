@@ -451,6 +451,13 @@
   --kima-radio-focus-ring-offset: 2px;
   --kima-radio-focus-ring-duration: 500ms;
   --kima-radio-focus-ring-growth: 2;
+  /* 涟漪（RippleToken 逐行）：opacity = pressedStateLayerOpacity 10%、
+   * enter long1 = 450ms linear、exit medium3 = 350ms + 官方 cubic-bezier(0,0,.2,.1)、
+   * 模糊半径 20px（RippleElement .ripple filter）。 */
+  --kima-radio-ripple-opacity: 0.1;
+  --kima-radio-ripple-enter-duration: 450ms;
+  --kima-radio-ripple-exit-duration: 350ms;
+  --kima-radio-ripple-blur: 20px;
   --kima-radio-unselected-icon-color: var(--kima-color-on-surface-variant);
   --kima-radio-selected-icon-color: var(--kima-color-primary);
   --kima-radio-disabled-icon-color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
