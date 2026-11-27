@@ -112,18 +112,24 @@ function handleChange(value) {
     &[data-state="checked"] {
       border-color: transparent;
       background: var(--kima-color-primary);
+
+      /* 状态层跟球到右：层心对选中球心（travel 22 + 24/2 = 34 − 层 20 = 14）。 */
+      &::before {
+        left: calc(var(--kima-switch-travel) + var(--kima-switch-outline) + var(--kima-switch-thumb-checked) / 2 - var(--kima-switch-state-layer) / 2);
+      }
     }
 
-    /* M3E 状态层（用户指认的光晕）：40px 圆跟球移动，浮在球后。 */
+    /* M3E 状态层（用户指认的光晕）：40px 圆跟球移动，浮在球后。
+     * 官网实测：未选层 left = 球心 14 − 20 = -6；层心永远对球心。 */
     &::before {
       content: "";
       position: absolute;
       top: calc(50% - var(--kima-switch-state-layer) / 2);
-      /* 球心 = 未选偏移 6 + 球半宽；选中 = 偏移 travel+6 + 球半宽。层左缘 = 球心 − 层半宽。 */
-      left: calc(6px + var(--kima-switch-thumb) / 2 - var(--kima-switch-state-layer) / 2);
+      left: calc(4px + var(--kima-switch-thumb) / 2 - var(--kima-switch-state-layer) / 2);
       width: var(--kima-switch-state-layer);
       height: var(--kima-switch-state-layer);
       border-radius: var(--kima-radius-full);
+      /* M3E：未选 state layer 色 = onSurface；选中 = primary（随轨道主题色）。 */
       background: var(--kima-color-on-surface);
       opacity: 0;
       transition: left var(--kima-duration-spring) var(--kima-ease-spring),
@@ -159,27 +165,34 @@ function handleChange(value) {
   &__thumb {
     display: block;
     pointer-events: none;
-    /* M3E handle 精确几何：
-     * 未选 16px 贴左（M3E inline-start = outline 2 + pressed 28 − icon 24 = 6px 偏移）；
-     * 选中 24px 贴右（52 − 24 − outline 6 = 22px 位移）；按压 28px。
-     * 宽高/位移全部独立 transition——M3E 用 spring fast spatial（位移）+ fast effects（尺寸）。 */
+    /* M3E handle 同构方案（官网实测对齐）：absolute + transform 定位，
+     * 不用 margin 布局——margin 在 flex 容器里被边框盒/主轴对齐干扰出 4px 级误差。
+     * 官方 transform 实测：未选 x=6（16px 球）/ 选中 x=22（24px 球），
+     * y 都由 translate 定位（top 基准 50% − 球高/2，随按压球尺寸同步移动）。 */
+    position: absolute;
+    top: 50%;
+    left: 0;
     width: var(--kima-switch-thumb);
     height: var(--kima-switch-thumb);
-    margin-inline-start: 6px;
     border-radius: var(--kima-radius-full);
     /* M3E：未选球 = outline 色；选中球 = on-primary；按压球 = on-surface-variant。 */
     background: var(--kima-color-outline);
+    /* 位移/尺寸用 transform + width 双轨：M3E 是 spring 位移 + spring 尺寸。 */
+    transform: translate(4px, -50%);
     transition:
-      margin-inline-start var(--kima-duration-spring) var(--kima-ease-spring),
+      transform var(--kima-duration-spring) var(--kima-ease-spring),
       width var(--kima-duration-spring) var(--kima-ease-spring),
       height var(--kima-duration-spring) var(--kima-ease-spring),
       background-color var(--kima-duration-effects) var(--kima-curve-standard);
 
-    /* M3E 按压：球真尺寸 28px（不是缩放）。 */
+    /* M3E 按压：球真尺寸 28px + 贴边（官方实测按压态 inline-start 0/end 贴边）。 */
     .kima-switch__track:active:not(:disabled) & {
       width: var(--kima-switch-thumb-pressed);
       height: var(--kima-switch-thumb-pressed);
       background: var(--kima-color-on-surface-variant);
+
+      &[data-state="unchecked"] { transform: translate(0px, -50%); }
+      &[data-state="checked"] { transform: translate(20px, -50%); }
     }
 
     .kima-switch__track:hover:not(:disabled) & {
@@ -189,13 +202,13 @@ function handleChange(value) {
     &[data-state="checked"] {
       width: var(--kima-switch-thumb-checked);
       height: var(--kima-switch-thumb-checked);
-      /* M3E 选中贴右：位移 = 轨道 52 − 球 24 − outline×3(6) − 未选偏移 6 = 22px。 */
-      margin-inline-start: var(--kima-switch-travel);
+      /* 官方实测选中 transform x=22（球心 34）：52 − 24 − outline×3(6) = 22。 */
+      transform: translate(var(--kima-switch-travel), -50%);
       background: var(--kima-color-on-primary);
     }
 
     &[data-state="unchecked"] {
-      margin-inline-start: 6px;
+      transform: translate(4px, -50%);
     }
   }
 

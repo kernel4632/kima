@@ -109,8 +109,9 @@
   --kima-switch-thumb-pressed: 28px;
   --kima-switch-state-layer: 40px;
   --kima-switch-inset: 4px;
-  /* M3E 选中位移：轨道 52 − 球 24 − outline×3(6) − 未选偏移 6 = 16px。 */
-  --kima-switch-travel: calc(var(--kima-switch-width) - var(--kima-switch-thumb-checked) - 3 * var(--kima-switch-outline) - 6px);
+  /* M3E 选中位移（官网实测 transform x=22）：52 − 24 − outline×3(6) = 22px。
+   * KIMA thumb 是 absolute（基准 = 边框内侧），translate x 需再减 outline 2：20px。 */
+  --kima-switch-travel: calc(var(--kima-switch-width) - var(--kima-switch-thumb-checked) - 4 * var(--kima-switch-outline));
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
   /* 官方输入框三件套 token（浅色组/深色组编译值）：
