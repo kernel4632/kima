@@ -157,13 +157,21 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
     border: var(--kima-outline-width) solid var(--kima-color-outline-tertiary);
   }
 
-  /* 无文字徽章高度 4 + 2 = 6，本身就是一个小圆点。 */
+  /* 无文字徽章高度 4 + 2 = 6，本身就是一个小圆点。
+   * 圆点是"状态灯"：官方圆点类 "size-2 rounded-full bg-fg-primary" 是实色模式——
+   * 15% 洗底的灯在深浅底上都近乎隐形，语义态（success/danger/accent）必须实色 fg-*。
+   * 非语义档（neutral/secondary/primary）dot 用自身变体底色实色。 */
   &--dot {
     min-width: 6px;
     width: 6px;
     min-height: 6px;
     height: 6px;
     padding: 0;
+
+    &.kima-badge--success { background: var(--kima-color-fg-success); }
+    &.kima-badge--danger { background: var(--kima-color-error); }
+    &.kima-badge--accent { background: var(--kima-color-fg-accent); }
+    &.kima-badge--warning { background: var(--kima-color-warning); }
   }
 
   &__slot {
