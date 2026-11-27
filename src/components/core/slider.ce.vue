@@ -23,6 +23,8 @@ const props = defineProps({
   min: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
   step: { type: Number, default: 1 },
+  // M3E discrete：离散模式（step > 1 时按步长渲染全量刻度点）。
+  discrete: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   required: { type: Boolean, default: false },
   name: { type: String, default: undefined },
@@ -61,6 +63,33 @@ const fill = computed(() => {
   const range = sliderMax.value - sliderMin.value;
   if (range <= 0) return 0;
   return Math.max(0, Math.min(1, (localValue.value - sliderMin.value) / range));
+});
+
+// M3E #updateTicks 一比一（SliderElement.ts）：
+// - continuous（默认）：min + （跨零时）0 + max 三个端点 tick
+// - discrete 且 step > 1：min→max 按 step 全量
+// - active = tick 值 < 当前 thumb 值（在 active 轨道覆盖内）
+// - hidden = tick 与 thumb 容器重叠（视觉避让）
+const ticks = computed(() => {
+  const list = [];
+  if (props.discrete && props.step > 1) {
+    for (let i = sliderMin.value; i <= sliderMax.value; i += props.step) {
+      list.push({ value: i });
+    }
+  } else {
+    list.push({ value: sliderMin.value });
+    if (sliderMin.value < 0 && sliderMax.value > 0) list.push({ value: 0 });
+    list.push({ value: sliderMax.value });
+  }
+  return list.map((tick) => {
+    const pct = (tick.value - sliderMin.value) / Math.max(sliderMax.value - sliderMin.value, 1);
+    return {
+      value: tick.value,
+      active: tick.value < localValue.value,
+      // 与 thumb 容器（16px）重叠则隐藏：中心距 fill 小于 thumb-gap 半宽。
+      hidden: Math.abs(pct - fill.value) * 100 < 100 * 8 / 1000 && Math.abs(tick.value - localValue.value) <= props.step,
+    };
+  });
 });
 
 // input 事件用于连续同步，原生 change 事件用于提交一次完整改动。
@@ -116,6 +145,16 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
         <span class="kima-slider__track-inactive kima-slider__track-inactive--start" />
         <span class="kima-slider__track-active" />
         <span class="kima-slider__track-inactive kima-slider__track-inactive--end" />
+      </span>
+      <!-- M3E .ticks 一比一：刻度点层（4px 圆点，track 内垂直居中）。 -->
+      <span class="kima-slider__ticks">
+        <span
+          v-for="tick in ticks"
+          :key="tick.value"
+          class="kima-slider__tick"
+          :class="{ 'kima-slider__tick--active': tick.active, 'kima-slider__tick--hidden': tick.hidden }"
+          :style="{ left: `${(tick.value - sliderMin) / Math.max(sliderMax - sliderMin, 1) * 100}%` }"
+        />
       </span>
       <span
         class="kima-slider__thumb"
@@ -236,6 +275,37 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
   /* ---- thumb（M3E m3e-slider-thumb 容器）----
    * absolute、left 由 thumb-left（fill 百分比）驱动；
    * wrapper 16px 宽（handle 4 + padding 6×2），高 100%（44）。 */
+  /* M3E .ticks/.tick 一比一（SliderElement.ts）：刻度点层。
+   * 4px 满圆点、层高 4、在 16px 轨道内垂直居中（top 偏移 (16−4)/2 = 6）。
+   * active tick = onPrimary（在 active 轨道上）；hidden = 与 thumb 重叠避让。 */
+  &__ticks {
+    position: absolute;
+    width: 100%;
+    height: var(--kima-slider-tick-size);
+    top: calc((var(--kima-slider-track-height) - var(--kima-slider-tick-size)) / 2);
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  &__tick {
+    position: absolute;
+    top: 0;
+    /* 居中补偿：tick 以 left 百分比定位，translate -50% 让圆心对刻度值。 */
+    translate: -50% 0;
+    width: var(--kima-slider-tick-size);
+    height: var(--kima-slider-tick-size);
+    border-radius: var(--kima-radius-full);
+    background: var(--kima-color-surface-container-highest);
+
+    &--active {
+      background: var(--kima-color-on-primary);
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
   &__thumb {
     position: absolute;
     top: 0;

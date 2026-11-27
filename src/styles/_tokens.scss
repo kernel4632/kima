@@ -375,6 +375,7 @@
   /* thumb 容器半宽（(4 + 6×2) / 2）：M3E 的轨道到 thumb 容器边缘为止，
    * handle 与轨道间保持容器宽度的断开（官方实测 active 到 92 / end 从 108）。 */
   --kima-slider-thumb-gap: 8px;
+  --kima-slider-tick-size: 4px;
   --kima-spinner-duration: 1568ms;
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
