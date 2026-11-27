@@ -119,7 +119,7 @@
 
   /* ---- 浮层表面（弹层专用，实色）----
    * 弹层浮在内容之上必须挡住背后的东西：菜单/下拉用 elevated，模态/抽屉用 pane。 */
-  --kima-color-popup: light-dark(#ffffff, #191919);
+  --kima-color-popup: light-dark(#fefefc, #191919); /* 官方 elevated：浅 gray-1000 #fefefc（非纯白）/ 深 gray-150 #191919 */
   --kima-color-popup-large: light-dark(#fefefc, #282726);
 
   /* ---- 玻璃（composer / 侧栏毛玻璃）----
