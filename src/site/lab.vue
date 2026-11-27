@@ -116,42 +116,32 @@ onBeforeUnmount(() => observer?.disconnect());
   margin: var(--kima-space-6) auto 0;
 }
 
-/* 平铺模式下每个演示要能认出是谁：把组件演示的标题放回来。 */
+/* 平铺模式下每个演示要能认出是谁：KimaTypography 自带尺寸/颜色 token，
+ * 只负责排版间距（flex 竖排 + 首行）。 */
 .kima-lab__body :deep(.kima-gallery__demo > header) {
   display: flex;
   flex-direction: column;
   gap: var(--kima-space-1);
   align-self: stretch;
-
-  h3 { margin: 0; font-size: var(--kima-font-size-title-small); }
-  p { margin: 0; color: var(--kima-color-on-surface-variant); font-size: var(--kima-font-size-label-medium); }
 }
 
-/* 分组标题也显示，并且组内 demo 两列铺开（窄屏一列）。 */
-.kima-lab__body :deep(.kima-gallery__section > h2) {
+/* 平铺模式把分组标题（KimaTypography）显出来，组距由 section gap 承担。 */
+.kima-lab__body :deep(.kima-gallery__section > .kima-typography) {
   display: block;
-  margin: var(--kima-space-6) 0 0;
-  font-size: var(--kima-font-size-title-medium);
 }
 
-.kima-lab__body :deep(.kima-gallery__main) {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--kima-space-4);
-  align-items: start;
-}
-
+/* 单列一排排：demo 卡片占满行宽，组间用 KimaDivider 分隔（组件自己渲染）。 */
+.kima-lab__body :deep(.kima-gallery__main),
 .kima-lab__body :deep(.kima-gallery__section) {
-  display: block;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kima-space-4);
 }
 
 .kima-lab__body :deep(.kima-gallery__section .kima-gallery__demo) {
   align-items: stretch;
   text-align: start;
-}
-
-@media (max-width: 900px) {
-  .kima-lab__body :deep(.kima-gallery__main) { grid-template-columns: minmax(0, 1fr); }
+  /* KimaCard 承担卡片皮肤，这里只管铺满。 */
+  width: 100%;
 }
 </style>

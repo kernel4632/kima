@@ -34,8 +34,9 @@
 }
 
 /* 页面标题与导语已经说明当前组件，演示区里不再重复一层说明块。
- * 只隐藏演示自带的 header：组件根节点可能就是 h2/h3，不能按标签一刀切。 */
-.kima-gallery__section > h2,
+ * 只隐藏演示自带的 header：组件根节点可能就是标题组件，不能按标签一刀切。
+ * 换装 KIMA 组件后按类名隐藏（lab 的 :deep 再把它显回来）。 */
+.kima-gallery__section > .kima-typography,
 .kima-gallery__demo > header {
   display: none;
 }
