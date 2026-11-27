@@ -117,8 +117,9 @@ function handleChange(value) {
     border: var(--kima-switch-outline) solid var(--kima-color-outline);
     background: var(--kima-color-surface-container-highest);
     outline: none;
-    transition: background-color var(--kima-duration-effects) var(--kima-curve-standard),
-      border-color var(--kima-duration-effects) var(--kima-curve-standard);
+    /* 官方 SwitchTrackStyle.ts 20-22：background-color short4 + easing.standard（200ms 档）。 */
+    transition: background-color var(--kima-motion-short4) var(--kima-motion-easing-standard),
+      border-color var(--kima-motion-short4) var(--kima-motion-easing-standard);
 
     /* 选中：边框透明（M3E :host([checked]) .track） */
     &[data-state="checked"] {
@@ -179,7 +180,16 @@ function handleChange(value) {
     );
     --handle-height: var(--kima-switch-thumb);
 
-    /* 球 = handle::before（M3E 一比一） */
+    /* 球 = handle::before（M3E 一比一）。
+     * 动效逐行照抄 SwitchHandleStyle.ts 37-50：
+     *   background-color: short4(200ms) + easing.standard —— 色彩渐变
+     *   transform / width: --_switch-handle-position-effect 变量——
+     *     非按压 = spring.fastSpatial（350ms c-b(0.27,1.06,0.18,1) 带过冲），
+     *     按压中 = spring.fastEffects（150ms c-b(0.31,0.94,0.34,1) 更快）
+     *   height: spring.fastEffects（150ms 恒定）
+     * 此前用 400ms ease-spring 无过冲统一曲线——官方是三槽分速 + 过冲，手感差异的根因。 */
+    --handle-position-effect: var(--kima-spring-fast-spatial);
+
     &::before {
       content: "";
       position: absolute;
@@ -192,10 +202,16 @@ function handleChange(value) {
       /* 未选球色 = outline（M3E unselectedHandleColor） */
       background: var(--kima-color-outline);
       transition:
-        transform var(--kima-duration-spring) var(--kima-ease-spring),
-        width var(--kima-duration-spring) var(--kima-ease-spring),
-        height var(--kima-duration-spring) var(--kima-ease-spring),
-        background-color var(--kima-duration-effects) var(--kima-curve-standard);
+        background-color var(--kima-motion-short4) var(--kima-motion-easing-standard),
+        transform var(--handle-position-effect),
+        width var(--handle-position-effect),
+        height var(--kima-spring-fast-effects);
+    }
+
+    /* 按压中（M3E .track.pressed .handle）：position-effect 切 fastEffects——
+     * 按住时位移/宽度变快（150ms），松手回到 fastSpatial（350ms 过冲弹回）。 */
+    .kima-switch__track:active:not(:disabled) & {
+      --handle-position-effect: var(--kima-spring-fast-effects);
     }
 
     /* 选中档（M3E :host([checked]) .track:not(.pressed) .handle）：
@@ -264,8 +280,10 @@ function handleChange(value) {
     top: calc(50% - var(--kima-switch-state-layer) / 2);
     background: var(--kima-color-on-surface);
     opacity: 0;
-    transition: inset-inline-start var(--kima-duration-spring) var(--kima-ease-spring),
-      opacity var(--kima-duration-effects) var(--kima-curve-standard);
+    /* 官方 SwitchStateLayerStyle.ts 24：位置 = spring.fastEffects（150ms）。
+     * opacity 由 state-layer 组件的 hover/focus 控制器驱动（淡入淡出）。 */
+    transition: inset-inline-start var(--kima-spring-fast-effects),
+      opacity var(--kima-motion-short4) var(--kima-motion-easing-standard);
     pointer-events: none;
   }
 

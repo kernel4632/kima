@@ -327,6 +327,17 @@
   --kima-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
   --kima-spring-snappy: var(--kima-ease-spring);
   --kima-spring-gentle: var(--kima-ease-spring);
+  /* M3 官方 spring token（m3e MotionToken.ts 逐字，--md-sys-motion-spring-* 编译值）：
+   * spatial 档 y2=1.06 带过冲弹性；effects 档轻快。switch/slider 的 handle 动效来源。 */
+  --kima-spring-fast-spatial: 350ms cubic-bezier(0.27, 1.06, 0.18, 1);
+  --kima-spring-default-spatial: 500ms cubic-bezier(0.27, 1.06, 0.18, 1);
+  --kima-spring-slow-spatial: 750ms cubic-bezier(0.27, 1.06, 0.18, 1);
+  --kima-spring-fast-effects: 150ms cubic-bezier(0.31, 0.94, 0.34, 1);
+  --kima-spring-default-effects: 200ms cubic-bezier(0.34, 0.80, 0.34, 1);
+  --kima-spring-slow-effects: 300ms cubic-bezier(0.34, 0.88, 0.34, 1);
+  /* M3 官方 duration/easing 档（同源补齐，switch track 等消费）。 */
+  --kima-motion-short4: 200ms;
+  --kima-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   /* 按下缩小的幅度按控件尺寸分档（官方 active:scale 0.95–0.99 区间）：
    * 大档 0.98（卡片/大按钮 64px+）、中档 0.97（按钮 56px）、小档 0.96（图标按钮 48px）。 */
   --kima-press-scale: 0.98;
