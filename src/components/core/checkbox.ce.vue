@@ -178,7 +178,10 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
         opacity var(--kima-duration-effects) var(--kima-curve-standard);
     }
 
-    &:hover:not(:disabled):not([aria-disabled="true"])::after {
+    /* hover 状态由宿主 label 驱动（M3E 宿主 :host(:hover) 同构）：
+     * 鼠标停在文字上时光圈也要亮——绑 control 自身 :hover 的话鼠标在文字区就灭灯，
+     * 这是"没有效果"的根因（label hover=true 而 control hover=false 实测）。 */
+    .kima-checkbox:hover:not(.kima-checkbox--disabled) &::after {
       opacity: 0.08; /* M3 state-layer hover 档（官方 8%），checkbox 光圈比全库轻状态层亮一档 */
     }
 
