@@ -167,15 +167,15 @@ const viewItems = [
       <div class="kima-gallery__main">
         <!-- 按钮与动作 -->
         <section v-show="visible('按钮与动作', 'button', 'icon', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">按钮与动作</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">按钮与动作</kima-typography>
 
-          <KimaCard v-show="visible('icon', '图标')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Icon 图标</KimaTypography><KimaTypography type="caption">Hugeicons 线宽 2.25，随尺寸等比缩放。</KimaTypography></header>
-            <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
-          </KimaCard>
+          <kima-card v-show="visible('icon', '图标')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Icon 图标</kima-typography><kima-typography type="caption">Hugeicons 线宽 2.25，随尺寸等比缩放。</kima-typography></header>
+            <div class="kima-gallery__row"><kima-icon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
+          </kima-card>
 
-          <KimaCard v-show="visible('button', '按钮')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Button 按钮</KimaTypography><KimaTypography type="caption">四种外观、加载和禁用状态。点击计数：{{ clicks }}</KimaTypography></header>
+          <kima-card v-show="visible('button', '按钮')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Button 按钮</kima-typography><kima-typography type="caption">四种外观、加载和禁用状态。点击计数：{{ clicks }}</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-button @click="countClick">填充</kima-button>
               <kima-button variant="tonal" @click="countClick">柔和</kima-button>
@@ -184,27 +184,27 @@ const viewItems = [
               <kima-button loading>加载中</kima-button>
               <kima-button disabled>禁用</kima-button>
               <kima-button round @click="countClick">
-                <template #leading><KimaIcon :icon="Add01Icon" :size="18" /></template>
+                <template #leading><kima-icon :icon="Add01Icon" :size="18" /></template>
                 新建
               </kima-button>
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('button', '按钮')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Button 纯图标形态</KimaTypography><KimaTypography type="caption">icon-only 组合：一个按钮原语覆盖纯文字与纯图标，不再有独立图标按钮组件。</KimaTypography></header>
+          <kima-card v-show="visible('button', '按钮')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Button 纯图标形态</kima-typography><kima-typography type="caption">icon-only 组合：一个按钮原语覆盖纯文字与纯图标，不再有独立图标按钮组件。</kima-typography></header>
             <div class="kima-gallery__row">
-              <kima-button variant="standard" icon-only label="收藏"><KimaIcon :icon="HeartIcon" :size="24" /></kima-button>
-              <kima-button variant="tonal" icon-only label="收藏"><KimaIcon :icon="FavouriteIcon" :size="24" /></kima-button>
-              <kima-button variant="outlined" icon-only label="设置"><KimaIcon :icon="Settings01Icon" :size="24" /></kima-button>
-              <kima-button variant="text" icon-only label="更多"><KimaIcon :icon="MoreHorizontalIcon" :size="24" /></kima-button>
+              <kima-button variant="standard" icon-only label="收藏"><kima-icon :icon="HeartIcon" :size="24" /></kima-button>
+              <kima-button variant="tonal" icon-only label="收藏"><kima-icon :icon="FavouriteIcon" :size="24" /></kima-button>
+              <kima-button variant="outlined" icon-only label="设置"><kima-icon :icon="Settings01Icon" :size="24" /></kima-button>
+              <kima-button variant="text" icon-only label="更多"><kima-icon :icon="MoreHorizontalIcon" :size="24" /></kima-button>
               <kima-button variant="tonal" icon-only label="加载中" loading />
             </div>
-          </KimaCard>
+          </kima-card>
 
         
 
-          <KimaCard v-show="visible('badge', '徽章')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Badge 徽章</KimaTypography><KimaTypography type="caption">状态、数量和圆点三种用法。</KimaTypography></header>
+          <kima-card v-show="visible('badge', '徽章')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Badge 徽章</kima-typography><kima-typography type="caption">状态、数量和圆点三种用法。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-badge value="8" />
               <kima-badge :value="128" :max="99" variant="danger" aria-label="128 条未读" />
@@ -212,10 +212,10 @@ const viewItems = [
               <kima-badge value="在线" variant="success" />
               <kima-badge dot variant="success" aria-label="在线" />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('divider', '分割线')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Divider 分割线</KimaTypography><KimaTypography type="caption">水平、带文字和垂直三种形态。</KimaTypography></header>
+          <kima-card v-show="visible('divider', '分割线')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Divider 分割线</kima-typography><kima-typography type="caption">水平、带文字和垂直三种形态。</kima-typography></header>
             <div class="kima-gallery__stack">
               <kima-divider />
               <kima-divider label="或者" />
@@ -225,10 +225,10 @@ const viewItems = [
                 <span>右</span>
               </div>
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('card', '卡片')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Card 卡片</KimaTypography><KimaTypography type="caption">三种容器样式，可点击的卡片支持键盘。</KimaTypography></header>
+          <kima-card v-show="visible('card', '卡片')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Card 卡片</kima-typography><kima-typography type="caption">三种容器样式，可点击的卡片支持键盘。</kima-typography></header>
             <div class="kima-gallery__grid">
               <kima-card>
                 <template #header><strong>表面卡片</strong></template>
@@ -243,7 +243,7 @@ const viewItems = [
                 <p>点击计数加到上方的按钮示例。</p>
               </kima-card>
             </div>
-          </KimaCard>
+          </kima-card>
 
 
 
@@ -260,10 +260,10 @@ const viewItems = [
 
         <!-- 表单输入 -->
         <section v-show="visible('表单输入', 'text-field', 'checkbox', 'switch', 'slider', 'progress')" id="form" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">表单输入</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">表单输入</kima-typography>
 
-          <KimaCard v-show="visible('text-field', '文本框')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">TextField 文本框</KimaTypography><KimaTypography type="caption">组件只画输入区域本身。当前值：{{ textValue || "空" }}</KimaTypography></header>
+          <kima-card v-show="visible('text-field', '文本框')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">TextField 文本框</kima-typography><kima-typography type="caption">组件只画输入区域本身。当前值：{{ textValue || "空" }}</kima-typography></header>
             <div class="kima-gallery__grid">
               <kima-text-field v-model="textValue" placeholder="请输入昵称" clearable />
               <kima-text-field v-model="email" type="email" placeholder="请输入邮箱" hint="用于接收通知" />
@@ -272,42 +272,42 @@ const viewItems = [
               <kima-text-field :model-value="''" hint="这段是说明文字" />
               <kima-text-field :model-value="'只读'" readonly />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('checkbox', '复选框')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Checkbox 复选框</KimaTypography><KimaTypography type="caption">选中、半选和禁用。选中：{{ accepted }}</KimaTypography></header>
+          <kima-card v-show="visible('checkbox', '复选框')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Checkbox 复选框</kima-typography><kima-typography type="caption">选中、半选和禁用。选中：{{ accepted }}</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-checkbox v-model="accepted" label="接受条款" />
               <kima-checkbox v-model="partial" :indeterminate="true" label="半选状态" />
               <kima-checkbox :model-value="true" disabled label="已禁用" />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('switch', '开关')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Switch 开关</KimaTypography><KimaTypography type="caption">开关状态：{{ syncEnabled }}</KimaTypography></header>
+          <kima-card v-show="visible('switch', '开关')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Switch 开关</kima-typography><kima-typography type="caption">开关状态：{{ syncEnabled }}</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-switch v-model="syncEnabled">启用同步</kima-switch>
               <kima-switch :model-value="false">关闭示例</kima-switch>
               <kima-switch :model-value="true" disabled>禁用</kima-switch>
             </div>
-          </KimaCard>
+          </kima-card>
 
 
-          <KimaCard v-show="visible('textarea', '多行文本')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Textarea 多行文本</KimaTypography><KimaTypography type="caption">可调整大小的多行输入。</KimaTypography></header>
+          <kima-card v-show="visible('textarea', '多行文本')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Textarea 多行文本</kima-typography><kima-typography type="caption">可调整大小的多行输入。</kima-typography></header>
             <kima-textarea v-model="notes" label="备注" :rows="3" placeholder="写下你的想法…" />
-          </KimaCard>
-          <KimaCard v-show="visible('slider', '滑块')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Slider 滑块</KimaTypography><KimaTypography type="caption">音量：{{ volume }}</KimaTypography></header>
+          </kima-card>
+          <kima-card v-show="visible('slider', '滑块')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Slider 滑块</kima-typography><kima-typography type="caption">音量：{{ volume }}</kima-typography></header>
             <div class="kima-gallery__stack">
               <kima-slider v-model="volume" label="音量" show-value />
               <kima-slider :model-value="25" :min="0" :max="50" label="范围 0-50" show-value />
               <kima-slider :model-value="60" label="禁用" disabled />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('progress', '进度条')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Progress 进度条</KimaTypography><KimaTypography type="caption">进度：{{ progressValue }}%</KimaTypography></header>
+          <kima-card v-show="visible('progress', '进度条')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Progress 进度条</kima-typography><kima-typography type="caption">进度：{{ progressValue }}%</kima-typography></header>
             <div class="kima-gallery__stack">
               <kima-progress :value="progressValue" label="下载进度" />
               <kima-progress indeterminate label="正在连接" />
@@ -316,7 +316,7 @@ const viewItems = [
               <kima-button variant="tonal" @click="progressValue = Math.min(100, progressValue + 10)">加 10</kima-button>
               </div>
             </div>
-          </KimaCard>
+          </kima-card>
 
 
 
@@ -333,31 +333,31 @@ const viewItems = [
 
         <!-- 选择与日期 -->
         <section v-show="visible('选择与日期', 'select', 'combobox')" id="pickers" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">选择与日期</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">选择与日期</kima-typography>
 
-          <KimaCard v-show="visible('select', '选择器')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Select 选择器</KimaTypography><KimaTypography type="caption">已选：{{ country || "未选择" }}</KimaTypography></header>
+          <kima-card v-show="visible('select', '选择器')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Select 选择器</kima-typography><kima-typography type="caption">已选：{{ country || "未选择" }}</kima-typography></header>
             <div class="kima-gallery__grid">
               <kima-select v-model="country" label="国家" :items="countries" searchable clearable />
               <kima-select :model-value="null" label="必填" :items="countries" required placeholder="请选择国家" />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('combobox', '组合框')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Combobox 组合框</KimaTypography><KimaTypography type="caption">输入可过滤，已选：{{ tag || "未选择" }}</KimaTypography></header>
+          <kima-card v-show="visible('combobox', '组合框')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Combobox 组合框</kima-typography><kima-typography type="caption">输入可过滤，已选：{{ tag || "未选择" }}</kima-typography></header>
             <div class="kima-gallery__grid">
               <kima-combobox v-model="tag" label="标签" :items="tags" clearable searchable />
               <kima-combobox :model-value="null" label="自由输入" :items="tags" free-solo searchable />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('radio-group', '单选组')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Radio Group 单选组</KimaTypography><KimaTypography type="caption">箭头键在选项间移动，当前：{{ plan || "未选择" }}</KimaTypography></header>
+          <kima-card v-show="visible('radio-group', '单选组')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Radio Group 单选组</kima-typography><kima-typography type="caption">箭头键在选项间移动，当前：{{ plan || "未选择" }}</kima-typography></header>
             <div class="kima-gallery__grid">
               <kima-radio-group v-model="plan" label="订阅方案" name="plan" :options="plans" />
               <kima-radio-group :model-value="'free'" label="禁用态" name="plan-disabled" :options="plans" disabled />
             </div>
-          </KimaCard>
+          </kima-card>
 
         
 
@@ -380,17 +380,17 @@ const viewItems = [
 
         <!-- 反馈与提示 -->
         <section v-show="visible('反馈与提示', 'dialog', 'drawer', 'tooltip')" id="feedback" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">反馈与提示</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">反馈与提示</kima-typography>
 
         
 
-          <KimaCard v-show="visible('dialog', '对话框')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Dialog 对话框</KimaTypography><KimaTypography type="caption">模态弹层，按 Esc 或点遮罩关闭。</KimaTypography></header>
+          <kima-card v-show="visible('dialog', '对话框')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Dialog 对话框</kima-typography><kima-typography type="caption">模态弹层，按 Esc 或点遮罩关闭。</kima-typography></header>
             <kima-button @click="dialogOpen = true">打开对话框</kima-button>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('drawer', '抽屉')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Drawer 抽屉</KimaTypography><KimaTypography type="caption">从底边或侧边滑入，背景变暗模糊。底部抽屉可抓着把手往下拖关闭。</KimaTypography></header>
+          <kima-card v-show="visible('drawer', '抽屉')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Drawer 抽屉</kima-typography><kima-typography type="caption">从底边或侧边滑入，背景变暗模糊。底部抽屉可抓着把手往下拖关闭。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-button variant="tonal" @click="drawerBottomOpen = true">底部抽屉</kima-button>
               <kima-button variant="tonal" @click="drawerRightOpen = true">右侧抽屉</kima-button>
@@ -399,16 +399,16 @@ const viewItems = [
                 吸附抽屉（四档 · 当前 {{ Math.round(drawerSnap * 100) }}%）
               </kima-button>
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('tooltip', '提示')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Tooltip 提示框</KimaTypography><KimaTypography type="caption">悬停或聚焦触发。</KimaTypography></header>
+          <kima-card v-show="visible('tooltip', '提示')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Tooltip 提示框</kima-typography><kima-typography type="caption">悬停或聚焦触发。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-tooltip text="保存当前内容"><kima-button variant="outlined">底部提示</kima-button></kima-tooltip>
               <kima-tooltip text="这段提示显示在上方" position="top"><kima-button variant="outlined">顶部提示</kima-button></kima-tooltip>
               <kima-tooltip text="右侧说明" position="right"><kima-button variant="outlined">右侧提示</kima-button></kima-tooltip>
             </div>
-          </KimaCard>
+          </kima-card>
 
         
 
@@ -427,10 +427,10 @@ const viewItems = [
 
         <!-- 数据展示 -->
         <section v-show="visible('数据展示', 'table', 'tree')" id="data" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">数据展示</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">数据展示</kima-typography>
 
-          <KimaCard v-show="visible('table', '表格')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Table 数据表</KimaTypography><KimaTypography type="caption">已选 {{ selectedRows.length }} 行，可点表头排序。</KimaTypography></header>
+          <kima-card v-show="visible('table', '表格')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Table 数据表</kima-typography><kima-typography type="caption">已选 {{ selectedRows.length }} 行，可点表头排序。</kima-typography></header>
             <kima-table
               v-model="selectedRows"
               :columns="columns"
@@ -444,17 +444,17 @@ const viewItems = [
               :sort-direction="sort.direction"
               @sort-change="applySort"
             />
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('tree', '树')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Tree 树</KimaTypography><KimaTypography type="caption">已选：{{ treeSelected || "未选择" }}</KimaTypography></header>
+          <kima-card v-show="visible('tree', '树')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Tree 树</kima-typography><kima-typography type="caption">已选：{{ treeSelected || "未选择" }}</kima-typography></header>
             <kima-tree
               v-model="treeSelected"
               v-model:expanded="treeExpanded"
               :items="treeItems"
               selectable
             />
-          </KimaCard>
+          </kima-card>
 
         
 
@@ -475,79 +475,79 @@ const viewItems = [
 
         <!-- 结构与导航 -->
         <section v-show="visible('结构与导航', 'menu', 'tabs')" id="structure" class="kima-gallery__section">
-          <KimaTypography type="heading" :level="2" size="headline-small">结构与导航</KimaTypography>
+          <kima-typography type="heading" :level="2" size="headline-small">结构与导航</kima-typography>
 
 
-          <KimaCard v-show="visible('collapsible', '折叠')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Collapsible 折叠</KimaTypography><KimaTypography type="caption">内容展开与收起，高度平滑过渡。</KimaTypography></header>
+          <kima-card v-show="visible('collapsible', '折叠')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Collapsible 折叠</kima-typography><kima-typography type="caption">内容展开与收起，高度平滑过渡。</kima-typography></header>
             <kima-collapsible v-model:open="collapsibleOpen" label="详情">
               <p>展开的内容区。收起时高度过渡为 0，不会一帧跳到位。</p>
             </kima-collapsible>
-          </KimaCard>
-          <KimaCard v-show="visible('menu', '菜单')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Menu 菜单</KimaTypography><KimaTypography type="caption">可搜索的单选菜单，已选：{{ menuValue }}</KimaTypography></header>
+          </kima-card>
+          <kima-card v-show="visible('menu', '菜单')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Menu 菜单</kima-typography><kima-typography type="caption">可搜索的单选菜单，已选：{{ menuValue }}</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-menu v-model="menuValue" v-model:open="menuOpen" :items="menuItems" label="排序" searchable />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('tabs', '标签页')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Tabs 标签页</KimaTypography><KimaTypography type="caption">当前标签：{{ tabValue }}</KimaTypography></header>
+          <kima-card v-show="visible('tabs', '标签页')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Tabs 标签页</kima-typography><kima-typography type="caption">当前标签：{{ tabValue }}</kima-typography></header>
             <kima-tabs v-model="tabValue" :items="tabItems">
               <template #panel="{ item }">
                 <p>{{ item.label }} 面板的内容。用方向键切换标签。</p>
               </template>
             </kima-tabs>
-          </KimaCard>
+          </kima-card>
 
         
 
-          <KimaCard v-show="visible('calendar', '日历')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Calendar 日历</KimaTypography><KimaTypography type="caption">月视图网格，支持范围选择。已选：{{ calendarDate || '未选' }}</KimaTypography></header>
+          <kima-card v-show="visible('calendar', '日历')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Calendar 日历</kima-typography><kima-typography type="caption">月视图网格，支持范围选择。已选：{{ calendarDate || '未选' }}</kima-typography></header>
             <kima-calendar v-model="calendarDate" label="日期" />
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('avatar', '头像')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Avatar 头像</KimaTypography><KimaTypography type="caption">文字首字与图片占位。</KimaTypography></header>
+          <kima-card v-show="visible('avatar', '头像')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Avatar 头像</kima-typography><kima-typography type="caption">文字首字与图片占位。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-avatar name="林青" />
               <kima-avatar name="陈禾" size="small" />
               <kima-avatar name="Alex" size="large" />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('skeleton', '骨架屏')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Skeleton 骨架屏</KimaTypography><KimaTypography type="caption">加载占位。</KimaTypography></header>
+          <kima-card v-show="visible('skeleton', '骨架屏')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Skeleton 骨架屏</kima-typography><kima-typography type="caption">加载占位。</kima-typography></header>
             <kima-skeleton :rows="2" label="加载占位" />
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('spinner', '加载指示')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Spinner 加载指示</KimaTypography><KimaTypography type="caption">独立加载动画。</KimaTypography></header>
+          <kima-card v-show="visible('spinner', '加载指示')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Spinner 加载指示</kima-typography><kima-typography type="caption">独立加载动画。</kima-typography></header>
             <div class="kima-gallery__row">
               <kima-spinner label="加载中" />
               <kima-spinner size="small" label="小号" />
               <kima-spinner size="large" label="大号" />
             </div>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('link', '链接')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Link 链接</KimaTypography><KimaTypography type="caption">行内导航，焦点环与涟漪齐全。</KimaTypography></header>
+          <kima-card v-show="visible('link', '链接')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Link 链接</kima-typography><kima-typography type="caption">行内导航，焦点环与涟漪齐全。</kima-typography></header>
             <kima-link href="#/overview">查看项目文档</kima-link>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('typography', '排版')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Typography 排版</KimaTypography><KimaTypography type="caption">语义化标题与正文的 token 尺寸。</KimaTypography></header>
+          <kima-card v-show="visible('typography', '排版')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Typography 排版</kima-typography><kima-typography type="caption">语义化标题与正文的 token 尺寸。</kima-typography></header>
             <kima-typography type="heading" :level="2" size="title-medium">成员列表</kima-typography>
             <kima-typography size="body">正文使用 body 档 15px，行高 1.5。</kima-typography>
             <kima-typography type="caption" size="label-medium">caption 档 14px</kima-typography>
-          </KimaCard>
+          </kima-card>
 
-          <KimaCard v-show="visible('popover', '气泡')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">Popover 气泡</KimaTypography><KimaTypography type="caption">锚定弹层，点击或聚焦打开。</KimaTypography></header>
+          <kima-card v-show="visible('popover', '气泡')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Popover 气泡</kima-typography><kima-typography type="caption">锚定弹层，点击或聚焦打开。</kima-typography></header>
             <kima-popover v-model:open="popoverOpen" label="项目详情" content-label="详情">
               <p>弹层是独立实色平面，挡住背后的内容。</p>
             </kima-popover>
-          </KimaCard>
+          </kima-card>
         </section>
 
       </div>

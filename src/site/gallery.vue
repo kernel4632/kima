@@ -70,69 +70,69 @@ onBeforeUnmount(() => clearTimeout(loadingTimer));
 <template>
   <div class="kima-playground" data-testid="playground">
     <header class="kima-playground__bar">
-      <div class="kima-playground__brand"><KimaIcon :icon="SparklesIcon" /><strong>KIMA</strong><span>交互实验室</span></div>
-      <KimaBadge value="LIVE" variant="primary" />
+      <div class="kima-playground__brand"><kima-icon :icon="SparklesIcon" /><strong>KIMA</strong><span>交互实验室</span></div>
+      <kima-badge value="LIVE" variant="primary" />
       <div class="kima-playground__tools">
-        <KimaPopover label="快速搜索" content-label="项目搜索">
-          <div class="kima-playground__flow"><KimaTextField label="搜索项目" placeholder="输入关键词" /></div>
-        </KimaPopover>
-        <KimaButton variant="standard" icon-only label="查看文件" @click="dialogOpen = true"><KimaIcon :icon="Folder01Icon" /></KimaButton>
-        <KimaLink href="#/overview">文档</KimaLink>
+        <kima-popover label="快速搜索" content-label="项目搜索">
+          <div class="kima-playground__flow"><kima-text-field label="搜索项目" placeholder="输入关键词" /></div>
+        </kima-popover>
+        <kima-button variant="standard" icon-only label="查看文件" @click="dialogOpen = true"><kima-icon :icon="Folder01Icon" /></kima-button>
+        <kima-link href="#/overview">文档</kima-link>
       </div>
     </header>
 
     <main class="kima-playground__layout">
       <div class="kima-playground__scenes">
         <div class="kima-playground__column">
-        <KimaCard class="kima-playground__scene" data-scene="create">
+        <kima-card class="kima-playground__scene" data-scene="create">
           <template #header><div class="kima-playground__heading"><h1>开始一个新想法</h1><p>小一点的计划，大一点的体验。</p></div></template>
           <form class="kima-playground__flow" @submit.prevent="saveProject">
-            <KimaTextField v-model="name" label="项目名称" name="project-name" placeholder="项目名称" required clearable />
-            <KimaSelect v-model="visibility" :items="visibilityItems" label="项目可见性" />
-            <KimaTextarea v-model="notes" label="项目备注" :rows="2" resize="none" placeholder="写下你的想法…" />
-            <KimaCheckbox v-model="accepted" label="与团队共享进度">与团队共享进度</KimaCheckbox>
+            <kima-text-field v-model="name" label="项目名称" name="project-name" placeholder="项目名称" required clearable />
+            <kima-select v-model="visibility" :items="visibilityItems" label="项目可见性" />
+            <kima-textarea v-model="notes" label="项目备注" :rows="2" resize="none" placeholder="写下你的想法…" />
+            <kima-checkbox v-model="accepted" label="与团队共享进度">与团队共享进度</kima-checkbox>
             <div class="kima-playground__row kima-playground__row--end">
-              <KimaButton variant="text" @click="notes = ''">清空备注</KimaButton>
-              <KimaButton type="submit" :disabled="!accepted"><template #leading><KimaIcon :icon="PlusSignIcon" /></template>创建项目</KimaButton>
+              <kima-button variant="text" @click="notes = ''">清空备注</kima-button>
+              <kima-button type="submit" :disabled="!accepted"><template #leading><kima-icon :icon="PlusSignIcon" /></template>创建项目</kima-button>
             </div>
           </form>
-        </KimaCard>
+        </kima-card>
 
-        <KimaCard class="kima-playground__scene" data-scene="team">
-          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>一起做点好东西</h2><p>共享团队，保留自己的偏好。</p></div><KimaSwitch v-model="favorite" label="收藏团队">收藏</KimaSwitch></div></template>
-          <div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__row"><KimaAvatar name="林青" size="small" /><strong>设计组</strong></div><KimaBadge value="3 人协作" /></div>
-          <div class="kima-playground__row kima-playground__row--end"><KimaButton variant="outlined" disabled>访客只读</KimaButton><KimaButton @click="drawerOpen = true">邀请成员</KimaButton></div>
-        </KimaCard>
+        <kima-card class="kima-playground__scene" data-scene="team">
+          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>一起做点好东西</h2><p>共享团队，保留自己的偏好。</p></div><kima-switch v-model="favorite" label="收藏团队">收藏</kima-switch></div></template>
+          <div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__row"><kima-avatar name="林青" size="small" /><strong>设计组</strong></div><kima-badge value="3 人协作" /></div>
+          <div class="kima-playground__row kima-playground__row--end"><kima-button variant="outlined" disabled>访客只读</kima-button><kima-button @click="drawerOpen = true">邀请成员</kima-button></div>
+        </kima-card>
         </div>
         <div class="kima-playground__column">
-        <KimaCard class="kima-playground__scene" data-scene="tasks">
-          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>让进展看得见</h2><p>任务面板与操作菜单。</p></div><KimaMenu :items="menuItems" label="任务操作" icon-only @select="runAction" /></div></template>
-          <KimaTabs v-model="tab" :items="tabs">
-            <template #panel><KimaTable :columns="columns" :rows="filteredTasks" row-key="id" hoverable aria-label="项目任务" /></template>
-          </KimaTabs>
-          <div class="kima-playground__row kima-playground__row--between"><KimaBadge :value="`${filteredTasks.length} 个任务`" /><KimaTooltip text="点右上角菜单管理任务"><KimaIcon :icon="FavouriteIcon" :size="18" /></KimaTooltip></div>
-        </KimaCard>
+        <kima-card class="kima-playground__scene" data-scene="tasks">
+          <template #header><div class="kima-playground__row kima-playground__row--between"><div class="kima-playground__heading"><h2>让进展看得见</h2><p>任务面板与操作菜单。</p></div><kima-menu :items="menuItems" label="任务操作" icon-only @select="runAction" /></div></template>
+          <kima-tabs v-model="tab" :items="tabs">
+            <template #panel><kima-table :columns="columns" :rows="filteredTasks" row-key="id" hoverable aria-label="项目任务" /></template>
+          </kima-tabs>
+          <div class="kima-playground__row kima-playground__row--between"><kima-badge :value="`${filteredTasks.length} 个任务`" /><kima-tooltip text="点右上角菜单管理任务"><kima-icon :icon="FavouriteIcon" :size="18" /></kima-tooltip></div>
+        </kima-card>
 
-        <KimaCard class="kima-playground__scene" data-scene="preferences">
+        <kima-card class="kima-playground__scene" data-scene="preferences">
           <template #header><div class="kima-playground__heading"><h2>保持刚好的节奏</h2><p>预算与席位，在一处调整。</p></div></template>
-          <div class="kima-playground__notification-options"><KimaSwitch v-model="notifications" label="接收通知">通知</KimaSwitch><KimaRadioGroup v-model="frequency" :options="frequencies" label="通知频率" orientation="horizontal" /></div>
-          <KimaCombobox v-model="owner" :items="owners" label="评审负责人" />
-          <KimaSlider v-model="budget" label="本期预算" />
-          <KimaProgress :value="budget" label="预算进度" />
-          <KimaDivider />
-          <div class="kima-playground__row kima-playground__row--between"><KimaTooltip text="重现同步中的加载状态"><KimaButton variant="text" :loading="loading" @click="refreshFiles">同步文件</KimaButton></KimaTooltip><KimaSpinner v-if="loading" size="small" label="正在同步" /><KimaBadge v-else value="已同步" variant="success" /></div>
-          <KimaSkeleton v-if="loading" :rows="1" label="同步占位" />
-          <KimaSkeleton v-else :rows="1" label="下次同步预览" />
-        </KimaCard>
+          <div class="kima-playground__notification-options"><kima-switch v-model="notifications" label="接收通知">通知</kima-switch><kima-radio-group v-model="frequency" :options="frequencies" label="通知频率" orientation="horizontal" /></div>
+          <kima-combobox v-model="owner" :items="owners" label="评审负责人" />
+          <kima-slider v-model="budget" label="本期预算" />
+          <kima-progress :value="budget" label="预算进度" />
+          <kima-divider />
+          <div class="kima-playground__row kima-playground__row--between"><kima-tooltip text="重现同步中的加载状态"><kima-button variant="text" :loading="loading" @click="refreshFiles">同步文件</kima-button></kima-tooltip><kima-spinner v-if="loading" size="small" label="正在同步" /><kima-badge v-else value="已同步" variant="success" /></div>
+          <kima-skeleton v-if="loading" :rows="1" label="同步占位" />
+          <kima-skeleton v-else :rows="1" label="下次同步预览" />
+        </kima-card>
         </div>
       </div>
     </main>
 
-    <KimaDialog v-model:open="dialogOpen" title="创建项目">
-      <div class="kima-playground__flow"><KimaTextField v-model="name" label="新项目名称" placeholder="项目名称" /><KimaSelect v-model="visibility" :items="visibilityItems" label="新项目可见性" /></div>
-      <template #footer><KimaButton variant="text" @click="dialogOpen = false">取消</KimaButton><KimaButton @click="saveProject">保存项目</KimaButton></template>
-    </KimaDialog>
-    <KimaDrawer v-model:open="drawerOpen" placement="right" title="邀请成员"><div class="kima-playground__flow"><KimaTextField label="邀请邮箱" placeholder="name@example.com" type="email" /><KimaButton @click="drawerOpen = false">发送邀请</KimaButton></div></KimaDrawer>
+    <kima-dialog v-model:open="dialogOpen" title="创建项目">
+      <div class="kima-playground__flow"><kima-text-field v-model="name" label="新项目名称" placeholder="项目名称" /><kima-select v-model="visibility" :items="visibilityItems" label="新项目可见性" /></div>
+      <template #footer><kima-button variant="text" @click="dialogOpen = false">取消</kima-button><kima-button @click="saveProject">保存项目</kima-button></template>
+    </kima-dialog>
+    <kima-drawer v-model:open="drawerOpen" placement="right" title="邀请成员"><div class="kima-playground__flow"><kima-text-field label="邀请邮箱" placeholder="name@example.com" type="email" /><kima-button @click="drawerOpen = false">发送邀请</kima-button></div></kima-drawer>
   </div>
 </template>
 

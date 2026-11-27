@@ -45,18 +45,18 @@ onBeforeUnmount(() => observer?.disconnect());
   <div class="kima-lab">
     <header class="kima-lab__top">
       <div class="kima-lab__brand">
-        <KimaButton variant="text" @click="navigate('overview')">← 返回文档</KimaButton>
-        <KimaBadge value="LAB" variant="primary" />
+        <kima-button variant="text" @click="navigate('overview')">← 返回文档</kima-button>
+        <kima-badge value="LAB" variant="primary" />
         <span class="kima-lab__hint">全部组件平铺，随便点</span>
       </div>
       <nav class="kima-lab__nav" aria-label="实验台分组">
-        <KimaButton
+        <kima-button
           v-for="group in groups"
           :key="group.id"
           variant="text"
           :aria-current="activeGroup === group.id ? 'true' : undefined"
           @click="scrollToGroup(group.id)"
-        >{{ group.label }}</KimaButton>
+        >{{ group.label }}</kima-button>
       </nav>
     </header>
 

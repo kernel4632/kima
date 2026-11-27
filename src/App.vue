@@ -77,7 +77,7 @@ watch(route, async () => {
 }, { immediate: true });
 const importCode = computed(() => component.value ? `import { Kima${component.value.name} } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';` : '');
 const install = 'pnpm add @kernel4632/kima vue';
-const vueUsage = `<script setup>\nimport { KimaButton } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';\n<` + `/script>\n\n<template>\n  <KimaButton>保存更改</KimaButton>\n</template>`;
+const vueUsage = `<script setup>\nimport { KimaButton } from '@kernel4632/kima';\nimport '@kernel4632/kima/style.css';\n<` + `/script>\n\n<template>\n  <kima-button>保存更改</kima-button>\n</template>`;
 const elementUsage = `import '@kernel4632/kima/elements';\n\n// 注册入口自带样式与 Vue 运行时\n// <kima-button>保存更改</kima-button>`;
 const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '类型' }, { key: 'default', label: '默认值' }];
 </script>
@@ -90,23 +90,23 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
   <div v-else-if="!['lab'].includes(route)" class="kima-docs">
     <header class="kima-docs__top">
       <div class="kima-docs__brand">
-        <KimaButton class="kima-docs__mobile-toggle" variant="text" icon-only label="打开文档导航" @click="mobileMenu = true"><KimaIcon :icon="Menu01Icon" /></KimaButton>
-        <KimaButton variant="text" @click="navigate('overview')"><template #leading><KimaIcon :icon="SparklesIcon" /></template>KIMA</KimaButton>
-        <KimaBadge :value="manifest.version" variant="primary" />
+        <kima-button class="kima-docs__mobile-toggle" variant="text" icon-only label="打开文档导航" @click="mobileMenu = true"><kima-icon :icon="Menu01Icon" /></kima-button>
+        <kima-button variant="text" @click="navigate('overview')"><template #leading><kima-icon :icon="SparklesIcon" /></template>KIMA</kima-button>
+        <kima-badge :value="manifest.version" variant="primary" />
       </div>
-      <KimaTextField v-model="search" class="kima-docs__search" label="搜索组件" type="search" placeholder="搜索组件 / Search components" clearable />
-      <KimaPopover v-model:open="commandOpen" class="kima-docs__command" label="全文搜索" content-label="搜索结果">
-        <template #trigger><KimaButton variant="tonal"><KimaIcon :icon="Search01Icon" />搜索 / Ctrl K</KimaButton></template>
+      <kima-text-field v-model="search" class="kima-docs__search" label="搜索组件" type="search" placeholder="搜索组件 / Search components" clearable />
+      <kima-popover v-model:open="commandOpen" class="kima-docs__command" label="全文搜索" content-label="搜索结果">
+        <template #trigger><kima-button variant="tonal"><kima-icon :icon="Search01Icon" />搜索 / Ctrl K</kima-button></template>
         <div class="kima-docs__command-panel">
-          <KimaTextField v-model="commandQuery" label="搜索组件、属性、事件或关键词" placeholder="输入关键词…" clearable />
+          <kima-text-field v-model="commandQuery" label="搜索组件、属性、事件或关键词" placeholder="输入关键词…" clearable />
           <div class="kima-docs__command-list" role="listbox" aria-label="搜索结果">
-            <KimaButton v-for="item in commandResults" :key="item.slug" variant="text" role="option" :aria-selected="false" @click="selectSearchResult(`components/${item.slug}`, item)">{{ item.name }} · {{ item.label }}</KimaButton>
+            <kima-button v-for="item in commandResults" :key="item.slug" variant="text" role="option" :aria-selected="false" @click="selectSearchResult(`components/${item.slug}`, item)">{{ item.name }} · {{ item.label }}</kima-button>
             <p v-if="!commandResults.length" role="status">没有匹配的组件。</p>
           </div>
         </div>
-      </KimaPopover>
+      </kima-popover>
       <div class="kima-docs__tools">
-        <KimaButton variant="tonal" @click="navigate('installation')">开始使用</KimaButton>
+        <kima-button variant="tonal" @click="navigate('installation')">开始使用</kima-button>
       </div>
     </header>
     <div class="kima-docs__layout">
@@ -114,7 +114,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
         <p class="kima-docs__sidebar-title">构建有生命力的界面</p>
         <nav v-for="group in nav" :key="group.heading" :aria-label="group.heading">
           <h2>{{ group.heading }}</h2>
-          <KimaButton v-for="item in group.items" :key="item.slug" :variant="route === item.slug ? 'tonal' : 'text'" :aria-current="route === item.slug ? 'page' : undefined" @click="navigate(item.slug)">{{ item.name }}</KimaButton>
+          <kima-button v-for="item in group.items" :key="item.slug" :variant="route === item.slug ? 'tonal' : 'text'" :aria-current="route === item.slug ? 'page' : undefined" @click="navigate(item.slug)">{{ item.name }}</kima-button>
         </nav>
         <p v-if="!filtered.length" role="status">没有匹配的组件。</p>
       </aside>
@@ -128,31 +128,31 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
         <template v-if="component">
           <section id="preview" class="kima-docs__section">
             <h2>交互预览</h2><p>这里运行的就是库里的组件，不是重新绘制的样图。</p>
-            <KimaTabs v-model="previewTab" :items="previewTabs">
+            <kima-tabs v-model="previewTab" :items="previewTabs">
               <template #panel="{ item }">
                 <div v-if="item.value === 'preview'" class="kima-docs__canvas"><Examples :key="component.slug" :component="component.slug" /></div>
                 <pre v-else class="kima-docs__code">{{ component.examples }}</pre>
               </template>
-            </KimaTabs>
+            </kima-tabs>
           </section>
           <section id="usage" class="kima-docs__section"><h2>使用方式</h2><p>先安装并导入全局样式，然后按需导入组件。</p><pre class="kima-docs__code">{{ importCode }}</pre></section>
           <section id="properties" class="kima-docs__section">
             <h2>属性参考</h2>
             <p>属性类型和默认值直接读取组件声明，与实际组件保持同步。</p>
-            <KimaTable :columns="propColumns" :rows="component.attributes" row-key="name" />
+            <kima-table :columns="propColumns" :rows="component.attributes" row-key="name" />
             <h3>公开事件</h3>
             <p>{{ component.events.length ? component.events.join(' / ') : '该组件没有自定义事件；可交互元素保留原生事件。' }}</p>
             <p>Vue 中直接接收参数；自定义元素通过 event.detail 数组接收参数。按钮 click 仍是原生事件。</p>
-            <KimaButton variant="text" :aria-expanded="showSource" @click="toggleSource">{{ showSource ? '收起源码' : '查看完整组件源码' }}</KimaButton>
+            <kima-button variant="text" :aria-expanded="showSource" @click="toggleSource">{{ showSource ? '收起源码' : '查看完整组件源码' }}</kima-button>
             <pre v-if="showSource" class="kima-docs__code">{{ fullSource || '正在加载源码…' }}</pre>
           </section>
         </template>
         <template v-else-if="route === 'overview'">
           <section class="kima-docs__hero-canvas" aria-label="KIMA 交互示例">
-            <KimaCard><template #header><KimaBadge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><KimaButton @click="navigate('gallery')">组件总览</KimaButton><KimaButton variant="text" @click="navigate('installation')">了解接入方式</KimaButton></div></KimaCard>
+            <kima-card><template #header><kima-badge value="用组件，展示组件" variant="primary" /></template><h2>好界面，从一次自然的交互开始。</h2><p>试着点击、悬停。文档站里的按钮、搜索、菜单和标签页，全部由 KIMA 自己提供。</p><div class="kima-docs__actions"><kima-button @click="navigate('gallery')">组件总览</kima-button><kima-button variant="text" @click="navigate('installation')">了解接入方式</kima-button></div></kima-card>
           </section>
-          <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><pre class="kima-docs__code">{{ install }}</pre><KimaButton variant="tonal" @click="navigate('installation')">查看接入指南</KimaButton></section>
-          <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><KimaCard><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></KimaCard><KimaCard><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></KimaCard><KimaCard><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></KimaCard></div></section>
+          <section id="usage" class="kima-docs__section"><h2>从安装开始</h2><p>安装包、导入样式、放入第一个组件。无需安装整套视觉框架。</p><pre class="kima-docs__code">{{ install }}</pre><kima-button variant="tonal" @click="navigate('installation')">查看接入指南</kima-button></section>
+          <section id="principles" class="kima-docs__section"><h2>交互第一，外观其次</h2><div class="kima-docs__principles"><kima-card><h3>留出呼吸感</h3><p>更大的控件、更松的间距，重要的操作一眼可见。</p></kima-card><kima-card><h3>用动效引导注意力</h3><p>状态变化清晰可感，抽屉与遮罩只聚焦当前内容。</p></kima-card><kima-card><h3>统一，而不僵硬</h3><p>同一套颜色、圆角和状态反馈，适配 Vue 与原生网页。</p></kima-card></div></section>
         </template>
         <template v-else-if="route === 'installation'">
           <section id="usage" class="kima-docs__section"><h2>1. 安装依赖</h2><pre class="kima-docs__code">{{ install }}</pre><p>公共 npm 包是否可下载，以仓库 README 的发布状态为准。正式发布前可安装本地产出的 tarball。</p><h2>2. 在 Vue 中使用</h2><pre class="kima-docs__code">{{ vueUsage }}</pre><h2>3. 在原生网页中使用</h2><pre class="kima-docs__code">{{ elementUsage }}</pre></section>
@@ -164,9 +164,9 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
         </template>
         <footer class="kima-docs__footer">KIMA · 让组件、界面与体验说同一种语言。</footer>
       </main>
-      <aside class="kima-docs__toc" aria-label="本页目录"><p>本页内容</p><KimaButton v-for="section in sections" :key="section.id" variant="text" @click="scrollToSection(section.id)">{{ section.label }}</KimaButton></aside>
+      <aside class="kima-docs__toc" aria-label="本页目录"><p>本页内容</p><kima-button v-for="section in sections" :key="section.id" variant="text" @click="scrollToSection(section.id)">{{ section.label }}</kima-button></aside>
     </div>
-    <KimaDrawer v-model:open="mobileMenu" placement="left" title="文档导航"><nav v-for="group in nav" :key="group.heading" class="kima-docs__mobile-nav"><h2>{{ group.heading }}</h2><KimaButton v-for="item in group.items" :key="item.slug" variant="text" @click="navigate(item.slug)">{{ item.name }}</KimaButton></nav></KimaDrawer>
+    <kima-drawer v-model:open="mobileMenu" placement="left" title="文档导航"><nav v-for="group in nav" :key="group.heading" class="kima-docs__mobile-nav"><h2>{{ group.heading }}</h2><kima-button v-for="item in group.items" :key="item.slug" variant="text" @click="navigate(item.slug)">{{ item.name }}</kima-button></nav></kima-drawer>
   </div>
 </template>
 
