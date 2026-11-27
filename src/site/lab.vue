@@ -1,44 +1,27 @@
-<!-- 实验台：全部 30 个原语组件平铺一页，直接上手交互看效果。
+<!-- 实验台：全部原语组件平铺一页，直接上手交互看效果。
      base-examples 以 component="*" 模式渲染全部演示块。
+     顶栏右侧是深浅主题切换（三态：跟随系统 / 浅色 / 深色）。
      入口：#/lab -->
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { ref } from 'vue';
 import BaseExamples from './base-examples.vue';
 import { KimaBadge, KimaButton } from '../index.js';
+import { Moon02Icon, Sun03Icon, ComputerIcon } from '@hugeicons/core-free-icons';
 
 defineProps({ navigate: { type: Function, required: true } });
 
-/* 模板里直接写 document 在运行时是 undefined（Vue 模板作用域只暴露实例），
- * 滚动锚点收进方法。 */
-function scrollToGroup(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+/* 主题切换：写 documentElement 的 color-scheme（light-dark() 全库自动跟随）。
+ * 三态循环：跟随系统（默认）→ 浅 → 深 → 跟随系统。 */
+const themeMode = ref('auto'); // auto | light | dark
+function cycleTheme() {
+  themeMode.value = { auto: 'light', light: 'dark', dark: 'auto' }[themeMode.value];
+  document.documentElement.style.colorScheme = themeMode.value === 'auto' ? '' : themeMode.value;
 }
-
-/* 目录高亮：滚动到哪个分组，导航点亮哪个。实验台是长页，这个比返回顶部有用。 */
-const groups = [
-  { id: 'actions', label: '按钮与动作' },
-  { id: 'form', label: '表单输入' },
-  { id: 'pickers', label: '选择' },
-  { id: 'feedback', label: '反馈与提示' },
-  { id: 'data', label: '数据展示' },
-  { id: 'structure', label: '结构与导航' },
-];
-const activeGroup = ref(groups[0].id);
-let observer;
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (visible) activeGroup.value = visible.target.id;
-    },
-    { rootMargin: '-80px 0px -70% 0px' },
-  );
-  for (const group of groups) {
-    const el = document.getElementById(group.id);
-    if (el) observer.observe(el);
-  }
-});
-onBeforeUnmount(() => observer?.disconnect());
+const themeMeta = {
+  auto: { label: '跟随系统', icon: ComputerIcon },
+  light: { label: '浅色主题', icon: Sun03Icon },
+  dark: { label: '深色主题', icon: Moon02Icon },
+};
 </script>
 
 <template>
@@ -49,15 +32,9 @@ onBeforeUnmount(() => observer?.disconnect());
         <kima-badge value="LAB" variant="primary" />
         <span class="kima-lab__hint">全部组件平铺，随便点</span>
       </div>
-      <nav class="kima-lab__nav" aria-label="实验台分组">
-        <kima-button
-          v-for="group in groups"
-          :key="group.id"
-          variant="text"
-          :aria-current="activeGroup === group.id ? 'true' : undefined"
-          @click="scrollToGroup(group.id)"
-        >{{ group.label }}</kima-button>
-      </nav>
+      <kima-button variant="standard" icon-only :label="themeMeta[themeMode].label" @click="cycleTheme">
+        <kima-icon :icon="themeMeta[themeMode].icon" :size="20" />
+      </kima-button>
     </header>
 
     <main class="kima-lab__body">
@@ -98,23 +75,6 @@ onBeforeUnmount(() => observer?.disconnect());
 .kima-lab__hint {
   color: var(--kima-color-on-surface-variant);
   font-size: var(--kima-font-size-label-medium);
-}
-
-.kima-lab__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--kima-space-1);
-
-  :deep(.kima-button) {
-    min-height: 40px;
-    padding-inline: var(--kima-space-3);
-    font-size: var(--kima-font-size-label-medium);
-  }
-
-  :deep(.kima-button[aria-current='true']) {
-    background: var(--kima-color-accent-secondary);
-    color: var(--kima-color-on-accent-secondary);
-  }
 }
 
 .kima-lab__body {
