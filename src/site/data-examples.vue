@@ -55,10 +55,10 @@ function addNotification() { const id = `notice-${Date.now()}`; notifications.va
       <output>已选 {{ selectedRows.length }} 行；筛选会保留稳定行键。</output>
     </div>
     <div v-else-if="component === 'infinite-scroll'" class="kima-data-demo__stack"><div class="kima-data-demo__feed"><p v-for="item in loadedItems" :key="item">{{ item }}</p><KimaInfiniteScroll :load-more="loadMore" :finished="loadCount >= 2" /></div><output>请求次数：{{ loadCount }}</output></div>
-    <KimaVirtualTable v-else-if="component === 'virtual-table'" :rows="virtualRows" :columns="virtualColumns" row-key="id" selectable :height="320" item-height="56" caption="1000 条固定行高数据" />
-    <KimaVirtualTree v-else-if="component === 'virtual-tree'" :items="treeItems" v-model="treeValue" v-model:expanded="treeExpanded" selectable :height="320" item-height="48" aria-label="大数据目录树" />
+    <KimaVirtualTable v-else-if="component === 'virtual-table'" :rows="virtualRows" :columns="virtualColumns" row-key="id" selectable :height="320" :item-height="56" caption="1000 条固定行高数据" />
+    <KimaVirtualTree v-else-if="component === 'virtual-tree'" :items="treeItems" v-model="treeValue" v-model:expanded="treeExpanded" selectable :height="320" :item-height="48" aria-label="大数据目录树" />
     <KimaImagePreview v-else-if="component === 'image-preview'" src="/th.jpg" alt="山间风景" :items="imageItems" caption="点击进入可键盘操作的预览" />
-    <div v-else-if="component === 'notification-queue'" class="kima-data-demo__stack"><KimaNotificationQueue :items="notifications" capacity="3" @update:items="notifications = $event" /><KimaButton @click="addNotification">追加队列通知</KimaButton><output>队列中 {{ notifications.length }} 条</output></div>
+    <div v-else-if="component === 'notification-queue'" class="kima-data-demo__stack"><KimaNotificationQueue :items="notifications" :capacity="3" @update:items="notifications = $event" /><KimaButton @click="addNotification">追加队列通知</KimaButton><output>队列中 {{ notifications.length }} 条</output></div>
     <div v-else-if="component === 'ring-progress'" class="kima-data-demo__row"><KimaRingProgress :value="percent" show-value label="上传进度" /><KimaRingProgress indeterminate label="正在处理" /><KimaButton variant="tonal" @click="percent = percent >= 100 ? 0 : percent + 8">调整到 {{ statusLabel }}</KimaButton></div>
     <KimaLongText v-else-if="component === 'long-text'" :text="longText" :lines="3" />
   </article>

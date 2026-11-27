@@ -5,6 +5,8 @@
 <script setup>
 import { ref } from "vue";
 import KimaButton from "../core/button.ce.vue";
+import KimaIcon from "../core/icon.ce.vue";
+import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { useInputAttrs, useInputState } from "../../utils/input-state.js";
 import { useRipple } from "../../utils/ripple.js";
 defineOptions({ inheritAttrs: false });
@@ -42,9 +44,9 @@ defineExpose({ focus: () => input.value?.focus() });
 </script>
 <template>
   <div ref="root" :class="['kima-number-field', attrs.class]" :style="attrs.style" :aria-disabled="disabled || undefined">
-    <KimaButton variant="text" :disabled="disabled || readonly || (min != null && local != null && local <= min)" aria-label="减少" @click="stepBy(-1)">−</KimaButton>
+    <KimaButton variant="text" :disabled="disabled || readonly || (min != null && local != null && local <= min)" aria-label="减少" @click="stepBy(-1)"><KimaIcon :icon="ArrowDown01Icon" :size="18" aria-hidden="true" /></KimaButton>
     <input ref="input" v-bind="controlAttrs" type="number" :aria-label="controlAttrs['aria-label'] || label" :name="name" :value="local ?? ''" :min="min" :max="max" :step="step" :required="required" :disabled="disabled" :readonly="readonly" :placeholder="placeholder" @input.stop="onInput" @change.stop="emit('change', local)" />
-    <KimaButton variant="text" :disabled="disabled || readonly || (max != null && local != null && local >= max)" aria-label="增加" @click="stepBy(1)">+</KimaButton>
+    <KimaButton variant="text" :disabled="disabled || readonly || (max != null && local != null && local >= max)" aria-label="增加" @click="stepBy(1)"><KimaIcon :icon="ArrowUp01Icon" :size="18" aria-hidden="true" /></KimaButton>
   </div>
 </template>
 <style scoped lang="scss">

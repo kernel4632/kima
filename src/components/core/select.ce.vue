@@ -418,7 +418,7 @@ onBeforeUnmount(() => {
   /* 官方输入框描边模式（同 kima-field-skin）：1px 发丝 + 浅底 + focus 描边加深。 */
   border: var(--kima-outline-width) solid var(--kima-color-input-border);
   border-radius: var(--kima-radius-control);
-  background: var(--kima-color-layer-1);
+  background: transparent;
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     border-color var(--kima-duration-effects) var(--kima-curve-standard),

@@ -214,7 +214,7 @@ onBeforeUnmount(() => {
        * 图标和关闭按钮都是 flex: none，只有正文会被压窄——
        * 长消息换行时它们不会被挤扁或推出容器。 -->
       <span v-if="notificationIcon" class="kima-notification__icon" aria-hidden="true">
-        <KimaIcon :icon="notificationIcon" :size="22" />
+        <KimaIcon :icon="notificationIcon" :size="24" />
       </span>
 
       <div class="kima-notification__copy">

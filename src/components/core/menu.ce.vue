@@ -122,6 +122,7 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   line-height: 1.5; position: relative; display: inline-flex; min-width: 180px; &--open { z-index: 60; } &--icon { min-width: 0; } }
 .kima-menu__trigger  {
   @include kima-state-layer;
+  @include kima-state-layer;
   @include kima-ripple-host;
   @include kima-focus-ring;
   @include kima-motion-colors;
@@ -138,6 +139,10 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
   background: var(--kima-color-layer-2);
   font: inherit;
   cursor: pointer;
+  /* 官方 hover 模式：触发器轻洗 5%（状态层 ::after 之外，行级 wash 更直观）。 */
+  &:hover:not(:disabled) {
+    background: var(--kima-color-wash-hover);
+  }
   &:disabled  {
     opacity: var(--kima-opacity-disabled);
     cursor: not-allowed;

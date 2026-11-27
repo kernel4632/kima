@@ -261,7 +261,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     box-sizing: border-box;
     border: var(--kima-outline-width) solid var(--kima-color-input-border);
     border-radius: var(--kima-radius-control);
-    background: var(--kima-color-layer-1);
+    background: transparent;
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);

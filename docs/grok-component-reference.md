@@ -224,9 +224,15 @@ pill: rounded-full（药丸）
 
 | 组件 | 推导依据 |
 |---|---|
-| Table/Tree/Cascader 等数据件 | 官方行高 40 + wash 悬停 + accent 选中（token 全量已对齐，逐组件核对即可） |
-| Tooltip | 规格 12px 字；弹层底/阴影用 popup+raised 档（token 推导） |
-| Spinner | 官方 loading 用 accent 点动画（chat 场景旁证） |
+| Tooltip | 规格 12px 字；弹层底/阴影用 popup+raised 档（token 推导）。官方 chunk 无 tooltip 皮肤类（设置页 chunk 未下载全） |
+| Spinner | 官方 loading 用 accent 点动画（chat 场景旁证）；无专属类汤 |
+| Progress | 官方 chunk 无 h-1/rounded-full 进度条类汤（官方可能内建在图表库）；KIMA 维持 token 推导（track layer 档 + fill primary） |
+| Breadcrumb | 官方 `ChevronRightSmIcon`（chunk 3rfjzjz5imsjd 明文图标名）→ KIMA 分隔图标对齐 |
+| Avatar | 官方 `size-10(40) place-items-center rounded-full bg-surface-l3`（chunk 0lugeiyrj6vdx）——KIMA 40 档 ✓ |
+
+### 本轮审计补充（运行时实测口径）
+- **测量污染警示**：真鼠标 hover/active 测量在长页面（lab 平铺）会被 sticky 顶栏与滚动锚定干扰，读到 `oklab(0.999…)` 近白假象——静态验证用 `getComputedStyle(el, ':hover')` 伪类读法复核，全库 hover 反馈实为齐全。
+- Badge 官方类汤 `shrink-0 gap-1.5 px-2 py-0.5 text-xs font-medium leading-4` 与 KIMA 实测（min-h 20/px 8/药丸/12px 字）几何一致，无需改动。
 
 ## 九、官方「伪元素外扩命中区」模式（KIMA 落地）
 

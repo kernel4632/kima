@@ -266,7 +266,7 @@ watch(() => [activeIndex.value, tabOrientation.value, props.items], () => nextTi
   }
 
   &:active:not(:disabled) {
-    background: var(--kima-color-layer-2);
+    background: var(--kima-color-wash-active);
   }
 
   &:focus-visible {

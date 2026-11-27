@@ -207,7 +207,9 @@
   border-radius: var(--kima-radius-control);
   color: inherit;
   font: inherit;
-  background: var(--kima-color-layer-1);
+  /* 官方 Input 类明文 "rounded-md border bg-transparent"：描边独立承担造型，底透明。
+   * 深浅两套都透明（官方同款）；此前 5% 白底叠描边与官方不符。 */
+  background: transparent;
   cursor: text;
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
