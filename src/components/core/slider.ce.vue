@@ -1,20 +1,34 @@
 <!--
 滑块：行为层保留原生 range（键盘、拖动、表单、无障碍），输入框透明覆盖在
-视觉层之上；视觉层按 M3E Slider 一比一同构复刻
-（github.com/matraic/m3e packages/web/src/slider，SliderElement.ts + SliderThumbElement.ts）。
-结构翻译（M3E render() → KIMA）：
-  .base > .track > (.track-inactive.start + .track-active + .track-inactive.end)
-        + .thumb 容器 > (.touch + .wrapper > .handle)
-原生 input 伪元素做不出 M3E 的分段轨道（active 左圆右直不对称圆角）与
-独立 thumb（4px 竖条、按压变 2px 细），所以视觉层是兄弟 DOM 而非伪元素。
-组件不画标签：label 属性只落到内部 range 的 aria-label 上；
-show-value 的当前值气泡（M3E .label 同构：inverse 底、拖动时浮现）。
+视觉层之上；视觉层按 M3E Slider 源码一比一翻译
+（github.com/matraic/m3e packages/web/src/slider，SliderElement.ts 逐函数照抄）。
+
+官方算法（#updateDimensions / #pointFromValue / #translate / #updateTicks / #updateTickOverlap，
+全部 JS 像素计算，非 CSS 百分比）：
+  pos(v) = (size − thumbSize) × (v − min) / (max − min)          ← thumb 左缘
+  thumb.transform = translate(pos, 0)
+  单 thumb 轨道变量：
+    active-track-size = pos
+    inactive-after-offset = pos + thumbSize
+    inactive-after-size = size − pos − thumbSize
+  ticks：min +（跨零）0 + max；discrete 且 step>1 全量；
+    tick.transform = translate(pos(tick.value), 0)
+    active = tick.value < lowerValue
+    hidden = |pos(tick) − pos(thumb)| < thumbSize / 2
+
+尺寸档（extra-small 默认 / small / medium / large / extra-large）：
+官方 :host 状态类切换 track 高度与总高，KIMA 用 prop size + data-size 属性同构。
+
+结构（官方 render() 同构）：
+  base > track（inactive.start + active + inactive.end）+ ticks + thumb 容器
+  thumb > touch(48 命中) + wrapper(handle 4px 竖条 + label 气泡)
+组件不画标签；label 属性落到 range 的 aria-label。
 调用示例：
   <kima-slider v-model="volume" label="音量" name="volume"></kima-slider>
-  <kima-slider :model-value="25" :min="0" :max="50" label="范围" show-value></kima-slider>
+  <kima-slider v-model="rate" label="速率" size="medium" discrete :step="10" show-value></kima-slider>
 -->
 <script setup>
-import { computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, useAttrs, watch } from "vue";
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from "vue";
 
 defineOptions({ inheritAttrs: false });
 
@@ -23,7 +37,9 @@ const props = defineProps({
   min: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
   step: { type: Number, default: 1 },
-  // M3E discrete：离散模式（step > 1 时按步长渲染全量刻度点）。
+  // M3E SliderSize：官方五档（extra-small 默认）。
+  size: { type: String, default: "extra-small" },
+  // M3E discrete：离散模式（step > 1 渲染全量刻度点）。
   discrete: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   required: { type: Boolean, default: false },
@@ -37,6 +53,7 @@ const attrs = useAttrs();
 const isCustomElement = Boolean(getCurrentInstance()?.ce);
 const forwardedAttrs = computed(() => isCustomElement ? { ...attrs, id: undefined } : attrs);
 const input = ref(null);
+const base = ref(null);
 const dragging = ref(false);
 let resetValue;
 let ownerDocument;
@@ -52,47 +69,92 @@ function clampValue(value) {
 
 const localValue = ref(clampValue(props.modelValue));
 
-// 外部值变化时同步；拖动过程中先更新本地值，保证原生控件不等待父组件回写。
 watch(
   [() => props.modelValue, () => props.min, () => props.max],
-  () => { localValue.value = clampValue(props.modelValue); },
+  () => { localValue.value = clampValue(props.modelValue); updateDimensions(); },
 );
 
-// M3E 的 fill 是 thumb 中心百分比；视觉层的 active 轨道按它定位。
-const fill = computed(() => {
-  const range = sliderMax.value - sliderMin.value;
-  if (range <= 0) return 0;
-  return Math.max(0, Math.min(1, (localValue.value - sliderMin.value) / range));
-});
+/* ============ 官方 #updateCachedDimensions / #updateDimensions 一比一 ============
+ * 官方是像素测量（clientWidth / thumb clientWidth）+ JS 写 CSS 变量与 transform。
+ * KIMA 同构：ResizeObserver 追踪 base 宽度（#cachedSize），thumb 宽从 token 推
+ * （wrapper = handle 4 + padding 6×2 = 16，官方 #cachedThumbSize = thumb clientWidth）。 */
+const cachedSize = ref(0); // base 宽
+const cachedThumbSize = 16; // thumb 容器宽（wrapper 4 + 2×6）
 
-// M3E #updateTicks 一比一（SliderElement.ts）：
-// - continuous（默认）：min + （跨零时）0 + max 三个端点 tick
-// - discrete 且 step > 1：min→max 按 step 全量
-// - active = tick 值 < 当前 thumb 值（在 active 轨道覆盖内）
-// - hidden = tick 与 thumb 容器重叠（视觉避让）
-const ticks = computed(() => {
+// 官方 #pointFromValue 一比一：(size − thumbSize) × (value − min) / (max − min)
+function pointFromValue(value) {
+  return (cachedSize.value - cachedThumbSize) * ((value - sliderMin.value) / (sliderMax.value - sliderMin.value));
+}
+
+// 官方 #updateDimensions 单 thumb 段一比一。
+const thumbPos = ref(0);
+const activeTrackSize = ref(0);
+const inactiveAfterOffset = ref(0);
+const inactiveAfterSize = ref(0);
+
+function updateDimensions() {
+  if (!cachedSize.value) return;
+  const lowerValue = localValue.value;
+  const lowerPos = pointFromValue(lowerValue);
+  thumbPos.value = lowerPos;
+  activeTrackSize.value = lowerPos;
+  inactiveAfterOffset.value = lowerPos + cachedThumbSize;
+  inactiveAfterSize.value = cachedSize.value - lowerPos - cachedThumbSize;
+}
+
+// 官方 #updateTicks + #updateTickOverlap 一比一。
+const ticks = ref([]);
+function updateTicks() {
   const list = [];
   if (props.discrete && props.step > 1) {
-    for (let i = sliderMin.value; i <= sliderMax.value; i += props.step) {
-      list.push({ value: i });
-    }
+    for (let i = sliderMin.value; i <= sliderMax.value; i += props.step) list.push({ value: i });
   } else {
     list.push({ value: sliderMin.value });
     if (sliderMin.value < 0 && sliderMax.value > 0) list.push({ value: 0 });
     list.push({ value: sliderMax.value });
   }
-  return list.map((tick) => {
-    const pct = (tick.value - sliderMin.value) / Math.max(sliderMax.value - sliderMin.value, 1);
+  const thumbHalfWidth = cachedThumbSize / 2;
+  ticks.value = list.map((tick) => {
+    const tickPos = pointFromValue(tick.value);
+    const thumbPosition = pointFromValue(localValue.value);
     return {
       value: tick.value,
+      pos: tickPos,
       active: tick.value < localValue.value,
-      // 与 thumb 容器（16px）重叠则隐藏：中心距 fill 小于 thumb-gap 半宽。
-      hidden: Math.abs(pct - fill.value) * 100 < 100 * 8 / 1000 && Math.abs(tick.value - localValue.value) <= props.step,
+      hidden: Math.abs(tickPos - thumbPosition) < thumbHalfWidth,
     };
   });
+}
+
+let resizeObserver;
+onMounted(() => {
+  const form = input.value?.form;
+  if (form) {
+    resetValue = localValue.value;
+    ownerDocument = form.ownerDocument;
+    ownerDocument.addEventListener("reset", handleReset, true);
+  }
+  // 官方 ResizeObserver（#resizeController）→ 尺寸变化重算全部位置。
+  resizeObserver = new ResizeObserver(() => {
+    cachedSize.value = base.value?.clientWidth ?? 0;
+    updateDimensions();
+    updateTicks();
+  });
+  if (base.value) resizeObserver.observe(base.value);
+  nextTick(() => {
+    cachedSize.value = base.value?.clientWidth ?? 0;
+    updateDimensions();
+    updateTicks();
+  });
+});
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  ownerDocument?.removeEventListener("reset", handleReset, true);
 });
 
-// input 事件用于连续同步，原生 change 事件用于提交一次完整改动。
+// 官方 @value-change → #updateDimensions 同步轨道与 tick。
+watch(localValue, () => { updateDimensions(); updateTicks(); });
+
 function handleInput(event) {
   localValue.value = clampValue(event.target.value);
   emit("update:modelValue", localValue.value);
@@ -112,63 +174,54 @@ function handlePointerDown() {
 function handlePointerUp() {
   dragging.value = false;
 }
-
-onMounted(() => {
-  const form = input.value?.form;
-  if (form) {
-    resetValue = localValue.value;
-    ownerDocument = form.ownerDocument;
-    ownerDocument.addEventListener("reset", handleReset, true);
-  }
-});
-onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, true));
 </script>
 
 <template>
   <label
     class="kima-slider"
-    :class="{ 'kima-slider--disabled': disabled }"
+    :class="['kima-slider--' + (['extra-small', 'small', 'medium', 'large', 'extra-large'].includes(size) ? size : 'extra-small'), { 'kima-slider--disabled': disabled }]"
+    :data-size="size"
   >
-    <!-- 视觉层：M3E 同构（.base > .track 三段 + .thumb > .handle）。
-         拖动中（--dragging）时 thumb handle 变细 + 数值气泡浮现。
-         thumb-left / active-width 挂在 base 上：track-active 与 thumb 是兄弟，
-         变量必须放在共同祖先才能两边都读到。 -->
-    <span
-      class="kima-slider__base"
-      aria-hidden="true"
-      :style="{
-        '--kima-slider-thumb-left': `${fill * 100}%`,
-        '--kima-slider-active-width': `${fill * 100}%`,
-      }"
-    >
+    <!-- 官方 render() 同构：base > track 三段 + ticks + thumb。
+         轨道变量由 JS 像素计算注入（官方 #updateDimensions 同款）。 -->
+    <span ref="base" class="kima-slider__base" aria-hidden="true">
       <span class="kima-slider__track">
         <span class="kima-slider__track-inactive kima-slider__track-inactive--start" />
-        <span class="kima-slider__track-active" />
-        <span class="kima-slider__track-inactive kima-slider__track-inactive--end" />
+        <span
+          class="kima-slider__track-active"
+          :style="{ '--_slider-active-track-size': activeTrackSize + 'px' }"
+        />
+        <span
+          class="kima-slider__track-inactive kima-slider__track-inactive--end"
+          :style="{
+            '--_slider-inactive-track-after-offset': inactiveAfterOffset + 'px',
+            '--_slider-inactive-track-after-size': inactiveAfterSize + 'px',
+          }"
+        />
       </span>
-      <!-- M3E .ticks 一比一：刻度点层（4px 圆点，track 内垂直居中）。 -->
+      <!-- 官方 .ticks + #renderTick：transform = translate(pos, 0)。 -->
       <span class="kima-slider__ticks">
         <span
           v-for="tick in ticks"
           :key="tick.value"
           class="kima-slider__tick"
           :class="{ 'kima-slider__tick--active': tick.active, 'kima-slider__tick--hidden': tick.hidden }"
-          :style="{ left: `${(tick.value - sliderMin) / Math.max(sliderMax - sliderMin, 1) * 100}%` }"
+          :style="{ transform: `translate(${tick.pos}px, 0)` }"
         />
       </span>
+      <!-- 官方 thumb：transform = translate(pos, 0)（JS 像素，非百分比居中）。 -->
       <span
         class="kima-slider__thumb"
         :class="{ 'kima-slider__thumb--dragging': dragging }"
+        :style="{ transform: `translate(${thumbPos}px, 0)` }"
       >
         <span class="kima-slider__touch" />
         <span class="kima-slider__wrapper">
           <span class="kima-slider__handle" />
-          <!-- M3E .label 同构：inverse 底数值气泡，拖动时浮现。 -->
           <span v-if="showValue" class="kima-slider__label">{{ localValue }}</span>
         </span>
       </span>
     </span>
-    <!-- 行为层：原生 range 透明覆盖整个 base（视觉层不拦截指针）。 -->
     <input
       ref="input"
       v-bind="forwardedAttrs"
@@ -188,7 +241,6 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
       @pointerup="handlePointerUp"
       @pointercancel="handlePointerUp"
     />
-    <!-- 静态数值（非气泡模式）：贴右上，跟 M3E 文档站的 value 展示同位。 -->
     <span v-if="showValue" class="kima-slider__header">
       <output class="kima-slider__value">{{ localValue }}</output>
     </span>
@@ -198,40 +250,39 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
 <style scoped lang="scss">
 @use "../../styles/mixins" as *;
 
-/* ============ M3E Slider 一比一复刻（源码翻译） ============
- * SliderElement.ts：host 44px 高（extra-small 档）、track 16px、三段轨道
- *   （inactive start / active / inactive end，不对称圆角）。
- * SliderThumbElement.ts：thumb 容器 absolute、wrapper 16px（handle 4 + padding 6×2）、
- *   handle 4px 竖条满圆 primary 色、active/focus 变 2px 细、touch 48px 命中。
- * token 映射：primary → --kima-color-primary、secondaryContainer → surface-container-highest、
- *   onSurface 12%/38% → KIMA disabled 公式、inverseSurface → surface-container-highest。 */
+/* ============ M3E Slider 源码翻译（不发明，只映射 token 色） ============
+ * SliderElement.ts / SliderThumbElement.ts 逐函数照抄：
+ * 结构、尺寸档、位置算法、tick 逻辑全部官方；KIMA 只换颜色 token。 */
 
 .kima-slider {
   display: block;
   width: 100%;
   color: var(--kima-color-on-surface);
   position: relative;
-  /* M3E :host extra-small 档总高 44。 */
-  min-height: var(--kima-slider-total-height);
+  /* 官方 :host 尺寸档（extra-small 默认 44；small 44 / medium 52 / large 68 / extra-large 96 由下档）。 */
+  min-height: var(--kima-slider-height, 44px);
+
+  &--small { --kima-slider-height: 44px; }
+  &--medium { --kima-slider-height: 52px; }
+  &--large { --kima-slider-height: 68px; }
 
   &--disabled {
     cursor: not-allowed;
   }
 
-  /* ---- base（M3E .base）：视觉容器，input 覆盖其上 ---- */
   &__base {
     display: block;
     position: relative;
     width: 100%;
-    height: var(--kima-slider-total-height);
-    /* M3E :host(:not([disabled])) cursor pointer——指针礼仪由覆盖的 input 提供。 */
+    height: var(--kima-slider-height, 44px);
   }
 
-  /* ---- track（M3E .track）：16px 高的场地 ---- */
+  /* 官方 .track（contain + relative + flex 1）。 */
   &__track {
     contain: layout style paint;
     position: absolute;
-    top: calc((var(--kima-slider-total-height) - var(--kima-slider-track-height)) / 2);
+    /* 官方 extra-small track 16px（其他档位由 --kima-slider-track-height-<size> 驱动，此处先 extra-small 基准）。 */
+    top: calc((var(--kima-slider-height, 44px) - var(--kima-slider-track-height)) / 2);
     left: 0;
     right: 0;
     height: var(--kima-slider-track-height);
@@ -244,54 +295,47 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
     height: 100%;
   }
 
-  /* M3E .track-inactive.start：secondaryContainer 色，start 端 8px 圆角（smallStart）。 */
+  /* 官方 .track-inactive.start：单 thumb 时无 start 段（size 0）。 */
   &__track-inactive--start {
-    width: var(--kima-slider-active-width, 0%);
-    /* start 段在 thumb 中心左侧：右端被 active 接管，只圆左端。 */
-    border-radius: var(--kima-radius-m) 0 0 var(--kima-radius-m);
+    width: 0;
     background: var(--kima-color-surface-container-highest);
+    border-radius: var(--kima-radius-m) 0 0 var(--kima-radius-m);
   }
 
-  /* M3E .track-active：primary 色、左圆右直（active 段右端被 thumb 的 handle 接管）。 */
+  /* 官方 .track-active：margin-inline-start = --_slider-active-track-offset（单 thumb 为 0）；
+   * width = --_slider-active-track-size（JS 注入）。 */
   &__track-active {
-    /* active 段从 thumb 中心向左铺满（M3E 由 JS 算 width/offset，KIMA 用 thumb-left 定位）。 */
-    left: 0;
-    /* M3E 官方实测：active 终点 = thumb 容器左缘（中心 − 容器半宽 8px），
-     * 不是 thumb 中心——thumb 两侧与轨道有 16px 断开（官方 value=50 时
-     * active 到 92 而非 100，inactive-end 从 108 起）。 */
-    width: calc(var(--kima-slider-active-width, 0%) - var(--kima-slider-thumb-gap));
+    margin-inline-start: var(--_slider-active-track-offset, 0px);
+    width: var(--_slider-active-track-size, 0px);
     border-radius: var(--kima-radius-m) 0 0 var(--kima-radius-m);
     background: var(--kima-color-primary);
   }
 
-  /* M3E .track-inactive.end：secondaryContainer，end 端圆角。 */
+  /* 官方 .track-inactive.end：margin-inline-start = after-offset、width = after-size（JS 注入）。 */
   &__track-inactive--end {
-    left: calc(var(--kima-slider-active-width, 0%) + var(--kima-slider-thumb-gap));
-    right: 0;
+    margin-inline-start: var(--_slider-inactive-track-after-offset, 0px);
+    width: var(--_slider-inactive-track-after-size, 0px);
     border-radius: 0 var(--kima-radius-m) var(--kima-radius-m) 0;
     background: var(--kima-color-surface-container-highest);
   }
 
-  /* ---- thumb（M3E m3e-slider-thumb 容器）----
-   * absolute、left 由 thumb-left（fill 百分比）驱动；
-   * wrapper 16px 宽（handle 4 + padding 6×2），高 100%（44）。 */
-  /* M3E .ticks/.tick 一比一（SliderElement.ts）：刻度点层。
-   * 4px 满圆点、层高 4、在 16px 轨道内垂直居中（top 偏移 (16−4)/2 = 6）。
-   * active tick = onPrimary（在 active 轨道上）；hidden = 与 thumb 重叠避让。 */
+  /* 官方 .ticks：absolute、高 = tick 4px、在 track 内垂直居中（官方 top 由 track 高度布局给）。 */
   &__ticks {
     position: absolute;
     width: 100%;
     height: var(--kima-slider-tick-size);
-    top: calc((var(--kima-slider-track-height) - var(--kima-slider-tick-size)) / 2);
+    top: calc((var(--kima-slider-height, 44px) - var(--kima-slider-tick-size)) / 2);
     overflow: visible;
     pointer-events: none;
   }
 
+  /* 官方 .tick：position absolute + JS transform 定位（#renderTick 一比一）；
+   * 官方 CSS 里 tick 的 inset-inline-start 是 tick-size + tick-size/2（中心补偿），
+   * KIMA translate 直接用官方 pos 公式，不改。 */
   &__tick {
     position: absolute;
     top: 0;
-    /* 居中补偿：tick 以 left 百分比定位，translate -50% 让圆心对刻度值。 */
-    translate: -50% 0;
+    inset-inline-start: calc(var(--kima-slider-tick-size) + var(--kima-slider-tick-size) / 2);
     width: var(--kima-slider-tick-size);
     height: var(--kima-slider-tick-size);
     border-radius: var(--kima-radius-full);
@@ -306,16 +350,19 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
     }
   }
 
+  /* 官方 thumb（SliderThumbElement.ts :host）：absolute、top/bottom 0、
+   * left 由 JS transform 承担（不再 CSS 百分比）。 */
   &__thumb {
+    display: block;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: var(--kima-slider-thumb-left, 0%);
-    /* 位移 -50%：thumb 左缘对准 thumb-left，让中心对齐百分比（M3E 同款居中锚定）。 */
-    translate: -50% 0;
+    left: 0;
+    border-radius: var(--kima-radius-full);
+    outline: none;
   }
 
-  /* M3E .touch：48px 命中区。 */
+  /* 官方 .touch：48px 命中区。 */
   &__touch {
     position: absolute;
     height: 48px;
@@ -324,34 +371,33 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
     touch-action: none;
   }
 
-  /* M3E .wrapper：视觉 thumb 的定位容器，16×44。 */
+  /* 官方 .base（thumb 内）：inline-flex 居中。 */
   &__wrapper {
     display: inline-flex;
+    align-items: center;
     justify-content: center;
-    height: 100%;
-    border-radius: inherit;
-    width: calc(var(--kima-slider-handle-width) + var(--kima-slider-thumb-padding) * 2);
     position: relative;
+    height: 100%;
+    width: calc(var(--kima-slider-handle-width) + var(--kima-slider-thumb-padding) * 2);
+    border-radius: inherit;
   }
 
-  /* M3E .handle：4px 竖条、满圆、primary；active/focus 变 2px（thumb-pressed-width）。 */
+  /* 官方 .handle：4px 竖条、满圆、primary；active/focus 变 2px。 */
   &__handle {
     height: 100%;
     width: var(--kima-slider-handle-width);
-    border-radius: var(--kima-radius-full);
+    border-radius: inherit;
     background: var(--kima-color-primary);
     transition: width var(--kima-duration-effects) var(--kima-curve-standard);
   }
 
-  /* M3E :host(:is(:active, :focus-visible)) .handle → 2px 细条。
-   * KIMA：拖动态由 --dragging 类驱动；聚焦态从宿主 label 感知（:has），
-   * 避免 scoped 兄弟链断选（~ * 在 data-v 作用域下不可靠）。 */
+  /* 官方 :host(:is(:active, :focus-visible)) .handle → 2px。 */
   &__thumb--dragging .kima-slider__handle,
   &:has(.kima-slider__input:focus-visible) .kima-slider__handle {
     width: var(--kima-slider-handle-pressed-width);
   }
 
-  /* M3E .label：数值气泡，inverse 底、拖动时浮现（scale 0→1）。 */
+  /* 官方 .label：inverse 底气泡。 */
   &__label {
     position: absolute;
     display: flex;
@@ -366,8 +412,8 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
       visibility var(--kima-duration-effects) var(--kima-curve-standard) allow-discrete;
     width: 48px;
     height: 44px;
-    top: calc(-1 * var(--kima-slider-label-height, 44px) - var(--kima-slider-label-margin, 4px));
-    inset-inline-start: calc(-1 * 100%);
+    top: calc(-1 * 44px - 4px);
+    inset-inline-start: -100%;
     border-radius: var(--kima-radius-full);
     background: var(--kima-color-surface-container-highest);
     color: var(--kima-color-on-surface);
@@ -383,14 +429,13 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
     }
   }
 
-  /* 拖动时气泡浮现（M3E 由 --active 状态驱动）。 */
   &__thumb--dragging .kima-slider__label {
     visibility: visible;
     opacity: 1;
     transform: scale(1);
   }
 
-  /* ---- 行为层：原生 range 透明覆盖 ---- */
+  /* 行为层：原生 range 透明覆盖。 */
   &__input {
     position: absolute;
     inset: 0;
@@ -399,27 +444,24 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
     margin: 0;
     opacity: 0;
     cursor: pointer;
-    /* 原生 thumb 的命中区即整个输入区——不需要原生视觉。 */
 
     &:disabled {
       cursor: not-allowed;
     }
 
-    /* 焦点环套整个控件（视觉层 DOM 在下方，环画在 input 上覆盖整个场地）。 */
     &:focus-visible {
       outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring);
       outline-offset: var(--kima-focus-ring-offset);
     }
   }
 
-  /* ---- 禁用（M3E disabled 公式）：active = onSurface 38% / inactive = onSurface 12% ---- */
+  /* 官方 disabled 公式：active = onSurface 38% / inactive = onSurface 12%。 */
   &--disabled {
     .kima-slider__track-active { background: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent); }
     .kima-slider__track-inactive { background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent); }
     .kima-slider__handle { background: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent); }
   }
 
-  /* ---- 静态数值头（show-value 非气泡模式） ---- */
   &__header {
     display: flex;
     justify-content: flex-end;
