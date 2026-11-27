@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
   color: var(--kima-color-on-surface);
   background: transparent;
   font: inherit;
-  font-size: var(--kima-font-size-body-large);
+  font-size: var(--kima-font-size-chrome);
   text-align: left;
   cursor: pointer;
 

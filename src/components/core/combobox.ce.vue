@@ -454,7 +454,7 @@ onBeforeUnmount(() => {
   min-width: 0;
   height: 100%;
   padding: 0 var(--kima-space-2) 0 var(--kima-field-padding);
-  font-size: var(--kima-font-size-body-large);
+  font-size: var(--kima-font-size-chrome);
   border: 0;
   border-radius: inherit;
   color: var(--kima-color-on-surface);

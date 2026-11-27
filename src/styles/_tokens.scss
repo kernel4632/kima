@@ -343,7 +343,9 @@
   --kima-button-height-m: 44px;
   --kima-button-height-l: 44px;
   --kima-button-min-width: 64px;
-  --kima-field-height: 64px;
+  /* 官方 Input 主框（chunk 明文 min-h-[57px]）：高 57、内边距 20、字 14px chrome 档。
+   * 此前 64/15px 偏大——输入框不是按钮，官方就是这个尺寸。 */
+  --kima-field-height: 57px;
   --kima-field-padding: 20px;
   --kima-control-height-xs: 20px;
   --kima-control-height-sm: 24px;

@@ -102,7 +102,7 @@ defineExpose({ focus: () => input.value?.focus() });
   box-sizing: border-box;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);
-  font-size: var(--kima-font-size-body-large);
+  font-size: var(--kima-font-size-chrome);
   font-weight: var(--kima-font-weight-semi-bold);
   &[aria-disabled="true"] { opacity: var(--kima-opacity-disabled); }
   &__surface { @include kima-field-skin; display: flex; align-items: flex-start; }

@@ -204,7 +204,12 @@
   padding: var(--kima-space-3) var(--kima-field-padding);
   border: var(--kima-outline-width) solid var(--kima-color-input-border);
   outline: 0;
-  border-radius: var(--kima-radius-control);
+  /* 官方 Input 类明文 rounded-md：编译 calc(0.5rem - 2px) = 6px
+   * （shadcn 系 --radius:.5rem；不是 grok 自有系 radius-md 8px）。 */
+  border-radius: 6px;
+  /* 官方 Input 类明文 shadow-sm：0 1px 2px 6% 黑的极轻投影——
+   * 描边之外的一层浮起感，此前缺失是"看起来不像"的原因之一。 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   color: inherit;
   font: inherit;
   /* 官方 Input 类明文 "rounded-md border bg-transparent"：描边独立承担造型，底透明。

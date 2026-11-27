@@ -300,7 +300,7 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     color: var(--kima-color-on-surface);
     background: transparent;
     font: inherit;
-    font-size: var(--kima-font-size-body-large);
+    font-size: var(--kima-font-size-chrome); /* 官方输入字 text-sm = font-size-chrome 14px */
   }
 
   /* 错误底是危险薄叠，文字保持 base（官方模式：底淡、字实、信息用 danger 小字）。 */
