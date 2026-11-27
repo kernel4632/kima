@@ -7,6 +7,7 @@ import {
   FavouriteIcon,
   Folder01Icon,
   HeartIcon,
+  Home01Icon,
   Menu01Icon,
   MoreHorizontalIcon,
   Settings01Icon,
@@ -17,6 +18,8 @@ import {
 import {
   KimaAvatar,
   KimaBadge,
+  KimaBreadcrumb,
+  KimaBreadcrumbItem,
   KimaCalendar,
   KimaCollapsible,
   KimaButton,
@@ -24,6 +27,7 @@ import {
   KimaCheckbox,
   KimaCombobox,
   KimaLink,
+  KimaLoadingIndicator,
   KimaPopover,
   KimaDialog,
   KimaDivider,
@@ -275,7 +279,7 @@ const viewItems = [
         </section>
 
         <!-- 表单输入 -->
-        <section v-show="visible('表单输入', 'text-field', 'checkbox', 'switch', 'slider', 'progress')" id="form" class="kima-gallery__section">
+        <section v-show="visible('表单输入', 'text-field', 'checkbox', 'switch', 'textarea', 'slider', 'progress', 'loading-indicator')" id="form" class="kima-gallery__section">
           <kima-typography type="heading" :level="2" size="headline-small">表单输入</kima-typography>
 
           <kima-card v-show="visible('text-field', '文本框')" class="kima-gallery__demo">
@@ -319,6 +323,14 @@ const viewItems = [
               <kima-slider v-model="volume" label="音量" show-value />
               <kima-slider :model-value="25" :min="0" :max="50" label="范围 0-50" show-value />
               <kima-slider :model-value="60" label="禁用" disabled />
+            </div>
+          </kima-card>
+
+          <kima-card v-show="visible('loading-indicator', '加载指示器')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Loading Indicator 加载指示器</kima-typography><kima-typography type="caption">M3E 七形循环形变，contained 态带容器。</kima-typography></header>
+            <div class="kima-gallery__row">
+              <kima-loading-indicator label="加载中" />
+              <kima-loading-indicator variant="contained" label="容器加载中" />
             </div>
           </kima-card>
 
@@ -515,7 +527,7 @@ const viewItems = [
         </section>
 
         <!-- 结构与导航 -->
-        <section v-show="visible('结构与导航', 'menu', 'tabs')" id="structure" class="kima-gallery__section">
+        <section v-show="visible('结构与导航', 'collapsible', 'menu', 'tabs', 'calendar', 'avatar', 'skeleton', 'spinner', 'link', 'typography', 'popover', 'breadcrumb', 'breadcrumb-item')" id="structure" class="kima-gallery__section">
           <kima-typography type="heading" :level="2" size="headline-small">结构与导航</kima-typography>
 
 
@@ -525,6 +537,23 @@ const viewItems = [
               <p>展开的内容区。收起时高度过渡为 0，不会一帧跳到位。</p>
             </kima-collapsible>
           </kima-card>
+          <kima-card v-show="visible('breadcrumb', 'breadcrumb-item', '面包屑')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Breadcrumb 面包屑</kima-typography><kima-typography type="caption">末项自动标为当前页，窄容器里末项省略号截断。</kima-typography></header>
+            <div class="kima-gallery__stack">
+              <kima-breadcrumb>
+                <kima-breadcrumb-item item-label="首页" href="#/lab"><kima-icon :icon="Home01Icon" /></kima-breadcrumb-item>
+                <kima-breadcrumb-item href="#/lab">项目</kima-breadcrumb-item>
+                <kima-breadcrumb-item href="#/lab">组件库</kima-breadcrumb-item>
+                <kima-breadcrumb-item>面包屑</kima-breadcrumb-item>
+              </kima-breadcrumb>
+              <kima-breadcrumb wrap>
+                <kima-breadcrumb-item href="#/lab">长路径换行演示</kima-breadcrumb-item>
+                <kima-breadcrumb-item href="#/lab">第二个节点</kima-breadcrumb-item>
+                <kima-breadcrumb-item>当前页</kima-breadcrumb-item>
+              </kima-breadcrumb>
+            </div>
+          </kima-card>
+
           <kima-card v-show="visible('menu', '菜单')" class="kima-gallery__demo">
             <header><kima-typography type="heading" :level="3" size="title-medium">Menu 菜单</kima-typography><kima-typography type="caption">可搜索的单选菜单，已选：{{ menuValue }}</kima-typography></header>
             <div class="kima-gallery__row">

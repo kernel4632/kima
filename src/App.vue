@@ -10,7 +10,7 @@ const Lab = defineAsyncComponent(() => import('./site/lab.vue'));
 import { catalog } from './site/catalog.js';
 import { tierMeta } from './component-tiers.js';
 import manifest from '../package.json';
-const route = ref(location.hash.slice(2) || 'overview');
+const route = ref(location.hash.slice(2) || 'lab');
 function readRoute() { route.value = location.hash.slice(2) || 'overview'; }
 window.addEventListener('hashchange', readRoute);
 const commandOpen = ref(false);
