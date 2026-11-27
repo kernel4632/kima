@@ -130,6 +130,35 @@
   color: var(--kima-color-on-surface-variant);
 }
 
+/* Shape 图标外壳宿主：按钮是交互层（焦点环/命中区），shape 只管裁形。 */
+.kima-shape-host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kima-touch-target);
+  height: var(--kima-touch-target);
+  padding: 0;
+  border: none;
+  border-radius: var(--kima-radius-full);
+  background: transparent;
+  cursor: pointer;
+}
+
+.kima-shape-host:focus-visible {
+  outline: 2px solid var(--kima-color-accent);
+  outline-offset: 2px;
+}
+
+.kima-shape-host__icon {
+  color: var(--kima-color-on-accent-secondary);
+  pointer-events: none;
+}
+
+.kima-shape-wall {
+  justify-content: flex-start;
+}
+
+
 /* 示例里的状态输出是“读数”，用一层轻底把长 JSON 收在演示区内。
  * 只认演示自己的 output；组件内部的 output（角度、评分、滑块读数）不能被套上这层底。 */
 .kima-gallery__demo > output:empty,

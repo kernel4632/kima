@@ -129,6 +129,7 @@
 | [scroll-area](../src/components/navigation/scroll-area.ce.vue:1) | 独立滚动区 | 具名原生滚动、高宽限制、横竖/双向；**不虚拟化、不自动加载** | E Scrollbar；R Scroll Area；M ScrollArea |
 | [select](../src/components/core/select.ce.vue:1) | 自绘单选选择器 | 可搜索、清空、键盘和表单；可选 loader 支持防抖、AbortSignal、乱序保护、重试和 loading/empty；多选由独立多选组件承担，未虚拟化 | E Select；R Select；U Select |
 | [sidebar](../src/components/shell/sidebar.ce.vue:1) | 响应式侧栏 | 嵌套真链接、展开/折叠、可选持久化、移动抽屉；无路由/权限引擎 | U Sidebar / DashboardSidebar；S Sidebar |
+| [shape](../src/components/core/shape.ce.vue:1) | 形状容器（图标外壳） | 35 形状 × 300 点 clip-path 构建期固化、morph 慢弹簧、slot 内容居中裁形；host a11y 中性，焦点环/命中区由宿主叠加；不是装饰性新目录（用户裁决容器定位 2026-11） | M3E Shape；Material Shape Library |
 | [skeleton](../src/components/display/skeleton.ce.vue:1) | 骨架屏 | 行/头像占位，加载后显示内容、减少动效；不是按真实 DOM 自动测量的骨架生成器 | E Skeleton；U Skeleton；S Skeleton |
 | [slider](../src/components/core/slider.ce.vue:1) | 单值滑块 | 原生单手柄、步长、上下限与表单；没有双手柄范围值 | E Slider；R Slider；M Slider |
 | [spinner](../src/components/display/spinner.ce.vue:1) | 加载指示器 | 具名状态或纯装饰；不请求数据，不阻止区域交互 | N Spin；M Loader；S Spinner |

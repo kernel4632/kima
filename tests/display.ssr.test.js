@@ -5,7 +5,7 @@ import { createServer } from "vite";
 import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 
-const slugs = ["avatar", "skeleton", "spinner"];
+const slugs = ["avatar", "shape", "skeleton", "spinner"];
 test("all display components SSR safely", async () => {
   const server = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: "custom" });
   const { componentPaths } = await server.ssrLoadModule('/src/component-paths.js');

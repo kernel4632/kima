@@ -337,7 +337,9 @@
   /* 同上：官网运行值 linear() 物理采样（无过冲快弹簧）。 */
   --kima-spring-fast-effects: 150ms linear(0, 0.0048 1.1%, 0.0197 2.3%, 0.0445 3.6%, 0.0817 5.1%, 0.1162 6.3%, 0.16 7.7%, 0.3647 13.8%, 0.4629 16.9%, 0.5129 18.6%, 0.557 20.2%, 0.5982 21.8%, 0.6365 23.4%, 0.6718 25%, 0.7062 26.7%, 0.7376 28.4%, 0.7661 30.1%, 0.7932 31.9%, 0.8175 33.7%, 0.8404 35.6%, 0.8606 37.5%, 0.8811 39.7%, 0.8988 41.9%, 0.9152 44.3%, 0.9297 46.8%, 0.9426 49.5%, 0.9537 52.3%, 0.9713 58.5%, 0.9833 65.4%, 0.9914 73.7%, 0.996 83.1%, 1);
   --kima-spring-default-effects: 200ms cubic-bezier(0.34, 0.80, 0.34, 1);
-  --kima-spring-slow-effects: 300ms cubic-bezier(0.34, 0.88, 0.34, 1);
+  /* 同上：官网 shape.html 实测 slow-effects 运行值 linear() 物理弹簧采样
+   *（2026-11-28 抓全 32 采样点，shape morph 的 transition 就吃这条）。 */
+  --kima-spring-slow-effects: 300ms linear(0 0%, 0.0048 1.2%, 0.0196 2.5%, 0.0461 4%, 0.0828 5.6%, 0.1171 6.9%, 0.1603 8.4%, 0.3635 15%, 0.4569 18.2%, 0.5058 20%, 0.5493 21.7%, 0.5901 23.4%, 0.628 25.1%, 0.6631 26.8%, 0.6955 28.5%, 0.7253 30.2%, 0.7541 32%, 0.7803 33.8%, 0.8039 35.6%, 0.8264 37.5%, 0.8466 39.4%, 0.8681 41.7%, 0.8868 44%, 0.9037 46.4%, 0.9193 49%, 0.9448 54.5%, 0.9644 60.7%, 0.9781 67.5%, 0.9877 75.4%, 0.9943 85.9%, 0.998 99.9%, 1 100%);
   /* M3 官方 duration/easing 档（同源补齐，switch track 等消费）。 */
   --kima-motion-short4: 200ms;
   --kima-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -430,7 +432,50 @@
   --kima-slider-label-font-weight: var(--kima-font-weight-medium);
   --kima-slider-label-line-height: 16px;
   --kima-slider-label-tracking: 0.5px;
+  /* ---- 单选（M3E radio-group 源码逐行：RadioElement.ts 150-236 + PseudoRadioElement.ts）
+   * 几何：容器 40、图标 20、touch 48；density 档 -3..0，每档 4px（官网实测 28/32/36/40）；
+   * 图标 = viewBox 20 的环（外 r10 挖掉 r8）+ 内点 r5（选中点直径 10）。
+   * 状态层：hover 8% / focus 10%，medium1 = 250ms + standard（StateToken/StateLayerToken）。
+   * 焦点环：3px、外扩 2px、long2 = 500ms、grow 2 倍（FocusRingToken，官网实测 0.5s）。
+   * 配色：未选 onSurfaceVariant；选中 primary；禁用 onSurface 38%（源码 color-mix 公式）。 */
+  --kima-radio-container-size: 40px;
+  --kima-radio-icon-size: 20px;
+  --kima-radio-touch-target: 48px;
+  --kima-radio-density-scale: 0;
+  --kima-radio-density-size: 4px;
+  --kima-radio-state-hover-opacity: 0.08;
+  --kima-radio-state-focus-opacity: 0.1;
+  --kima-radio-state-duration: 250ms;
+  --kima-radio-focus-ring-color: var(--kima-color-focus-ring);
+  --kima-radio-focus-ring-thickness: 3px;
+  --kima-radio-focus-ring-offset: 2px;
+  --kima-radio-focus-ring-duration: 500ms;
+  --kima-radio-focus-ring-growth: 2;
+  --kima-radio-unselected-icon-color: var(--kima-color-on-surface-variant);
+  --kima-radio-selected-icon-color: var(--kima-color-primary);
+  --kima-radio-disabled-icon-color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
   --kima-spinner-duration: 1568ms;
+  /* ---- Progress（M3E progress-indicator 官方 cssprop 编译值，2026-11-27 官网实测）----
+   * 官方 --m3e-* → KIMA --kima-progress-*（重命名，值照抄）：
+   *   linear-thickness 4px / linear shape = corner.extraSmall 4px（实测 primary 圆角 4px）
+   *   linear-wavy-amplitude 3px / wavelength 40px / indeterminate wavelength 24px
+   *   circular flat diameter 40px / wavy diameter 48px / thickness 4px
+   *   circular wavy amplitude 1.6px（星形变形基准；实测探针 used value 1.59375px）
+   *   / wavelength 15px
+   * 颜色走官方 token 映射：indicator = primary、track = secondaryContainer（KIMA 侧
+   * 已映射为 --kima-color-primary / --kima-color-secondary-container，见 387 行注释）。 */
+  --kima-progress-linear-thickness: 4px;
+  --kima-progress-linear-shape: var(--kima-radius-xs);
+  --kima-progress-linear-wavy-amplitude: 3px;
+  --kima-progress-linear-wavy-wavelength: 40px;
+  --kima-progress-linear-wavy-indeterminate-wavelength: 24px;
+  --kima-progress-circular-thickness: 4px;
+  --kima-progress-circular-flat-diameter: 40px;
+  --kima-progress-circular-wavy-diameter: 48px;
+  --kima-progress-circular-wavy-amplitude: 1.6px;
+  --kima-progress-circular-wavy-wavelength: 15px;
+  --kima-progress-color: var(--kima-color-primary);
+  --kima-progress-track-color: var(--kima-color-secondary-container);
   --kima-scrollbar-thickness: 8px;
   /* 滚动条滑块：从主文字色派生，深浅两套主题自动适配，不写死颜色。
    * 轨道透明，不割版面。悬停时加深，鼠标停在滚动条上时能看清位置。 */
@@ -638,4 +683,51 @@ kima-slider {
 @keyframes kima-menu-bounce-open {
   from { transform: scaleY(0); }
   to { transform: scaleY(1); }
+}
+
+/* select 弹层进场 scaleY 弹簧（M3E MenuElement.ts 306-320 同一套 bounce-open；
+ * menu 与 select 的弹层动画在官方是同一份实现，这里 keyframes 按组件独立命名、
+ * 规则独立成组——并组会被 SCSS 编译器并写，linear() 的逗号会干扰简写解析）。 */
+.kima-popup-enter-active.kima-select__popup {
+  /* transition 覆盖必须与常驻 @starting-style 规则同值：挂类那一帧不改轨道，
+   * opacity 快进全程保持官方 short2 = 100ms + standard。 */
+  transition: opacity 100ms cubic-bezier(0.2, 0, 0, 1);
+  scale: none;
+  animation-name: kima-select-bounce-open;
+  animation-duration: 350ms;
+  animation-timing-function: linear(0, 0.0017 0.6%, 0.0079 1.3%, 0.0164 1.9%, 0.0298 2.6%, 0.0665 4%, 0.1178 5.5%, 0.1742 6.9%, 0.2412 8.4%, 0.5471 14.7%, 0.6213 16.3%, 0.6871 17.8%, 0.7523 19.4%, 0.8119 21%, 0.8655 22.6%, 0.9129 24.2%, 0.9564 25.9%, 0.995 27.7%, 1.0264 29.5%, 1.0521 31.4%, 1.071 33.3%, 1.0843 35.3%, 1.0922 37.4%, 1.0948 39.7%, 1.0919 42.3%, 1.0835 45.2%, 1.0299 57.4%, 1.0082 63.9%, 0.9951 71%, 0.991 79.3%, 0.9982 99.9%, 1);
+}
+@keyframes kima-select-bounce-open {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* select / menu 弹层退场（M3E 官方 transition short2 = 100ms standard 同值）：
+ * 官方退场回落 :host(:not(:popover-open)) 的 scaleY(0.8) + opacity 0，
+ * 100ms 缩回 + 淡出。覆盖通用 leave 组的 scale 0.96（scale: none 关掉
+ * 独立缩放通道，改走 transform scaleY，与 bounce-open 同一条通道不打架）。 */
+.kima-popup-leave-active.kima-select__popup,
+.kima-popup-leave-active.kima-menu__popup {
+  transition:
+    opacity 100ms cubic-bezier(0.2, 0, 0, 1),
+    transform 100ms cubic-bezier(0.2, 0, 0, 1);
+}
+.kima-popup-leave-to.kima-select__popup,
+.kima-popup-leave-to.kima-menu__popup {
+  transform: scaleY(0.8);
+  scale: none;
+}
+
+/* select / menu 弹层 opacity 快进（M3E 官方 opacity 走 transition 短通道，
+ * @starting-style 给首帧 0，100ms 快进到位——进退场同一份 transition，
+ * 不依赖手动挂类，插入 DOM 那一帧自动播）。 */
+.kima-select__popup,
+.kima-menu__popup {
+  transition: opacity 100ms cubic-bezier(0.2, 0, 0, 1);
+}
+@starting-style {
+  .kima-select__popup,
+  .kima-menu__popup {
+    opacity: 0;
+  }
 }

@@ -70,6 +70,7 @@ HOP：约束见[协作规范](../AGENTS.md)，组件逐项来源唯一维护在[
 | G25 | 日志查看 / 已实现 | [log-viewer](../src/components/utility/log-viewer.ce.vue:1)：追加、上限裁剪、暂停/恢复跟尾、过滤与导出；server auth/transport 由宿主提供 | N Log | UT |
 | G26 | 时间展示 / 已实现 | [relative-time](../src/components/data/relative-time.ce.vue:1)与[time-display](../src/components/foundation/time-display.ce.vue:1)：相对时间和 Intl 绝对时间、locale/timeZone 回退；不提供服务端校时 | N Time | DA / FO |
 | G27 | 页面加载条 / 已实现 | [loading-bar](../src/components/utility/loading-bar.ce.vue:1)：任务生命周期、结束/错误；路由/请求何时开始结束由宿主接入，不拦截全局网络 | N Loading Bar | UT |
+| G51 | 形状容器（图标外壳） / 已实现 | [shape](../src/components/core/shape.ce.vue:1)：M3E Shape 全源码复刻（35 形状 × 300 点构建期固化，运行时零计算；morph = clip-path 0.3s slow-effects linear() 弹簧，官网运行值逐字照抄）。图标外壳容器：图标/图/视频在 clip 内正中安放，焦点环与命中区由宿主叠加；host 自身 a11y 中性（官方同款）。尺寸走 --kima-shape-size 默认 48px | M3E Shape（github.com/matraic/m3e packages/web/src/shape）；Material Shape Library 形状来源 | display.ssr.test.js（SSR）+ lab 实测对表 2026-11-28 |
 | G28 | 数字动画 / 已实现 | [animated-number](../src/components/utility/animated-number.ce.vue:1)：补间、反向更新、准确终值及减少动效；不是图表或无限滚动数字引擎 | N Number Animation；M RollingNumber | UT |
 | G32 | 内联选择/标签集合 / 已实现 | [listbox](../src/components/utility/listbox.ce.vue:1)与[tag-group](../src/components/utility/tag-group.ce.vue:1)：集合焦点、选择/删除及表单；不等价富文本标签编辑器 | R Listbox / Tag Group；U Listbox | UT |
 | G34 | 环形/分组进度 / 已实现，有限范围 | [ring-progress](../src/components/data/ring-progress.ce.vue:1)与[progress-group](../src/components/utility/progress-group.ce.vue:1)：环形显示、任务权重汇总；没有多段环/半圆全部变体 | M RingProgress / SemiCircleProgress；U ProgressGroup | DA / UT |

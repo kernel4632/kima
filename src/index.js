@@ -7,6 +7,8 @@ import "./styles/_tokens.scss";
 
 export { default as KimaAvatar } from "./components/display/avatar.ce.vue";
 export { default as KimaBadge } from "./components/core/badge.ce.vue";
+export { default as KimaBreadcrumb } from "./components/navigation/breadcrumb.ce.vue";
+export { default as KimaBreadcrumbItem } from "./components/navigation/breadcrumb-item.ce.vue";
 export { default as KimaButton } from "./components/core/button.ce.vue";
 export { default as KimaCalendar } from "./components/advanced-input/calendar.ce.vue";
 export { default as KimaCard } from "./components/core/card.ce.vue";
@@ -18,11 +20,13 @@ export { default as KimaDivider } from "./components/core/divider.ce.vue";
 export { default as KimaDrawer } from "./components/core/drawer.ce.vue";
 export { default as KimaIcon } from "./components/core/icon.ce.vue";
 export { default as KimaLink } from "./components/navigation/link.ce.vue";
+export { default as KimaLoadingIndicator } from "./components/core/loading-indicator.ce.vue";
 export { default as KimaMenu } from "./components/core/menu.ce.vue";
 export { default as KimaPopover } from "./components/interaction/popover.ce.vue";
 export { default as KimaProgress } from "./components/core/progress.ce.vue";
 export { default as KimaRadioGroup } from "./components/input/radio-group.ce.vue";
 export { default as KimaSelect } from "./components/core/select.ce.vue";
+export { default as KimaShape } from "./components/core/shape.ce.vue";
 export { default as KimaSkeleton } from "./components/display/skeleton.ce.vue";
 export { default as KimaSlider } from "./components/core/slider.ce.vue";
 export { default as KimaSpinner } from "./components/display/spinner.ce.vue";
@@ -38,6 +42,8 @@ export { default as KimaTypography } from "./components/foundation/typography.ce
 export const componentNames = [
   "KimaAvatar",
   "KimaBadge",
+  "KimaBreadcrumb",
+  "KimaBreadcrumbItem",
   "KimaButton",
   "KimaCalendar",
   "KimaCard",
@@ -49,11 +55,13 @@ export const componentNames = [
   "KimaDrawer",
   "KimaIcon",
   "KimaLink",
+  "KimaLoadingIndicator",
   "KimaMenu",
   "KimaPopover",
   "KimaProgress",
   "KimaRadioGroup",
   "KimaSelect",
+  "KimaShape",
   "KimaSkeleton",
   "KimaSlider",
   "KimaSpinner",

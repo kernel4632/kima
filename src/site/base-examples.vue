@@ -1,14 +1,16 @@
 <!-- 组件实时示例：component 指定当前文档页的组件，复用实际 KIMA 交互。 -->
 <script setup>
-import { ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import {
   Add01Icon,
+  AiChat02Icon,
   FavouriteIcon,
   Folder01Icon,
   HeartIcon,
   Menu01Icon,
   MoreHorizontalIcon,
   Settings01Icon,
+  Settings02Icon,
   SparklesIcon,
   StarIcon,
 } from "@hugeicons/core-free-icons";
@@ -31,6 +33,7 @@ import {
   KimaProgress,
   KimaRadioGroup,
   KimaSelect,
+  KimaShape,
   KimaSkeleton,
   KimaSpinner,
   KimaSlider,
@@ -101,6 +104,21 @@ const drawerLeftOpen = ref(false);
 const drawerSnapOpen = ref(false);
 const drawerSnap = ref(0.4);
 // --- 数据展示 ---
+// 形状墙 + morph 轮播状态（shape）。
+const shapeNames = [
+  "4-leaf-clover", "4-sided-cookie", "6-sided-cookie", "7-sided-cookie", "8-leaf-clover",
+  "9-sided-cookie", "12-sided-cookie", "arch", "arrow", "boom", "bun", "burst", "circle",
+  "diamond", "fan", "flower", "gem", "ghost-ish", "heart", "hexagon", "oval", "pentagon",
+  "pill", "pixel-circle", "pixel-triangle", "puffy", "puffy-diamond", "semicircle", "slanted",
+  "soft-boom", "soft-burst", "square", "sunny", "triangle", "very-sunny",
+];
+const morphIndex = ref(0);
+const morphName = computed(() => shapeNames[morphIndex.value % shapeNames.length]);
+let morphTimer = null;
+onMounted(() => {
+  morphTimer = setInterval(() => { morphIndex.value += 1; }, 1200);
+});
+onBeforeUnmount(() => clearInterval(morphTimer));
 const columns = [
   { key: "name", label: "名称", sortable: true },
   { key: "role", label: "角色" },
@@ -408,10 +426,35 @@ const viewItems = [
             </div>
           </kima-card>
 
-        
-
-
-
+          <kima-card v-show="visible('shape', '形状')" class="kima-gallery__demo">
+            <header><kima-typography type="heading" :level="3" size="title-medium">Shape 形状容器</kima-typography><kima-typography type="caption">图标外壳 + 35 形状墙 + morph 轮播（慢弹簧）。</kima-typography></header>
+            <div class="kima-gallery__stack">
+              <div class="kima-gallery__row">
+                <button type="button" class="kima-shape-host" aria-label="新建项目" @click="countClick">
+                  <kima-shape name="sunny">
+                    <kima-icon :icon="AiChat02Icon" size="24" class="kima-shape-host__icon" />
+                  </kima-shape>
+                </button>
+                <button type="button" class="kima-shape-host" aria-label="收藏" @click="countClick">
+                  <kima-shape name="12-sided-cookie" style="--kima-shape-size: 56px">
+                    <kima-icon :icon="StarIcon" size="24" class="kima-shape-host__icon" />
+                  </kima-shape>
+                </button>
+                <button type="button" class="kima-shape-host" aria-label="设置" @click="countClick">
+                  <kima-shape name="puffy-diamond" style="--kima-shape-size: 40px">
+                    <kima-icon :icon="Settings02Icon" size="20" class="kima-shape-host__icon" />
+                  </kima-shape>
+                </button>
+              </div>
+              <div class="kima-gallery__row kima-shape-wall">
+                <kima-shape v-for="name in shapeNames" :key="name" :name="name" aria-hidden="true" />
+              </div>
+              <div class="kima-gallery__row">
+                <kima-shape :name="morphName" style="--kima-shape-size: 72px" aria-hidden="true" />
+                <kima-typography type="caption">{{ morphName }}</kima-typography>
+              </div>
+            </div>
+          </kima-card>
 
 
 
@@ -424,7 +467,7 @@ const viewItems = [
         </section>
 
         <!-- 数据展示 -->
-        <section v-show="visible('数据展示', 'table', 'tree')" id="data" class="kima-gallery__section">
+        <section v-show="visible('数据展示', 'table', 'tree', 'shape')" id="data" class="kima-gallery__section">
           <kima-typography type="heading" :level="2" size="headline-small">数据展示</kima-typography>
 
           <kima-card v-show="visible('table', '表格')" class="kima-gallery__demo">

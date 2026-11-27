@@ -6,6 +6,8 @@ import { defineKimaElements } from "./utils/register-elements.js";
 
 import KimaAvatar from "./components/display/avatar.ce.vue";
 import KimaBadge from "./components/core/badge.ce.vue";
+import KimaBreadcrumb from "./components/navigation/breadcrumb.ce.vue";
+import KimaBreadcrumbItem from "./components/navigation/breadcrumb-item.ce.vue";
 import KimaButton from "./components/core/button.ce.vue";
 import KimaCalendar from "./components/advanced-input/calendar.ce.vue";
 import KimaCard from "./components/core/card.ce.vue";
@@ -17,11 +19,13 @@ import KimaDivider from "./components/core/divider.ce.vue";
 import KimaDrawer from "./components/core/drawer.ce.vue";
 import KimaIcon from "./components/core/icon.ce.vue";
 import KimaLink from "./components/navigation/link.ce.vue";
+import KimaLoadingIndicator from "./components/core/loading-indicator.ce.vue";
 import KimaMenu from "./components/core/menu.ce.vue";
 import KimaPopover from "./components/interaction/popover.ce.vue";
 import KimaProgress from "./components/core/progress.ce.vue";
 import KimaRadioGroup from "./components/input/radio-group.ce.vue";
 import KimaSelect from "./components/core/select.ce.vue";
+import KimaShape from "./components/core/shape.ce.vue";
 import KimaSkeleton from "./components/display/skeleton.ce.vue";
 import KimaSlider from "./components/core/slider.ce.vue";
 import KimaSpinner from "./components/display/spinner.ce.vue";
@@ -37,6 +41,8 @@ import KimaTypography from "./components/foundation/typography.ce.vue";
 export const elements = defineKimaElements({
   "avatar": KimaAvatar,
   "badge": KimaBadge,
+  "breadcrumb": KimaBreadcrumb,
+  "breadcrumb-item": KimaBreadcrumbItem,
   "button": KimaButton,
   "calendar": KimaCalendar,
   "card": KimaCard,
@@ -48,11 +54,13 @@ export const elements = defineKimaElements({
   "drawer": KimaDrawer,
   "icon": KimaIcon,
   "link": KimaLink,
+  "loading-indicator": KimaLoadingIndicator,
   "menu": KimaMenu,
   "popover": KimaPopover,
   "progress": KimaProgress,
   "radio-group": KimaRadioGroup,
   "select": KimaSelect,
+  "shape": KimaShape,
   "skeleton": KimaSkeleton,
   "slider": KimaSlider,
   "spinner": KimaSpinner,
