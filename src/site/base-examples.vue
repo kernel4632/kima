@@ -170,7 +170,7 @@ const viewItems = [
           <kima-typography type="heading" :level="2" size="headline-small">按钮与动作</kima-typography>
 
           <kima-card v-show="visible('icon', '图标')" class="kima-gallery__demo">
-            <header><kima-typography type="heading" :level="3" size="title-medium">Icon 图标</kima-typography><kima-typography type="caption">Hugeicons 线宽 2.25，随尺寸等比缩放。</kima-typography></header>
+            <header><kima-typography type="heading" :level="3" size="title-medium">Icon 图标</kima-typography><kima-typography type="caption">Hugeicons 线宽 2，随尺寸等比缩放。</kima-typography></header>
             <div class="kima-gallery__row"><kima-icon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
           </kima-card>
 

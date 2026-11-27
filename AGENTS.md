@@ -181,7 +181,7 @@ pnpm test:ssr    # SSR 测试
 2. ✅ **重做基础层**：Grok 官方 token（色/字/形状/层级/状态层/动效）+ mixins + 字体接入。
    token 唯一来源 `src/styles/_tokens.scss`（官方编译值 + 证据链注释 + 推导标注），
    深浅零 JS（color-scheme + light-dark()）。
-   图标统一走 `src/components/icon.ce.vue`（线宽 `iconStrokeWidth` 2.25，配 `absolute-stroke-width`）。
+   图标统一走 `src/components/icon.ce.vue`（线宽 `iconStrokeWidth` 2，随尺寸等比缩放）。
 3. ✅ **官方复刻**：30 个原语组件已按官方证据对齐（Button CVA / Switch / Menu / Input 描边 /
    Modal 阴影逐字节；见 docs/grok-component-reference.md）。交互反馈的分配规则：
    - **按钮类**（`button`、`icon-button`）：状态层 + 焦点环 + 涟漪 + 按下回弹（幅度按尺寸分档）。

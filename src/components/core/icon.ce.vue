@@ -1,9 +1,8 @@
 <!--
-图标：包一层 Hugeicons，线宽按尺寸等比缩放。
-Hugeicons 按 24×24 画布设计；不传 absolute-stroke-width 时，strokeWidth
-是画布坐标系里的值——图标放大到多少 px，线条就跟着等比放大多少。
+图标：包一层 Hugeicons，线宽随尺寸等比缩放（画布坐标系 2，全局唯一来源）。
+Hugeicons 按 24×24 画布设计，strokeWidth 是画布坐标系里的值——
 24px 图标视觉线宽 2px，48px 图标自然长到 4px，比例永远协调。
-全库粗细只由下面 iconStrokeWidth 一个值决定（画布坐标系），不要在别的组件里单独传 strokeWidth。
+不要在别的组件里单独传 strokeWidth。
 调用示例：
   <kima-icon :icon="Search01Icon" :size="20" />
   <kima-icon :icon="StarIcon" :size="32" class="my-icon" />
