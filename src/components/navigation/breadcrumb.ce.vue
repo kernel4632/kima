@@ -36,12 +36,17 @@ const forwardedAttrs = computed(() => (isCustomElement ? { ...attrs, id: undefin
 const root = ref(null);
 const separatorSlotRef = ref(null);
 
-/* ---------- item 扫描与 current 追踪（官方 #handleSlotChange 逐行）----------
- * 官方在 slot 的 slotchange 里 querySelectorAll("m3e-breadcrumb-item")。
- * KIMA 两条路都归到全量 querySelectorAll：
- *   CE light DOM：Vue 把宿主子节点搬进 <slot> 所在的 <ol>（slot 投影的物理迁移），
- *   item 不在宿主直接 children 里——必须从根节点全量查；
- *   Vue 模式：item 由父作用域 v-for 渲染，同样落在根节点子树。
+/* ---------- item 扫描与 current 追踪（官方 #handleSlotChange 130-141 逐行）----------
+ * 官方在 slot 的 slotchange 里 querySelectorAll("m3e-breadcrumb-item")：
+ * 非末项抹 current、末项无 current 则写 current="page"、逐项下发分隔符。
+ * KIMA 双载体归一（官方单载体，本库有两种挂载方式，语义照抄）：
+ *   CE light DOM：宿主子节点被 Vue 搬进 <slot> 所在 <ol>（slot 投影物理迁移），
+ *     item 是真正的 kima-breadcrumb-item 自定义元素；
+ *   Vue SFC：item 组件渲染内层 <li class="kima-breadcrumb-item">（root ref），
+ *     DOM 里没有自定义元素标签。
+ * 官方把 current 写在 item 元素的 current 属性上（Lit reflect），两种载体上
+ * 等价位置分别是 CE 宿主的 data-current 属性、li 的 data-current 属性——
+ * 统一按"每个 item 自己的根载体"读写。扫描两种都认，DOM 序即官方 slot 序。
  * MutationObserver(childList + subtree) 对应官方 slotchange 的触发时机：
  * item 增删移动、卸载重挂都重新同步。
  * 自激防护：subtree observer 会看到 item 内部重渲染——签名比对拦掉
@@ -51,12 +56,26 @@ let lastItemSignature = "\u0000init";
 let lastSeparatorHtml = "\u0000init";
 
 function scanItems() {
-  return [...(root.value?.querySelectorAll("kima-breadcrumb-item") || [])];
+  const scope = root.value;
+  if (!scope) return [];
+  const list = [];
+  for (const el of scope.querySelectorAll("kima-breadcrumb-item, li.kima-breadcrumb-item")) {
+    /* CE 模式两种选择器命中的是包含关系的两个节点（宿主 > 其模板 li 根）：
+     * 宿主才是官方语义的 item（官方 slotchange 枚举的就是它）。有宿主的 li
+     * 不是独立 item，跳过；Vue 模式无宿主，li 独立成项。 */
+    if (el.parentElement?.closest("kima-breadcrumb-item")) continue;
+    list.push(el);
+  }
+  /* DOM 序在两种载体下都是官方 slot 序（querySelectorAll 文档序）。 */
+  return list;
 }
 
+/* 官方 current 的读写都在 item 元素上；KIMA 双载体的载体规则：
+ * li 根的 data-current 由 Vue 响应式驱动（容器写属性 + item 的 observer 读回），
+ * 与 CE 宿主同通道——item 侧 readDomCurrent 已按载体分派。 */
 function syncCurrent() {
   const items = scanItems();
-  const signature = items.map((item, index) => `${index}:${item.getAttribute("item-label") || ""}:${item.hasAttribute("data-current")}`).join("|");
+  const signature = items.map((item, index) => `${index}:${item.tagName}:${item.hasAttribute("data-current")}`).join("|");
   if (signature === lastItemSignature) return;
   lastItemSignature = signature;
   for (let i = 0; i < items.length; i++) {
