@@ -152,6 +152,10 @@ provide("kimaBreadcrumbSeparator", () => (separatorVNodes.value.length ? separat
 /* ============ BreadcrumbElement.ts styles（94-111 逐行）============ */
 .kima-breadcrumb {
   display: block;
+  /* 官方 :host{display:block} 满父宽；放进 flex 舞台时 flex item 的
+   * min-width:auto 会把宿主收缩成内容宽（LAB 实测 321px vs 官方满宽）——
+   * width:100% 补齐官方 block 语义（KIMA 块级场地规矩同款，progress 线同因同修）。 */
+  width: 100%;
   box-sizing: border-box;
   min-width: 0;
 }

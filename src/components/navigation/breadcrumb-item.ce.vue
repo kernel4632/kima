@@ -345,8 +345,13 @@ defineExpose({ setSeparator });
   padding-inline: var(--kima-breadcrumb-item-label-padding-inline, 12px);
 }
 .kima-breadcrumb-item-button:not(.kima-breadcrumb-item-button--icon-only):not(.kima-breadcrumb-item-button--current):not([aria-disabled="true"]) .kima-breadcrumb-item-button__base {
-  /* 官方 --m3e-breadcrumb-item-label-color, color.primary。 */
-  color: var(--kima-breadcrumb-item-label-color, var(--kima-color-primary));
+  /* 官方 --m3e-breadcrumb-item-label-color, color.primary。
+   * 官方 primary 是主题强调位（M3 紫系，实测 rgb(205,192,236)）；
+   * KIMA Grok 主题的强调位是 accent 蓝（--kima-color-primary 被映射为 base 文字色，
+   * 用它会导致 current（on-surface）与普通项零差别）。官方语义「链接项走主题强调色」
+   * 在 KIMA token 体系里的对应位是 accent（AGENTS.md：链接是 accent 三大专属用途之一，
+   * kima-link 同款）。 */
+  color: var(--kima-breadcrumb-item-label-color, var(--kima-color-accent));
 }
 
 /* KIMA 交互反馈（AGENTS.md 分配规则：按钮类 = 状态层 + 焦点环 + 涟漪）。
@@ -410,7 +415,9 @@ defineExpose({ setSeparator });
 
 /* 官方 m3e-text-overflow 内联（TextOverflowElement :host/.base 逐行）。
  * 官方结构是 slot > .base span 承担 ellipsis；KIMA slot 投影可能是裸文本
- * （无包裹元素），截断属性直接放 __overflow 自身，两层职责合一。 */
+ * （无包裹元素），截断属性直接放 __overflow 自身，两层职责合一。
+ * 官方 79-81 行：icon-only 态 .overflow { flex: none }（官方量值 0 0 auto）——
+ * 方形收缩后省略层不再参与伸缩。 */
 .kima-breadcrumb-item-button__overflow {
   flex: 1 1 auto;
   display: inline-flex;
@@ -420,6 +427,9 @@ defineExpose({ setSeparator });
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.kima-breadcrumb-item-button--icon-only .kima-breadcrumb-item-button__overflow {
+  flex: none;
 }
 
 /* 官方 @media (forced-colors: active)（164-173 逐行）。 */
