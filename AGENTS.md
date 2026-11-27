@@ -173,6 +173,43 @@ pnpm test:ssr    # SSR 测试
 - 流程：一次只做一小步（一个组件或一小块基础）→ 做完停下来给用户看（截图 + 说明）
   → 用户给意见 → 改 → 用户点头 → 提交 → 再下一步。
 - 用户较难用文字描述想要的感觉；**多用图/可见效果沟通**，少让用户凭空描述。
+- 用户说"和 X 不一样"时，第一动作是**找 X 的权威实现源**（官方 App？官方仓库？开源组件库？），
+  不是自己再猜一轮参数。
+
+## 复刻开源组件的方法论（Switch 七轮血泪总结，铁律）
+
+**翻译结构，不是翻译视觉结果。**
+
+- ❌ 错误路径：看官网效果 → 自己发明实现（margin 布局/transform 偏移/"等效"方案）→
+  逐值对齐静态几何 → 动效和中间帧永远差一截 → 打补丁循环。
+- ✅ 正确路径：**找官方仓库源码 → DOM 同构 + 变量系统照抄 → 官网实测对值**。
+  例子（M3E Switch）：官方用三个 CSS 变量（`--handle-inline-start/inline-end/height`）
+  驱动一个 `::before` 伪元素，四态只改变量不改规则——连"球是伪元素"这个架构决策都照搬，
+  公式逐行翻译，动画中间帧天然一致。
+- 复刻的最小单位是**架构决策**（为什么用伪元素、为什么用变量驱动、状态怎么映射到结构），
+  不是渲染结果（像素值）。像素对了手感不对，就是复刻单位错了。
+
+### 直接套库 vs 手写复刻的判定
+
+引入 Lit 系 Web Component 库（M3E 等）当行为底座有**结构性矛盾**：
+- elements 产物要求零 import 单文件（禁动态 import）
+- Node verify（SSR/静态检查）要求延后浏览器注册
+- 同一份源码满足不了两边；垫片追不完 Lit 的 DOM API 面。
+
+结论：**行为底座选 Reka（Vue 生态、无 DOM 顶层注册），视觉/结构复刻选源码翻译**。
+除非放弃 verify 的 Node 端检查，否则不引 Lit 系组件库当依赖。
+
+### 已知的工程坑（直接跳过，别再踩）
+
+- **Vue async setup 陷阱**：`<script setup>` 里的 top-level await 会把组件编译成
+  async setup——**组件静默渲染成空白，console 零报错**。副作用代码（注册/初始化）
+  放模块级 `<script>` 块。
+- **Lit 库进 Node 产物链必炸**：Lit 模块顶层就 `customElements.define`，
+  Node 端 import 全库直接崩；HTMLElement/document 垫片是死路。
+- **pnpm approve-builds 非交互环境**：构建脚本白名单写 `pnpm-workspace.yaml`
+  （`onlyBuiltDependencies` + 显式 `packages: []`）。
+- **dev 服务器模块缓存**：提交新代码后 dev 可能仍服务旧 transform（已发生 3 次
+  "用户看到旧版"事故）。**每次提交后硬重启 dev**（杀进程 + 删 `node_modules/.vite`）再放行。
 
 ## 迁移状态
 
