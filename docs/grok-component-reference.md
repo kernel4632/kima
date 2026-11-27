@@ -68,35 +68,43 @@ padding-block: calc((var(--grok-control-height-lg) - var(--grok-line-height-comp
 
 ### 证据
 1. **组件层**：Base UI Switch（JS chunk `304v8ig9c0k8p.js`：`useRenderElement` + `SwitchRootContext` + `role="switch"` + `aria-checked`），与 KIMA 的 Reka Switch 同为无头库
-2. **Token（设置页）**：`--toggle-border: hsl(white/9%)` 深 / `hsl(black/10%)` 浅；`--toggle-selected: hsl(white/24%)` 深 / `hsl(black/8%)` 浅
-3. **同站 web 实测 switch（cookie-consent，`1eqhhq8j5i595.js` 明文类）**：
+2. **全站唯一 switch 皮肤类（cookie-consent 场景，`1eqhhq8j5i595.js` 明文，强证据）**：
    ```
    轨道: peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors
           focus-visible:ring-2 ring-offset-2 ring-primary/30；disabled:opacity-50
-   选中: bg-primary hover:opacity-90（cookie 版是实色；设置页用 token——见下）
-   拇指: pointer-events-none block size-5 rounded-full shadow-lg ring-0 transition-transform duration-150 ease-out
-   位移: translate-x-5（=20px）/ translate-x-0
+   底色: c ? "bg-primary hover:opacity-90" : "bg-primary/20 hover:opacity-90"
+         （bg-primary 编译为 var(--fg-primary)；bg-primary/20 = fg-primary 混 20% 透明）
+   拇指: pointer-events-none block size-5 rounded-full bg-[var(--cookie-consent-surface)] shadow-lg ring-0 transition-transform duration-150 ease-out
+   位移: c ? "translate-x-5" : "translate-x-0"（=20px）
    ```
-   → **web 官方几何：44×24 胶囊、2px 边框位、拇指 20、行程 20、150ms ease-out**
-4. **iOS 版**：UISwitch 64×28（第三方提取，弱于 web 实测）
-5. **设置页 switch 具体类**：在未下载到的设置页 chunk；其 token（toggle-border/selected）与 cookie 几何合成
+   `--cookie-consent-surface: var(--background)` → 拇指 = 页面底色（深色近黑/浅色近白，与 primary 反色）。
+   `shadow-lg` 编译值：`0 0 30px -5px #0000001a, 0 0 6px -4px #0000001a`（大柔焦）。
+   `transition-colors` 默认 150ms cubic-bezier(.4,0,.2,1)。
+3. **`--toggle-border` / `--toggle-selected` 的真相（重要纠错）**：官方 CSS 定义了这两个 token，
+   但全站 **无任何 switch 消费**。JS 唯一引用 `border-toggle-border` 的字符串是
+   `"bg-surface-base border-b border-toggle-border"`——设置行的**底部分隔线**（border-b），
+   与开关无关；`--toggle-selected` 无消费者。此前把它当「设置页 switch 边框轨道」属误读，产物已废弃。
+4. **iOS 版**：UISwitch 64×28（第三方提取，弱证据；web 实测与它不同——手机 app 与网页端确实不一样）
 
 ### 官方 web 版结论（证据强度标注）
-- 几何 **44×24 胶囊**（web 实测类，强证据）；thumb **20px**（size-5）；行程 **20px**（translate-x-5）
-- 过渡 **150ms ease-out**（thumb 的 transition-transform duration-150 ease-out，强证据）
-- 轨道色：cookie 版 bg-primary 实色，设置页 toggle token border+wash（token 强证据）→ 复刻取 **toggle-border 1px + 选中 toggle-selected wash**（设置页模式，用户指认的 Grok 视觉）
-- focus：ring-2 ring-offset-2 ring-primary/30（web 实测）→ KIMA 用 focus-ring token 同义
+- 几何 **44×24 胶囊**（w-11/h-6，强证据）；thumb **20px**（size-5）；行程 **20px**（translate-x-5；44 − 2×2 border − 20 = 20 精确成立）
+- 过渡 **thumb 150ms ease-out**、**轨道色 150ms cubic-bezier(.4,0,.2,1)**（强证据）
+- 轨道色：**未选 primary 20% 透明底 → 选中 primary 实色**（强证据）；hover 轨道整体 opacity-90；disabled opacity-50
+- 拇指色 = **页面底色**（--background，与 primary 反色）+ shadow-lg 大柔焦（强证据）
+- focus：ring-2 ring-offset-2 ring-primary/30（强证据）
 
-### KIMA 复刻（本轮执行，取 web 实测几何 + 设置页 token）
+### KIMA 复刻（取全站唯一 switch 皮肤类，一比一）
 | 维度 | 官方 | KIMA 复刻值 |
 |---|---|---|
 | 轨道尺寸 | 44×24（w-11/h-6） | `--kima-switch-width: 44px / height: 24px` |
-| 轨道边框 | border-2（占位透明）；设置页 toggle-border | 1px `--kima-color-toggle-border` |
-| 选中底 | 设置页 toggle-selected wash | `--kima-color-toggle-selected` |
-| 拇指 | 20px（size-5） | 20px |
-| 行程 | 20px（translate-x-5） | 20px |
-| 过渡 | duration-150 ease-out | 150ms ease-out |
-| focus | ring-2 offset-2 | focus-ring 2px + offset |
+| 轨道边框 | border-2 透明占位（无边框视觉） | `border: 2px solid transparent` |
+| 未选底 | bg-primary/20 | `color-mix(primary 20%, transparent)` |
+| 选中底 | bg-primary 实色 | `var(--kima-color-primary)` |
+| hover | opacity-90（轨道整体） | `opacity: 0.9` |
+| 拇指 | 20px 页面底色 + shadow-lg | `var(--kima-color-surface)` + 官方 shadow-lg 编译值 |
+| 行程 | 20px（translate-x-5） | `--kima-switch-travel`（44−2×2−20 = 20 精确） |
+| 过渡 | thumb duration-150 ease-out | `transform 150ms ease-out` |
+| focus | ring-2 offset-2 primary/30 | 双层 box-shadow 等价实现 |
 
 ## 四、Menu / MenuItem（官方 web 版，实锤）
 

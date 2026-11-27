@@ -97,18 +97,16 @@
   --kima-color-inverse-on-surface: var(--kima-color-on-primary);
   /* 柔和按钮底 = 次级填充档（wash 8%），文字仍是 base。 */
   --kima-color-primary-soft: var(--kima-color-wash-secondary);
-  /* 未选中控件底（滑块轨道）官方 toggle token（--toggle-border / --toggle-selected）：
-   * 轨道边框：浅 hsl(black/10%)、深 hsl(white/9%)；选中轨道底是半透明 wash：
-   * 浅 8%、深 24%——官方开关没有实色轨道，选中感靠 wash 底 + 实色拇指。 */
-  --kima-color-toggle-border: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.09));
-  --kima-color-toggle-selected: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.24));
-  /* Switch 几何（官方 web 实测类：w-11/h-6 = 44×24、thumb size-5 = 20、
-   * 位移 translate-x-5 = 20px、过渡 duration-150 ease-out——证据链见
-   * docs/grok-component-reference.md 三）：胶囊 44×24、拇指 20、行程 20、两端内距 2。 */
+  /* Switch 几何（官方 web switch 类，chunk 1eqhhq8j5i595.js 明文）：
+   * 轨道 w-11 h-6 = 44×24、border-2 透明占位（inset 2 = 边框宽）；拇指 size-5 = 20；
+   * 位移 translate-x-5 = 20px——border-box 下内容盒 40 − 拇指 20 = 20 精确成立；
+   * 过渡 duration-150 ease-out。证据链见 docs/grok-component-reference.md 三。 */
   --kima-switch-width: 44px;
   --kima-switch-height: 24px;
   --kima-switch-thumb: 20px;
   --kima-switch-inset: 2px;
+  /* 行程 = 内容盒宽 − 拇指 = (44 − 2×2 边框位) − 20 = 20px（translate-x-5 一比一）。 */
+  --kima-switch-travel: calc(var(--kima-switch-width) - 2 * var(--kima-switch-inset) - var(--kima-switch-thumb));
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
   /* 官方输入框描边 token（--input-border / --input-border-focus）：
