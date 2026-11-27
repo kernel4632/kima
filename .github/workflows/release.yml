@@ -1,10 +1,8 @@
 name: Validate and release
 
+# 2026-11 按用户指令停用：CI 校验在本地全链已覆盖（build / build:lib / verify:lib / test / test:ssr），
+# 发布流程暂不跑。workflow_dispatch 保留，需要时在 Actions 页面手动触发。
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
