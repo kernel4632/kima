@@ -72,12 +72,18 @@ function handleChange(value) {
  *   transition-transform duration-150 ease-out；位移 translate-x-5 / translate-x-0
  * 注意：官方 --toggle-border/--toggle-selected 无任何 switch 消费者（JS 唯一引用
  * 是设置行 border-b 分隔线），此前两轮的「边框轨道」是误读，已废弃。 */
+/* M3 Switch（M3E 源码 matraic/m3e 逐项复刻，SwitchToken/TrackStyle/HandleStyle/StateLayerStyle）：
+ * 轨道 52×32、2px outline 边框；未选 = surface-container-highest 实色底（不是透明！）+ outline 边框；
+ * 选中 = primary 实色 + 边框透明。
+ * 球：未选 16px 贴左（inline-start = outline + pressed 28 − with-icon 24 = 6px 偏移，不是居中）；
+ * 选中 24px 贴右（52 − 24 − outline×3 = 22px）；按压 28px（真尺寸变化，非缩放）。
+ * 球色：未选 outline 灰、选中 on-primary、hover on-surface-variant、按压 on-surface-variant。
+ * 光晕 = 40px state layer 圆随球移动（hover 8% / focus 10% / pressed 10%）。 */
 .kima-switch {
   display: inline-flex;
   align-items: center;
   gap: var(--kima-space-2);
-  /* 触摸命中：官方用伪元素外扩（见 docs/grok-component-reference.md 六）。
-   * 这里 label 竖向 padding 补到 44 命中（24 轨道 + 2×10 padding），视觉行高不变。 */
+  /* 触摸命中：label 竖向 padding 补到 44（32 轨道 + 2×6），视觉行高不变。 */
   padding-block: calc((var(--kima-touch-target) - var(--kima-switch-height)) / 2);
   color: var(--kima-color-on-surface);
   font-size: var(--kima-font-size-body-medium);
@@ -88,71 +94,108 @@ function handleChange(value) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    /* M3 Switch（Grok App Compose 规格，用户解包指认）：52×32 胶囊。 */
+    position: relative;
+    /* M3E trackWidth/trackHeight：52×32。 */
     width: var(--kima-switch-width);
     height: var(--kima-switch-height);
     box-sizing: border-box;
     padding: 0;
-    /* M3：未选轨道 = outline 色边框造型 + 透明底；选中 = primary 实色 + primary 边框。 */
-    border: 2px solid var(--kima-color-on-surface-variant);
+    /* M3E：2px outline 边框；选中态边框透明。 */
+    border: var(--kima-switch-outline) solid var(--kima-color-outline);
     border-radius: var(--kima-radius-full);
-    background: transparent;
-    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* M3E：未选底 = surfaceContainerHighest 实色（浅灰面）。 */
+    background: var(--kima-color-surface-container-highest);
+    transition: background-color var(--kima-duration-effects) var(--kima-curve-standard),
+      border-color var(--kima-duration-effects) var(--kima-curve-standard);
     outline: none;
 
-    &:focus-visible {
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--kima-color-primary) 30%, transparent),
-        0 0 0 4px var(--kima-color-surface);
+    &[data-state="checked"] {
+      border-color: transparent;
+      background: var(--kima-color-primary);
     }
 
-    &[data-state="checked"] {
-      background: var(--kima-color-primary);
-      border-color: var(--kima-color-primary);
+    /* M3E 状态层（用户指认的光晕）：40px 圆跟球移动，浮在球后。 */
+    &::before {
+      content: "";
+      position: absolute;
+      top: calc(50% - var(--kima-switch-state-layer) / 2);
+      /* 球心 = 未选偏移 6 + 球半宽；选中 = 偏移 travel+6 + 球半宽。层左缘 = 球心 − 层半宽。 */
+      left: calc(6px + var(--kima-switch-thumb) / 2 - var(--kima-switch-state-layer) / 2);
+      width: var(--kima-switch-state-layer);
+      height: var(--kima-switch-state-layer);
+      border-radius: var(--kima-radius-full);
+      background: var(--kima-color-on-surface);
+      opacity: 0;
+      transition: left var(--kima-duration-spring) var(--kima-ease-spring),
+        opacity var(--kima-duration-effects) var(--kima-curve-standard);
+      pointer-events: none;
     }
 
     &:hover:not(:disabled) {
-      opacity: 0.9;
+      &::before { opacity: 0.08; }
+    }
+
+    &:focus-visible {
+      &::before { opacity: 0.1; }
+    }
+
+    &:active:not(:disabled)::before {
+      opacity: 0.1;
     }
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      /* M3E disabled：未选 = onSurface 12% 底 + onSurface 12% 边框；选中 = onSurface 12% 底。 */
+      background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
+      border-color: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
+
+      &[data-state="checked"] {
+        background: color-mix(in srgb, var(--kima-color-on-surface) 12%, transparent);
+        border-color: transparent;
+      }
     }
   }
 
   &__thumb {
     display: block;
     pointer-events: none;
-    /* M3 Switch 精确规格（用户指认 App 开关：未选球缩小、选中球放大）：
-     * 未选 thumb 16px 居中收拢；选中 thumb 24px 撑满内距。
-     * 宽高与位移同槽过渡，球"长大着滑过去"。 */
+    /* M3E handle 精确几何：
+     * 未选 16px 贴左（M3E inline-start = outline 2 + pressed 28 − icon 24 = 6px 偏移）；
+     * 选中 24px 贴右（52 − 24 − outline 6 = 22px 位移）；按压 28px。
+     * 宽高/位移全部独立 transition——M3E 用 spring fast spatial（位移）+ fast effects（尺寸）。 */
     width: var(--kima-switch-thumb);
     height: var(--kima-switch-thumb);
+    margin-inline-start: 6px;
     border-radius: var(--kima-radius-full);
-    /* M3：未选球 = on-surface-variant 灰；选中球 = on-primary（primary 轨道反色）。 */
-    background: var(--kima-color-on-surface-variant);
-    /* 外层光晕（用户指认"外层有一个光晕"）：大柔焦外晕 + 近距锐影。 */
-    box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.35), 0 0 8px -3px rgba(0, 0, 0, 0.3);
+    /* M3E：未选球 = outline 色；选中球 = on-primary；按压球 = on-surface-variant。 */
+    background: var(--kima-color-outline);
     transition:
-      transform 150ms var(--kima-curve-standard),
-      width 200ms var(--kima-curve-standard),
-      height 200ms var(--kima-curve-standard),
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      margin-inline-start var(--kima-duration-spring) var(--kima-ease-spring),
+      width var(--kima-duration-spring) var(--kima-ease-spring),
+      height var(--kima-duration-spring) var(--kima-ease-spring),
+      background-color var(--kima-duration-effects) var(--kima-curve-standard);
 
-    /* 按住轨道时球额外隆起 ~8%（M3 pressed 手感）。 */
-    .kima-switch__track:active & {
-      scale: 1.08;
+    /* M3E 按压：球真尺寸 28px（不是缩放）。 */
+    .kima-switch__track:active:not(:disabled) & {
+      width: var(--kima-switch-thumb-pressed);
+      height: var(--kima-switch-thumb-pressed);
+      background: var(--kima-color-on-surface-variant);
+    }
+
+    .kima-switch__track:hover:not(:disabled) & {
+      background: var(--kima-color-on-surface-variant);
     }
 
     &[data-state="checked"] {
       width: var(--kima-switch-thumb-checked);
       height: var(--kima-switch-thumb-checked);
-      transform: translateX(var(--kima-switch-travel));
+      /* M3E 选中贴右：位移 = 轨道 52 − 球 24 − outline×3(6) − 未选偏移 6 = 22px。 */
+      margin-inline-start: var(--kima-switch-travel);
       background: var(--kima-color-on-primary);
     }
 
     &[data-state="unchecked"] {
-      transform: translateX(0);
+      margin-inline-start: 6px;
     }
   }
 

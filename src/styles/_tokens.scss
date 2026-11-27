@@ -99,17 +99,18 @@
   --kima-color-inverse-on-surface: var(--kima-color-on-primary);
   /* 柔和按钮底 = 次级填充档（wash 8%），文字仍是 base。 */
   --kima-color-primary-soft: var(--kima-color-wash-secondary);
-  /* Switch 几何（Material 3 Switch——Grok 安卓 App 用 Compose M3 组件，
-   * 用户解包指认 App 的开关是 M3 规格：thumb 尺寸随状态变化）：
-   * 轨道 52×32、thumb 未选 16 / 选中 24（M3 精确档）、两端内距 4。
-   * 此前 44×24 是官方 web cookie-consent 档——用户裁决以 App 观感为准。 */
+  /* Switch 几何（M3E 源码 SwitchToken 逐值，matraic/m3e）：
+   * 轨道 52×32、outline 2px、球未选 16 / 选中 24 / 按压 28、state layer 40。 */
   --kima-switch-width: 52px;
   --kima-switch-height: 32px;
+  --kima-switch-outline: 2px;
   --kima-switch-thumb: 16px;
   --kima-switch-thumb-checked: 24px;
+  --kima-switch-thumb-pressed: 28px;
+  --kima-switch-state-layer: 40px;
   --kima-switch-inset: 4px;
-  /* 行程 = 轨道 − 2×内距 − 选中 thumb（按 M3：滑移终点以大球计）。 */
-  --kima-switch-travel: calc(var(--kima-switch-width) - 2 * var(--kima-switch-inset) - var(--kima-switch-thumb-checked));
+  /* M3E 选中位移：轨道 52 − 球 24 − outline×3(6) − 未选偏移 6 = 16px。 */
+  --kima-switch-travel: calc(var(--kima-switch-width) - var(--kima-switch-thumb-checked) - 3 * var(--kima-switch-outline) - 6px);
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
   /* 官方输入框三件套 token（浅色组/深色组编译值）：
