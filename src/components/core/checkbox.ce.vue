@@ -161,7 +161,40 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     justify-content: center;
     border-radius: var(--kima-radius-full);
 
-    @include kima-state-layer;
+    /* M3E state-layer 同构（CheckboxElement.ts + StateLayerElement）：
+     * 40px 圆形光圈，hover/focus 分态色——未选 = onSurface 8% / 选中 = primary 8%
+     * （官方 m3e-checkbox-unselected/selected-hover-color），
+     * 色彩渐变 200ms（官方 short4）。此前恒用 currentColor，选中后光圈跟文字走
+     * 而官方是 primary 独立光圈（用户指认"m3e 的 hover 一圈更好"）。 */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: var(--kima-radius-full);
+      background: var(--kima-color-on-surface);
+      opacity: 0;
+      pointer-events: none;
+      transition: background-color var(--kima-duration-effects) var(--kima-curve-standard),
+        opacity var(--kima-duration-effects) var(--kima-curve-standard);
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"])::after {
+      opacity: 0.08; /* M3 state-layer hover 档（官方 8%），checkbox 光圈比全库轻状态层亮一档 */
+    }
+
+    /* 选中/半选态：光圈换 primary（官方 --m3e-checkbox-selected-hover-color = primary）。 */
+    /* 选中/半选态：光圈换 primary（官方 --m3e-checkbox-selected-hover-color = primary）。
+     * 状态类在宿主上，用后代选择器从宿主态驱动 control 光圈。 */
+    .kima-checkbox--checked &::after,
+    .kima-checkbox--indeterminate &::after {
+      background: var(--kima-color-primary);
+    }
+
+    /* 输入聚焦时光圈也亮（官方 focus-opacity 10%）——input 是 control 的前置兄弟。 */
+    .kima-checkbox__input:focus-visible + &::after {
+      opacity: 0.1;
+    }
+
     @include kima-ripple-host;
   }
 
