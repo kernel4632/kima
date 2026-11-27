@@ -5,7 +5,7 @@
 <script setup>
 import { ref } from 'vue';
 import BaseExamples from './base-examples.vue';
-import { KimaBadge, KimaButton } from '../index.js';
+import { KimaBadge, KimaButton, KimaIcon } from '../index.js';
 import { Moon02Icon, Sun03Icon, ComputerIcon } from '@hugeicons/core-free-icons';
 
 defineProps({ navigate: { type: Function, required: true } });
