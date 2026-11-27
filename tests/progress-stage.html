@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- progress 官方对表专用：直接注册全量 elements，平铺全部状态。
+     用法：http://localhost:5173/tests/progress-stage.html -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress 对表台</title>
+  </head>
+  <body>
+    <div id="stage" style="display: grid; gap: 24px; padding: 24px; width: 900px"></div>
+    <script type="module">
+      import "/src/styles/_tokens.scss";
+      import "/src/elements.js";
+      const stage = document.getElementById("stage");
+      const mk = (id, attrs, inner) => {
+        const el = document.createElement("kima-progress");
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        el.setAttribute("aria-label", id);
+        el.innerHTML = inner || "";
+        window["__" + id] = el;
+        stage.appendChild(el);
+      };
+      mk("d25", { value: "25" });
+      mk("d0", { value: "0" });
+      mk("d100", { value: "100" });
+      mk("ind", { mode: "indeterminate" });
+      mk("query", { mode: "query" });
+      mk("buf", { mode: "buffer", value: "25", "buffer-value": "60" });
+      mk("lw", { value: "50", variant: "wavy" });
+      mk("lwi", { mode: "indeterminate", variant: "wavy" });
+      mk("lwb", { mode: "buffer", value: "25", "buffer-value": "60", variant: "wavy" });
+      mk("c25", { mode: "circular", value: "25" }, "25");
+      mk("c0", { mode: "circular", value: "0" });
+      mk("c100", { mode: "circular", value: "100" });
+      mk("ci", { mode: "circular", indeterminate: "" });
+      mk("w25", { mode: "circular", value: "25", variant: "wavy" }, "25");
+      mk("w0", { mode: "circular", value: "0", variant: "wavy" });
+      mk("wi", { mode: "circular", indeterminate: "", variant: "wavy" });
+      document.documentElement.setAttribute("data-ready", "true");
+    </script>
+  </body>
+</html>
