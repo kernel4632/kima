@@ -12,7 +12,6 @@ form.reset() 恢复挂载时的 modelValue；清除选择返回 null，必填时
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useAttrs, useHost, useId, getCurrentInstance, watch } from "vue";
 import { PopoverRoot, PopoverAnchor, PopoverPortal, PopoverContent } from "reka-ui";
-import { AnimatePresence, motion } from "motion-v";
 import KimaIcon from "./icon.ce.vue";
 import { useRemoteOptions } from "../../utils/remote-options.js";
 import { ArrowDown01Icon, Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons";
@@ -214,7 +213,10 @@ function handleKeydown(event) {
 // --- 外部点击与焦点离开：composedPath 也能识别 Shadow DOM 内部点击 ---
 function handleOutside(event) {
   const path = event.composedPath();
-  if (localOpen.value && !path.includes(root.value) && !path.includes(popup.value)) closeSelect(false);
+  /* popup 模板 ref 经 PopoverPortal 传送后不解析（实测恒为 null），
+   * 弹层按类名查文档；弹层是传送进本文档的，ownerDocument 一致。 */
+  const popupEl = document.querySelector(".kima-select__popup");
+  if (localOpen.value && !path.includes(root.value) && !path.includes(popupEl)) closeSelect(false);
 }
 
 watch(() => props.modelValue, (value) => { localValue.value = value; });
@@ -235,6 +237,67 @@ watch(localOpen, async (open, wasOpen) => {
     restoreFocus = true;
   }
 }, { immediate: true });
+
+/* M3E 弹层进出（bounce-open，与 menu.ce.vue 同一套机制）：
+ * 官方 MenuElement.ts 306-320 = CSS animation scaleY 0→1 跑 spring-fast-spatial
+ * 的 linear() 采样串；opacity 100ms 快进由 _tokens.scss 的 @starting-style 常驻
+ * transition 接管，CSS 自己播，不需要挂类。这里只挂进退场的 keyframes 类：
+ * Vue <Transition> 在 Reka Portal + force-mount 组合下 enter-active 不出现
+ * （实测），watcher 手动挂/移除。leaving 必须同步置位——放 nextTick 里的话
+ * v-if 同一帧已把弹层卸掉，退场永远播不出来。 */
+const leaving = ref(false);
+watch(localOpen, (open) => {
+  if (open) {
+    leaving.value = false;
+    nextTick(() => {
+      /* 弹层经 PopoverPortal 传送到 body：popup 模板 ref 在传送目标渲染前
+       * 还是 null（实测 watcher 触发时 popup.value=false），nextTick 也追不上。
+       * 弹层类名全库唯一，直接按类查文档，和 menu watcher 同一套做法。 */
+      const node = document.querySelector(".kima-select__popup");
+      if (!node || !localOpen.value) return;
+      node.classList.remove("kima-popup-leave-active", "kima-popup-leave-to");
+      const attach = () => {
+        if (!localOpen.value || node.classList.contains("kima-popup-enter-active")) return;
+        node.classList.add("kima-popup-enter-active");
+        const clear = (event) => {
+          if (event.target !== node) return; // 子元素（涟漪/选项行）的动画会冒泡
+          node.classList.remove("kima-popup-enter-active");
+          node.removeEventListener("animationend", clear);
+        };
+        node.addEventListener("animationend", clear);
+      };
+      /* Reka PopperContent 在定位完成前给弹层内联 animation:none（源码
+       * PopperContent.js 275 行），内联样式压过类选择器——挂类必须等定位，
+       * 定位完成以 data-side 属性出现为准（placed 事件同一帧写出）。 */
+      if (node.hasAttribute("data-side")) attach();
+      else {
+        const observer = new MutationObserver(() => { if (node.hasAttribute("data-side")) { observer.disconnect(); attach(); } });
+        observer.observe(node, { attributes: true, attributeFilter: ["data-side"] });
+        setTimeout(() => { observer.disconnect(); attach(); }, 300); // 兜底：极端时定位失败也要进场
+      }
+    });
+  } else {
+    /* popup 模板 ref 经 Portal 传送后不解析（进场实测 popup.value=null），
+     * 退场判定也按文档查：弹层在场才需要保层播退场。 */
+    const node = document.querySelector(".kima-select__popup");
+    if (!node) return;
+    leaving.value = true; // 同步置位：渲染前保住弹层，退场播完再卸
+    nextTick(() => {
+      const el = document.querySelector(".kima-select__popup");
+      if (!el || localOpen.value) return;
+      el.classList.remove("kima-popup-enter-active");
+      el.classList.add("kima-popup-leave-active", "kima-popup-leave-to");
+      const done = (event) => {
+        if (event && event.target !== el) return;
+        leaving.value = false;
+        el.classList.remove("kima-popup-leave-active", "kima-popup-leave-to");
+        el.removeEventListener("transitionend", done);
+      };
+      el.addEventListener("transitionend", done);
+      setTimeout(done, 140); // 官方退场 100ms，+40ms 兜底（transitionend 丢失时）
+    });
+  }
+});
 
 watch(visibleItems, () => {
   // 搜索结果或选项更新后，不让高亮指向另一条过期结果。
@@ -328,17 +391,16 @@ onBeforeUnmount(() => {
       </option>
     </select>
 
-    <!-- 弹层定位全交给 Reka Popper：翻转/碰撞/跟随滚动自动处理，零手算坐标。 -->
+    <!-- 弹层定位全交给 Reka Popper：翻转/碰撞/跟随滚动自动处理，零手算坐标。
+         弹层动效按 M3E MenuElement.ts 一比一（纯 CSS，无 JS 动画库）：
+         进场 bounce-open scaleY 弹簧 + opacity 100ms 快进（@starting-style）；
+         退场 100ms 缩回 scaleY(0.8) + 淡出；origin 按翻转后方向（data-side）。
+         force-mount + leaving：进退场类由 watcher 手动挂，播完再卸载。 -->
       <PopoverPortal :disabled="!isBrowser">
-        <AnimatePresence>
-          <PopoverContent v-if="localOpen" as-child :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached>
-            <motion.div
+          <PopoverContent v-if="localOpen || leaving" as-child :side-offset="8" :collision-padding="12" position-strategy="fixed" avoid-collisions hide-when-detached force-mount>
+            <div
               ref="popup"
               class="kima-select__popup"
-              :initial="{ opacity: 0, scale: 0.96 }"
-              :animate="{ opacity: 1, scale: 1 }"
-              :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
-              :transition="{ type: 'spring', stiffness: 400, damping: 32 }"
             >
             <div v-if="searchable" class="kima-select__search-wrap">
               <KimaIcon class="kima-select__search-icon" :icon="Search01Icon" :size="18" aria-hidden="true" />
@@ -382,9 +444,8 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <div v-if="!remoteLoading && !remoteError && visibleItems.length === 0" class="kima-select__empty" role="status">没有匹配选项</div>
-            </motion.div>
+            </div>
           </PopoverContent>
-        </AnimatePresence>
       </PopoverPortal>
     </PopoverRoot>
   </div>
@@ -568,6 +629,13 @@ onBeforeUnmount(() => {
   background: var(--kima-color-popup);
   box-shadow: var(--kima-elevation-3);
 }
+
+/* transform-origin 按 M3E 官方锚点方向（MenuElement.ts 328-333：
+ * --bottom 态→top / --top 态→bottom）。Reka 把翻转后的真实方向写在
+ * data-side 上（期望方向写 props.placement，翻转后 data-side 才是真相），
+ * 弹层从锚点往下开 = 向上生长 = origin top。 */
+.kima-select__popup[data-side="bottom"] { transform-origin: top; }
+.kima-select__popup[data-side="top"] { transform-origin: bottom; }
 
 .kima-select__search-wrap {
   position: relative;

@@ -4,7 +4,6 @@
 <script setup>
 import { computed, nextTick, ref, useId, watch } from 'vue';
 import { DropdownMenuRoot, DropdownMenuTrigger, DropdownMenuContent } from 'reka-ui';
-import { AnimatePresence, motion } from 'motion-v';
 import KimaIcon from './icon.ce.vue';
 import MenuItems from '../../internal/menu-items.vue';
 import { ArrowDown01Icon, MoreHorizontalIcon, Search01Icon } from '@hugeicons/core-free-icons';
@@ -36,32 +35,86 @@ function searchKey(event) {
 }
 watch(() => props.disabled, (value) => { if (value) setOpen(false); });
 watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => searchInput.value?.focus()); });
+
+/* M3E 弹层进出（bounce-open）：Vue <Transition> 的类挂载在 Reka Portal
+ * + force-mount 组合下不生效（实测 enter-active 从未出现，CSS 链路本身正常）。
+ * 改用官方同构思路——纯 CSS 驱动：打开时挂 kima-popup-enter-active（bounce
+ * keyframes + opacity 快进），动画结束自己移除；关闭时挂 leave-active，
+ * 退场播完再卸载（leaving 控制卸载延迟，保 AnimatePresence 的等价语义）。
+ * leaving 必须同步置位：放 nextTick 里的话 v-if 同一帧已把弹层卸掉，
+ * 退场永远播不出来。事件回调必须过滤 target——涟漪/选项行的动画会冒泡
+ * 误触清理。 */
+const leaving = ref(false);
+watch(localOpen, (open) => {
+  const el = root.value?.querySelector('.kima-menu__popup');
+  if (open) {
+    leaving.value = false;
+    nextTick(() => {
+      const node = root.value?.querySelector('.kima-menu__popup');
+      if (!node || !localOpen.value) return;
+      node.classList.remove('kima-popup-leave-active', 'kima-popup-leave-to');
+      const attach = () => {
+        if (!localOpen.value || node.classList.contains('kima-popup-enter-active')) return;
+        node.classList.add('kima-popup-enter-active');
+        const clear = (event) => {
+          if (event.target !== node) return;
+          node.classList.remove('kima-popup-enter-active');
+          node.removeEventListener('animationend', clear);
+        };
+        node.addEventListener('animationend', clear);
+      };
+      /* Reka PopperContent 定位完成前给弹层内联 animation:none，压过类选择器；
+       * 挂类等 data-side 出现（定位完成同帧写出）。 */
+      if (node.hasAttribute('data-side')) attach();
+      else {
+        const observer = new MutationObserver(() => { if (node.hasAttribute('data-side')) { observer.disconnect(); attach(); } });
+        observer.observe(node, { attributes: true, attributeFilter: ['data-side'] });
+        setTimeout(() => { observer.disconnect(); attach(); }, 300);
+      }
+    });
+  } else {
+    if (!el) return;
+    leaving.value = true; // 同步置位：渲染前保住弹层，退场播完再卸
+    nextTick(() => {
+      const node = root.value?.querySelector('.kima-menu__popup');
+      if (!node || localOpen.value) return;
+      node.classList.remove('kima-popup-enter-active');
+      node.classList.add('kima-popup-leave-active', 'kima-popup-leave-to');
+      const done = (event) => {
+        if (event && event.target !== node) return;
+        leaving.value = false;
+        node.classList.remove('kima-popup-leave-active', 'kima-popup-leave-to');
+        node.removeEventListener('transitionend', done);
+      };
+      node.addEventListener('transitionend', done);
+      setTimeout(done, 140); // 官方退场 100ms，+40ms 兜底
+    });
+  }
+});
 </script>
 <template>
   <div ref="root" v-bind="forwardedAttrs" class="kima-menu" :class="{'kima-menu--open': localOpen, 'kima-menu--icon': iconTrigger, [`kima-menu--${triggerSize}`]: true}">
     <DropdownMenuRoot :open="localOpen && !disabled" :modal="false" @update:open="setOpen">
       <DropdownMenuTrigger as-child><button ref="trigger" type="button" class="kima-menu__trigger" :disabled="disabled" :aria-label="iconTrigger ? label : undefined" :title="iconTrigger ? label : undefined"><slot name="trigger" :open="localOpen" :selected-item="selectedItem" :value="localValue"><KimaIcon v-if="iconTrigger" :icon="triggerIcon" :size="20" aria-hidden="true" /><span v-else>{{ selectedItem?.label || label }}</span></slot><KimaIcon v-if="!iconTrigger" :icon="ArrowDown01Icon" :size="20" aria-hidden="true" /></button></DropdownMenuTrigger>
-      <!-- 弹层交给 Motion：进场 = 弹簧缩放 + 淡入（从 0.96 弹到 1，带一丝过冲），
-           退场 = 快速淡出。AnimatePresence 保证关闭时退场动画能播完才卸载，
-           Vue 的 <Transition> 做不了嵌套子菜单的这种受控退出。 -->
-      <AnimatePresence>
-        <DropdownMenuContent v-if="localOpen && !disabled" :id="menuId" force-mount v-bind="position" as-child>
-          <motion.div
-            class="kima-menu__popup"
-            :initial="{ opacity: 0, scale: 0.96 }"
-            :animate="{ opacity: 1, scale: 1 }"
-            :exit="{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }"
-            :transition="{ type: 'spring', stiffness: 400, damping: 32 }"
-            :aria-label="label"
-            loop
-            @escape-key-down="(e) => dismissInteraction(e, () => setOpen(false))"
-            @open-auto-focus="(e) => { if (searchable) { e.preventDefault(); nextTick(() => searchInput?.focus()); } }"
-          >
+      <!-- 弹层动效按 M3E MenuElement.ts 一比一（纯 CSS，无 JS 动画库）：
+           官方 = CSS animation bounce-open（scaleY 0→1）跑 spring-fast-spatial 的
+           linear() 弹簧采样串 + opacity 100ms transition 快进、
+           transform-origin 按锚点方向（--bottom→top / --top→bottom 官方同款）。
+           退场 = 100ms 缩回 0.8 + 淡出（官方 transition short2 同值）。
+           进退场类由 script 里的 localOpen watcher 手动挂（Vue <Transition> 的类
+           在 Reka Portal + force-mount 组合下不生效——实测 enter-active 从未
+           出现，而手动挂类后 animationName 立即恢复）。 -->
+      <DropdownMenuContent v-if="localOpen && !disabled || leaving" :id="menuId" force-mount v-bind="position" as-child>
+        <div
+          class="kima-menu__popup"
+          :aria-label="label"
+          @escape-key-down="(e) => dismissInteraction(e, () => setOpen(false))"
+          @open-auto-focus="(e) => { if (searchable) { e.preventDefault(); nextTick(() => searchInput?.focus()); } }"
+        >
             <div v-if="searchable" class="kima-menu__search-wrap"><KimaIcon :icon="Search01Icon" :size="18" aria-hidden="true" /><input ref="searchInput" v-model="query" type="search" class="kima-menu__search" role="searchbox" aria-label="搜索菜单项" @input.stop @change.stop @keydown.stop="searchKey"></div>
             <MenuItems :items="visibleItems" :checked="checked" :model-value="localValue" selection :disabled="disabled" @select="select" @check="check" /><div v-if="!visibleItems.length" role="status">没有匹配项目</div>
-          </motion.div>
+          </div>
         </DropdownMenuContent>
-      </AnimatePresence>
     </DropdownMenuRoot>
   </div>
 </template>
@@ -152,9 +205,15 @@ watch(localOpen, (value) => { if (value && props.searchable) nextTick(() => sear
 }
 .kima-menu--small .kima-menu__trigger { min-height: 40px; padding-inline: var(--kima-space-3); }
 .kima-menu--icon .kima-menu__trigger { width: var(--kima-touch-target); min-width: var(--kima-touch-target); height: var(--kima-touch-target); padding: 0; justify-content: center; aspect-ratio: 1; }
-/* 菜单内容由 Reka 渲染并传送到 body：现在外面套了 motion.div，
- * data-v 标记在 motion.div 上，但 motion.div 由 Motion 渲染时同样带 scoped id，
- * 加上弹层结构变了，继续用 :global 按类名命中最稳（类名带 kima- 前缀，不污染宿主）。 */
+/* 菜单内容由 Reka 渲染（本组件不走 Portal，弹层在 root 内），
+ * data-v 标记在弹层 div 上，:global 按类名命中最稳。
+ * transform-origin 按 M3E 锚点方向（MenuElement.ts :host(--bottom)→top /
+ * --top→bottom）。Reka 把翻转后的真实方向写在 data-side 上（props.placement
+ * 是期望方向，翻转后 data-side 才是真相），弹层从锚点往下开 = 向上生长 = origin top。 */
+:global(.kima-menu__popup[data-side="bottom"]) { transform-origin: top; }
+:global(.kima-menu__popup[data-side="top"]) { transform-origin: bottom; }
+:global(.kima-menu__popup[data-side="right"]) { transform-origin: left center; }
+:global(.kima-menu__popup[data-side="left"]) { transform-origin: right center; }
 :global(.kima-menu__popup) { min-width: 0;
   color: var(--kima-color-on-surface);
   font-family: var(--kima-font-family);

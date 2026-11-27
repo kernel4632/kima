@@ -1,10 +1,12 @@
 // 只注册冒烟需要的三个入口，不编译完整组件库。
+import "../src/styles/_tokens.scss";
 import { defineCustomElement } from "vue";
 import Button from "../src/components/core/button.ce.vue";
 import Dialog from "../src/components/core/dialog.ce.vue";
+import RadioGroup from "../src/components/input/radio-group.ce.vue";
 import Select from "../src/components/core/select.ce.vue";
 
-for (const [tag, component] of Object.entries({ "kima-button": Button, "kima-dialog": Dialog, "kima-select": Select })) {
+for (const [tag, component] of Object.entries({ "kima-button": Button, "kima-dialog": Dialog, "kima-radio-group": RadioGroup, "kima-select": Select })) {
   if (!customElements.get(tag)) customElements.define(tag, defineCustomElement(component, { shadowRoot: false }));
 }
 
