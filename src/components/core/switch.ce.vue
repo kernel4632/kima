@@ -140,9 +140,17 @@ function handleChange(value) {
     /* 官方 bg-[var(--cookie-consent-surface)] = var(--background) 页面底色：
      * 深色主题近黑、浅色主题近白——正好是 primary 轨道的反色。 */
     background: var(--kima-color-surface);
-    /* 官方 shadow-lg 编译值：0 0 30px -5px #0000001a, 0 0 6px -4px #0000001a。 */
+    /* 官方 shadow-lg 编译值：0 0 30px -5px #0000001a, 0 0 6px -4px #0000001a
+     * ——大柔焦外晕（用户记忆的"一圈东西"）+ 近距锐影，球的立体感来源。 */
     box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.1), 0 0 6px -4px rgba(0, 0, 0, 0.1);
-    transition: transform 150ms ease-out;
+    /* iOS 原生 switch 的 thumb 动效（用户指认"官方的球有大小变化"）：
+     * 按住时球隆起放大 ~12%（thumb 按压感），松手弹回；滑移同步进行不互抢。 */
+    transition: transform 150ms ease-out, scale 150ms var(--kima-curve-standard);
+
+    /* 按住轨道时球放大——iOS UISwitch 的隆起手感（Space 键同样命中 :active）。 */
+    .kima-switch__track:active & {
+      scale: 1.12;
+    }
 
     &[data-state="checked"] {
       transform: translateX(var(--kima-switch-travel));
