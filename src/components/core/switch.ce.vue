@@ -1,10 +1,10 @@
 <!--
-开关：行为层全由 Reka Switch 承担（键盘、表单 input、aria），皮肤按 Grok 官方 web
-switch 一比一（chunk 1eqhhq8j5i595.js，全站唯一 switch 皮肤类）：
-44×24 胶囊（w-11 h-6）+ border-2 透明占位；未选底 primary 20%、选中 primary 实色、
-hover 轨道 opacity-90；拇指 20px（size-5）页面底色（与 primary 反色）+ shadow-lg，
-150ms ease-out 滑移 20px（translate-x-5）。focus-visible ring-2 offset-2 primary/30。
-label 竖向 padding 补足 44 触摸命中（视觉行高不变）。证据链见 docs/grok-component-reference.md。
+开关：行为层全由 Reka Switch 承担（键盘、表单 input、aria），皮肤按 Grok App 的
+M3 Switch 规格复刻（用户解包指认：App 是 Compose + Material 3 组件——
+thumb 尺寸随状态变化：未选 16px 缩小 / 选中 24px 放大；
+未选轨道 = outline 边框 + 透明底，选中 = primary 实色；球带外层光晕）。
+52×32 轨道（M3 档）；44 触摸命中由 label 竖向 padding 补足。
+此前 44×24 是官方 web cookie-consent 档——用户裁决以 App 观感为准。
 label 属性只落到内部输入的 aria-label 上，可见标签由使用者自己排版。
 调用示例：
   <kima-switch v-model="enabled" name="enabled">启用同步</kima-switch>
@@ -88,40 +88,32 @@ function handleChange(value) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    /* 官方 web 规格：44×24 胶囊（w-11 h-6）。 */
+    /* M3 Switch（Grok App Compose 规格，用户解包指认）：52×32 胶囊。 */
     width: var(--kima-switch-width);
     height: var(--kima-switch-height);
     box-sizing: border-box;
-    /* 官方 Tailwind preflight 按钮零内边距；UA 默认 padding 会吃掉几何，必须归零。 */
     padding: 0;
-    /* 官方 border-2 border-transparent：2px 透明占位（占几何不占视觉）。
-     * 官方轨道无边框、无可见描边——形全靠底色。 */
-    border: 2px solid transparent;
+    /* M3：未选轨道 = outline 色边框造型 + 透明底；选中 = primary 实色 + primary 边框。 */
+    border: 2px solid var(--kima-color-on-surface-variant);
     border-radius: var(--kima-radius-full);
-    /* 官方未选底 = bg-primary/20（fg-primary 混 20% 透明）。 */
-    background: color-mix(in srgb, var(--kima-color-primary) 20%, transparent);
-    /* 官方 transition-colors = 默认 150ms cubic-bezier(.4,0,.2,1)。 */
-    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
     outline: none;
 
-    /* 官方 focus-visible ring-2 ring-offset-2 ring-primary/30：
-     * ring 是外圈 2px 30% primary；offset 2px 垫底用页面底色（官方 ring-offset 透明垫）。 */
     &:focus-visible {
       box-shadow: 0 0 0 2px color-mix(in srgb, var(--kima-color-primary) 30%, transparent),
         0 0 0 4px var(--kima-color-surface);
     }
 
-    /* 官方选中底 = bg-primary 实色（不透明）。 */
     &[data-state="checked"] {
       background: var(--kima-color-primary);
+      border-color: var(--kima-color-primary);
     }
 
-    /* 官方 hover:opacity-90 作用于整个轨道（含选中）。 */
     &:hover:not(:disabled) {
       opacity: 0.9;
     }
 
-    /* 官方 disabled:opacity-50。 */
     &:disabled {
       cursor: not-allowed;
       opacity: 0.5;
@@ -131,29 +123,32 @@ function handleChange(value) {
   &__thumb {
     display: block;
     pointer-events: none;
-    /* 官方 size-5 = 20px。行程 translate-x-5 = 20px。
-     * 官方无 margin——两端内距 2px 全部来自轨道的 border-2 透明占位（border-box），
-     * 拇指起点即在边框位内缘。 */
+    /* M3 Switch 精确规格（用户指认 App 开关：未选球缩小、选中球放大）：
+     * 未选 thumb 16px 居中收拢；选中 thumb 24px 撑满内距。
+     * 宽高与位移同槽过渡，球"长大着滑过去"。 */
     width: var(--kima-switch-thumb);
     height: var(--kima-switch-thumb);
     border-radius: var(--kima-radius-full);
-    /* 官方 bg-[var(--cookie-consent-surface)] = var(--background) 页面底色：
-     * 深色主题近黑、浅色主题近白——正好是 primary 轨道的反色。 */
-    background: var(--kima-color-surface);
-    /* 官方 shadow-lg 编译值：0 0 30px -5px #0000001a, 0 0 6px -4px #0000001a
-     * ——大柔焦外晕（用户记忆的"一圈东西"）+ 近距锐影，球的立体感来源。 */
-    box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.1), 0 0 6px -4px rgba(0, 0, 0, 0.1);
-    /* iOS 原生 switch 的 thumb 动效（用户指认"官方的球有大小变化"）：
-     * 按住时球隆起放大 ~12%（thumb 按压感），松手弹回；滑移同步进行不互抢。 */
-    transition: transform 150ms ease-out, scale 150ms var(--kima-curve-standard);
+    /* M3：未选球 = on-surface-variant 灰；选中球 = on-primary（primary 轨道反色）。 */
+    background: var(--kima-color-on-surface-variant);
+    /* 外层光晕（用户指认"外层有一个光晕"）：大柔焦外晕 + 近距锐影。 */
+    box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.35), 0 0 8px -3px rgba(0, 0, 0, 0.3);
+    transition:
+      transform 150ms var(--kima-curve-standard),
+      width 200ms var(--kima-curve-standard),
+      height 200ms var(--kima-curve-standard),
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* 按住轨道时球放大——iOS UISwitch 的隆起手感（Space 键同样命中 :active）。 */
+    /* 按住轨道时球额外隆起 ~8%（M3 pressed 手感）。 */
     .kima-switch__track:active & {
-      scale: 1.12;
+      scale: 1.08;
     }
 
     &[data-state="checked"] {
+      width: var(--kima-switch-thumb-checked);
+      height: var(--kima-switch-thumb-checked);
       transform: translateX(var(--kima-switch-travel));
+      background: var(--kima-color-on-primary);
     }
 
     &[data-state="unchecked"] {
