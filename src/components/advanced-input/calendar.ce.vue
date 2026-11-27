@@ -6,6 +6,8 @@ import { useInputState } from "../../utils/input-state.js";
 import { civilDate, dateKey, formatDate, monthKey, normalizeDate, parseDate, shiftDay, shiftMonth, todayKey } from "../../utils/local-date.js";
 import { useContentMotion } from "../../utils/content-motion.js";
 import { useRipple } from "../../utils/ripple.js";
+import KimaIcon from "../core/icon.ce.vue";
+import { ChevronLeftIcon, ChevronRightIcon } from "@hugeicons/core-free-icons";
 const props = defineProps({
   modelValue: { type: String, default: null }, viewDate: String,
   min: String, max: String, disabledDates: { type: Array, default: () => [] },
@@ -70,9 +72,9 @@ defineExpose({ focus: () => focus(tabDate.value || month.value), navigate });
 <template>
   <section ref="root" class="kima-calendar" :aria-label="label">
     <header class="kima-calendar__head">
-      <button v-if="!hideNavigation" class="kima-calendar__nav" type="button" aria-label="上一月" :disabled="disabled || !canNavigate(-1)" @click="navigate(-1)">‹</button>
+      <button v-if="!hideNavigation" class="kima-calendar__nav" type="button" aria-label="上一月" :disabled="disabled || !canNavigate(-1)" @click="navigate(-1)"><KimaIcon :icon="ChevronLeftIcon" :size="18" aria-hidden="true" /></button>
       <h2 :id="id" aria-live="polite">{{ title }}</h2>
-      <button v-if="!hideNavigation" class="kima-calendar__nav" type="button" aria-label="下一月" :disabled="disabled || !canNavigate(1)" @click="navigate(1)">›</button>
+      <button v-if="!hideNavigation" class="kima-calendar__nav" type="button" aria-label="下一月" :disabled="disabled || !canNavigate(1)" @click="navigate(1)"><KimaIcon :icon="ChevronRightIcon" :size="18" aria-hidden="true" /></button>
     </header>
     <div ref="grid" role="grid" :aria-labelledby="id" class="kima-calendar__grid">
       <div role="row" class="kima-calendar__row"><span v-for="(weekday,index) in weekdays" :key="index" role="columnheader">{{ weekday }}</span></div>
