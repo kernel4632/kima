@@ -46,7 +46,9 @@
   /* ---- 主色系（primary = base 文字色）----
    * 主按钮 = 文字色底 + 页面色字；hover / active 单独给档，不落在通用 wash 上。 */
   --kima-color-primary: var(--kima-color-on-surface);
-  --kima-color-on-primary: light-dark(#f9f8f7, #1e1d1d);
+  /* 官方 --grok-on-primary：浅 #fff、深 #1e1d1d（warm 皮肤编译值，grok-css 实锤；
+   * 早前浅色误写 chrome 色 #f9f8f7——on-primary 是主按钮上的字，官方用纯白）。 */
+  --kima-color-on-primary: light-dark(#ffffff, #1e1d1d);
   --kima-color-primary-hover: light-dark(#40403e, #f8f8f7);
   --kima-color-primary-active: light-dark(#1b1b1b, #d4d3cf);
 
@@ -64,15 +66,15 @@
   --kima-color-text-selection: light-dark(color-mix(in srgb, var(--kima-color-accent) 20%, transparent), color-mix(in srgb, var(--kima-color-accent) 30%, transparent));
 
   /* ---- 洗色（wash：悬停 / 次级填充 / 按下 / 选中的统一梯子）----
-   * 官方逻辑（--grok-bg-* 系）：所有 wash 档从基准洗色 --grok-base-wash mix，
+   * 官方逻辑（--grok-bg-* 系，grok-css 编译值）：所有 wash 档从基准洗色 --grok-base-wash mix，
    * 不是从文字色 mix——浅色主题文字是冷黑 #2C2C2B，从它 mix 会丢掉 Grok 的暖调基因
    * （浅色官方洗的是 #2B1C00 暖棕）。
-   * 官方刻度：hover 深色 5% / 浅色 6%、secondary 8%、active 深色 10% / 浅色 7%、
-   * selected = bg-secondary-active 16%。 */
+   * 官方编译实值：hover 5%、secondary 8%、active 7%、secondary-active 16%
+   * （两个主题变体同值；早期 spec 文档的「浅 6%」在编译产物中不存在，弃用）。 */
   --kima-color-wash: light-dark(#2b1c00, #ffffff);
-  --kima-color-wash-hover: light-dark(color-mix(in srgb, var(--kima-color-wash) 6%, transparent), color-mix(in srgb, var(--kima-color-wash) 5%, transparent));
+  --kima-color-wash-hover: color-mix(in srgb, var(--kima-color-wash) 5%, transparent);
   --kima-color-wash-secondary: color-mix(in srgb, var(--kima-color-wash) 8%, transparent);
-  --kima-color-wash-active: light-dark(color-mix(in srgb, var(--kima-color-wash) 7%, transparent), color-mix(in srgb, var(--kima-color-wash) 10%, transparent));
+  --kima-color-wash-active: color-mix(in srgb, var(--kima-color-wash) 7%, transparent);
   --kima-color-wash-selected: color-mix(in srgb, var(--kima-color-wash) 16%, transparent);
 
   /* ---- 层次（页面内组件的半透明叠层，不用边框）----
@@ -109,10 +111,10 @@
   --kima-switch-travel: calc(var(--kima-switch-width) - 2 * var(--kima-switch-inset) - var(--kima-switch-thumb));
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
-  /* 官方输入框描边 token（--input-border / --input-border-focus）：
-   * 深色发丝白 4% / 聚焦白 16%；浅色 neutral-200 38% / 聚焦 neutral-500 50%
-   * → KIMA 映射：发丝 = outline-tertiary 档、聚焦 = base 16%/50% 洗色档。 */
-  --kima-color-input-border: var(--kima-color-outline-tertiary);
+  /* 官方输入框描边：Input 组件类是裸 border（1px）+ border-border-l1 体系：
+   * 深 hsl(white/6-8%)、浅 hsl(black/6%)；聚焦 ring-1 input-border-focus（深白16%/浅38%档）。
+   * 此前的「白4% 发丝」取自 --input-border token——那是另一套体系，官方输入框组件不用它，属误读。 */
+  --kima-color-input-border: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.07));
   --kima-color-input-border-focus: color-mix(in srgb, var(--kima-color-on-surface) light-dark(50%, 16%), transparent);
 
   /* ---- 浮层表面（弹层专用，实色）----
@@ -121,10 +123,11 @@
   --kima-color-popup-large: light-dark(#fefefc, #282726);
 
   /* ---- 玻璃（composer / 侧栏毛玻璃）----
-   * 官方 --grok-glass-*：底 = pane 色 64-66% alpha；rim-edge 三层发丝内描
-   * 深色 #0000001a / #ffffff5c / #ffffff70，浅色是反色的 #ffffff2e / #00000038 / #ffffff38；
-   * rim-soft 单层顶描。 */
-  --kima-color-glass: color-mix(in srgb, var(--kima-color-surface-container-high) 75%, transparent);
+   * 官方 --grok-glass-*（编译值）：底 = pane 色 alpha64%（浅 #fefefca3）/ 66%（深 #282726a8）；
+   * rim-edge 三层发丝内描 深色 黑10%/白36%/白44%，浅色是反色的 白18%/黑22%/白22%；
+   * rim-soft 单层顶描 深白36% / 浅白16%。
+   * 此前 75% 取自 spec 文档「74-76%」——那实际是 hover(74%)/active(76%) 档，静止档臆想修正。 */
+  --kima-color-glass: light-dark(color-mix(in srgb, var(--kima-color-surface-container-high) 64%, transparent), color-mix(in srgb, var(--kima-color-surface-container-high) 66%, transparent));
   --kima-shadow-glass-edge: inset 0 0 0 0.5px light-dark(rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.1)), inset 0 0 0 0.5px light-dark(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.36)), inset 0 0.5px 0 light-dark(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.44));
   --kima-shadow-glass-soft: inset 0 0.5px 0 light-dark(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.36));
 
@@ -164,10 +167,14 @@
   /* 旧名映射：error-container 系指向官方危险薄叠，on- 是 base（红底上用红字会隐形）。 */
   --kima-color-error-container: var(--kima-color-error-secondary);
   --kima-color-on-error-container: var(--kima-color-on-surface);
-  --kima-color-success: light-dark(#05a95f, #00c972);
-  --kima-color-on-success: light-dark(#ffffff, #00391c);
-  --kima-color-warning: light-dark(#d77f02, #ff9800);
-  --kima-color-on-warning: light-dark(#ffffff, #3d2600);
+  /* 官方语义色单值深浅同色（--grok-success/--grok-warn 编译值；warm 皮肤不变换）。
+   * 此前深色误用 --grok-green/--grok-yellow（palette 色板，非语义 token）——臆想修正。
+   * on-success/on-warning：官方无此配对 token（官方用 bg-*-primary + text-on-primary），
+   * KIMA 自有配对——推导：实色底上的字取 text-on-primary 系（浅白/深页面色）。 */
+  --kima-color-success: #05a95f;
+  --kima-color-on-success: var(--kima-color-on-primary);
+  --kima-color-warning: #d77f02;
+  --kima-color-on-warning: var(--kima-color-on-primary);
 
   /* ---- 字体 ----
    * Inter 可变字体是 Universal Sans 的官方免费替代；中文由系统回退自动接管。 */
@@ -269,15 +276,18 @@
   --kima-color-primary-disabled: color-mix(in srgb, var(--kima-color-primary) 24%, transparent);
 
   /* ---- 阴影（Grok 六档）----
-   * 深色逐字官方 rgba；浅色用暖调（#0F0D0A 5-13%、#462500 3-8%），不用纯黑。
+   * 深色逐字官方 rgba（grok-css 编译值实锤：composer 深 3%、menu 深 30%/25%、
+   * overlay 40%/30%、modal 55%/35%、outline-diffuse 白9%+黑25%）；
+   * 浅色 warm 调（composer/menu #462500 3%、overlay #0F0D0A 10%/6%、modal 18%/8%、
+   * outline-diffuse #2B1C00 7% + #462500 3%），不用纯黑。
    * tier 语义：raised 页面浮起物 / composer 输入区 / menu 菜单与下拉 /
    * overlay 覆盖层 / modal 模态 / outline-diffuse 玻璃描边+弥散。 */
   --kima-shadow-raised: 0 2px 8px light-dark(rgba(15, 13, 10, 0.08), rgba(0, 0, 0, 0.18));
-  --kima-shadow-composer: 0 2px 6px light-dark(rgba(70, 37, 0, 0.04), rgba(0, 0, 0, 0.12)), 0 8px 12px light-dark(rgba(15, 13, 10, 0.06), rgba(0, 0, 0, 0.10));
-  --kima-shadow-menu: 0 2px 6px light-dark(rgba(70, 37, 0, 0.06), rgba(0, 0, 0, 0.30)), 0 8px 12px light-dark(rgba(15, 13, 10, 0.09), rgba(0, 0, 0, 0.25));
-  --kima-shadow-overlay: 0 4px 16px light-dark(rgba(15, 13, 10, 0.11), rgba(0, 0, 0, 0.40)), 0 1px 3px light-dark(rgba(70, 37, 0, 0.06), rgba(0, 0, 0, 0.30));
-  --kima-shadow-modal: 0 12px 40px light-dark(rgba(15, 13, 10, 0.13), rgba(0, 0, 0, 0.55)), 0 2px 8px light-dark(rgba(70, 37, 0, 0.07), rgba(0, 0, 0, 0.35));
-  --kima-shadow-outline-diffuse: 0 0 0 1px light-dark(rgba(15, 13, 10, 0.09), rgba(255, 255, 255, 0.09)), 0 12px 32px light-dark(rgba(15, 13, 10, 0.10), rgba(0, 0, 0, 0.25));
+  --kima-shadow-composer: 0 2px 6px light-dark(rgba(70, 37, 0, 0.03), rgba(0, 0, 0, 0.12)), 0 8px 12px light-dark(rgba(15, 13, 10, 0.03), rgba(0, 0, 0, 0.10));
+  --kima-shadow-menu: 0 2px 6px light-dark(rgba(70, 37, 0, 0.03), rgba(0, 0, 0, 0.30)), 0 8px 12px light-dark(rgba(15, 13, 10, 0.03), rgba(0, 0, 0, 0.25));
+  --kima-shadow-overlay: 0 4px 16px light-dark(rgba(15, 13, 10, 0.10), rgba(0, 0, 0, 0.40)), 0 1px 3px light-dark(rgba(15, 13, 10, 0.06), rgba(0, 0, 0, 0.30));
+  --kima-shadow-modal: 0 12px 40px light-dark(rgba(15, 13, 10, 0.18), rgba(0, 0, 0, 0.55)), 0 2px 8px light-dark(rgba(15, 13, 10, 0.08), rgba(0, 0, 0, 0.35));
+  --kima-shadow-outline-diffuse: 0 0 0 1px light-dark(rgba(43, 28, 0, 0.07), rgba(255, 255, 255, 0.09)), 0 12px 32px light-dark(rgba(70, 37, 0, 0.03), rgba(0, 0, 0, 0.25));
 
   /* 旧 elevation 名映射到最近档：1→raised、2→composer、3→menu、4/5→modal。
    * kima-popup 走 3（菜单阴影）/ 4（模态阴影），正好落在 Grok 的 menu / modal 档上。 */
