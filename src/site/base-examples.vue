@@ -166,12 +166,14 @@ const viewItems = [
 <template>
     <div class="kima-gallery__body">
       <div class="kima-gallery__main">
-        <KimaCard v-if="component === 'icon'" class="kima-gallery__demo">
-          <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
-        </KimaCard>
         <!-- 按钮与动作 -->
-        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
+        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'icon', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
           <KimaTypography type="heading" :level="2" size="headline-small">按钮与动作</KimaTypography>
+
+          <KimaCard v-show="visible('icon', '图标')" class="kima-gallery__demo">
+            <header><KimaTypography type="heading" :level="3" size="title-medium">Icon 图标</KimaTypography><KimaTypography type="caption">Hugeicons 线宽 2.25，随尺寸等比缩放。</KimaTypography></header>
+            <div class="kima-gallery__row"><KimaIcon v-for="icon in [SparklesIcon, Folder01Icon, StarIcon, Settings01Icon]" :key="icon" :icon="icon" :size="32" /></div>
+          </KimaCard>
 
           <KimaCard v-show="visible('button', '按钮')" class="kima-gallery__demo">
             <header><KimaTypography type="heading" :level="3" size="title-medium">Button 按钮</KimaTypography><KimaTypography type="caption">四种外观、加载和禁用状态。点击计数：{{ clicks }}</KimaTypography></header>
