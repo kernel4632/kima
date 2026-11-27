@@ -92,7 +92,7 @@ defineExpose({ focus: () => input.value?.focus() });
     <TransitionGroup name="kima-list" v-bind="tagTransition">
     <span v-for="(tag, index) in local" :key="tag" class="kima-tags-input__tag">
       <span>{{ tag }}</span>
-      <KimaIcon v-if="!readonly" class="kima-tags-input__tag-remove" :icon="Cancel01Icon" :size="14" role="button" tabindex="0" :disabled="disabled" :aria-label="`移除 ${tag}`" @click="remove(index)" @keydown.enter.prevent="remove(index)" />
+      <span v-if="!readonly" class="kima-tags-input__tag-remove" role="button" tabindex="0" :aria-disabled="disabled || undefined" :aria-label="`移除 ${tag}`" @click="!disabled && remove(index)" @keydown.enter.prevent="!disabled && remove(index)"><KimaIcon :icon="Cancel01Icon" :size="14" aria-hidden="true" /></span>
     </span>
     </TransitionGroup>
     <input v-for="tag in local" :key="tag" type="hidden" :name="name" :value="tag" :disabled="disabled" />
@@ -139,9 +139,10 @@ defineExpose({ focus: () => input.value?.focus() });
     color: var(--kima-color-on-accent-secondary);
   }
 
-  /* 移除钮：Hugeicons Cancel01Icon 14px，与库内清除钮同族。
-   * 视觉盒与图标同宽（无额外留白）——× 墨迹到标签右缘 = padding 12，与文字左边 12 对称
-   * （此前 28px 盒 + 右 padding 12 实测墨迹右边距 19，上下也因 em 盒不对称偏沉）。
+  /* 移除钮：span 根 + 内层 Hugeicons Cancel01Icon 14px。
+   * 根必须是 HTML 元素——svg 根上挂 ::before/::after 在 Chromium 不渲染盒
+   * （用户实测 hover 光圈消失实锤），伪元素光圈/命中区都需要 HTML 宿主。
+   * 视觉盒与图标同宽：× 墨迹到标签右缘 = padding 12，与文字左边 12 对称。
    * 44 触摸命中靠透明外扩，不靠视觉盒。 */
   &__tag-remove {
     flex: 0 0 auto;
@@ -159,15 +160,15 @@ defineExpose({ focus: () => input.value?.focus() });
     position: relative;
     transition: color var(--kima-duration-effects) var(--kima-curve-standard);
 
-    /* 44 命中：视觉 14 + 透明外扩。hover 光圈落在外扩前的 28px 视觉区（更醒目的热区提示）。 */
+    /* 44 命中：视觉 14 + 透明外扩；hover 光圈 28px（外扩后的热区提示）。 */
     &::before { content: ""; position: absolute; inset: -8px; border-radius: var(--kima-radius-full); background: transparent; transition: background-color var(--kima-duration-effects) var(--kima-curve-standard); }
     &::after { content: ""; position: absolute; inset: -15px; }
 
-    &:hover::before { background: var(--kima-color-wash-hover); }
+    &:hover:not([aria-disabled])::before { background: var(--kima-color-wash-hover); }
 
     &:focus-visible { outline: var(--kima-focus-ring-width) solid var(--kima-color-focus-ring); outline-offset: var(--kima-focus-ring-offset); }
 
-    &:disabled { cursor: not-allowed; }
+    &[aria-disabled] { cursor: not-allowed; }
   }
 }
 /* 退场标签脱离排版：FLIP 重排时它不再占位，其余标签平滑补位（_tokens.scss 的 kima-list 管过渡）。
