@@ -2,7 +2,7 @@
 图标：包一层 Hugeicons，线宽按尺寸等比缩放。
 Hugeicons 按 24×24 画布设计；不传 absolute-stroke-width 时，strokeWidth
 是画布坐标系里的值——图标放大到多少 px，线条就跟着等比放大多少。
-24px 图标视觉线宽 1.75px，48px 图标自然长到 3.5px，比例永远协调。
+24px 图标视觉线宽 2px，48px 图标自然长到 4px，比例永远协调。
 全库粗细只由下面 iconStrokeWidth 一个值决定（画布坐标系），不要在别的组件里单独传 strokeWidth。
 调用示例：
   <kima-icon :icon="Search01Icon" :size="20" />
@@ -14,8 +14,8 @@ import { HugeiconsIcon } from "@hugeicons/vue";
 // 全库图标线宽的唯一来源（24 画布坐标系）。想整体调粗细只改这一个数。
 // 为什么不放 CSS token：线宽要传给 Hugeicons 组件当属性用，JS 读不到 CSS 变量，
 // 放两处就会出现"改了 token 图标没变"的情况。
-// 2.25 = 1.75 × 1.28：用户实测反馈整体偏细，全局基准加粗约 1.3 倍。
-const iconStrokeWidth = 2.25;
+// 2 = 用户实测校准（2.25 偏粗，1.75 偏细，2 与文字粗细平衡）。
+const iconStrokeWidth = 2;
 
 const props = defineProps({
   icon: {
