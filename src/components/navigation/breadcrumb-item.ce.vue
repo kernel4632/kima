@@ -330,8 +330,10 @@ defineExpose({ setSeparator });
   padding-inline: var(--kima-breadcrumb-item-icon-padding-inline, 0px);
 }
 .kima-breadcrumb-item-button--icon-only:not(.kima-breadcrumb-item-button--current):not([aria-disabled="true"]) .kima-breadcrumb-item-button__base {
-  /* 官方 --m3e-breadcrumb-item-icon-color, onSurfaceVariant。 */
-  color: var(--kima-breadcrumb-item-icon-color, var(--kima-color-on-surface-variant));
+  /* 官方 --m3e-breadcrumb-item-icon-color, onSurfaceVariant（官网实测实色 174,169,180）。
+   * KIMA 的 on-surface-variant 是 64.7% 半透明（深色底上发虚），实色形态走
+   * on-surface-variant-solid（token 派生，见 _tokens.scss）。 */
+  color: var(--kima-breadcrumb-item-icon-color, var(--kima-color-on-surface-variant-solid));
 }
 
 /* 非 icon-only 的排版（官方 typescale.standard.label.large 编译值：14/500/20/0.1px）。 */
@@ -345,13 +347,11 @@ defineExpose({ setSeparator });
   padding-inline: var(--kima-breadcrumb-item-label-padding-inline, 12px);
 }
 .kima-breadcrumb-item-button:not(.kima-breadcrumb-item-button--icon-only):not(.kima-breadcrumb-item-button--current):not([aria-disabled="true"]) .kima-breadcrumb-item-button__base {
-  /* 官方 --m3e-breadcrumb-item-label-color, color.primary。
-   * 官方 primary 是主题强调位（M3 紫系，实测 rgb(205,192,236)）；
-   * KIMA Grok 主题的强调位是 accent 蓝（--kima-color-primary 被映射为 base 文字色，
-   * 用它会导致 current（on-surface）与普通项零差别）。官方语义「链接项走主题强调色」
-   * 在 KIMA token 体系里的对应位是 accent（AGENTS.md：链接是 accent 三大专属用途之一，
-   * kima-link 同款）。 */
-  color: var(--kima-breadcrumb-item-label-color, var(--kima-color-accent));
+  /* 官方 --m3e-breadcrumb-item-label-color, color.primary（官网实测 primary=淡紫，
+   * 与 current 近白是同色温微差，不是强调对比）。
+   * Grok 主题的对应位是 fg-accent（官方链接类汤 text-fg-accent 同位，双主题值
+   * 浅 #0890ff / 深 #299fff）——比 accent 本值 #1084FE 柔和，色相观感对齐官方。 */
+  color: var(--kima-breadcrumb-item-label-color, var(--kima-color-fg-accent));
 }
 
 /* KIMA 交互反馈（AGENTS.md 分配规则：按钮类 = 状态层 + 焦点环 + 涟漪）。

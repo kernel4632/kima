@@ -38,6 +38,10 @@
   --kima-color-on-surface: light-dark(#2c2c2b, #e6e5e3);
   /* 次要文字 = base 64.7% 透明（官方洗法）。 */
   --kima-color-on-surface-variant: color-mix(in srgb, var(--kima-color-on-surface) 64.7%, transparent);
+  /* on-surface-variant 的实色形态：把 64.7% mix 的底从 transparent 换成 surface。
+   * 在表面底上与半透明版逐像素一致，但落成实色——对齐官方 onSurfaceVariant 的实色观感。
+   * 纯现有 token 派生，零新色值。面包屑 icon-only 已消费；其余图标类用法后续按需换。 */
+  --kima-color-on-surface-variant-solid: color-mix(in srgb, var(--kima-color-on-surface) 64.7%, var(--kima-color-surface));
 
   --kima-color-outline: light-dark(#d4d3cf, #5f5e59);
   --kima-color-outline-variant: light-dark(#e6e5e3, #383836);
