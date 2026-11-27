@@ -217,14 +217,17 @@ onBeforeUnmount(() => ownerDocument?.removeEventListener("reset", handleReset, t
   &__track-active {
     /* active 段从 thumb 中心向左铺满（M3E 由 JS 算 width/offset，KIMA 用 thumb-left 定位）。 */
     left: 0;
-    width: var(--kima-slider-active-width, 0%);
+    /* M3E 官方实测：active 终点 = thumb 容器左缘（中心 − 容器半宽 8px），
+     * 不是 thumb 中心——thumb 两侧与轨道有 16px 断开（官方 value=50 时
+     * active 到 92 而非 100，inactive-end 从 108 起）。 */
+    width: calc(var(--kima-slider-active-width, 0%) - var(--kima-slider-thumb-gap));
     border-radius: var(--kima-radius-m) 0 0 var(--kima-radius-m);
     background: var(--kima-color-primary);
   }
 
   /* M3E .track-inactive.end：secondaryContainer，end 端圆角。 */
   &__track-inactive--end {
-    left: var(--kima-slider-active-width, 0%);
+    left: calc(var(--kima-slider-active-width, 0%) + var(--kima-slider-thumb-gap));
     right: 0;
     border-radius: 0 var(--kima-radius-m) var(--kima-radius-m) 0;
     background: var(--kima-color-surface-container-highest);
