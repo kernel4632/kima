@@ -259,9 +259,10 @@ onBeforeUnmount(() => ownerDocument.removeEventListener("reset", handleReset, tr
     align-items: center;
     height: var(--kima-field-height);
     box-sizing: border-box;
+    /* 文本输入官方模式：背景突出（--input 底），描边辅助线。 */
     border: var(--kima-outline-width) solid var(--kima-color-input-border);
-    border-radius: var(--kima-radius-control);
-    background: transparent;
+    border-radius: 6px;
+    background: var(--kima-color-input-bg);
     transition:
       background-color var(--kima-duration-effects) var(--kima-curve-standard),
       border-color var(--kima-duration-effects) var(--kima-curve-standard);

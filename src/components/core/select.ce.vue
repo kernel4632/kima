@@ -415,10 +415,13 @@ onBeforeUnmount(() => {
   height: var(--kima-field-height);
   box-sizing: border-box;
   padding-right: var(--kima-space-2);
-  /* 官方输入框描边模式（同 kima-field-skin）：1px 发丝 + 浅底 + focus 描边加深。 */
+  /* 官方 Select 触发器（chunk 0krw1oe1f4-2d 明文）：57px、rounded-md 6、
+   * 1px border + shadow-sm + bg-transparent——描边突出是选择器的官方模式
+   * （文本输入框才是背景突出，两者不同源，勿混）。 */
   border: var(--kima-outline-width) solid var(--kima-color-input-border);
-  border-radius: var(--kima-radius-control);
+  border-radius: 6px;
   background: transparent;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   transition:
     background-color var(--kima-duration-effects) var(--kima-curve-standard),
     border-color var(--kima-duration-effects) var(--kima-curve-standard),

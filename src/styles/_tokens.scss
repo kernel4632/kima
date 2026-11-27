@@ -111,10 +111,14 @@
   --kima-switch-travel: calc(var(--kima-switch-width) - 2 * var(--kima-switch-inset) - var(--kima-switch-thumb));
   /* 未选中控件底（开关轨道、滑块轨道）：与卡片分隔线同档，Grok 开关「已对齐」。 */
   --kima-color-track: var(--kima-color-outline-variant);
-  /* 官方输入框描边：Input 组件类是裸 border（1px）+ border-border-l1 体系：
-   * 深 hsl(white/6-8%)、浅 hsl(black/6%)；聚焦 ring-1 input-border-focus（深白16%/浅38%档）。
-   * 此前的「白4% 发丝」取自 --input-border token——那是另一套体系，官方输入框组件不用它，属误读。 */
-  --kima-color-input-border: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.07));
+  /* 官方输入框三件套 token（浅色组/深色组编译值）：
+   * 背景 --input：浅 hsl(white) 白 / 深 hsl(neutral-700) = 21% 灰——背景是主突出手段；
+   * 悬停 --input-hover 同系；描边 --input-border：浅 neutral-200/38%（辅助线）/ 深 /4%（极淡）。
+   * 官方文本输入靠背景色突出（用户实测指认），此前透明底+边框是把 Select 触发器
+   * （57px border bg-transparent shadow-sm）的皮肤错安到文本框——组件归属修正。 */
+  --kima-color-input-bg: light-dark(#ffffff, hsl(0 0% 21%));
+  --kima-color-input-bg-hover: light-dark(#ffffff, hsl(0 0% 24%));
+  --kima-color-input-border: light-dark(rgba(43, 43, 42, 0.38), rgba(255, 255, 255, 0.04));
   --kima-color-input-border-focus: color-mix(in srgb, var(--kima-color-on-surface) light-dark(50%, 16%), transparent);
 
   /* ---- 浮层表面（弹层专用，实色）----
