@@ -170,6 +170,11 @@ function handleKeyup(event) {
 }
 
 .kima-card__body {
+  /* 卡内多块内容（标题区 + 交互区）天然分行：flex 列 + 与卡同档 gap。
+   * 此前 display:block 零间距，slot 里的多行内容贴在一起（用户实测"每行太挤"根因）。 */
+  display: flex;
+  flex-direction: column;
+  gap: var(--kima-space-3);
   min-width: 0;
 }
 

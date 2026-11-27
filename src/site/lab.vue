@@ -8,6 +8,12 @@ import { KimaBadge, KimaButton } from '../index.js';
 
 defineProps({ navigate: { type: Function, required: true } });
 
+/* 模板里直接写 document 在运行时是 undefined（Vue 模板作用域只暴露实例），
+ * 滚动锚点收进方法。 */
+function scrollToGroup(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
 /* 目录高亮：滚动到哪个分组，导航点亮哪个。实验台是长页，这个比返回顶部有用。 */
 const groups = [
   { id: 'actions', label: '按钮与动作' },
@@ -49,7 +55,7 @@ onBeforeUnmount(() => observer?.disconnect());
           :key="group.id"
           variant="text"
           :aria-current="activeGroup === group.id ? 'true' : undefined"
-          @click="document.getElementById(group.id)?.scrollIntoView({ behavior: 'smooth' })"
+          @click="scrollToGroup(group.id)"
         >{{ group.label }}</KimaButton>
       </nav>
     </header>
@@ -117,8 +123,8 @@ onBeforeUnmount(() => observer?.disconnect());
 }
 
 /* 平铺模式下每个演示要能认出是谁：KimaTypography 自带尺寸/颜色 token，
- * 只负责排版间距（flex 竖排 + 首行）。 */
-.kima-lab__body :deep(.kima-gallery__demo > header) {
+ * 只负责排版间距。header 在 KimaCard 的 body 插槽里，用后代选择器命中。 */
+.kima-lab__body :deep(.kima-gallery__demo header) {
   display: flex;
   flex-direction: column;
   gap: var(--kima-space-1);

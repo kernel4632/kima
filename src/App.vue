@@ -3,7 +3,7 @@
 <script setup>
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaTable, KimaIcon, KimaPopover, KimaTooltip } from './index.js';
-import { Menu01Icon, SparklesIcon } from '@hugeicons/core-free-icons';
+import { Menu01Icon, SparklesIcon, Search01Icon } from '@hugeicons/core-free-icons';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
 const Lab = defineAsyncComponent(() => import('./site/lab.vue'));
