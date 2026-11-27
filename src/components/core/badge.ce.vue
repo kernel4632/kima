@@ -40,8 +40,11 @@ const hasDefaultContent = computed(() => slots.default?.().some((vnode) => {
 }) || hasNativeSlot("default"));
 
 const badgeVariant = computed(() => {
-  const variants = ["neutral", "primary", "danger", "success"];
-  return variants.includes(props.variant) ? props.variant : "primary";
+  // 官方 Badge CVA 变体（chunk 0krw1oe1f4-2d.js）：muted(默认)/secondary/highlight/warning/
+  // success/accent/destructive/outline。KIMA 映射：muted→neutral、destructive→danger，
+  // 其余同名；官方默认 muted——KIMA 同步默认 neutral。
+  const variants = ["neutral", "primary", "secondary", "warning", "success", "accent", "danger", "outline"];
+  return variants.includes(props.variant) ? props.variant : "neutral";
 });
 
 const displayValue = computed(() => {
@@ -100,22 +103,56 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
   font-weight: var(--kima-font-weight-semi-bold);
   line-height: 1;
   white-space: nowrap;
-  color: var(--kima-color-on-primary);
-  background: var(--kima-color-primary);
+  /* 官方 Badge CVA（chunk 0krw1oe1f4-2d.js）变体一比一：
+   * muted → 次级填充底 + fg-secondary 字；secondary → 同底 + fg-primary 字；
+   * success/accent → 语义色 15% 洗底 + 同色字（官方 bg-fg-success/15 模式，
+   *   与 error-secondary 梯子同哲学）；warning → 实色橙底；
+   * destructive → button-danger-fill 实底；outline → 透明 + border-l3。
+   * KIMA 默认档与官方默认 muted 对齐 = neutral。 */
+  color: var(--kima-color-on-surface-variant);
+  background: var(--kima-color-wash-secondary);
 
-  &--neutral {
-    color: var(--kima-color-on-surface);
-    background: var(--kima-color-layer-3);
+  /* primary：KIMA 的米白实底场景（角标常用），官方语义位 = secondary 的实色档。 */
+  &--primary {
+    color: var(--kima-color-on-primary);
+    background: var(--kima-color-primary);
   }
 
+  /* 官方 secondary：次级填充底 + base 字。 */
+  &--secondary {
+    color: var(--kima-color-on-surface);
+    background: var(--kima-color-wash-secondary);
+  }
+
+  /* 官方 success：语义色 15% 洗底 + 语义字。 */
+  &--success {
+    color: var(--kima-color-success);
+    background: color-mix(in srgb, var(--kima-color-success) 15%, transparent);
+  }
+
+  /* 官方 accent：accent 15% 洗底 + accent 字。 */
+  &--accent {
+    color: var(--kima-color-accent);
+    background: color-mix(in srgb, var(--kima-color-accent) 15%, transparent);
+  }
+
+  /* 官方 warning：bg-warning 实色 + 专属字色。 */
+  &--warning {
+    color: var(--kima-color-on-warning);
+    background: var(--kima-color-warning);
+  }
+
+  /* 官方 destructive：button-danger-fill 实底 + danger 字色。 */
   &--danger {
     color: var(--kima-color-on-error);
     background: var(--kima-color-error);
   }
 
-  &--success {
-    color: var(--kima-color-on-success);
-    background: var(--kima-color-success);
+  /* 官方 outline：透明底 + border-l3 描边 + base 字。 */
+  &--outline {
+    color: var(--kima-color-on-surface);
+    background: transparent;
+    border: var(--kima-outline-width) solid var(--kima-color-outline-tertiary);
   }
 
   /* 无文字徽章高度 4 + 2 = 6，本身就是一个小圆点。 */

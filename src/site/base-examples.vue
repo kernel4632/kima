@@ -204,8 +204,10 @@ const viewItems = [
             <div class="kima-gallery__row">
               <kima-badge value="8" />
               <kima-badge :value="128" :max="99" variant="danger" aria-label="128 条未读" />
-              <kima-badge value="新" variant="primary" />
+              <kima-badge value="新" variant="secondary" />
               <kima-badge value="在线" variant="success" />
+              <kima-badge value="项目" variant="accent" />
+              <kima-badge value="_beta" variant="outline" />
               <kima-badge dot variant="success" aria-label="在线" />
             </div>
           </kima-card>
