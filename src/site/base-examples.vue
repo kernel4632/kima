@@ -27,7 +27,6 @@ import {
   KimaDivider,
   KimaDrawer,
   KimaIcon,
-  KimaIconButton,
   KimaMenu,
   KimaProgress,
   KimaRadioGroup,
@@ -167,7 +166,7 @@ const viewItems = [
     <div class="kima-gallery__body">
       <div class="kima-gallery__main">
         <!-- 按钮与动作 -->
-        <section v-show="visible('按钮与动作', 'button', 'icon-button', 'icon', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
+        <section v-show="visible('按钮与动作', 'button', 'icon', 'badge', 'divider', 'card')" id="actions" class="kima-gallery__section">
           <KimaTypography type="heading" :level="2" size="headline-small">按钮与动作</KimaTypography>
 
           <KimaCard v-show="visible('icon', '图标')" class="kima-gallery__demo">
@@ -191,16 +190,14 @@ const viewItems = [
             </div>
           </KimaCard>
 
-          <KimaCard v-show="visible('icon-button', '图标按钮')" class="kima-gallery__demo">
-            <header><KimaTypography type="heading" :level="3" size="title-medium">IconButton 图标按钮</KimaTypography><KimaTypography type="caption">单个图标的可访问按钮，三种尺寸。</KimaTypography></header>
+          <KimaCard v-show="visible('button', '按钮')" class="kima-gallery__demo">
+            <header><KimaTypography type="heading" :level="3" size="title-medium">Button 纯图标形态</KimaTypography><KimaTypography type="caption">icon-only 组合：一个按钮原语覆盖纯文字与纯图标，不再有独立图标按钮组件。</KimaTypography></header>
             <div class="kima-gallery__row">
-              <kima-icon-button label="收藏" :icon="HeartIcon" />
-              <kima-icon-button label="收藏" variant="tonal" :icon="FavouriteIcon" />
-              <kima-icon-button label="设置" variant="outlined" :icon="Settings01Icon" />
-              <kima-icon-button label="更多" variant="text" :icon="MoreHorizontalIcon" />
-              <kima-icon-button label="小号" size="small" variant="tonal" :icon="Menu01Icon" />
-              <kima-icon-button label="大号" size="large" :icon="StarIcon" />
-              <kima-icon-button label="加载中" loading />
+              <kima-button variant="standard" icon-only label="收藏"><KimaIcon :icon="HeartIcon" :size="24" /></kima-button>
+              <kima-button variant="tonal" icon-only label="收藏"><KimaIcon :icon="FavouriteIcon" :size="24" /></kima-button>
+              <kima-button variant="outlined" icon-only label="设置"><KimaIcon :icon="Settings01Icon" :size="24" /></kima-button>
+              <kima-button variant="text" icon-only label="更多"><KimaIcon :icon="MoreHorizontalIcon" :size="24" /></kima-button>
+              <kima-button variant="tonal" icon-only label="加载中" loading />
             </div>
           </KimaCard>
 

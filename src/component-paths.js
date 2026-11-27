@@ -14,7 +14,6 @@ export const componentPaths = {
   "divider": "/src/components/core/divider.ce.vue",
   "drawer": "/src/components/core/drawer.ce.vue",
   "icon": "/src/components/core/icon.ce.vue",
-  "icon-button": "/src/components/core/icon-button.ce.vue",
   "link": "/src/components/navigation/link.ce.vue",
   "menu": "/src/components/core/menu.ce.vue",
   "popover": "/src/components/interaction/popover.ce.vue",

@@ -2,7 +2,7 @@
      pnpm dev 查看；#/components/button 可直达组件并刷新保留位置。 -->
 <script setup>
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { KimaButton, KimaIconButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaTable, KimaIcon, KimaPopover, KimaTooltip } from './index.js';
+import { KimaButton, KimaTextField, KimaSelect, KimaTabs, KimaBadge, KimaCard, KimaDrawer, KimaTable, KimaIcon, KimaPopover, KimaTooltip } from './index.js';
 import { Menu01Icon, SparklesIcon, Search01Icon } from '@hugeicons/core-free-icons';
 const Examples = defineAsyncComponent(() => import('./site/examples.vue'));
 const Gallery = defineAsyncComponent(() => import('./site/gallery.vue'));
@@ -90,7 +90,7 @@ const propColumns = [{ key: 'name', label: '属性' }, { key: 'type', label: '�
   <div v-else-if="!['lab'].includes(route)" class="kima-docs">
     <header class="kima-docs__top">
       <div class="kima-docs__brand">
-        <KimaIconButton class="kima-docs__mobile-toggle" :icon="Menu01Icon" label="打开文档导航" variant="text" @click="mobileMenu = true" />
+        <KimaButton class="kima-docs__mobile-toggle" variant="text" icon-only label="打开文档导航" @click="mobileMenu = true"><KimaIcon :icon="Menu01Icon" /></KimaButton>
         <KimaButton variant="text" @click="navigate('overview')"><template #leading><KimaIcon :icon="SparklesIcon" /></template>KIMA</KimaButton>
         <KimaBadge :value="manifest.version" variant="primary" />
       </div>

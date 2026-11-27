@@ -16,7 +16,6 @@ import KimaDialog from "./components/core/dialog.ce.vue";
 import KimaDivider from "./components/core/divider.ce.vue";
 import KimaDrawer from "./components/core/drawer.ce.vue";
 import KimaIcon from "./components/core/icon.ce.vue";
-import KimaIconButton from "./components/core/icon-button.ce.vue";
 import KimaLink from "./components/navigation/link.ce.vue";
 import KimaMenu from "./components/core/menu.ce.vue";
 import KimaPopover from "./components/interaction/popover.ce.vue";
@@ -48,7 +47,6 @@ export const elements = defineKimaElements({
   "divider": KimaDivider,
   "drawer": KimaDrawer,
   "icon": KimaIcon,
-  "icon-button": KimaIconButton,
   "link": KimaLink,
   "menu": KimaMenu,
   "popover": KimaPopover,

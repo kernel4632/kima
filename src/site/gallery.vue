@@ -6,7 +6,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 // runAction 里 document.querySelector 是事件回调（非渲染期），浏览器专属 API 放在事件处理里执行。
 import {
   KimaAvatar, KimaBadge, KimaButton, KimaCard, KimaCheckbox, KimaCombobox,
-  KimaDialog, KimaDivider, KimaDrawer, KimaIcon, KimaIconButton,
+  KimaDialog, KimaDivider, KimaDrawer, KimaIcon,
   KimaLink, KimaMenu, KimaPopover, KimaProgress, KimaRadioGroup,
   KimaSelect, KimaSkeleton, KimaSlider, KimaSpinner, KimaSwitch,
   KimaTable, KimaTabs, KimaTextField, KimaTextarea, KimaTooltip,
@@ -76,7 +76,7 @@ onBeforeUnmount(() => clearTimeout(loadingTimer));
         <KimaPopover label="快速搜索" content-label="项目搜索">
           <div class="kima-playground__flow"><KimaTextField label="搜索项目" placeholder="输入关键词" /></div>
         </KimaPopover>
-        <KimaIconButton :icon="Folder01Icon" label="查看文件" @click="dialogOpen = true" />
+        <KimaButton variant="standard" icon-only label="查看文件" @click="dialogOpen = true"><KimaIcon :icon="Folder01Icon" /></KimaButton>
         <KimaLink href="#/overview">文档</KimaLink>
       </div>
     </header>

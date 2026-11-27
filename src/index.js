@@ -17,7 +17,6 @@ export { default as KimaDialog } from "./components/core/dialog.ce.vue";
 export { default as KimaDivider } from "./components/core/divider.ce.vue";
 export { default as KimaDrawer } from "./components/core/drawer.ce.vue";
 export { default as KimaIcon } from "./components/core/icon.ce.vue";
-export { default as KimaIconButton } from "./components/core/icon-button.ce.vue";
 export { default as KimaLink } from "./components/navigation/link.ce.vue";
 export { default as KimaMenu } from "./components/core/menu.ce.vue";
 export { default as KimaPopover } from "./components/interaction/popover.ce.vue";
@@ -49,7 +48,6 @@ export const componentNames = [
   "KimaDivider",
   "KimaDrawer",
   "KimaIcon",
-  "KimaIconButton",
   "KimaLink",
   "KimaMenu",
   "KimaPopover",

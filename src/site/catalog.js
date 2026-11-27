@@ -9,14 +9,13 @@ const extensions = groupEntries;
 const sources = import.meta.glob('../components/**/*.ce.vue', { query: '?raw', import: 'default' });
 const sourcesBySlug = Object.fromEntries(Object.entries(sources).map(([path, load]) => [path.slice(path.lastIndexOf('/') + 1, -'.ce.vue'.length), load]));
 const labels = {
-  'code-block': '代码块',
-  badge: '徽章', button: '按钮', 'button-group': '按钮组', card: '卡片', cascader: '级联选择', checkbox: '复选框', combobox: '组合框', 'date-picker': '日期选择', dialog: '对话框', divider: '分隔线', drawer: '抽屉', 'empty-state': '空状态', icon: '图标', 'icon-button': '图标按钮', layout: '布局', menu: '菜单', notification: '通知', pagination: '分页', progress: '进度条', select: '选择器', slider: '滑块', switch: '开关', table: '表格', tabs: '标签页', 'text-field': '文本框', 'time-picker': '时间选择', tooltip: '提示', tree: '树', 'virtual-scroll': '虚拟滚动',
+  badge: '徽章', button: '按钮', calendar: '日历', card: '卡片', checkbox: '复选框', collapsible: '折叠', combobox: '组合框', dialog: '对话框', divider: '分隔线', drawer: '抽屉', icon: '图标', link: '链接', menu: '菜单', popover: '气泡', progress: '进度条', 'radio-group': '单选组', select: '选择器', skeleton: '骨架屏', slider: '滑块', spinner: '加载指示', switch: '开关', table: '表格', tabs: '标签页', 'text-field': '文本框', textarea: '多行文本', tooltip: '提示', tree: '树', typography: '排版', avatar: '头像',
 };
 const groups = {
-  '操作与导航': ['button', 'icon-button', 'button-group', 'menu', 'tabs'],
-  '表单与选择': ['text-field', 'checkbox', 'switch', 'slider', 'select', 'combobox', 'cascader', 'date-picker', 'time-picker'],
-  '反馈与弹层': ['dialog', 'drawer', 'notification', 'tooltip', 'progress', 'empty-state'],
-  '内容与布局': ['badge', 'card', 'code-block', 'divider', 'icon', 'layout', 'table', 'tree', 'pagination', 'virtual-scroll'],
+  '操作与导航': ['button', 'menu', 'tabs', 'link'],
+  '表单与选择': ['text-field', 'textarea', 'checkbox', 'switch', 'slider', 'select', 'combobox', 'radio-group', 'calendar'],
+  '反馈与弹层': ['dialog', 'drawer', 'tooltip', 'popover', 'progress', 'spinner', 'skeleton'],
+  '内容与布局': ['badge', 'card', 'divider', 'icon', 'table', 'tree', 'collapsible', 'avatar', 'typography'],
 };
 export const catalog = metadata.map((item) => ({
   ...item,

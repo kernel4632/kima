@@ -59,3 +59,17 @@
 button icon-button checkbox radio-group switch slider text-field textarea select combobox menu
 dialog drawer popover tooltip progress spinner skeleton avatar badge divider icon link card
 typography tabs table tree calendar collapsible
+
+## 第三批：原语合并（30 → 29，icon-button 并入 button）
+
+用户裁决升级原则：**有共同特征的原语应提取合并，组件靠组合表达**。
+button 本身可以承载空内容/纯文字/纯图标/图文——独立图标按钮组件是冗余。
+
+- `icon-button` 删除。KimaButton 吸收其能力：
+  - 新变体 `standard`（透明底 + hover wash，原图标钮默认肤）
+  - 新 prop `icon-only`（纯图标方形几何：aspect-ratio 1、min-width 收掉、图标居中）
+  - 新 prop `label`（可访问名落 aria-label）
+- 纯图标按钮的组合表达：`<kima-button icon-only label="设置"><KimaIcon :icon="..." /></kima-button>`
+- 消费者迁移：App.vue（移动端目录钮）、base-examples（演示块改组合教学）、
+  gallery.vue（查看文件钮）；dialog/drawer 的关闭钮本来就是 button+icon 组合，无需动。
+- catalog.js 的死映射（旧 136 时代残留 21 个已删组件条目）顺手清理成 30 清单同步。

@@ -1,8 +1,11 @@
 <!--
-按钮：KIMA 的主操作控件。默认药丸形，点击有涟漪和按下回弹。
+按钮：KIMA 最小交互原语。默认药丸形；内容随意组合——空按钮、纯文字、
+纯图标（icon-only 方形）、图文（leading/trailing slot）都是它的形态，
+不设独立的图标按钮组件（原语组合）。
 调用示例：
   <kima-button variant="filled" type="submit">保存</kima-button>
   <kima-button variant="tonal" :loading="saving">继续</kima-button>
+  <kima-button variant="standard" icon-only label="设置"><KimaIcon :icon="Settings01Icon" /></kima-button>
   <kima-button shape="square"><template #leading>...</template>添加</kima-button>
 -->
 <script setup>
@@ -30,6 +33,14 @@ const props = defineProps({
     type: String,
     default: "button",
   },
+  // 可访问名：不画可见标签（最小原语不给组件配文案排版），落到 aria-label。
+  label: {
+    type: String,
+    default: "",
+  },
+  // 内容只有图标时给 true：按钮收缩成方形（宽=高=尺寸档），图标居中。
+  // 纯图标按钮由「button + icon-only」组合表达，不再有独立图标按钮组件。
+  iconOnly: Boolean,
 });
 
 const attrs = useAttrs();
@@ -41,7 +52,8 @@ const forwardedAttrs = computed(() => isCustomElement ? { ...attrs, id: undefine
 useRipple(root);
 
 const buttonVariant = computed(() => {
-  const variants = ["filled", "tonal", "outlined", "text"];
+  // standard：透明底 + hover wash——纯图标钮的默认肤（原 icon-button 的 standard）。
+  const variants = ["filled", "tonal", "outlined", "text", "standard"];
   return variants.includes(props.variant) ? props.variant : "filled";
 });
 
@@ -56,17 +68,18 @@ const isRound = computed(() => props.round || props.shape !== "square");
     class="kima-button"
     :class="[
       `kima-button--${buttonVariant}`,
-      { 'kima-button--round': isRound },
+      { 'kima-button--round': isRound, 'kima-button--icon-only': iconOnly },
     ]"
     :type="type"
     :disabled="disabled || loading"
     :aria-busy="loading || undefined"
+    :aria-label="label || undefined"
   >
     <Transition name="kima-fade" mode="out-in">
       <span v-if="loading" key="loading" class="kima-button__indicator" aria-hidden="true"><span class="kima-button__spinner" /></span>
       <span v-else-if="$slots.leading || hasNativeSlot('leading')" key="leading" class="kima-button__slot kima-button__slot--leading"><slot name="leading" /></span>
     </Transition>
-    <span class="kima-button__label"><slot /></span>
+    <span v-if="$slots.default || hasNativeSlot('default')" class="kima-button__label"><slot /></span>
     <span v-if="$slots.trailing || hasNativeSlot('trailing')" class="kima-button__slot kima-button__slot--trailing">
       <slot name="trailing" />
     </span>
@@ -178,9 +191,35 @@ const isRound = computed(() => props.round || props.shape !== "square");
     }
   }
 
+  /* standard：透明底图标钮肤（原 icon-button 默认）——与 text 的差别是
+   * 文字/图标用次级色、hover 同 wash；作为图标容器时无 padding 药丸感。 */
+  &--standard {
+    color: var(--kima-color-on-surface-variant);
+    background: transparent;
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      color: var(--kima-color-on-surface);
+      background: var(--kima-color-wash-hover);
+    }
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      background: var(--kima-color-wash-active);
+    }
+  }
+
   &--outlined:disabled,
-  &--text:disabled {
+  &--text:disabled,
+  &--standard:disabled {
     color: color-mix(in srgb, var(--kima-color-on-surface) 38%, transparent);
+  }
+
+  /* 纯图标几何：方形（宽=高），min-width 收掉，图标居中。
+   * 「button + 图标 + icon-only」组合替代独立的图标按钮组件。 */
+  &--icon-only {
+    min-width: 0;
+    aspect-ratio: 1;
+    padding-inline: var(--kima-space-2);
+    justify-content: center;
   }
 
   &__label,

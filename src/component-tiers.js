@@ -38,7 +38,6 @@ export const componentTiers = {
     "divider",
     "drawer",
     "icon",
-    "icon-button",
     "link",
     "menu",
     "popover",
