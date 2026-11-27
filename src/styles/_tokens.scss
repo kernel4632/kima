@@ -165,6 +165,11 @@
   --kima-color-on-success: var(--kima-color-on-primary);
   --kima-color-warning: #d77f02;
   --kima-color-on-warning: var(--kima-color-on-primary);
+  /* 官方徽章/文字用 fg-success / fg-accent 是双主题值（组件消费走这套，不是语义单值）：
+   * fg-success 浅 = hsl(green-600) #009427 / 深 = hsl(green-300) #8ce38f；
+   * fg-accent 浅 #0890ff（body）/ 深 #299fff（:root.dark）。洗底配对同色。 */
+  --kima-color-fg-success: light-dark(#009427, #8ce38f);
+  --kima-color-fg-accent: light-dark(#0890ff, #299fff);
 
   /* ---- 字体 ----
    * Inter 可变字体是 Universal Sans 的官方免费替代；中文由系统回退自动接管。 */

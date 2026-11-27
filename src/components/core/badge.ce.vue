@@ -124,16 +124,18 @@ const accessibleLabel = computed(() => attrs["aria-label"] || displayValue.value
     background: var(--kima-color-wash-secondary);
   }
 
-  /* 官方 success：语义色 15% 洗底 + 语义字。 */
+  /* 官方 success：语义色 15% 洗底 + 语义字。官方徽章字色走 fg-success（双主题），
+   * 不用 --grok-success 单值——token：--kima-color-fg-success。 */
   &--success {
-    color: var(--kima-color-success);
-    background: color-mix(in srgb, var(--kima-color-success) 15%, transparent);
+    color: var(--kima-color-fg-success);
+    background: color-mix(in srgb, var(--kima-color-fg-success) 15%, transparent);
   }
 
-  /* 官方 accent：accent 15% 洗底 + accent 字。 */
+  /* 官方 accent：accent 15% 洗底 + accent 字。官方 fg-accent 双主题
+   * （浅 #0890ff / 深 #299fff）——token：--kima-color-fg-accent。 */
   &--accent {
-    color: var(--kima-color-accent);
-    background: color-mix(in srgb, var(--kima-color-accent) 15%, transparent);
+    color: var(--kima-color-fg-accent);
+    background: color-mix(in srgb, var(--kima-color-fg-accent) 15%, transparent);
   }
 
   /* 官方 warning：bg-warning 实色 + 专属字色。 */
